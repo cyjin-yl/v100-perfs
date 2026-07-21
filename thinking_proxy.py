@@ -37,10 +37,22 @@ PROJECT_DIR = os.environ.get("PROJECT_DIR", os.getcwd())
 BACKEND_PORT = int(os.environ.get("BACKEND_PORT", "8001"))
 PROXY_PORT = int(os.environ.get("PROXY_PORT", "8000"))
 PROXY_HOST = os.environ.get("PROXY_HOST", "0.0.0.0")
-AUTH_TOKEN = os.environ.get("AUTH_TOKEN", "CHANGE_ME")
+AUTH_TOKEN = os.environ.get("AUTH_TOKEN", "")
 HEALTH_INTERVAL = int(os.environ.get("HEALTH_INTERVAL", "15"))
 HEALTH_TIMEOUT = int(os.environ.get("HEALTH_TIMEOUT", "5"))
 MAX_RESTART_BACKOFF = int(os.environ.get("MAX_RESTART_BACKOFF", "60"))
+MAX_STREAMING_CONCURRENCY = int(os.environ.get("MAX_STREAMING_CONCURRENCY", "1"))
+QUEUE_TIMEOUT = int(os.environ.get("QUEUE_TIMEOUT", "180"))
+FALLBACK_ENABLED = os.environ.get("FALLBACK_ENABLED", "1") == "1"
+BENCHMARK_MODE = os.environ.get("BENCHMARK_MODE", "0") == "1"
+
+NIM_API_KEY = os.environ.get("NIM_API_KEY", "")
+NIM_BASE_URL = os.environ.get("NIM_BASE_URL", "https://integrate.api.nvidia.com/v1")
+NIM_MODEL_MULTIMODAL = os.environ.get("NIM_MODEL_MULTIMODAL", "nvidia/minimax-m3")
+NIM_MODEL_TEXT = os.environ.get("NIM_MODEL_TEXT", "deepseek-ai/deepseek-v4-flash")
+
+STREAMING_SEMAPHORE = asyncio.Semaphore(MAX_STREAMING_CONCURRENCY)
+REQUEST_SEMAPHORE = asyncio.Semaphore(MAX_STREAMING_CONCURRENCY)
 
 BACKEND_URL = f"http://127.0.0.1:{BACKEND_PORT}"
 TAILSCALE_NET = ipaddress.ip_network("100.64.0.0/10")
@@ -50,16 +62,17 @@ LLAMA_BINARY = os.path.join(
 )
 LLAMA_ARGS = [
     "-m", os.path.join(PROJECT_DIR, os.environ.get(
-        "TURBO_MODEL", "models/Qwen3.6-27B-GGUF/Qwen3.6-27B-Q3_K_M.gguf")),
+        "TURBO_MODEL", "models/Qwen3.6-27B-Fable-Fus-711-UnHeretic-NM-DAU-NEO-MAX-NEO-LOW-MTP-IQ4_XS.gguf")),
     "--mmproj", os.path.join(
         PROJECT_DIR, "models/Qwen3.6-27B-DFlash-GGUF/mmproj-BF16.gguf"),
-    "-c", "573440", "-ngl", "99", "-np", "4", "-fa", "on",
+    "-c", "327680", "-ngl", "99", "-np", "2", "-fa", "on", "-fit", "off",
     "--cache-type-k", "turbo3", "--cache-type-v", "turbo3",
     "--cache-ram", "0",
+    "--spec-type", "draft-mtp", "--spec-draft-n-max", "5",
     "--jinja",
     "--chat-template-file", os.path.join(
         PROJECT_DIR, "chat_templates/qwen3.6_merged.jinja"),
-    "--chat-template-kwargs", '{"enable_thinking":false}',
+    "--chat-template-kwargs", '{"enable_thinking":true}',
     "--alias", "qwen3.6-27b-awq",
     "--host", "127.0.0.1", "--port", str(BACKEND_PORT),
 ]
@@ -71,6 +84,102 @@ STOP_REASON_MAP = {
 }
 
 
+# ─── Fallback helpers ────────────────────────────────────────────
+
+def _get_context_limit() -> int:
+    total = 32768
+    slots = 1
+    args = LLAMA_ARGS
+    for i, a in enumerate(args):
+        if a == "-c" and i + 1 < len(args):
+            total = int(args[i + 1])
+        if a == "-np" and i + 1 < len(args):
+            slots = int(args[i + 1])
+    return total // slots
+
+
+_CONTEXT_LIMIT = _get_context_limit()
+
+
+def _estimate_tokens(messages: list) -> int:
+    total = 0
+    for msg in messages:
+        c = msg.get("content", "")
+        if isinstance(c, str):
+            total += len(c)
+        elif isinstance(c, list):
+            for block in c:
+                if isinstance(block, dict):
+                    txt = block.get("text", "") or block.get("content", "") or ""
+                    total += len(txt)
+                    if block.get("type") in ("image_url", "image"):
+                        total += 1000
+        for tc in msg.get("tool_calls", []):
+            fn = tc.get("function", {})
+            total += len(str(tc))
+            total += len(str(fn.get("arguments", "")))
+        total += len(str(msg.get("reasoning_content", "")))
+    return total // 2
+
+
+def _over_context(body: dict) -> bool:
+    prompt_est = _estimate_tokens(body.get("messages", []))
+    max_tokens = body.get("max_tokens", 4096)
+    return prompt_est + max_tokens > _CONTEXT_LIMIT
+
+def _has_images(messages: list) -> bool:
+    for msg in messages:
+        c = msg.get("content", "")
+        if isinstance(c, str):
+            continue
+        if isinstance(c, list):
+            for block in c:
+                if isinstance(block, dict) and block.get("type") in ("image_url", "image"):
+                    return True
+    return False
+
+
+async def _nim_chat(body: dict) -> dict:
+    has_img = _has_images(body.get("messages", []))
+    model = NIM_MODEL_MULTIMODAL if has_img else NIM_MODEL_TEXT
+    payload = {
+        "model": model,
+        "messages": body["messages"],
+        "temperature": body.get("temperature", 0.7),
+        "max_tokens": body.get("max_tokens", 4096),
+        "stream": False,
+    }
+    async with httpx.AsyncClient(timeout=120) as c:
+        r = await c.post(
+            f"{NIM_BASE_URL}/chat/completions",
+            headers={"Authorization": f"Bearer {NIM_API_KEY}"},
+            json=payload,
+        )
+        if r.status_code != 200:
+            raise RuntimeError(f"NIM returned {r.status_code}: {r.text[:200]}")
+        return r.json()
+
+
+async def _nim_stream(body: dict):
+    has_img = _has_images(body.get("messages", []))
+    model = NIM_MODEL_MULTIMODAL if has_img else NIM_MODEL_TEXT
+    payload = {
+        "model": model,
+        "messages": body["messages"],
+        "temperature": body.get("temperature", 0.7),
+        "max_tokens": body.get("max_tokens", 4096),
+        "stream": True,
+    }
+    async with httpx.AsyncClient(timeout=600) as c:
+        async with c.stream(
+            "POST", f"{NIM_BASE_URL}/chat/completions",
+            headers={"Authorization": f"Bearer {NIM_API_KEY}"},
+            json=payload,
+        ) as resp:
+            async for chunk in resp.aiter_bytes():
+                yield chunk
+
+
 # ─── Process manager ────────────────────────────────────────────
 
 class LlamaManager:
@@ -80,6 +189,16 @@ class LlamaManager:
         self._stopping = False
 
     async def start(self):
+        try:
+            async with httpx.AsyncClient(timeout=3) as c:
+                r = await c.get(f"{BACKEND_URL}/health")
+                if r.status_code == 200:
+                    print(f"[manager] adopting existing backend on port {BACKEND_PORT}", flush=True)
+                    self.proc = None
+                    asyncio.create_task(self.monitor())
+                    return
+        except Exception:
+            pass
         print(f"[manager] starting llama-server on port {BACKEND_PORT}", flush=True)
         self.proc = await asyncio.create_subprocess_exec(
             *([LLAMA_BINARY] + LLAMA_ARGS),
@@ -88,8 +207,15 @@ class LlamaManager:
             cwd=PROJECT_DIR,
             env=os.environ.copy(),
         )
-        await self._wait_ready()
-        print(f"[manager] llama-server ready (pid {self.proc.pid})", flush=True)
+        asyncio.create_task(self._wait_ready_and_monitor())
+
+    async def _wait_ready_and_monitor(self):
+        try:
+            await self._wait_ready(deadline=600)
+            print(f"[manager] llama-server ready (pid {self.proc.pid})", flush=True)
+        except RuntimeError as e:
+            print(f"[manager] {e}", flush=True)
+        asyncio.create_task(self.monitor())
 
     async def _wait_ready(self, deadline=300):
         start = time.time()
@@ -113,14 +239,14 @@ class LlamaManager:
             await asyncio.sleep(HEALTH_INTERVAL)
             if self._stopping:
                 break
-            crashed = self.proc.returncode is not None
+            crashed = self.proc is not None and self.proc.returncode is not None
             unhealthy = False
-            if not crashed:
+            if not crashed and self.proc is not None:
                 try:
                     async with httpx.AsyncClient() as c:
                         r = await c.get(
                             f"{BACKEND_URL}/health", timeout=HEALTH_TIMEOUT)
-                        unhealthy = r.status_code != 200
+                        unhealthy = r.status_code not in (200, 503)
                 except Exception:
                     unhealthy = True
 
@@ -128,6 +254,7 @@ class LlamaManager:
                 if crashed:
                     print(f"[manager] llama-server crashed "
                           f"(exit {self.proc.returncode})", flush=True)
+                    await self.proc.wait()
                 else:
                     print("[manager] health check failed, killing", flush=True)
                     self.proc.kill()
@@ -251,15 +378,15 @@ async def openai_chat(request: Request):
     enable_thinking_top = body.pop("enable_thinking", None)
     thinking_budget = body.pop("thinking_budget", None)
 
-    enable = False
-    if effort and effort != "none":
-        enable = True
+    enable = True
+    if effort == "none":
+        enable = False
     if isinstance(reasoning_obj, dict):
         eff = reasoning_obj.get("effort", "")
-        if eff and eff != "none":
-            enable = True
-    elif reasoning_obj == "on":
-        enable = True
+        if eff == "none":
+            enable = False
+    elif reasoning_obj == "off":
+        enable = False
     if enable_thinking_top is True:
         enable = True
     elif enable_thinking_top is False:
@@ -267,25 +394,64 @@ async def openai_chat(request: Request):
 
     kwargs = body.setdefault("chat_template_kwargs", {})
     kwargs["enable_thinking"] = enable
-    if thinking_budget is not None and thinking_budget > 0:
-        body.setdefault("reasoning", {})["budget"] = thinking_budget
+
+    if enable:
+        _EFFORT_BUDGETS = {"low": 2048, "medium": 4096, "high": 8192}
+        budget = thinking_budget
+        if budget is None or budget <= 0:
+            key = (effort or "").lower()
+            if isinstance(reasoning_obj, dict):
+                key = (reasoning_obj.get("effort") or "").lower()
+            budget = _EFFORT_BUDGETS.get(key, 4096)
+        body.setdefault("reasoning", {})["budget"] = budget
 
     _convert_images(body.get("messages", []))
 
     if body.get("stream"):
         return StreamingResponse(
-            _proxy_stream(f"{BACKEND_URL}/v1/chat/completions", body),
+            _proxy_stream_limited(f"{BACKEND_URL}/v1/chat/completions", body),
             media_type="text/event-stream",
         )
 
-    async with httpx.AsyncClient(timeout=600) as client:
-        resp = await client.post(
-            f"{BACKEND_URL}/v1/chat/completions", json=body)
-        return Response(
-            content=resp.content,
-            status_code=resp.status_code,
-            media_type=resp.headers.get("content-type", "application/json"),
-        )
+    if FALLBACK_ENABLED and not BENCHMARK_MODE and _over_context(body):
+        try:
+            nim_data = await _nim_chat(body)
+            return JSONResponse(nim_data)
+        except Exception:
+            return JSONResponse({"error": "context exceeds limit, fallback failed"}, status_code=429)
+
+    try:
+        await asyncio.wait_for(REQUEST_SEMAPHORE.acquire(), timeout=QUEUE_TIMEOUT)
+    except asyncio.TimeoutError:
+        if not FALLBACK_ENABLED or BENCHMARK_MODE:
+            return JSONResponse({"error": "queue timeout"}, status_code=503)
+        try:
+            nim_data = await _nim_chat(body)
+            return JSONResponse(nim_data)
+        except Exception:
+            return JSONResponse({"error": "service unavailable"}, status_code=429)
+
+    try:
+        async with httpx.AsyncClient(timeout=600) as client:
+            resp = await client.post(
+                f"{BACKEND_URL}/v1/chat/completions", json=body)
+            if resp.status_code == 200 or not FALLBACK_ENABLED or BENCHMARK_MODE:
+                return Response(
+                    content=resp.content,
+                    status_code=resp.status_code,
+                    media_type=resp.headers.get("content-type", "application/json"),
+                )
+    except (httpx.ConnectError, httpx.TimeoutException):
+        if not FALLBACK_ENABLED or BENCHMARK_MODE:
+            return JSONResponse({"error": "backend unavailable"}, status_code=503)
+    finally:
+        REQUEST_SEMAPHORE.release()
+
+    try:
+        nim_data = await _nim_chat(body)
+        return JSONResponse(nim_data)
+    except Exception:
+        return JSONResponse({"error": "service unavailable"}, status_code=429)
 
 
 # ─── Anthropic endpoint ─────────────────────────────────────────
@@ -299,18 +465,50 @@ async def anthropic_messages(request: Request):
 
     if stream:
         return StreamingResponse(
-            _anthropic_stream(openai_body),
+            _anthropic_stream_limited(openai_body),
             media_type="text/event-stream",
         )
 
-    async with httpx.AsyncClient(timeout=600) as client:
-        resp = await client.post(
-            f"{BACKEND_URL}/v1/chat/completions", json=openai_body)
-        if resp.status_code != 200:
-            return Response(
-                content=resp.content, status_code=resp.status_code,
-                media_type="application/json")
-        return JSONResponse(_openai_to_anthropic(resp.json()))
+    if FALLBACK_ENABLED and not BENCHMARK_MODE and _over_context(openai_body):
+        try:
+            nim_data = await _nim_chat(openai_body)
+            return JSONResponse(_openai_to_anthropic(nim_data))
+        except Exception:
+            return JSONResponse({"error": "context exceeds limit, fallback failed"}, status_code=429)
+
+    try:
+        await asyncio.wait_for(REQUEST_SEMAPHORE.acquire(), timeout=QUEUE_TIMEOUT)
+    except asyncio.TimeoutError:
+        if not FALLBACK_ENABLED or BENCHMARK_MODE:
+            return JSONResponse({"error": "queue timeout"}, status_code=503)
+        try:
+            nim_data = await _nim_chat(openai_body)
+            return JSONResponse(_openai_to_anthropic(nim_data))
+        except Exception:
+            return JSONResponse({"error": "service unavailable"}, status_code=429)
+
+    try:
+        async with httpx.AsyncClient(timeout=600) as client:
+            resp = await client.post(
+                f"{BACKEND_URL}/v1/chat/completions", json=openai_body)
+            if resp.status_code != 200:
+                if not FALLBACK_ENABLED or BENCHMARK_MODE:
+                    return Response(
+                        content=resp.content, status_code=resp.status_code,
+                        media_type="application/json")
+            else:
+                return JSONResponse(_openai_to_anthropic(resp.json()))
+    except (httpx.ConnectError, httpx.TimeoutException):
+        if not FALLBACK_ENABLED or BENCHMARK_MODE:
+            return JSONResponse({"error": "backend unavailable"}, status_code=503)
+    finally:
+        REQUEST_SEMAPHORE.release()
+
+    try:
+        nim_data = await _nim_chat(openai_body)
+        return JSONResponse(_openai_to_anthropic(nim_data))
+    except Exception:
+        return JSONResponse({"error": "service unavailable"}, status_code=429)
 
 
 @app.post("/v1/messages/count_tokens")
@@ -421,7 +619,7 @@ def _anthropic_to_openai(body: dict) -> dict:
         messages.append(msg_dict)
 
     thinking_param = body.get("thinking") or {}
-    enable = thinking_param.get("type") == "enabled"
+    enable = thinking_param.get("type") != "disabled"
 
     output_config = body.get("output_config") or {}
     if output_config.get("effort") and output_config["effort"] != "none":
@@ -436,6 +634,10 @@ def _anthropic_to_openai(body: dict) -> dict:
         "stream": body.get("stream", False),
         "chat_template_kwargs": {"enable_thinking": enable},
     }
+
+    if enable:
+        budget = thinking_param.get("budget_tokens") or 4096
+        result.setdefault("reasoning", {})["budget"] = budget
 
     if body.get("stop_sequences"):
         result["stop"] = body["stop_sequences"]
@@ -515,6 +717,68 @@ def _openai_to_anthropic(oai: dict) -> dict:
 
 
 # ─── Streaming ──────────────────────────────────────────────────
+
+async def _proxy_stream_limited(url: str, body: dict):
+    try:
+        await asyncio.wait_for(STREAMING_SEMAPHORE.acquire(), timeout=QUEUE_TIMEOUT)
+    except asyncio.TimeoutError:
+        if not FALLBACK_ENABLED or BENCHMARK_MODE:
+            yield b"data: " + json.dumps({"error": "queue timeout"}).encode() + b"\n\n"
+            yield b"data: [DONE]\n\n"
+            return
+        async for chunk in _nim_stream(body):
+            yield chunk
+        return
+    try:
+        async for chunk in _proxy_stream(url, body):
+            yield chunk
+    finally:
+        STREAMING_SEMAPHORE.release()
+
+
+async def _anthropic_stream_limited(openai_body: dict):
+    try:
+        await asyncio.wait_for(STREAMING_SEMAPHORE.acquire(), timeout=QUEUE_TIMEOUT)
+    except asyncio.TimeoutError:
+        if not FALLBACK_ENABLED or BENCHMARK_MODE:
+            yield _sse("error", {"error": {"message": "queue timeout"}})
+            return
+        try:
+            nim_data = await _nim_chat(openai_body)
+        except Exception:
+            yield _sse("error", {"error": {"message": "fallback failed"}})
+            return
+        anthro = _openai_to_anthropic(nim_data)
+        yield _sse("message_start", {
+            "type": "message_start", "message": anthro,
+        })
+        for block in anthro.get("content", []):
+            yield _sse("content_block_start", {
+                "type": "content_block_start",
+                "index": anthro["content"].index(block),
+                "content_block": block,
+            })
+            yield _sse("content_block_stop", {
+                "type": "content_block_stop",
+                "index": anthro["content"].index(block),
+            })
+        usage = anthro.get("usage", {})
+        yield _sse("message_delta", {
+            "type": "message_delta",
+            "delta": {"stop_reason": anthro.get("stop_reason", "end_turn"),
+                      "stop_sequence": None},
+            "usage": {
+                "output_tokens": usage.get("output_tokens", 0),
+            },
+        })
+        yield _sse("message_stop", {"type": "message_stop"})
+        return
+    try:
+        async for chunk in _anthropic_stream(openai_body):
+            yield chunk
+    finally:
+        STREAMING_SEMAPHORE.release()
+
 
 async def _proxy_stream(url: str, body: dict):
     async with httpx.AsyncClient(timeout=600) as client:
@@ -640,25 +904,30 @@ async def passthrough(path: str, request: Request):
         k: v for k, v in request.headers.items()
         if k.lower() not in ("host", "authorization", "x-api-key")
     }
-    async with httpx.AsyncClient(timeout=600) as client:
-        resp = await client.request(
-            request.method, url,
-            content=body, headers=headers,
-            params=request.query_params,
-        )
-        return Response(
-            content=resp.content,
-            status_code=resp.status_code,
-            media_type=resp.headers.get("content-type"),
-        )
+    try:
+        async with httpx.AsyncClient(timeout=600) as client:
+            resp = await client.request(
+                request.method, url,
+                content=body, headers=headers,
+                params=request.query_params,
+            )
+            return Response(
+                content=resp.content,
+                status_code=resp.status_code,
+                media_type=resp.headers.get("content-type"),
+            )
+    except httpx.ConnectError:
+        return JSONResponse(
+            {"error": "backend loading", "status": "unavailable"},
+            status_code=503)
 
 
 # ─── Startup / shutdown ─────────────────────────────────────────
 
 @app.on_event("startup")
 async def _startup():
-    await manager.start()
-    asyncio.create_task(manager.monitor())
+    asyncio.create_task(manager.start())
+    print("[proxy] starting in background, backend not ready yet", flush=True)
 
 
 @app.on_event("shutdown")
@@ -671,7 +940,7 @@ async def _shutdown():
 if __name__ == "__main__":
     print(f"[proxy] starting on {PROXY_HOST}:{PROXY_PORT}, "
           f"backend on port {BACKEND_PORT}", flush=True)
-    print(f"[proxy] auth token: {AUTH_TOKEN}", flush=True)
+    print(f"[proxy] auth token: {'set' if AUTH_TOKEN else 'EMPTY - INSECURE'}", flush=True)
     print(f"[proxy] tailscale + localhost bypass auth", flush=True)
 
     def _handle_sigterm(*_):
