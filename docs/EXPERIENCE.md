@@ -523,3 +523,73 @@ AUTH_TOKEN=your_token ./start_proxy.sh
 ```
 
 所有日志 (代理 + llama-server) 输出到 tmux 同一窗口, 可以实时观察。
+
+---
+
+## 7. Fedora 44 + CUDA 12.9 构建问题
+
+### 7.1 GCC 16 与 nvcc 不兼容
+
+Fedora 44 自带 **GCC 16.1.1**，但 CUDA 12.9 的 nvcc 最高只支持 GCC 14。直接使用会报：
+
+```
+#error -- unsupported GNU version! gcc versions later than 14 are not supported!
+```
+
+即使传 `--allow-unsupported-compiler` 也不行——GCC 14+ `<type_traits>` 使用了 `__is_array`、`__is_pointer` 等新关键字，nvcc 的 host 编译器前端无法解析：
+
+```
+/usr/include/c++/16/type_traits: __call_is_nothrow<__invoke_result<...>>: error: type name is not allowed
+```
+
+### 7.2 解决方案：conda GCC 12
+
+安装 conda 的 GCC 12 并让 nvcc 通过 `-ccbin` 使用它：
+
+```bash
+conda install -n tsenv gxx_linux-64=12
+```
+
+然后用 nvcc wrapper 脚本让 CMake 使用正确的 host 编译器：
+
+```bash
+#!/bin/bash
+exec /home/ezra/.conda/envs/tsenv/bin/nvcc \
+    -ccbin=/home/ezra/.conda/envs/tsenv/bin/x86_64-conda-linux-gnu-g++ "$@"
+```
+
+CMake 配置（fastllm 示例）：
+```bash
+export PATH="/home/ezra/.conda/envs/tsenv/bin:$PATH"
+export CC=/home/ezra/.conda/envs/tsenv/bin/x86_64-conda-linux-gnu-gcc
+export CXX=/home/ezra/.conda/envs/tsenv/bin/x86_64-conda-linux-gnu-g++
+
+cmake .. -DUSE_CUDA=ON \
+         -DCMAKE_CUDA_COMPILER=/tmp/nvcc-wrapper \
+         -DCUDA_ARCH="70" \
+         -DCMAKE_C_COMPILER="$CC" \
+         -DCMAKE_CXX_COMPILER="$CXX"
+```
+
+### 7.3 fastllm 第三方依赖
+
+fastllm 的 `third_party/` 需要以下子仓库（通过 `git clone --recursive` 获取或手动补全）：
+
+| 目录 | 来源 | 用途 |
+|---|---|---|
+| `third_party/pybind11` | Git submodule | Python binding |
+| `third_party/json11` | dropbox/json11 | JSON 解析 |
+| `third_party/gguf` | 独立仓库 | GGUF 格式读取 |
+| `third_party/flashinfer` | 独立仓库 | FlashInfer 算子 |
+| `third_party/turbomind` | turbomind 内核 | SM x84 优化 |
+| `third_party/cutlass` | Nvidia CUTLASS | FP8 Marlin Linear 等 |
+
+如果直接 `git clone --depth 1` 没有子模块，需要逐一克隆或运行 `git submodule update --init --recursive`。
+
+### 7.4 SM70 上的 fastllm 注意事项
+
+- V100 (SM70) 不支持 FP8——CUTLASS FP8 kernels 自动关闭
+- fastllm 的 AWQ 算子有 SM70 专用路径 (`src/devices/cuda/awq_sm70/`)
+- 对于缺乏原生 4-bit 支持的 SM70，fastllm 通过 FP16 半解包方式运行量化模型
+- fastllm 支持 SM70 的 `--cache-ram` 上下文缓存机制（不同于 llama.cpp 的 checkpoint 方案）
+
