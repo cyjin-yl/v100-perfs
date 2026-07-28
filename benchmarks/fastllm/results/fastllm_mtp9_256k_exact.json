@@ -1,0 +1,52 @@
+{
+  "context_tokens": 262144,
+  "prompt_tokens": 261888,
+  "completion_tokens": 256,
+  "activation_dtype": "float16",
+  "mtp_drafts_per_step": 9,
+  "fp16_kv_attempt": {
+    "request_completed": false,
+    "result": "cuda_oom",
+    "vram_mib_before_failed_allocation": 31642,
+    "free_mib_before_failed_allocation": 859,
+    "failed_allocation_bytes": 874086400,
+    "failed_tensor": "lm_head.weight",
+    "cuda_embedding": true
+  },
+  "fp16_kv_without_cuda_embedding_attempt": {
+    "request_completed": false,
+    "result": "cuda_oom",
+    "vram_mib_before_failed_allocation": 31642,
+    "free_mib_before_failed_allocation": 853,
+    "failed_allocation_bytes": 874086400,
+    "failed_tensor": "lm_head.weight",
+    "cuda_embedding": false
+  },
+  "fp8_e4m3_kv_attempt": {
+    "request_completed": true,
+    "http_status": 200,
+    "e2e_seconds": 745.46724152565,
+    "ttft_seconds": null,
+    "ttft_note": "The streaming client recorded the initial role metadata chunk, not the first non-empty content token; no TTFT claim is made.",
+    "vram_mib_start": 152,
+    "vram_mib_peak": 31088,
+    "cuda_embedding": true,
+    "output_check": "PASS: continuation starts at 4 and counts upward",
+    "usage": {
+      "prompt_tokens": 261888,
+      "completion_tokens": 256,
+      "total_tokens": 262144
+    },
+    "final_mtp_profile": {
+      "samples": 144,
+      "seed_paths": 122,
+      "single_validation_paths": 22,
+      "speculative_full": 8,
+      "speculative_partial": 12,
+      "speculative_reject0": 2,
+      "avg_commit_tokens": 1.72,
+      "avg_matched_draft_tokens": 0.72
+    }
+  },
+  "gpu_coexistence": "exclusive; the previously observed ComfyUI PID was no longer running"
+}

@@ -2,7 +2,7 @@
 
 **Author:** Sisyphus session (2026-07-28)
 **Project root:** `/run/media/ezra/13D010B6FDBC1A06/1CatVLLM/`
-**Status:** ✅ Short-context trunk + MTP9 inference works. Long-context capacity initializes through 256K, but exact full-window prefill requests currently stall or time out. An isolated upstream branch is built and regression-tested.
+**Status:** ✅ Trunk + MTP9 inference works. Exact-window 128K and 160K complete with FP16 KV; exact 256K completes with FP8 E4M3 KV. FP16 KV does not fit exact 256K on the 32GB V100. The isolated upstream branch is built and regression-tested.
 
 This document is self-contained. Anyone picking this up does **not** need to read prior session logs — everything needed to continue is here.
 
@@ -13,11 +13,11 @@ This document is self-contained. Anyone picking this up does **not** need to rea
 Deploy **fastllm** as an alternative inference backend for the **Qwen3.6 27B "Fable Fusion"** model (David's variant), running on this V100, alongside the existing `thinking_proxy.py`. The end state is:
 
 1. FastLLM `apiserver` running on a port (e.g. 8002) serving the same Qwen3.6 model as llama.cpp.
-2. `thinking_proxy.py` able to route to fastllm as a backend, in parallel with or instead of llama.cpp.
+2. `thinking_proxy.py` able to route to FastLLM as an independent backend alongside llama.cpp.
 3. Benchmark numbers at 128K / 160K / 256K context comparing fastllm vs llama.cpp (prefill t/s, decode t/s).
-4. A clean upstream PR to `ztxz16/fastllm` with the two-line patch that fixes Qwen3.6 GGUF loading (see §7).
+4. A clean upstream PR to `ztxz16/fastllm` covering the Qwen3.5/3.6 GGUF, runtime, MTP, and V100 IQ4_XS changes (see §7).
 
-The implementation, proxy adapter, short tool-call roundtrips, and MTP9 smoke tests now work. The remaining performance blocker is long-context prefill completion, not missing SSM/GDN operators.
+The implementation, proxy adapter unit tests, MTP9 smoke tests, and exact-window context matrix now work. Live structured OpenAI/Anthropic tool-call validation and deployment hardening remain, alongside native SM70 attention/GDN performance work and upstream review.
 
 ## 2. Hardware & Software
 
@@ -126,7 +126,7 @@ After variant B, additionally:
 
 All `models/...` paths are relative to `/run/media/ezra/13D010B6FDBC1A06/1CatVLLM/`.
 
-Available variants of the same model (same architecture, different quants — same SSM blocker applies to all):
+Available variants of the same model (same supported Qwen3.5/3.6 GDN architecture, different quantization and MTP contents):
 - `Qwen3.6-27B-Fable-Fus-711-UnHeretic-NM-DAU-NEO-MAX-NEO-IQ3_M.gguf` (14 GB)
 - `Qwen3.6-27B-Fable-Fus-711-UnHeretic-NM-DAU-NEO-MAX-NEO-IQ4_XS.gguf` (16 GB, no MTP)
 - `Qwen3.6-27B-Fable-Fus-711-UnHeretic-NM-DAU-NEO-MAX-NEO-LOW-MTP-IQ4_XS.gguf` (15 GB, **with MTP — the one in use**)
@@ -146,8 +146,9 @@ Verified current behavior:
 - MTP9 executes speculative validation and records partial acceptance, rather than merely accepting an environment flag.
 - The SM70 IQ4_XS MMQ path is selected on V100 and retains legacy fallbacks.
 - Focused `qwen35_gguf` and `gguf_dequant` regressions pass; the full `regressionOps` suite passes on the isolated latest-upstream branch.
-- FastLLM capacities of 131,072, 163,840, and 262,144 tokens all initialize while ComfyUI remains resident.
-- Exact prompts of 130,816 / 163,584 / 261,888 tokens did not complete within 3,600 / 900 / 900 seconds. This is the current benchmark blocker.
+- Exact requests complete at 131,072 and 163,840 total tokens with FP16 KV, and at 262,144 total tokens with FP8 E4M3 KV. All successful runs returned 256 completion tokens and correct continuation output.
+- Exact 256K with FP16 KV fails deterministically after reaching 31,642 MiB and requesting an additional 874,086,400-byte `lm_head.weight` allocation. Disabling CUDA embedding repeats the same failure. The successful FP8 run peaks at 31,088 MiB.
+- The final benchmark traces were exclusive-GPU runs: the earlier ComfyUI PID was no longer running when they started.
 
 The embedded macro-heavy Jinja template is still rendered by `thinking_proxy.py` with Jinja2 and sent as `raw_prompt=true`; no FastLLM Jinja-parser extension is required for this deployment.
 
@@ -169,10 +170,10 @@ Validation on the isolated latest-upstream tree:
 
 ## 8. Work remaining
 
-1. Diagnose the long-context prefill stall observed after successful 128K/160K/256K capacity startup.
-2. Repeat the exact-window benchmark after that fix and record TTFT/prefill, decode throughput, MTP acceptance, and continuous VRAM.
-3. Complete final review of the isolated upstream branch and publish the upstream contribution.
-4. Keep TurboQuant 256K as the working reference: the completed two-slot run sustained 15.65 aggregate tok/s with 256-token outputs.
+1. Audit and selectively reimplement dependency-free SM70 kernels from the 1Cat-vLLM FlashAttention/FlashQLA references, retaining FastLLM native fallbacks.
+2. Finish the independent FastLLM backend deployment and structured OpenAI/Anthropic tool-call validation.
+3. Complete final review and follow-up updates for the open upstream contribution.
+4. Keep the TurboQuant 256K result as a different-workload reference; do not present it as a direct cold exact-window A/B.
 
 ## 9. Thinking-proxy integration
 
@@ -197,11 +198,11 @@ Production-path service smoke:
 ```bash
 FASTLLM_QWEN35_ENABLE_MTP=9 FASTLLM_QWEN35_MTP_PROFILE=2 \
   build/apiserver -p /path/to/model.gguf -t 2 -l --atype float16 \
-  --batch 1 --tokens 2048 --model_name qwen3.6-fastllm \
-  --port 8002 --device cuda
+  --kv_cache_dtype fp8_e4m3 --batch 1 --tokens 262144 \
+  --model_name qwen3.6-fastllm --port 8002 --device cuda --cuda_embedding
 ```
 
-Use TCP port readiness, then send a pre-rendered prompt with `raw_prompt=true`. The verified short smoke returns HTTP 200; exact full-window prompts currently reproduce the long-context timeout described in §6.
+Use TCP port readiness, then send a pre-rendered prompt with `raw_prompt=true`. The verified exact 256K configuration uses FP8 E4M3 KV; omit `--kv_cache_dtype fp8_e4m3` for the verified FP16 128K/160K runs.
 
 ## 11. Key files (absolute paths)
 
@@ -222,7 +223,7 @@ Use TCP port readiness, then send a pre-rendered prompt with `raw_prompt=true`. 
 
 ## 12. Current caveats
 
-- The published FastLLM throughput table remains empty because all exact-window requests timed out; only capacity startup and failure timing are claimed.
+- Exact-window result artifacts and methodology are in `docs/fastllm_benchmark.md`; only the 160K client captured a reliable first-content TTFT, so no TTFT is claimed for 128K or 256K.
 - The official Python `ftllm bench` runner enters a different FP32 GGUF matmul path and aborted during 128K warmup, so it is not used for production-path numbers.
-- TurboQuant 256K has a completed historical result and VRAM trace. It was not rerun while ComfyUI remained resident because their combined VRAM requirement exceeds 32GB.
+- TurboQuant 256K has a completed historical result and VRAM trace, but its prefix reuse/concurrency/cache workload differs from the cold exact-window FastLLM runs.
 - The FastLLM Jinja parser still does not support the embedded macros; proxy-side Jinja2 rendering is the deployed workaround.

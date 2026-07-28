@@ -1,0 +1,34 @@
+{
+  "context_tokens": 163840,
+  "prompt_tokens": 163584,
+  "completion_tokens": 256,
+  "kv_cache_dtype": "float16",
+  "activation_dtype": "float16",
+  "mtp_drafts_per_step": 9,
+  "http_status": 200,
+  "request_completed": true,
+  "ttft_seconds": 344.52659916877747,
+  "prefill_tokens_per_second": 474.8080420921669,
+  "e2e_seconds": 381.13343358039856,
+  "decode_seconds_after_first_chunk": 36.606834411621094,
+  "decode_tokens_per_second_after_first_chunk": 6.993229655463763,
+  "vram_mib_start": 21,
+  "vram_mib_peak": 30529,
+  "gpu_coexistence": "exclusive; the previously observed ComfyUI PID was no longer running",
+  "output_check": "PASS: continuation starts at 4 and counts upward",
+  "usage": {
+    "prompt_tokens": 163584,
+    "completion_tokens": 256,
+    "total_tokens": 163840
+  },
+  "final_mtp_profile": {
+    "samples": 144,
+    "seed_paths": 126,
+    "single_validation_paths": 18,
+    "speculative_full": 9,
+    "speculative_partial": 8,
+    "speculative_reject0": 1,
+    "avg_commit_tokens": 1.74,
+    "avg_matched_draft_tokens": 0.74
+  }
+}

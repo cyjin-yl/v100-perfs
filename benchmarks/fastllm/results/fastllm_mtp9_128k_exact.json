@@ -1,0 +1,32 @@
+{
+  "context_tokens": 131072,
+  "prompt_tokens": 130816,
+  "completion_tokens": 256,
+  "kv_cache_dtype": "float16",
+  "activation_dtype": "float16",
+  "mtp_drafts_per_step": 9,
+  "http_status": 200,
+  "request_completed": true,
+  "e2e_seconds": 318.76171040534973,
+  "ttft_seconds": null,
+  "ttft_note": "The non-streaming client did not record first-token time.",
+  "vram_mib_start": 21,
+  "vram_mib_peak": 28049,
+  "gpu_coexistence": "exclusive; the previously observed ComfyUI PID was no longer running",
+  "output_check": "PASS: continuation starts at 4 and counts upward",
+  "usage": {
+    "prompt_tokens": 130816,
+    "completion_tokens": 256,
+    "total_tokens": 131072
+  },
+  "final_mtp_profile": {
+    "samples": 146,
+    "seed_paths": 129,
+    "single_validation_paths": 17,
+    "speculative_full": 10,
+    "speculative_partial": 6,
+    "speculative_reject0": 1,
+    "avg_commit_tokens": 1.74,
+    "avg_matched_draft_tokens": 0.74
+  }
+}
