@@ -1,0 +1,12 @@
+{
+  "context_tokens": 131072,
+  "prompt_tokens_target": 130816,
+  "decode_tokens_target": 256,
+  "server_capacity_ready": true,
+  "request_completed": false,
+  "timeout_seconds": 3600,
+  "result": "prefill_stall",
+  "vram_mib_idle": 27067,
+  "vram_mib_peak_observed": 27899,
+  "notes": "FastLLM apiserver bound successfully with --tokens 131072 while ComfyUI remained running. GPU utilization was initially ~100%, then fell to 0% while the request remained pending until the one-hour timeout. The official ftllm bench path separately aborted during its internal FP32 warmup with a cuBLAS error (exit 134)."
+}

@@ -2,7 +2,7 @@
 
 **Author:** Sisyphus session (2026-07-28)
 **Project root:** `/run/media/ezra/13D010B6FDBC1A06/1CatVLLM/`
-**Status:** ⏸ Blocked at inference — model loads but forward pass deadlocks. Patches ready, upstream PR not yet opened.
+**Status:** ✅ Short-context trunk + MTP9 inference works. Long-context capacity initializes through 256K, but exact full-window prefill requests currently stall or time out. An isolated upstream branch is built and regression-tested.
 
 This document is self-contained. Anyone picking this up does **not** need to read prior session logs — everything needed to continue is here.
 
@@ -17,7 +17,7 @@ Deploy **fastllm** as an alternative inference backend for the **Qwen3.6 27B "Fa
 3. Benchmark numbers at 128K / 160K / 256K context comparing fastllm vs llama.cpp (prefill t/s, decode t/s).
 4. A clean upstream PR to `ztxz16/fastllm` with the two-line patch that fixes Qwen3.6 GGUF loading (see §7).
 
-The benchmark (step 3) is **blocked** because inference deadlocks. See §6 for the root cause and what work remains.
+The implementation, proxy adapter, short tool-call roundtrips, and MTP9 smoke tests now work. The remaining performance blocker is long-context prefill completion, not missing SSM/GDN operators.
 
 ## 2. Hardware & Software
 
@@ -137,157 +137,71 @@ Available variants of the same model (same architecture, different quants — sa
 - **Model load** — both C++ `apiserver` and Python `ftllm.llm.model(...)` load the full 27B model into V100 in ~3 minutes (159s cold, 220s warm). All 100 weight blocks (`Loading 0` → `Loading 100`) succeed. IQ4_XS weights dequantize via the patched `to_float` pointer.
 - **Python bindings importable** — `/home/ezra/.conda/envs/tsenv/bin/python3` with `sys.path` pointing at `build/tools/` loads `ftllm` and `ftllm.llm` cleanly. `pyfastllm` C extension initializes and prints CPU instruction info.
 
-## 6. The blocker — inference deadlocks
+## 6. Current inference status
 
-After successful load, **any** call into the forward pass crashes:
-- `model.generate([[tokens]], max_new_tokens=1)` → `terminate called after throwing an instance of 'std::system_error': Resource deadlock avoided` (Linux `EDEADLK`)
-- `model.response_logits("...")` → first hits the Jinja parser error (§6.1), then would hit the same deadlock
-- `model.response("...")` → same Jinja error
-- C++ `apiserver` + `--device cuda` → same `std::bad_alloc` family of errors during first request (same underlying code path)
+The earlier conclusion that FastLLM lacked Qwen3.6 SSM/GDN and MTP execution was incorrect. The current source includes Qwen3.5/3.6 linear-attention/GDN kernels, full-attention paths, and an MTP draft head. The actual GGUF issues were architecture naming, tensor mapping, V-head export layout, MTP tensor routing, and runtime metadata.
 
-### 6.1 Root cause #1: SSM layers not implemented
+Verified current behavior:
+- Real 27B trunk inference returns HTTP 200.
+- MTP9 executes speculative validation and records partial acceptance, rather than merely accepting an environment flag.
+- The SM70 IQ4_XS MMQ path is selected on V100 and retains legacy fallbacks.
+- Focused `qwen35_gguf` and `gguf_dequant` regressions pass; the full `regressionOps` suite passes on the isolated latest-upstream branch.
+- FastLLM capacities of 131,072, 163,840, and 262,144 tokens all initialize while ComfyUI remains resident.
+- Exact prompts of 130,816 / 163,584 / 261,888 tokens did not complete within 3,600 / 900 / 900 seconds. This is the current benchmark blocker.
 
-Qwen3.6 is a **hybrid attention + SSM** architecture. Every transformer block contains 7 SSM tensors:
-```
-blk.N.ssm_a            (48)         f32
-blk.N.ssm_alpha.weight (48 × 5120)  iq4_xs
-blk.N.ssm_beta.weight  (48 × 5120)  iq4_xs
-blk.N.ssm_conv1d.weight(10240 × 4)  f32
-blk.N.ssm_dt.bias      (48)         f32
-blk.N.ssm_norm.weight  (128)        f32
-blk.N.ssm_out.weight   (5120 × 6144) iq4_xs
-```
-FastLLM's `Qwen3_5Model` (in `src/models/qwen3_5.cpp`) was written for Qwen3.5, which is **attention-only**. It has no forward code for these tensors, so on load it logs `unmatched weight blk.N.ssm_*` for every one of them (hundreds of warnings), and on the first forward pass the inference thread hits a code path that ends in `EDEADLK`. The deadlock is the symptom; the missing implementation is the cause.
+The embedded macro-heavy Jinja template is still rendered by `thinking_proxy.py` with Jinja2 and sent as `raw_prompt=true`; no FastLLM Jinja-parser extension is required for this deployment.
 
-### 6.2 Root cause #2: MTP head not implemented
+## 7. Current upstream contribution
 
-Block 64 is a Multi-Token-Prediction head:
-```
-blk.64.nextn.eh_proj.weight         (5120 × 10240) iq4_xs
-blk.64.nextn.enorm.weight           (5120)         f32
-blk.64.nextn.hnorm.weight           (5120)         f32
-blk.64.nextn.shared_head_norm.weight(5120)         f32
-```
-Same story — unmatched on load, would fail at forward time. Even if SSM were implemented, the MTP head needs its own forward pass.
+The isolated branch is based on current upstream `origin/master`, not the old local checkout. It contains four Chinese, intent-split commits:
 
-### 6.3 Secondary issue: Jinja chat template parser
+1. API server prompt lifetime and disconnected-client handling.
+2. Low-memory embedding boundary and backing-storage validation.
+3. MTP CLI validation through nine drafts.
+4. End-to-end Qwen3.5/3.6 GGUF support: architecture validation, metadata/tensor mapping, V-head inverse permutation, MTP layer routing, runtime layout markers, SM70 IQ4_XS MMQ, ROCm fallback stubs, and behavior regressions.
 
-The GGUF embeds a chat template starting with `{%- macro render_content(content, do_vision_count, is_system_content=false) %}`. FastLLM's bundled Jinja parser does not support `{% macro %}` blocks, so any API that applies the chat template (`response`, `response_logits`, `stream_response`, `launch_stream_response`) dies with:
-```
-FastLLM Error: Jinja parse failed (Unknown block type): {%- macro render_content(...) %}
-```
-**Workaround:** use `model.generate([token_ids], ...)` with pre-encoded token IDs — it bypasses the chat template entirely. This is what any future benchmark/service code should do until the Jinja parser is extended.
+Validation on the isolated latest-upstream tree:
+- `regressionOps` and `apiserver` build successfully.
+- `FASTLLM_REGRESSION_ONLY=qwen35_gguf ./regressionOps` passes.
+- `FASTLLM_REGRESSION_ONLY=gguf_dequant ./regressionOps` passes on V100.
+- Full `./regressionOps` exits 0, including current upstream NUMA regressions.
+- Real 27B MTP9 smoke returns HTTP 200 and `OK`.
 
-### 6.4 Secondary issue: kv_cache_dtype values
+## 8. Work remaining
 
-`int8` is **rejected** as `kv_cache_dtype`. Valid values are exactly: `auto`, `float32`, `float16`, `bfloat16`, `fp8_e4m3`. V100 has no FP8 hardware so `fp8_e4m3` is software-emulated and slow — use `float16` for benchmarks.
+1. Diagnose the long-context prefill stall observed after successful 128K/160K/256K capacity startup.
+2. Repeat the exact-window benchmark after that fix and record TTFT/prefill, decode throughput, MTP acceptance, and continuous VRAM.
+3. Complete final review of the isolated upstream branch and publish the upstream contribution.
+4. Keep TurboQuant 256K as the working reference: the completed two-slot run sustained 15.65 aggregate tok/s with 256-token outputs.
 
-## 7. Patches (already applied to the working tree)
+## 9. Thinking-proxy integration
 
-Two minimal edits. Both are safe to upstream — they only add aliases, no behavior change for existing models.
+The integration is implemented rather than planned:
+- FastLLM is an independent backend selected by the exact `qwen3.6-fastllm` alias.
+- `thinking_proxy.py` renders the macro-heavy template with Jinja2, sends `raw_prompt=true`, and converts FastLLM XML tool calls into OpenAI-compatible `message.tool_calls`.
+- Historical tool-call arguments are normalized for multi-turn result injection.
+- FastLLM readiness uses TCP because the C++ apiserver has no `/health` or `/v1/models` endpoint.
+- Non-FastLLM local and cloud backends remain available; the alias is local-only and cannot silently spill to a cloud model.
 
-### Patch 1 — `src/model.cpp`, `ConvertGGUFTypeToFastllmType` dict (~line 2110)
+## 10. Reproduction
 
-Adds `qwen35` → `qwen3_5` alias so GGUF files exported for Qwen3.6 are recognized. Without this, fastllm prints `Warning: Can't convert type "qwen35"` and then `Unsupport graph model type qwen35`.
-
-```diff
-         static std::map <std::string, std::string> ggufTypeToFastllmTypeDict = {
-             {"qwen2", "qwen2"}, // llama
-             {"qwen3moe", "qwen3_moe"}, {"qwen3_moe", "qwen3_moe"}, // qwen3_moe
-+            {"qwen35", "qwen3_5"}, {"qwen3_5", "qwen3_5"}, // qwen3_5 (Qwen3.6 GGUF reports as qwen35)
-             {"glm4_moe", "glm4_moe"}, // glm4_moe
-             {"glm-dsa", "glm_moe_dsa"}, {"glm_moe_dsa", "glm_moe_dsa"}, // glm_moe_dsa
-             {"minimax_m2", "minimax_m2"}, // minimax_m2
-             {"deepseek2", "deepseek_v2"}, {"deepseek_v2", "deepseek_v2"},  {"deepseek_v3", "deepseek_v2"} // deepseek_v2
-         };
-```
-
-### Patch 2 — `third_party/gguf/gguf.cpp`, two `type_traits` tables
-
-The `to_float` function pointer for `GGML_TYPE_IQ4_XS` was commented out in **both** tables in this file. The function `dequantize_row_iq4_xs` exists in `ggml-dequantize.cpp` and is declared in `gguf.h` — it just wasn't wired in. Without this patch, IQ4_XS weights fail with `WeightImportGGUFTensor: weight token_embd.weight(type iq4_xs) can't convert to fp32`.
-
-**Designated-initializer table** (~line 543):
-```diff
-         {GGML_TYPE_IQ4_XS, {
-             .type_name                = "iq4_xs",
-             .blck_size                = QK_K,
-             .type_size                = sizeof(block_iq4_xs),
-             .is_quantized             = true,
--            // .to_float                 = (ggml_to_float_t) dequantize_row_iq4_xs,
-+            .to_float                 = (ggml_to_float_t) dequantize_row_iq4_xs,
-             // .from_float_ref           = (ggml_from_float_t)quantize_row_iq4_xs_ref,
-         }},
-```
-
-**Legacy C-style table** (~line 206):
-```diff
-         {GGML_TYPE_IQ4_XS, {/* type_name */"iq4_xs", /* blck_size */QK_K,
-             /* type_size */ sizeof(block_iq4_xs),/* is_quantized */  true,
--            // .to_float                 = (ggml_to_float_t) dequantize_row_iq4_xs,
-+            /* to_float */ (ggml_to_float_t) dequantize_row_iq4_xs,
-             // .from_float_ref           = (ggml_from_float_t)quantize_row_iq4_xs_ref,
-         }},
-```
-
-A combined patch file is saved at `/run/media/ezra/13D010B6FDBC1A06/1CatVLLM/v100-perfs/scripts/fastllm_qwen36_iq4xs.patch`.
-
-### 7.1 Upstream PR notes (not yet opened)
-
-- Repo: `git@github.com:ztxz16/fastllm.git` (upstream `master` HEAD `0036333`).
-- These two patches are genuinely upstream-safe — they only add an alias and uncomment an existing function pointer. They do not change behavior for any model that already works.
-- The **SSM forward implementation** (§6.1, §6.2) is a much larger piece of work and is out of scope for this initial PR. The PR description should explicitly say "loads Qwen3.6 GGUF; full inference still requires SSM support which is being tracked separately".
-- Before opening the PR, rebase on latest upstream `master`, verify the patch still applies cleanly, run the existing fastllm test suite if any, and add a short test that loads a small qwen3.6 GGUF and asserts it doesn't throw `Unsupport graph model type`.
-
-## 8. Work remaining (in priority order)
-
-1. **Implement SSM forward in `Qwen3_5Model`** (`src/models/qwen3_5.cpp` + `include/models/qwen3_5.h`). This is the gating item — without it, no benchmark, no service. Reference implementations to crib from:
-   - `llama.cpp`'s `llama.cpp/src/llama-graph.cpp` search for `ssm_` tensors (the llama.cpp path runs this model correctly today)
-   - Mamba2 papers and the Qwen3.6 technical report for the math
-   - The 7 SSM tensors per block and their semantics are listed in §6.1
-2. **Implement MTP head forward** (the `blk.64.nextn.*` block). Smaller scope, only 4 tensors. Reference: llama.cpp's `nextn` handling and the original DeepSeek-V3 MTP paper.
-3. **Extend Jinja parser** to support `{% macro %}` (or at minimum, strip macro blocks before parsing). Lower priority since `generate()` with raw tokens is a viable workaround.
-4. **Once inference works:** run benchmarks at 128K / 160K / 256K context, measure prefill t/s and decode t/s, write up in `v100-perfs/docs/fastllm_benchmark.md`.
-5. **Once benchmarks pass:** write the fastllm backend adapter in `thinking_proxy.py` (see §9), stand up `apiserver` on a port, route proxy traffic to it.
-6. **Open the upstream PR** (§7.1).
-
-## 9. Thinking-proxy integration spec (for after inference works)
-
-Current `thinking_proxy.py` (line refs as of this session):
-- `BACKEND_URL = f"http://127.0.0.1:{BACKEND_PORT}"` where `BACKEND_PORT` defaults to 8001 (line 44, 70)
-- `PROXY_PORT` defaults to 8000 (line 45) — this is the public entrypoint
-- The llama.cpp backend is started by the proxy itself via `subprocess.Popen` (line 78+) with `llama-server` binary and a long arg list including `-c 262144 -ngl 99 -np 1 -fa on -fit off --cache-type-k turbo4 --cache-type-v turbo4 --spec-type draft-mtp --spec-draft-n-max 9`
-- `_pick_backend` (search near line 252) decides routing; `MODEL_HERETIC = "qwen3.6-27b-heretic"` is a model-name substring that triggers a special route
-- The model path is read from env `TURBO_MODEL`, defaulting to `models/Qwen3.6-27B-Fable-Fus-711-UnHeretic-NM-DAU-NEO-MAX-NEO-LOW-MTP-IQ4_XS.gguf`
-
-To add a fastllm backend:
-1. Stand up `apiserver` on a new port (suggest `8002`) with `--device cuda --port 8002 -p <model> --model_name qwen3.6-fastllm`. FastLLM's apiserver exposes an OpenAI-compatible `/v1/chat/completions` so it is a drop-in for the existing proxy→backend HTTP contract.
-2. In `thinking_proxy.py`, add a `FASTLLM_URL = "http://127.0.0.1:8002"` constant and a routing branch in `_pick_backend`. The simplest initial policy: A/B test a fraction of traffic to fastllm, or route based on a `X-Backend: fastllm` header.
-3. The fastllm `apiserver` does **not** need the `-c 262144` flag the llama.cpp path uses — context size is set differently. Check the apiserver `--help` output for the equivalent flag (likely `--tokens`).
-4. Spec decoding (`--spec-type draft-mtp`) has no fastllm equivalent yet; fastllm's own MTP support would need to land first (§8 item 2). Until then, fastllm will be slower on decode than llama.cpp's MTP-accelerated path — plan the A/B test accordingly.
-5. KV cache dtype: pass `float16` (§6.4).
-
-## 10. Reproduction: how to confirm the current state
-
-To verify the build still works and reproduces the deadlock:
+Focused build and regression:
 ```bash
-cd /run/media/ezra/13D010B6FDBC1A06/1CatVLLM/fastllm/build/tools
-/home/ezra/.conda/envs/tsenv/bin/python3 -c "
-import sys, time
-sys.path.insert(0, '.')
-import ftllm.llm as llm_mod
-llm_mod.set_device_map({'cuda:0': 1})
-llm_mod.set_cpu_low_mem('true')
-llm_mod.set_cpu_threads(2)
-m = '/run/media/ezra/13D010B6FDBC1A06/1CatVLLM/models/Qwen3.6-27B-Fable-Fus-711-UnHeretic-NM-DAU-NEO-MAX-NEO-LOW-MTP-IQ4_XS.gguf'
-t0 = time.time()
-model = llm_mod.model(m, dtype='float16', kv_cache_dtype='float16')
-print(f'loaded in {time.time()-t0:.1f}s')
-ids = model.encode('Hello world')
-print(f'got {len(ids)} tokens')
-print(model.generate([ids], max_new_tokens=1, do_sample=False))  # will throw EDEADLK
-"
+cmake --build build --target regressionOps apiserver -j4
+FASTLLM_REGRESSION_ONLY=qwen35_gguf build/regressionOps
+FASTLLM_REGRESSION_ONLY=gguf_dequant build/regressionOps
+build/regressionOps
 ```
-Expected output: ~3 min load, `got 2 tokens`, then `terminate called after throwing an instance of 'std::system_error': Resource deadlock avoided`. That confirms §6.
+
+Production-path service smoke:
+```bash
+FASTLLM_QWEN35_ENABLE_MTP=9 FASTLLM_QWEN35_MTP_PROFILE=2 \
+  build/apiserver -p /path/to/model.gguf -t 2 -l --atype float16 \
+  --batch 1 --tokens 2048 --model_name qwen3.6-fastllm \
+  --port 8002 --device cuda
+```
+
+Use TCP port readiness, then send a pre-rendered prompt with `raw_prompt=true`. The verified short smoke returns HTTP 200; exact full-window prompts currently reproduce the long-context timeout described in §6.
 
 ## 11. Key files (absolute paths)
 
@@ -300,17 +214,15 @@ Expected output: ~3 min load, `got 2 tokens`, then `terminate called after throw
 | Model GGUF (MTP, IQ4_XS) | `/run/media/ezra/13D010B6FDBC1A06/1CatVLLM/models/Qwen3.6-27B-Fable-Fus-711-UnHeretic-NM-DAU-NEO-MAX-NEO-LOW-MTP-IQ4_XS.gguf` |
 | Multimodal projector | `/run/media/ezra/13D010B6FDBC1A06/1CatVLLM/models/Qwen3.6-27B-DFlash-GGUF/mmproj-BF16.gguf` |
 | Chat template (jinja) | `/run/media/ezra/13D010B6FDBC1A06/1CatVLLM/chat_templates/qwen3.6_merged.jinja` |
-| Thinking proxy | `/run/media/ezra/13D010B6FDBC1A06/1CatVLLM/thinking_proxy.py` |
+| Thinking proxy | `/run/media/ezra/13D010B6FDBC1A06/1CatVLLM/v100-perfs/thinking_proxy.py` |
 | llama.cpp server (working baseline) | `/run/media/ezra/13D010B6FDBC1A06/1CatVLLM/llama.cpp-turboquant/build/bin/llama-server` |
-| Patch file (combined) | `/run/media/ezra/13D010B6FDBC1A06/1CatVLLM/v100-perfs/scripts/fastllm_qwen36_iq4xs.patch` |
-| Build/patch notes (committed) | `/run/media/ezra/13D010B6FDBC1A06/1CatVLLM/v100-perfs/docs/fastllm_benchmark.md` |
+| Build and benchmark notes | `/run/media/ezra/13D010B6FDBC1A06/1CatVLLM/v100-perfs/docs/fastllm_benchmark.md` |
 | Conda env | `/home/ezra/.conda/envs/tsenv/` |
 | nvcc wrapper (recreate after reboot) | `/tmp/nvcc-wrapper` (content in §3.2) |
 
-## 12. Things I did NOT do (so the next person knows)
+## 12. Current caveats
 
-- **Did not open the upstream PR.** Patches are in the working tree and in `v100-perfs/scripts/fastllm_qwen36_iq4xs.patch`, ready to be cleaned up and pushed.
-- **Did not restart the llama.cpp backend.** It was killed earlier in this session to free VRAM for fastllm testing. The proxy was also killed. Whoever picks this up should restart both before relying on them. The original llama-server command line is in §9 (and in the proxy source).
-- **Did not collect any benchmark numbers.** Inference is blocked; no t/s data exists for fastllm on this model.
-- **Did not implement SSM or MTP forward.** This is the gating work item — see §8 item 1.
-- **Did not extend the Jinja parser.** Workaround is `generate()` with raw tokens (§6.3).
+- The published FastLLM throughput table remains empty because all exact-window requests timed out; only capacity startup and failure timing are claimed.
+- The official Python `ftllm bench` runner enters a different FP32 GGUF matmul path and aborted during 128K warmup, so it is not used for production-path numbers.
+- TurboQuant 256K has a completed historical result and VRAM trace. It was not rerun while ComfyUI remained resident because their combined VRAM requirement exceeds 32GB.
+- The FastLLM Jinja parser still does not support the embedded macros; proxy-side Jinja2 rendering is the deployed workaround.

@@ -1,0 +1,10 @@
+{
+  "context_tokens": 163840,
+  "prompt_tokens_target": 163584,
+  "decode_tokens_target": 1,
+  "server_capacity_ready": true,
+  "request_completed": false,
+  "timeout_seconds": 900,
+  "result": "prefill_timeout",
+  "notes": "FastLLM apiserver bound successfully with --tokens 163840 while ComfyUI remained running. The exact 163584-token raw prompt did not return within 900 seconds."
+}

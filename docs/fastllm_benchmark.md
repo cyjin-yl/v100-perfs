@@ -1,135 +1,107 @@
-# FastLLM on V100 — Build, Patches, and Qwen3.6 Inference Findings
+# FastLLM on V100 — Qwen3.6 Fable Fusion Performance
 
-Date: 2026-07-28
-Hardware: NVIDIA V100 (SM70, 32GB VRAM, 16GB SM, 64GB system RAM)
-Software: Fedora 44, GCC 16.1.1 (system), GCC 12.4.0 (conda), CUDA 12.9
+**Date:** 2026-07-28  
+**Hardware:** NVIDIA V100 (SM70, 32GB VRAM, 16GB SM, 64GB system RAM)  
+**Software:** Fedora 44, GCC 16.1.1 (system), GCC 12.4.0 (conda), CUDA 12.9  
+**Model:** Qwen3.6-27B-Fable-Fus-711-UnHeretic-NM-DAU-NEO-MAX-NEO-LOW-MTP-IQ4_XS.gguf (IQ4_XS, 64 trunk layers + 1 MTP head)  
 
 ## Outcome
 
-FastLLM **builds** on this machine and **loads** the David Fable Fusion Qwen3.6 27B GGUF (IQ4_XS, with MTP) into the V100. However, **inference deadlocks** because fastllm's `qwen3_5` implementation does not support the SSM (state space) layers that Qwen3.6 introduces on top of Qwen3.5. The llama.cpp backend continues to be the working production path.
+FastLLM now **runs full inference** (trunk + MTP9) on this model with a patched build — see §Patches. The first real token was produced at approximately 87s (cold startup with `--low` lazy weight placement). MTP9 yields partial acceptance (~1.75 avg matched drafts per step at commit~2.75 tokens). All ops are on CUDA: `Fastllm paged prefill` (chunked cublas), SM70 IQ4_XS MMQ matmul, and GDN transposed-recurrent decode.
 
 ## What works
 
-1. **Build** with the patches documented below — produces `main`, `apiserver`, `benchmark`, `quant`, `pyfastllm`, and `libfastllm_tools.so`.
-2. **Model load** — all 100 blocks (blk.0..blk.64 plus MTP head) load into GPU in ~3 minutes. Tokenizer initializes successfully.
+1. **Model load** — all 65 blocks + tokenizer + IQ4_XS dequant → GPU in ~2m30s.
+2. **`/generate` raw prompt** — HTTP 200, correct output, streaming and non-stream OpenAI SSE.
+3. **SM70 IQ4_XS MMQ** — auto-selected for `k>=128`, F16 activations, DP4A accumulation. Fallback to legacy MMVQ for narrow projections.
+4. **MTP9 speculative decode** — 9 drafts/step, exact acceptance, single-GPU copy-validation path.
+5. **GDN (linear attention)** — `cuda-transposed-recurrent` with QKVZ+BA fused layout.
+6. **Native paged attention** — FlashInfer disabled on CC 7.0 → chunked cublas prefill + native paged decode.
 
-## What's blocked
+## Known limitations
 
-- `generate()`, `response_logits()`, `response()`, and `stream_response()` all crash during forward pass with `std::system_error: Resource deadlock avoided` (Linux `EDEADLK`).
-- Root cause: the GGUF reports ~7 SSM tensors per block (`ssm_a`, `ssm_alpha`, `ssm_beta`, `ssm_conv1d`, `ssm_dt`, `ssm_norm`, `ssm_out`). FastLLM logs these as `unmatched weight` for every layer and has no forward implementation for them, causing the deadlock in the inference thread.
-- Workaround would require implementing SSM forward + MTP head forward in fastllm — significant work, out of scope for this iteration.
+- **Chat template:** The embedded GGUF Jinja template uses `{% macro %}`, which FastLLM's Jinja parser does not support. Use raw `/generate` with pre-formatted ChatML, or deploy the Thinking Proxy with proxy-side Jinja2 rendering.
+- **MTP >1 layer:** The GGUF has `nextn_predict_layers=1`. Multi-layer MTP is untested.
+- **Multi-GPU TP:** Single V100 only — not validated with tensor parallelism.
+- **Long context:** 128K, 160K, and 256K KV capacities all initialize, but exact full-window raw prompts did not complete within the benchmark deadlines; see §Performance.
 
-## Required source patches (2 lines total)
+## Patches applied
 
-Both patches are minimal and safe to upstream.
+The isolated upstream branch contains the Qwen3.5 GGUF/runtime, MTP9, SM70 IQ4_XS, apiserver, and regression changes described below.
 
-### Patch 1 — GGUF architecture name mapping
+### 1. Qwen3.5/3.6 GGUF adapter (`src/model.cpp`, `third_party/gguf/*`)
+- Architecture alias `qwen35`→`qwen3_5`
+- `block_count` correction (65→64 trunk + 1 MTP)
+- `attention.key_length` → `head_dim`, `ssm.*` → linear-attention metadata
+- V-head tiled→grouped inverse permutation at load time (`GGUFWeightReplaceUntileVHeads`)
+- Norm pre-offset recognition independent of V-head layout
+- `FASTLLM_QWEN35_GGUF_VHEAD_TILED=0` override for pre-grouped GGUFs
+- `CreateLLMModelFromFile()` magic-based GGUF dispatch (fixes `std::bad_alloc`)
 
-File: `src/model.cpp`, function `ConvertGGUFTypeToFastllmType`
+### 2. Qwen3.5 runtime (`src/models/qwen3_5.cpp`, `include/models/qwen3_5.h`)
+- KV metadata initialization (`num_key_value_heads` shadowing fix, linear-attention metadata)
+- Grouped vs tiled TP out-proj scheme selection via `ggufOutProjColumnsTiled`
+- MTP logging/profile infrastructure
 
-GGUF metadata uses `general.architecture = "qwen35"` for Qwen3.6, but fastllm's
-internal model type is `"qwen3_5"`. The lookup dict was missing the alias.
+### 3. SM70 IQ4_XS MMQ (`src/devices/cuda/fastllm-iq4xs-sm70.cu`)
+- DP4A matrix-multiply-quantized kernel for SM70/V100
+- F16/F32/BF16 activations, Q8_1 D4 quantization, per-stream persistent scratch
+- env-gated (`FASTLLM_CUDA_SM70_IQ4XS_MMQ=0` to disable)
 
-```diff
- static std::map <std::string, std::string> ggufTypeToFastllmTypeDict = {
-     {"qwen2", "qwen2"},
-     {"qwen3moe", "qwen3_moe"}, {"qwen3_moe", "qwen3_moe"},
-+    {"qwen35", "qwen3_5"}, {"qwen3_5", "qwen3_5"},
-     {"glm4_moe", "glm4_moe"},
-     {"glm-dsa", "glm_moe_dsa"}, {"glm_moe_dsa", "glm_moe_dsa"},
-     {"minimax_m2", "minimax_m2"},
-     {"deepseek2", "deepseek_v2"}, {"deepseek_v2", "deepseek_v2"}, {"deepseek_v3", "deepseek_v2"}
- };
-```
+### 4. CPU rounding fix (`src/devices/cpu/cpudevice.cpp`)
+- `_mm256_cvtps_epi32` → `_mm256_cvttps_epi32` (truncation, not round-to-nearest, matching scalar path).
 
-### Patch 2 — IQ4_XS dequantize function pointer
+### 5. Apiserver hardening (`example/apiserver/apiserver.cpp`)
+- Tokenizer buffer UAF fix (direct init instead of assign-after-declare)
+- Readiness probe no longer deadlocks
+- HTTPS/OpenAI SSE chat completions + streaming
 
-File: `third_party/gguf/gguf.cpp`, the `type_traits` table for `GGML_TYPE_IQ4_XS`
+### 6. Parallel regression test suite (`test/ops/regressionOps.cpp`, ~+1498 lines)
+All focused regressions pass: GGUF config aliases, V-head layout, grouped override, embedding/direct memory, projection layout resolution, TP out-proj scheme, CPU embedding low-mem AWQ Linear, MTP9 snapshots/greedy, CUDA graph ownership, paged batches, etc.
 
-The `to_float` function pointer was commented out, causing
-`WeightImportGGUFTensor: weight ... can't convert to fp32`. The function
-`dequantize_row_iq4_xs` exists in `ggml-dequantize.cpp`; just needs to be wired in.
+## Performance
 
-There are two `type_traits` tables in this file (legacy C-style and modern
-designated-initializer); both need the same one-line change.
+Short production-path inference remains functional after the final fixes: MTP9 returned HTTP 200 with `OK`; the profile recorded partial speculative acceptance. Long-context testing used the same C++ apiserver path with `--atype float16`, MTP9, and exact raw-prompt token counts calibrated from server `usage.prompt_tokens` (`"x " × N` produces $N+1$ tokens).
 
-```diff
- {GGML_TYPE_IQ4_XS, {
-     .type_name                = "iq4_xs",
-     .blck_size                = QK_K,
-     .type_size                = sizeof(block_iq4_xs),
-     .is_quantized             = true,
--    // .to_float                 = (ggml_to_float_t) dequantize_row_iq4_xs,
-+    .to_float                 = (ggml_to_float_t) dequantize_row_iq4_xs,
-     // .from_float_ref           = (ggml_from_float_t)quantize_row_iq4_xs_ref,
- }},
-```
+| Context | Input target | Decode target | Capacity startup | Request result | Observed VRAM |
+|---------|--------------|---------------|------------------|----------------|---------------|
+| 128K | 130,816 | 256 | PASS | Did not complete in 3,600s; GPU initially saturated, then fell to 0% while request remained pending | 27,067 MiB idle; 27,899 MiB peak sampled |
+| 160K | 163,584 | 1 prefill probe | PASS | Did not complete in 900s | Not separately sampled |
+| 256K | 261,888 | 1 prefill probe | PASS | Did not complete in 900s | Not separately sampled |
 
-And the legacy C-style table:
+The official `ftllm bench` runner was also attempted at 128K with 130,816 input and 256 output tokens. It aborted during its internal warmup with a cuBLAS error (exit 134) because that Python path entered FP32 GGUF matmul, unlike the production F16 apiserver path. It is therefore not used for throughput claims.
 
-```diff
- {GGML_TYPE_IQ4_XS, {/* type_name */"iq4_xs", /* blck_size */QK_K,
-     /* type_size */ sizeof(block_iq4_xs),/* is_quantized */  true,
--    // .to_float                 = (ggml_to_float_t) dequantize_row_iq4_xs,
-+    /* to_float */ (ggml_to_float_t) dequantize_row_iq4_xs,
-     // .from_float_ref           = (ggml_from_float_t)quantize_row_iq4_xs_ref,
- }},
-```
+These are failed performance runs, not successful throughput measurements. They prove KV-capacity initialization but do not establish usable long-context prefill/decode rates.
 
-## Build commands (Fedora 44 + CUDA 12.9)
+## TurboQuant 256K reference
+
+The existing completed TurboQuant result uses two agents with 262,144 tokens per slot, 117,964 shared-prefix tokens, and 256 output tokens. Steady-state aggregate throughput was 15.65 tok/s (7.78 tok/s per request), with 32.92s average latency. The historical VRAM trace reached 32,199 MiB transiently and about 30,692 MiB in steady decode. A same-session rerun was intentionally skipped because ComfyUI remained resident and the combined requirement exceeds the 32GB V100; the existing result and server log are retained as the verified 256K evidence.
+
+Result artifacts:
+- `benchmarks/fastllm/results/fastllm_mtp9_128k_timeout.json`
+- `benchmarks/fastllm/results/fastllm_mtp9_160k_timeout.json`
+- `benchmarks/fastllm/results/fastllm_mtp9_256k_http.json`
+- `benchmarks/turboquant/results/llama_tq3_iq4_256k_2slot_short.json`
+
+## Build notes
+
+See `docs/HANDOFF_fastllm.md` (§3) for the reference build procedure. Key prerequisites:
+- CUDA toolkit with an SM70-compatible compiler
+- A host compiler version supported by that CUDA toolkit
+- `libnuma` development headers when NUMA support is enabled
+- Build parallelism: `-j4` max (swap thrashing at `-j8`)
+
+## Service deployment
 
 ```bash
-# 1. Init pybind11 submodule (only needed for PY_API build)
-git submodule update --init third_party/pybind11
-
-# 2. CMake configure (non-Python build — produces main, apiserver, benchmark, libfastllm_tools.so)
-cmake .. \
-  -DUSE_CUDA=ON \
-  -DUSE_NUMAS=OFF \
-  -DCMAKE_CUDA_COMPILER=/tmp/nvcc-wrapper \
-  -DCUDA_ARCH="70" \
-  -DCMAKE_CXX_COMPILER=/path/to/conda-gcc-12 \
-  -DCMAKE_CXX_FLAGS="-I/path/to/conda/include" \
-  -DCMAKE_CUDA_FLAGS="-I/path/to/conda/include"
-
-# 3. Build (use -j2 or -j4, swap pressure makes -j8 unstable)
-make -j2 main apiserver benchmark fastllm_tools
+# tmux session: fastllm
+ulimit -c 0
+cd /path/to/fastllm/build
+FASTLLM_QWEN35_ENABLE_MTP=9 ./apiserver \
+  -p /path/to/model.gguf \
+  -t 2 -l --atype float16 --batch 1 --tokens 8192 \
+  --model_name qwen3.6-fastllm --port 8002 \
+  --device cuda --cuda_embedding
 ```
 
-The conda `include` path is needed because:
-- `third_party/pybind11` requires Python headers
-- `fastllm` requires `numa.h` (only available via system `numactl-devel`)
-- Multicuda requires `nccl.h`
-
-The `nvcc-wrapper` script points nvcc at the conda GCC 12 (system GCC 16 is
-incompatible with CUDA 12.9 even with `--allow-unsupported-compiler`).
-
-## Notable build pitfalls encountered
-
-1. **GCC 16 vs nvcc** — system GCC 16.1.1 cannot compile CUDA even with
-   `--allow-unsupported-compiler`. Must use conda GCC 12.
-2. **Swap thrashing at high parallelism** — `-j8` causes OOM kills on CUDA
-   compile due to 48GB swap saturation. Use `-j2` or `-j4`.
-3. **NUMAS is incompatible** — system `libnuma.so` references GLIBC 2.38
-   symbols that conda's older glibc lacks. Disable with `-DUSE_NUMAS=OFF`.
-4. **`std::bad_alloc` on first model load** — caused by `/usr/include` leaking
-   into CUDA include path via `CPATH` (math header conflicts). Fix: symlink
-   `numa.h` and `nccl.h` into conda's `include/` instead, no `CPATH=/usr/include`.
-
-## KV cache dtype values (gotcha)
-
-`int8` is **not** a valid `kv_cache_dtype`. Valid values:
-`auto`, `float32`, `float16`, `bfloat16`, `fp8_e4m3`. Passing `int8` silently
-errors after model load completes.
-
-## Token benchmark results
-
-No benchmark numbers were collected because inference deadlocks before any
-token is produced. The Qwen3.6 SSM architecture support is the gating work
-item for any future fastllm speed comparison.
-
-## Recommendation
-
-Continue running the existing llama.cpp backend for the David Fable Fusion
-Qwen3.6 model. The fastllm build artifacts are kept for future use when
-Qwen3.6 SSM support lands upstream.
+Proxy: `FASTLLM_BACKEND_URL=http://127.0.0.1:8002` plus proxy-side Jinja2 template render.
