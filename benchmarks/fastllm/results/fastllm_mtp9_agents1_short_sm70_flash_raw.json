@@ -1,0 +1,47 @@
+[
+  {
+    "agent_id": 0,
+    "turn": 1,
+    "warmup": true,
+    "compacted": false,
+    "multimodal": false,
+    "prompt_tokens": 251,
+    "completion_tokens": 63,
+    "latency": 6.301428416278213,
+    "ttft": 0.531376070342958,
+    "decode_tok_per_sec": 10.918445141035972,
+    "e2e_tok_per_sec": 9.997733186535099,
+    "ctx_before": 284,
+    "ctx_after": 386
+  },
+  {
+    "agent_id": 0,
+    "turn": 2,
+    "warmup": false,
+    "compacted": false,
+    "multimodal": false,
+    "prompt_tokens": 356,
+    "completion_tokens": 13,
+    "latency": 2.1631538751535118,
+    "ttft": 0.6131927641108632,
+    "decode_tok_per_sec": 8.387307208795056,
+    "e2e_tok_per_sec": 6.009743527411999,
+    "ctx_before": 386,
+    "ctx_after": 422
+  },
+  {
+    "agent_id": 0,
+    "turn": 3,
+    "warmup": false,
+    "compacted": false,
+    "multimodal": false,
+    "prompt_tokens": 413,
+    "completion_tokens": 23,
+    "latency": 3.1693736286833882,
+    "ttft": 0.6793132689781487,
+    "decode_tok_per_sec": 9.236723885168239,
+    "e2e_tok_per_sec": 7.256954431577886,
+    "ctx_before": 422,
+    "ctx_after": 479
+  }
+]

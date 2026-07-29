@@ -7,7 +7,7 @@
 
 ## Outcome
 
-FastLLM now **runs full inference** (trunk + MTP9) on this model with the upstream-PR build — see §Patches. Exact-window requests completed at 128K and 160K with FP16 KV, and at 256K with FP8 E4M3 KV. MTP9 remained active through all three runs. Those exact-window artifacts validate FastLLM's pre-existing V100 native paged-attention stack, SM70 IQ4_XS MMQ, and the Qwen3.5 transposed-recurrent GDN kernels. The later `b693ad8` branch tip adds a Flash-Attention-V100-inspired exact-shape SM70 paged XQA specialization for `qLen=1` decode; its post-commit evidence is the focused/full regression, kernel microbenchmark, and short real-model smoke described below, not a rerun of the complete exact-window matrix.
+FastLLM now **runs full inference** (trunk + MTP9) on this model with the upstream-PR build—see §Patches. Exact-window requests completed at 128K and 160K with FP16 KV, and at 256K with FP8 E4M3 KV. A final-binary rerun also completed exact 128K, 160K, and 256K windows under the production FP8-KV configuration. MTP9 remained active. The native SM70 paged XQA decode specialization remains production-enabled for its supported shape. The new Flash-Attention-V100-inspired qLen2..10 FP8 paged-prefill specialization is retained as an experimental opt-in only: focused numeric tests and attention microbenchmarks pass, but end-to-end MTP output diverged from native and steady decode throughput regressed, so production keeps this route disabled.
 
 ## What works
 
@@ -79,6 +79,8 @@ The isolated upstream branch for PR [ztxz16/fastllm#705](https://github.com/ztxz
 - Tokenizer buffer UAF fix (direct init instead of assign-after-declare)
 - Readiness probe no longer deadlocks
 - HTTPS/OpenAI SSE chat completions + streaming
+- OpenAI `stop` string/array parsing through the loaded model tokenizer, with atomic rejection of unsupported multi-token stops
+- Socket writes use full-write handling; SSE termination and stop behavior have focused tests
 
 ### 7. Parallel regression test suite (`test/ops/regressionOps.cpp`)
 All focused regressions pass: GGUF config aliases, V-head layout, grouped override, embedding/direct memory, projection layout resolution, TP out-proj scheme, CPU embedding low-mem AWQ Linear, MTP9 snapshots/greedy, CUDA graph ownership, paged batches, etc.
@@ -128,6 +130,39 @@ The retained smoke summary records HTTP 200 for the 27B IQ4_XS greedy request an
 
 Machine-readable result: `benchmarks/fastllm/results/fastllm_sm70_paged_xqa.json`.
 
+
+### Final-binary FP8 long-context validation
+
+The final production binary was rerun with MTP9, FP16 activations, FP8 E4M3 KV, batch capacity 5, a 262,144-token cache, CUDA embedding, and the experimental qLen2..10 route disabled. Raw prompts used the calibrated fragment `" a"`, which encoded as exactly one token at both 1,024 and 2,048 repetitions. Each case requested 64 output tokens, and server `usage` exactly matched the target window.
+
+FastLLM emits one JSON event across multiple SSE `data:` fields. The final verifier therefore joined all `data:` fields through the blank-line event boundary before parsing JSON. Every case produced 66 valid JSON events, zero malformed events, one `[DONE]`, `finish_reason=stop`, a non-empty 128-character response, no leaked `<|im_start|>`/`<|im_end|>` tail, and the same response SHA-256.
+
+| Total window | Prompt + decode | E2E | Sampled VRAM peak | Protocol/correctness |
+|-------------:|-----------------|----:|------------------:|----------------------|
+| 131,072 | 131,008 + 64 | 240.35s | 27,968 MiB | HTTP 200; exact usage; 66 events; 0 malformed; one `[DONE]` |
+| 163,840 | 163,776 + 64 | 330.78s | 28,220 MiB | HTTP 200; exact usage; 66 events; 0 malformed; one `[DONE]` |
+| 262,144 | 262,080 + 64 | 695.89s | 28,436 MiB | HTTP 200; exact usage; 66 events; 0 malformed; one `[DONE]` |
+
+Machine-readable result: `benchmarks/fastllm/results/fastllm_mtp9_fp8_longctx_final.json`.
+
+### qLen2..10 SM70 FP8 paged-prefill experiment
+
+The experimental `FASTLLM_CUDA_SM70_FLASH_ATTN=1` route specializes the Qwen3.5/3.6 MTP validation shape: V100 SM70, FP16 Q/output, FP8 E4M3 paged KV, page 128, Q24/KV4, D256, GQA6, batch 1..5, and per-request qLen 2..10. It is not FlashInfer: it is a FastLLM-local Volta WMMA kernel adapted from the tiled causal/paged online-softmax structure in the local Flash-Attention-V100 source. Unsupported shapes fall back to native attention. The default KV ceiling is 512 tokens because the CUDA-event microbenchmark crossed from 1.70× faster at KV512 to 0.90× at KV1024; an independent environment variable can raise the ceiling for experiments.
+
+Focused numeric coverage passes for qLen2/qLen10, ragged batch 5, non-sequential physical pages, partial pages, KV8192 under an explicit test override, default long-KV rejection without output modification, and route-disabled fallback. The attention-only microbenchmark measured 0.212 ms versus 0.705 ms native at qLen10/KV273 (3.33×), and 0.120 ms versus 2.743 ms for the ragged batch-5 fixture (22.82×).
+
+Those kernel-level gains did **not** justify production enablement. In the authenticated three-turn agent workload, steady decode throughput fell from 11.24 to 8.81 tok/s at concurrency 1. At concurrency 5, steady aggregate throughput fell from 10.84 to 8.41 tok/s, while sampled VRAM remained effectively flat. Generated lengths also differed, so aggregate throughput is not a pure speed comparison; the per-request decode metric is the cleaner negative signal. More importantly, a fixed greedy prompt was stable across repeated native runs but produced a different SHA-256 and token count under the opt-in route. The numeric tolerance is therefore adequate for an experimental attention regression, not for production output equivalence. The route remains default-off.
+
+| Agents | Native steady aggregate | Opt-in steady aggregate | Native avg decode | Opt-in avg decode | Native / opt-in VRAM peak |
+|-------:|------------------------:|------------------------:|------------------:|------------------:|---------------------------:|
+| 1 | 10.00 tok/s | 4.64 tok/s | 11.24 tok/s | 8.81 tok/s | 26,652 / 26,624 MiB |
+| 2 | 10.28 tok/s | 7.41 tok/s | 11.93 tok/s | 9.50 tok/s | 26,666 / 26,674 MiB |
+| 5 | 10.84 tok/s | 8.41 tok/s | 12.57 tok/s | 9.81 tok/s | 26,782 / 26,672 MiB |
+
+The benchmark's first turn is classified as JIT warmup and later turns as steady state; this is not a strict prompt-cache cold/warm measurement. Its shared-prefix ratio is only an estimate, not a server cache-hit counter. The harness now accepts an optional bearer-token environment variable without storing the token and propagates worker-thread request failures instead of writing misleading zero-request artifacts.
+
+Machine-readable results: `benchmarks/fastllm/results/fastllm_mtp9_agents{1,2,5}_short_native.json` and `fastllm_mtp9_agents{1,2,5}_short_sm70_flash.json`, with corresponding `_raw.json` files.
+
 ## TurboQuant 256K reference
 
 The retained TurboQuant result uses two agents with 262,144 tokens per slot, 117,964 shared-prefix tokens, and 256 output tokens. Steady-state aggregate throughput was 15.65 tok/s (7.78 tok/s per request), with 32.92s average latency. Its workload, prefix reuse, concurrency, and cache format differ from the cold exact-window FastLLM measurement, so the figures are retained as deployment evidence rather than presented as a direct A/B.
@@ -136,7 +171,9 @@ Result artifacts:
 - `benchmarks/fastllm/results/fastllm_mtp9_128k_exact.json`
 - `benchmarks/fastllm/results/fastllm_mtp9_160k_exact.json`
 - `benchmarks/fastllm/results/fastllm_mtp9_256k_exact.json`
+- `benchmarks/fastllm/results/fastllm_mtp9_fp8_longctx_final.json`
 - `benchmarks/fastllm/results/fastllm_sm70_paged_xqa.json`
+- `benchmarks/fastllm/results/fastllm_mtp9_agents{1,2,5}_short_{native,sm70_flash}.json`
 - `benchmarks/turboquant/results/llama_tq3_iq4_256k_2slot_short.json`
 
 ## Build notes
@@ -153,11 +190,11 @@ See `docs/HANDOFF_fastllm.md` (§3) for the reference build procedure. Key prere
 # tmux session: fastllm
 ulimit -c 0
 cd /path/to/fastllm/build
-FASTLLM_QWEN35_ENABLE_MTP=9 ./apiserver \
+FASTLLM_QWEN35_ENABLE_MTP=9 FASTLLM_QWEN35_MTP_PROFILE=2 ./apiserver \
   -p /path/to/model.gguf \
   -t 2 -l --atype float16 --kv_cache_dtype fp8_e4m3 \
-  --batch 1 --tokens 262144 --model_name qwen3.6-fastllm \
+  --batch 5 --tokens 262144 --model_name qwen3.6-fastllm \
   --port 8002 --device cuda --cuda_embedding
 ```
 
-Proxy adapter code can render the macro-heavy template with Jinja2 and send `raw_prompt=true`, but the checked-in `thinking_proxy.py` refactor is not yet the required independent fifth-backend architecture: its current FastLLM mode replaces the llama backend. At the latest audit neither the proxy nor FastLLM service was running on ports 8000/8002.
+The checked-in proxy renders the macro-heavy Qwen template with Jinja2, sends `raw_prompt=true`, rewrites the public model name on the response, and keeps FastLLM failures local instead of invoking cloud fallback. The live deployment is running on proxy port 8000 with FastLLM on 8002. Production intentionally leaves `FASTLLM_CUDA_SM70_FLASH_ATTN` unset; setting it to `1` enables the experimental qLen2..10 route described above.

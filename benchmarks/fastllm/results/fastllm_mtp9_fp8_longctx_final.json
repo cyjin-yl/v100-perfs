@@ -1,0 +1,90 @@
+{
+  "date": "2026-07-29T16:51:26+0800",
+  "hardware": "Tesla V100-PCIE-32GB",
+  "service_pid": 1123804,
+  "route": "native (FASTLLM_CUDA_SM70_FLASH_ATTN unset)",
+  "kv_cache_dtype": "fp8_e4m3",
+  "activation_dtype": "float16",
+  "mtp_drafts_per_step": 9,
+  "batch_capacity": 5,
+  "token_capacity": 262144,
+  "raw_prompt_unit": "\" a\" = exactly one token (calibrated at 1024 and 2048)",
+  "sse_parser": "multiline data fields joined until blank-line event boundary",
+  "results": [
+    {
+      "target_total_tokens": 131072,
+      "requested_prompt_tokens": 131008,
+      "max_completion_tokens": 64,
+      "http_status": 200,
+      "completed": true,
+      "error": null,
+      "elapsed_s": 240.347,
+      "events": 66,
+      "done_count": 1,
+      "malformed_events": 0,
+      "finish_reasons": [
+        "stop"
+      ],
+      "usage": {
+        "completion_tokens": 64,
+        "prompt_tokens": 131008,
+        "total_tokens": 131072
+      },
+      "content_chars": 128,
+      "content_sha256": "bac3b4bd261029cf604db1a1cd9e8750bc359e68cbbacdd6b41be0dba5c401cd",
+      "template_tail_leaked": false,
+      "vram_peak_mib": 27968,
+      "vram_samples": 237
+    },
+    {
+      "target_total_tokens": 163840,
+      "requested_prompt_tokens": 163776,
+      "max_completion_tokens": 64,
+      "http_status": 200,
+      "completed": true,
+      "error": null,
+      "elapsed_s": 330.779,
+      "events": 66,
+      "done_count": 1,
+      "malformed_events": 0,
+      "finish_reasons": [
+        "stop"
+      ],
+      "usage": {
+        "completion_tokens": 64,
+        "prompt_tokens": 163776,
+        "total_tokens": 163840
+      },
+      "content_chars": 128,
+      "content_sha256": "bac3b4bd261029cf604db1a1cd9e8750bc359e68cbbacdd6b41be0dba5c401cd",
+      "template_tail_leaked": false,
+      "vram_peak_mib": 28220,
+      "vram_samples": 326
+    },
+    {
+      "target_total_tokens": 262144,
+      "requested_prompt_tokens": 262080,
+      "max_completion_tokens": 64,
+      "http_status": 200,
+      "completed": true,
+      "error": null,
+      "elapsed_s": 695.885,
+      "events": 66,
+      "done_count": 1,
+      "malformed_events": 0,
+      "finish_reasons": [
+        "stop"
+      ],
+      "usage": {
+        "completion_tokens": 64,
+        "prompt_tokens": 262080,
+        "total_tokens": 262144
+      },
+      "content_chars": 128,
+      "content_sha256": "bac3b4bd261029cf604db1a1cd9e8750bc359e68cbbacdd6b41be0dba5c401cd",
+      "template_tail_leaked": false,
+      "vram_peak_mib": 28436,
+      "vram_samples": 686
+    }
+  ]
+}
