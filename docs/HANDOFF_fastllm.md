@@ -2,7 +2,7 @@
 
 **Author:** Sisyphus session (2026-07-28)
 **Project root:** `/run/media/ezra/13D010B6FDBC1A06/1CatVLLM/`
-**Status:** ✅ Trunk + MTP9 inference works. Exact-window 128K and 160K complete with FP16 KV; exact 256K completes with FP8 E4M3 KV. FP16 KV does not fit exact 256K on the 32GB V100. The isolated upstream branch is built and regression-tested.
+**Status:** ✅ Trunk + MTP9 inference works. Exact-window 128K and 160K complete with FP16 KV; exact 256K completes with FP8 E4M3 KV. FP16 KV does not fit exact 256K on the 32GB V100. Native SM70 paged XQA is implemented, benchmarked, and pushed to upstream PR #705. ⚠️ No FastLLM/proxy service is currently running, and the independent fifth-backend proxy refactor is not finished.
 
 This document is self-contained. Anyone picking this up does **not** need to read prior session logs — everything needed to continue is here.
 
@@ -17,7 +17,7 @@ Deploy **fastllm** as an alternative inference backend for the **Qwen3.6 27B "Fa
 3. Benchmark numbers at 128K / 160K / 256K context comparing fastllm vs llama.cpp (prefill t/s, decode t/s).
 4. A clean upstream PR to `ztxz16/fastllm` covering the Qwen3.5/3.6 GGUF, runtime, MTP, and V100 IQ4_XS changes (see §7).
 
-The implementation, proxy adapter unit tests, MTP9 smoke tests, and exact-window context matrix now work. Live structured OpenAI/Anthropic tool-call validation and deployment hardening remain, alongside native SM70 attention/GDN performance work and upstream review.
+The runtime implementation, adapter unit tests, MTP9 smoke tests, exact-window context matrix, and native SM70 `qLen=1` XQA optimization now work. The remaining deployment work is to turn the current FastLLM replacement mode into a genuinely independent fifth backend, implement structured streaming tool-call conversion, and run live OpenAI/Anthropic tool-result round trips.
 
 ## 2. Hardware & Software
 
@@ -149,40 +149,50 @@ Verified current behavior:
 - Exact requests complete at 131,072 and 163,840 total tokens with FP16 KV, and at 262,144 total tokens with FP8 E4M3 KV. All successful runs returned 256 completion tokens and correct continuation output.
 - Exact 256K with FP16 KV fails deterministically after reaching 31,642 MiB and requesting an additional 874,086,400-byte `lm_head.weight` allocation. Disabling CUDA embedding repeats the same failure. The successful FP8 run peaks at 31,088 MiB.
 - The final benchmark traces were exclusive-GPU runs: the earlier ComfyUI PID was no longer running when they started.
+- Full-history/worktree audit shows that FastLLM's baseline native split-KV stack is pre-existing upstream code, not a FlashInfer-SM70 port from this work: `38b4b8b8` added the native fallback on 2026-05-31, `adb30fd0` optimized SM70 bandwidth, and `bd9a24ad` added chunked-cuBLAS prefill.
+- No independent FlashInfer-SM70 backend, planner, Volta MMA layer, BM32/`ALL_P` prefill kernel, or benchmark artifact landed in the current FastLLM worktree/PR. Bundled upstream FlashInfer remains disabled on CC 7.0. `b693ad8` is the attention change that did land: it adapts the Flash-Attention-V100 GQA6 K/V-reuse strategy into FastLLM's page-128 `SM70 paged XQA` route.
+- Post-`b693ad8`, native SM70 paged XQA is selected for exact FP16 `page128/Q24/KV4/D256/GQA6/qLen1` decode. Its single-layer attention microbenchmark is 2.22× faster at 8K, 3.37× at 32K, and 4.03× at 128K than the original per-Q-head native split route.
+- The XQA phase-1 cubin uses 136 registers and 30,912 bytes shared memory with zero local memory/spill. Eager, partial/non-sequential pages, batch 2, CUDA graph replay, dual-PTDS concurrency, and rejection paths pass.
+- MTP9 target validation uses `qLen=10` and deliberately remains on the native causal prefill path; ordinary greedy/seed `qLen=1` decode can use XQA.
+- The 128K/160K/256K exact-window artifacts predate `b693ad8`; they validate FastLLM's existing native attention stack, not the final XQA increment. The final increment has focused/full regression, kernel-microbenchmark, and short 27B smoke evidence, but the full exact-window matrix has not yet been rerun.
+- These are completed benchmark/smoke results. At the latest live audit, ports 8000/8001/8002 were closed and no GPU inference process was active.
 
-The embedded macro-heavy Jinja template is still rendered by `thinking_proxy.py` with Jinja2 and sent as `raw_prompt=true`; no FastLLM Jinja-parser extension is required for this deployment.
+The embedded macro-heavy Jinja template must be rendered by the proxy-side Jinja2 adapter and sent as `raw_prompt=true`; no FastLLM Jinja-parser extension is required. The adapter code and unit tests exist locally, but the end-to-end independent-backend deployment is not complete.
 
 ## 7. Current upstream contribution
 
-The isolated branch is based on current upstream `origin/master`, not the old local checkout. It contains four Chinese, intent-split commits:
+The isolated branch is based on current upstream `origin/master` and is published as [ztxz16/fastllm#705](https://github.com/ztxz16/fastllm/pull/705). The PR is open, non-draft, and reports a clean merge state. Its eight Chinese intent-split commits cover:
 
-1. API server prompt lifetime and disconnected-client handling.
-2. Low-memory embedding boundary and backing-storage validation.
-3. MTP CLI validation through nine drafts.
-4. End-to-end Qwen3.5/3.6 GGUF support: architecture validation, metadata/tensor mapping, V-head inverse permutation, MTP layer routing, runtime layout markers, SM70 IQ4_XS MMQ, ROCm fallback stubs, and behavior regressions.
+1. API server prompt lifetime and disconnected-client handling (`d7fecea`).
+2. Low-memory embedding boundary and backing-storage validation (`1aade2c`).
+3. MTP CLI validation through nine drafts (`24c7ff9`).
+4. End-to-end Qwen3.5/3.6 GGUF support and SM70 IQ4_XS MMQ (`cfebc74`).
+5. Exact-window page-budget fixes (`97a10e2`).
+6. CPU-only Qwen3.5 GGUF loading (`4dbd114`).
+7. Cross-configuration GGUF regression hardening (`6adcef1`).
+8. Native SM70 paged XQA decode and its correctness/performance fixtures (`b693ad8`).
 
 Validation on the isolated latest-upstream tree:
 - `regressionOps` and `apiserver` build successfully.
-- `FASTLLM_REGRESSION_ONLY=qwen35_gguf ./regressionOps` passes.
-- `FASTLLM_REGRESSION_ONLY=gguf_dequant ./regressionOps` passes on V100.
-- Full `./regressionOps` exits 0, including current upstream NUMA regressions.
-- Real 27B MTP9 smoke returns HTTP 200 and `OK`.
+- Focused `qwen35_gguf`, `gguf_dequant`, and `sm70_paged_xqa` regressions pass on their applicable configurations.
+- Full `./regressionOps` exits 0, including current upstream NUMA regressions; unavailable Triton/two-GPU cases skip as expected.
+- Retained 27B smoke summaries record HTTP 200 for greedy and MTP9; the greedy summary records `SM70 paged XQA enabled`, while MTP9 records speculative full/partial acceptance. The raw post-`b693ad8` service log was not retained.
 
 ## 8. Work remaining
-
-1. Audit and selectively reimplement dependency-free SM70 kernels from the 1Cat-vLLM FlashAttention/FlashQLA references, retaining FastLLM native fallbacks.
-2. Finish the independent FastLLM backend deployment and structured OpenAI/Anthropic tool-call validation.
-3. Complete final review and follow-up updates for the open upstream contribution.
-4. Keep the TurboQuant 256K result as a different-workload reference; do not present it as a direct cold exact-window A/B.
+1. Rerun the exact 128K/160K/256K matrix on branch tip `b693ad8` so the final XQA increment has end-to-end long-context evidence, not only kernel and short-smoke evidence.
+2. Finish the independent FastLLM fifth-backend proxy architecture. The current `FASTLLM_MODE` still replaces the existing llama backend instead of coexisting with it.
+3. Add OpenAI streaming tool-call deltas and Anthropic `tool_use` / `input_json_delta`, then run live two-turn tool-result round trips.
+4. Deploy FastLLM on port 8002 with `--tokens 262144 --kv_cache_dtype fp8_e4m3`, deploy the proxy on 8000, and verify TCP readiness and local-only alias routing.
+5. Keep the TurboQuant 256K result as a different-workload reference; do not present it as a direct cold exact-window A/B.
 
 ## 9. Thinking-proxy integration
 
-The integration is implemented rather than planned:
-- FastLLM is an independent backend selected by the exact `qwen3.6-fastllm` alias.
-- `thinking_proxy.py` renders the macro-heavy template with Jinja2, sends `raw_prompt=true`, and converts FastLLM XML tool calls into OpenAI-compatible `message.tool_calls`.
+The adapter layer is implemented and unit-tested, but the required independent-backend wiring is **not complete**:
+- `fastllm_adapter.py` renders the macro-heavy template with Jinja2, sends `raw_prompt=true`, splits reasoning, and promotes generated XML calls into OpenAI-compatible `message.tool_calls` for non-stream responses.
 - Historical tool-call arguments are normalized for multi-turn result injection.
-- FastLLM readiness uses TCP because the C++ apiserver has no `/health` or `/v1/models` endpoint.
-- Non-FastLLM local and cloud backends remain available; the alias is local-only and cannot silently spill to a cloud model.
+- TCP readiness code exists because the C++ apiserver has no `/health` or `/v1/models` endpoint.
+- However, `thinking_proxy.py` still aliases `FASTLLM_MODE` to the single local backend, overwrites `BACKEND_URL`, and disables llama-server spawning. It therefore replaces llama rather than adding FastLLM as the independent fifth backend.
+- OpenAI/Anthropic structured streaming and live tool-result round trips remain unverified.
 
 ## 10. Reproduction
 
@@ -191,6 +201,7 @@ Focused build and regression:
 cmake --build build --target regressionOps apiserver -j4
 FASTLLM_REGRESSION_ONLY=qwen35_gguf build/regressionOps
 FASTLLM_REGRESSION_ONLY=gguf_dequant build/regressionOps
+FASTLLM_REGRESSION_ONLY=sm70_paged_xqa build/regressionOps
 build/regressionOps
 ```
 
@@ -203,6 +214,8 @@ FASTLLM_QWEN35_ENABLE_MTP=9 FASTLLM_QWEN35_MTP_PROFILE=2 \
 ```
 
 Use TCP port readiness, then send a pre-rendered prompt with `raw_prompt=true`. The verified exact 256K configuration uses FP8 E4M3 KV; omit `--kv_cache_dtype fp8_e4m3` for the verified FP16 128K/160K runs.
+
+The command above is a verified 256K-capable configuration, not a currently active daemon. The latest audit found no listener on 8002. The proxy on 8000 and the existing llama backend on 8001 were also not running.
 
 ## 11. Key files (absolute paths)
 
@@ -226,4 +239,4 @@ Use TCP port readiness, then send a pre-rendered prompt with `raw_prompt=true`. 
 - Exact-window result artifacts and methodology are in `docs/fastllm_benchmark.md`; only the 160K client captured a reliable first-content TTFT, so no TTFT is claimed for 128K or 256K.
 - The official Python `ftllm bench` runner enters a different FP32 GGUF matmul path and aborted during 128K warmup, so it is not used for production-path numbers.
 - TurboQuant 256K has a completed historical result and VRAM trace, but its prefix reuse/concurrency/cache workload differs from the cold exact-window FastLLM runs.
-- The FastLLM Jinja parser still does not support the embedded macros; proxy-side Jinja2 rendering is the deployed workaround.
+- The FastLLM Jinja parser still does not support the embedded macros; proxy-side Jinja2 rendering is the planned workaround, but the independent fifth-backend deployment is not currently active.

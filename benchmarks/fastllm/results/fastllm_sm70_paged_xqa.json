@@ -1,0 +1,80 @@
+{
+  "benchmark": "fastllm_sm70_paged_xqa",
+  "implementation_lineage": {
+    "fastllm_route": "native SM70 paged XQA; not a separately registered FLASHINFER_SM70 or FLASH_ATTN_V100 backend",
+    "baseline_native_history": "38b4b8b8 added the native low-compute-capability fallback on 2026-05-31; adb30fd0 optimized SM70 bandwidth; bd9a24ad added chunked-cuBLAS prefill",
+    "flashinfer_sm70_status": "not landed in the current FastLLM worktree or PR; no independent backend/planner, Volta MMA layer, BM32/ALL_P prefill kernel, or FastLLM benchmark artifact",
+    "flash_attention_v100_relation": "b693ad8 adapts GQA6 work-by-KV-head and K/V reuse to FastLLM page-128 Q24/KV4/D256 layout",
+    "port_type": "FastLLM-native architectural adaptation, not a byte-for-byte kernel copy",
+    "prefill_route": "existing native chunked cuBLAS attention; no FlashInfer-SM70 or Flash-V100 BM32/ALL_P prefill route landed"
+  },
+  "scope": "single-layer paged-attention decode microbenchmark; not end-to-end model throughput",
+  "hardware": {
+    "gpu": "NVIDIA Tesla V100-PCIE-32GB",
+    "compute_capability": "7.0"
+  },
+  "shape": {
+    "batch": 1,
+    "query_length": 1,
+    "query_heads": 24,
+    "kv_heads": 4,
+    "head_dimension": 256,
+    "gqa_group": 6,
+    "page_size": 128,
+    "dtype": "float16"
+  },
+  "timing": {
+    "warmup_iterations": 5,
+    "timed_iterations": 30,
+    "clock": "CUDA events",
+    "xqa_scope": "phase-1 split-KV kernel plus phase-2 combine kernel"
+  },
+  "chronology": {
+    "baseline_exact_window_artifacts_written": "2026-07-29T06:50:52+08:00",
+    "xqa_commit_time": "2026-07-29T09:19:24+08:00",
+    "xqa_summary_artifact_written": "2026-07-29T09:34:52+08:00",
+    "post_xqa_exact_window_matrix": "not rerun",
+    "post_xqa_evidence_scope": "focused/full regression, kernel microbenchmark, and short 27B greedy/MTP9 smoke"
+  },
+  "results": [
+    {
+      "kv_tokens": 8192,
+      "baseline_ms": 0.397039,
+      "sm70_xqa_ms": 0.179029,
+      "speedup": 2.22
+    },
+    {
+      "kv_tokens": 32768,
+      "baseline_ms": 1.73889,
+      "sm70_xqa_ms": 0.516552,
+      "speedup": 3.37
+    },
+    {
+      "kv_tokens": 131072,
+      "baseline_ms": 5.774,
+      "sm70_xqa_ms": 1.433,
+      "speedup": 4.03
+    }
+  ],
+  "kernel_resources": {
+    "phase1_registers": 136,
+    "phase1_shared_bytes": 30912,
+    "phase1_local_bytes": 0,
+    "phase1_spill_bytes": 0
+  },
+  "validation": {
+    "focused_regression": "PASS",
+    "full_regression": "PASS",
+    "real_model_greedy_http_status": 200,
+    "real_model_route_log": "SM70 paged XQA enabled",
+    "mtp9_http_status": 200,
+    "mtp9_target_query_length": 10,
+    "mtp9_target_route": "native causal prefill (XQA ineligible by design)",
+    "real_model_route_evidence": "retained summary only; raw post-b693ad8 service log was not preserved",
+    "upstream_flashinfer_cc70": "disabled; adapted FastLLM-native route executes instead"
+  },
+  "upstream": {
+    "pull_request": "https://github.com/ztxz16/fastllm/pull/705",
+    "commit": "b693ad82551d3629df9bbbbe565fb385b6553d58"
+  }
+}

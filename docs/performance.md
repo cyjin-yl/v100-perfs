@@ -1156,9 +1156,9 @@ LD_LIBRARY_PATH="/home/ezra/.conda/envs/tsenv/lib:${LD_LIBRARY_PATH:-}" \
 
 对比 IQ4_XS 同配置 **不开 MTP** 的 36 tok/s, MTP 提升约 15%; 对比 Q3_K_M no-MTP 的 21 tok/s, 提升约 98%。
 
-**但 MTP 与长上下文冲突:**
+**在这组 llama.cpp TurboQuant 双 256K 配置中,MTP 与长上下文冲突:**
 - IQ4_XS + MTP + 2×256K context **OOM** (MTP draft context 额外需要 2.4 GB)。
-- 因此 **MTP 适合“短上下文 + 高速度”场景**, 长上下文场景必须关闭 MTP。
+- 因此对该 llama.cpp 双 slot 配置应在“MTP短上下文速度”和“长上下文容量”之间取舍。这不是跨引擎限制: FastLLM 已用 FP8 E4M3 KV 完成单序列 MTP9 + exact 256K,见 §19。
 
 ### 17.7 结论与推荐
 
@@ -1178,7 +1178,7 @@ LD_LIBRARY_PATH="/home/ezra/.conda/envs/tsenv/lib:${LD_LIBRARY_PATH:-}" \
 - 本测试的 llama.cpp 是 **无 DFlash** 的保守配置。实际生产应优先使用 §14 的 `start_llama.sh`。
 - TurboQuant fork 尚未合并到 llama.cpp 主线, 构建需要 `feature/turboquant-kv-cache` 分支 + SM70 兼容的 CUDA 12.x 工具链。
 - TurboQuant 节省的是 KV cache, 不是模型权重。显存受限时优先选择 turbo4; 需要极限 context 时再考虑 turbo3 并承受速度损失。
-- **MTP 和长上下文不可兼得**: 启用 MTP 后 VRAM 开销增加, 长 context / 多 slot 配置会 OOM。根据场景二选一。
+- **llama.cpp TurboQuant 的 MTP/双 256K 需要取舍**: 本节配置启用 MTP 后额外 VRAM 会使双长 context / 多 slot OOM。FastLLM 单序列使用 FP8 KV 已验证 MTP9 + exact 256K,两者工作负载不能直接类比。
 - **不要把启动显存推到 31 GB 以上**: 高并发多模态会产生临时 buffer 尖峰, 建议保留 ≥1.5 GB 余量。
 
 ### 17.8 修复: `start_llama_nospec.sh` LD_LIBRARY_PATH
@@ -1347,5 +1347,60 @@ Qwen3.6 默认在每次回复前生成 `<think>` 推理过程。在生产 agent 
 | 思考模式 | 默认关闭, 客户端可按需开启 |
 | VRAM | ~30.0 GB / 32 GB |
 | 日志 | `/tmp/llama-tq-4x140k.log` |
+
+---
+
+## 19. FastLLM Qwen3.6 GGUF 与 V100 Attention 审计
+
+本节记录FastLLM在同一张V100 32GB上运行Qwen3.6-27B IQ4_XS (64层trunk + 1层MTP)的最新结果,并区分既有native attention、未落地的FlashInfer-SM70候选和已落地的Flash-Attention-V100式XQA。完整方法、补丁说明和原始artifact见[`docs/fastllm_benchmark.md`](fastllm_benchmark.md)。
+
+### 19.1 Exact-window 端到端容量
+
+三次请求都使用C++ apiserver、F16 activation、MTP9、精确`context - 256` prompt和256-token decode。服务端`usage.total_tokens`与目标窗口完全一致,输出均通过连续计数检查。它们验证的是FastLLM既有的V100 native paged-attention栈;artifact早于最后的`b693ad8` GQA6 XQA特化。
+
+| 总窗口 | KV cache | Prompt + decode | TTFT | E2E | 采样显存峰值 | 结果 |
+|-------:|----------|-----------------|-----:|----:|---------------:|------|
+| 131,072 | FP16 | 130,816 + 256 | 未可靠采集 | 318.762 s | 28,049 MiB | PASS |
+| 163,840 | FP16 | 163,584 + 256 | 344.527 s | 381.133 s | 30,529 MiB | PASS |
+| 262,144 | FP16 | 261,888 + 256 | — | — | 31,642 MiB | OOM: `lm_head.weight` 需再分配 874,086,400 bytes |
+| 262,144 | FP8 E4M3 | 261,888 + 256 | 未可靠采集 | 745.467 s | 31,088 MiB | PASS |
+
+160K 是唯一可靠记录首个非空内容 token 的客户端: prefill 474.81 tok/s,首内容后 decode 6.99 tok/s。128K/256K 的流式客户端把 role metadata chunk 当成首 chunk,因此不补算 TTFT。最终三次成功运行的 MTP 平均 matched draft 都约 0.72–0.74 token/step。
+
+这些是独占 GPU 的冷 exact-window容量测试。此前记录的 ComfyUI PID 在测试开始前已退出,因此不能把显存峰值当作共存容量。
+
+### 19.2 两条候选工作流在FastLLM中的实际落地状态
+
+完整Git历史和`.config/superpowers/worktrees/fastllm/qwen35-gguf-sm70`现存工作树给出了明确边界:
+
+| 路径/工作流 | FastLLM状态 | 可验证来源 | 已有结果 |
+|-------------|-------------|------------|----------|
+| 既有native paged attention | 本工作开始前已在上游 | `38b4b8b8`于2026-05-31加入低算力GPU native fallback;`adb30fd0`优化SM70带宽;`bd9a24ad`加入受限内存的chunked-cuBLAS prefill | exact-window 128K/160K/256K; paged metadata/CUDA graph相关回归 |
+| FlashInfer-SM70 | **当前FastLLM worktree和PR #705均未落地** | 没有独立backend/planner、Volta MMA兼容层、BM32/`ALL_P` prefill kernel或对应FastLLM benchmark artifact;内置上游FlashInfer在CC 7.0仍禁用 | 不声明FastLLM性能结果 |
+| Flash-Attention-V100式XQA | `b693ad8`已落地 | `FastllmSm70PagedXqaSplitKernel`按KV head组织GQA6,一次K/V读取服务6个Q head,并改写为FastLLM page128/Q24/KV4/D256布局 | 8K/32K/128K单层microbenchmark、专项/完整回归、短27B greedy/MTP9 smoke |
+
+FastLLM既有split-KV/state-combine结构与FlashInfer-SM70后来探索的机制相似,但完整历史证明它在5月已经进入上游,不能倒推成7月工作流的移植。真实V100 prefill日志仍为`Native paged prefill uses chunked cublas attention`,因此本文不宣称FlashInfer-SM70或Flash-Attention-V100 BM32/`ALL_P` prefill加速。
+
+测试时间线必须分开:exact-window JSON约在2026-07-29 06:50生成,`b693ad8`在09:19提交,XQA汇总artifact约在09:34生成。因此长上下文表证明既有native栈可运行,但不是最终XQA commit后的端到端重测;后者目前只有kernel、回归和短smoke证据。
+
+### 19.3 `b693ad8`后SM70分页XQA单层microbenchmark
+
+最终FastLLM分支为精确FP16 `page128/Q24/KV4/D256/GQA6/qLen1` decode增加SM70 XQA:它把Flash-Attention-V100工作流中验证过的GQA6 K/V复用策略改写到FastLLM布局,并复用FastLLM既有的split调度/分段状态combine。以下只计同一层attention kernel路径,不是整个27B模型tok/s:batch 1,KV cache已在GPU,5次warmup、30次CUDA event计时,并包含XQA phase-1 + combine两次launch。
+
+| KV tokens | 原生每Q-head split | SM70 XQA | 加速比 |
+|----------:|-------------------:|---------:|-------:|
+| 8,192 | 0.397 ms | 0.179 ms | **2.22×** |
+| 32,768 | 1.739 ms | 0.516 ms | **3.37×** |
+| 131,072 | 5.774 ms | 1.433 ms | **4.03×** |
+
+最终 phase-1 cubin 使用136 registers、30,912 bytes shared memory,无local memory/spill。专项回归覆盖非连续物理页、partial final page、batch 2非零`pageStart`、CUDA graph capture/replay、双PTDS并发、不支持group以及非连续output拒绝;完整`regressionOps`也通过。
+
+保留的smoke汇总记录27B greedy HTTP 200和`SM70 paged XQA enabled`;MTP9也返回HTTP 200并出现full/partial acceptance。MTP9 target validation为`qLen=10`,按设计仍走原生causal prefill;只有普通greedy/seed的`qLen=1` decode命中XQA。原始post-`b693ad8`服务日志未保留,因此JSON属于汇总证据而非可重放raw log。
+
+### 19.4 与TurboQuant 256K的边界
+
+TurboQuant已有历史“2 agents、每slot上限256K、约99% prefix cache hit、多轮并发”结果;FastLLM是“单个冷261,888-token prompt + 256 decode”的exact-window请求。前者能证明压缩KV pool与并发吞吐,后者能证明冷prefill、精确页预算和单请求容量,但不能从两组数字推导引擎直接胜负。
+
+FastLLM上游实现已提交到 [ztxz16/fastllm#705](https://github.com/ztxz16/fastllm/pull/705),状态为OPEN/CLEAN。仍需在`b693ad8`分支tip重新跑128K/160K/256K exact-window矩阵,补齐最终XQA增量的长上下文端到端证据。性能验证后现场审计显示8000/8001/8002均未监听,FastLLM独立第五后端proxy也仍待完成;本节不宣称服务当前在线。
 
 ---

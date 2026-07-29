@@ -43,8 +43,11 @@
 | **4 agent × 140K 上下文 (生产)** | llama.cpp TurboQuant turbo3, 4 slots | **~30** (1-2 活跃) / 5.5 (4 并发) | 4×140K | yes |
 | **vLLM 兼容** | 1Cat-vLLM 1.2.1 AWQ + fp8 KV | **21.4** | 98K | yes |
 | **vLLM 高并发** | 1Cat-vLLM 1.2.0 AWQ | **60.5** (5 并发合计) | 20K | no |
+| **FastLLM 单序列 exact 256K 容量** | FastLLM IQ4_XS + MTP9 + FP8 E4M3 KV | — (冷 261,888-token prefill) | 256K | 未验证 |
 
 > 4×140K 配置在真实 agent 负载中, agent 通常是轮流工作而非同时生成。1-2 个 agent 活跃时单 agent 约 30 tok/s; 只有 4 个 agent 同时在 140K context 上并发解码时才会降到 5.5 tok/s (attention 计算量随 context 平方增长)。这个配置的核心价值是 "4 个 agent 各自拥有 140K 上下文", 这是单 V100-32GB 上能达到的最大并发 × 上下文组合。
+
+> FastLLM这一行是exact-window容量验证,不是与多轮steady-state tok/s的直接排名:256K请求以261,888-token冷prompt + 256-token decode完成,E2E 745.467 s,采样显存峰值31,088 MiB。完整worktree/git历史审计显示:既有native split-KV是5月已进入上游的FastLLM baseline,不是本次FlashInfer-SM70移植;当前PR真正落地的是`b693ad8`的Flash-Attention-V100式GQA6 XQA,其单层microbenchmark比原route快2.22×/3.37×/4.03× (8K/32K/128K KV)。FlashInfer-SM70 backend/prefill kernel未进入当前worktree,不声明其FastLLM性能。长上下文artifact早于最后的XQA commit,最终分支仍需重跑完整exact-window矩阵;详见[`docs/fastllm_benchmark.md`](docs/fastllm_benchmark.md)。
 
 ### V100 上的核心限制
 
@@ -63,7 +66,9 @@
 ├── README.md                           # 本文件
 ├── thinking_proxy.py                   # Thinking Proxy: API 翻译 + 认证 + 进程管理
 ├── docs/
-│   ├── performance.md                  # 完整性能报告 (18 个章节, 含所有实测数据)
+│   ├── performance.md                  # 完整性能报告 (19 个章节, 含所有实测数据)
+│   ├── fastllm_benchmark.md            # FastLLM exact-window、MTP9 与 SM70 XQA
+│   ├── HANDOFF_fastllm.md              # FastLLM 上游 PR 与部署交接状态
 │   └── EXPERIENCE.md                   # 经验总结: SM70 踩坑、构建、调优
 ├── scripts/
 │   ├── start_proxy.sh                  # Thinking Proxy 启动 (管理 llama-server)
@@ -80,6 +85,8 @@
 │   ├── vllm-120/                       # 1.2.0 结果 (1/2/4 agents)
 │   ├── vllm-121/                       # 1.2.1 结果 (1/2/4 agents)
 │   ├── llama-nospec/                   # llama.cpp no-spec 结果
+│   ├── fastllm/
+│   │   └── results/                    # FastLLM exact-window 与 XQA JSON artifact
 │   └── turboquant/
 │       ├── results/                    # 所有 TurboQuant JSON 结果
 │       └── logs/                       # 所有 TurboQuant 服务器日志
