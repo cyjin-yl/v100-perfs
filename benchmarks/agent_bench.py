@@ -51,6 +51,8 @@ TINY_PNG_B64 = (
     "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=="
 )
 
+API_KEY_ENV = ""
+
 
 def now() -> float:
     return time.perf_counter()
@@ -79,10 +81,16 @@ def call_chat(
         "stream_options": {"include_usage": True},
     }
     data = json.dumps(body).encode()
+    headers = {"Content-Type": "application/json"}
+    if API_KEY_ENV:
+        api_key = os.environ.get(API_KEY_ENV, "")
+        if not api_key:
+            raise RuntimeError(f"API key environment variable {API_KEY_ENV} is empty")
+        headers["Authorization"] = f"Bearer {api_key}"
     req = urllib.request.Request(
         f"{endpoint}/v1/chat/completions",
         data=data,
-        headers={"Content-Type": "application/json"},
+        headers=headers,
         method="POST",
     )
     start = now()
@@ -458,19 +466,25 @@ def run_agents(
         threads: list[threading.Thread] = []
         per_agent_results: list[TurnResult] = []
         lock = threading.Lock()
+        worker_errors: list[Exception] = []
 
         def worker(agent: AgentRun) -> None:
-            # 30% of each prompt is unique recent conversation; shared prefix is cached
-            result = run_one_turn(
-                agent,
-                endpoint,
-                model,
-                shared_system,
-                shared_prefix_text,
-                compact_threshold,
-                max_model_len,
-                max_tokens,
-            )
+            try:
+                # 30% of each prompt is unique recent conversation; shared prefix is cached
+                result = run_one_turn(
+                    agent,
+                    endpoint,
+                    model,
+                    shared_system,
+                    shared_prefix_text,
+                    compact_threshold,
+                    max_model_len,
+                    max_tokens,
+                )
+            except Exception as error:
+                with lock:
+                    worker_errors.append(error)
+                return
             with lock:
                 per_agent_results.append(result)
 
@@ -480,6 +494,8 @@ def run_agents(
             t.start()
         for t in threads:
             t.join()
+        if worker_errors:
+            raise worker_errors[0]
 
         all_results.extend(per_agent_results)
         for r in per_agent_results:
@@ -565,7 +581,12 @@ def main() -> int:
     parser.add_argument("--warmup-turns", type=int, default=1, help="Number of initial turns per agent to discard as warmup")
     parser.add_argument("--output", default="/tmp/agent_bench_result.json")
     parser.add_argument("--wait-for-server", action="store_true")
+    parser.add_argument(
+        "--api-key-env", default="",
+        help="Read the bearer token from this environment variable; never stored in artifacts")
     args = parser.parse_args()
+    global API_KEY_ENV
+    API_KEY_ENV = args.api_key_env
 
     if args.wait_for_server:
         if not wait_for_health(args.endpoint):
