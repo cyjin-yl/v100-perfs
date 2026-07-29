@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Thinking Proxy for llama-server.
+Thinking Proxy for llama-server (default) or an external FastLLM backend.
 
 - OpenAI /v1/chat/completions: transparent passthrough, maps reasoning_effort
   to chat_template_kwargs.enable_thinking.
@@ -9,6 +9,26 @@ Thinking Proxy for llama-server.
 - Auth: Bearer token (OpenAI) or x-api-key (Anthropic).
   Tailscale (100.64.0.0/10) and localhost bypass auth.
 - Process manager: starts, health-checks, and auto-restarts llama-server.
+  In FastLLM mode the proxy NEVER spawns a backend; it only health-checks the
+  external FastLLM endpoint (see env below).
+
+Backend selection (env-driven; default is llama-server):
+  FASTLLM_BACKEND_URL   When set (e.g. http://127.0.0.1:8002) the proxy's
+                        "local" backend becomes this external FastLLM OpenAI
+                        endpoint instead of the self-managed llama-server.
+                        FastLLM is managed out-of-band (e.g. a tmux session)
+                        and is never spawned by this proxy.
+  FASTLLM_MODEL_SLUG    Backend slug sent in outbound payloads; never exposed
+                        to clients. Default "qwen3.6-fastllm".
+  FASTLLM_PUBLIC_ALIASES  Comma-separated public model names that route to
+                        FastLLM. Default "qwen3.6-27b-heretic,qwen3.6-27b-awq".
+                        They are kept public in /v1/models and in responses;
+                        only the outbound payload model field is rewritten to
+                        the slug. local-only heretic/Fable requests never
+                        silently fall through to cloud providers.
+
+When FASTLLM_BACKEND_URL is unset, behavior is unchanged from the original
+llama-server proxy.
 
 Run:  python thinking_proxy.py
   or:  uvicorn thinking_proxy:app --host 0.0.0.0 --port 8000
@@ -28,6 +48,7 @@ import sys
 import time
 import uuid
 from collections import OrderedDict
+from urllib.parse import urlparse
 from pathlib import Path
 
 import httpx
@@ -37,6 +58,8 @@ from fastapi.responses import JSONResponse, Response, StreamingResponse
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import ClientDisconnect
 from starlette.responses import JSONResponse as _StarletteJSONResponse, Response
+
+from fastllm_adapter import adapt_fastllm_response, prepare_fastllm_body
 
 # ─── Config ─────────────────────────────────────────────────────
 
@@ -67,7 +90,29 @@ ZEN_MODELS = os.environ.get("ZEN_MODELS", "[]")
 
 CC_SWITCH_BASE_URL = os.environ.get("CC_SWITCH_BASE_URL", "http://127.0.0.1:15721")
 
-BACKEND_URL = f"http://127.0.0.1:{BACKEND_PORT}"
+# ── FastLLM backend (optional, externally managed) ─────────────
+FASTLLM_BACKEND_URL = os.environ.get("FASTLLM_BACKEND_URL", "").rstrip("/")
+FASTLLM_MODEL_SLUG = os.environ.get("FASTLLM_MODEL_SLUG", "qwen3.6-fastllm")
+FASTLLM_PUBLIC_ALIASES = {
+    s.strip() for s in os.environ.get(
+        "FASTLLM_PUBLIC_ALIASES", "qwen3.6-fastllm"
+    ).split(",") if s.strip()
+}
+FASTLLM_ENABLED = bool(FASTLLM_BACKEND_URL)
+FASTLLM_MODE = FASTLLM_ENABLED
+FASTLLM_CHAT_TEMPLATE = Path(os.environ.get(
+    "FASTLLM_CHAT_TEMPLATE",
+    os.path.join(PROJECT_DIR, "chat_templates", "qwen3.6_merged.jinja"),
+))
+LLAMA_ENABLED = os.environ.get("LLAMA_ENABLED", "1") == "1"
+if FASTLLM_MODE and QUEUE_TIMEOUT < 600:
+    QUEUE_TIMEOUT = 600
+
+if FASTLLM_MODE:
+    BACKEND_URL = FASTLLM_BACKEND_URL
+else:
+    BACKEND_URL = f"http://127.0.0.1:{BACKEND_PORT}"
+BACKEND_HEALTH_PATH = "/health"
 TAILSCALE_NET = ipaddress.ip_network("100.64.0.0/10")
 
 LLAMA_BINARY = os.path.join(
@@ -251,7 +296,90 @@ MODEL_HERETIC = "qwen3.6-27b-heretic"
 def route_for_model(model: str) -> dict:
     if MODEL_HERETIC in model:
         return {"local_only": True, "priority": 0}
+    if FASTLLM_MODE and _is_fastllm_alias(model):
+        # FastLLM is the local backend; keep it local-only so heretic/Fable
+        # requests never silently spill to cloud fallbacks.
+        return {"local_only": True, "priority": 0}
     return {"local_only": False, "priority": 1}
+
+
+def _is_fastllm_alias(model: str) -> bool:
+    """True when a public model name should route to the FastLLM backend."""
+    if not model:
+        return False
+    if model == FASTLLM_MODEL_SLUG:
+        return True
+    return any(alias in model for alias in FASTLLM_PUBLIC_ALIASES)
+
+
+def _to_backend_model(public_model: str) -> str:
+    """Rewrite a public alias to the configured FastLLM backend slug in
+    outbound payloads. Leaves other model names (incl. cloud models) intact."""
+    if FASTLLM_MODE and _is_fastllm_alias(public_model):
+        return FASTLLM_MODEL_SLUG
+    return public_model
+
+
+def _to_public_model(backend_model: str, requested_model: str) -> str:
+    """Restore the public model name the caller actually requested in responses,
+    hiding the internal backend slug. Only rewrites when we are in FastLLM mode
+    and the request targeted a FastLLM alias."""
+    if FASTLLM_MODE and backend_model == FASTLLM_MODEL_SLUG and requested_model:
+        return requested_model
+    return backend_model
+
+
+def _rewrite_local_response(resp, requested_model: str):
+    """Restore the public model name in a non-streaming local-backend response
+    when serving FastLLM. Returns a FastAPI Response preserving status, content
+    type and body. No-op outside FastLLM mode or for non-JSON bodies."""
+    if not (FASTLLM_MODE and requested_model and resp.status_code == 200):
+        return resp
+    ctype = resp.headers.get("content-type", "")
+    if "json" not in ctype:
+        return resp
+    try:
+        data = json.loads(resp.body)
+    except (json.JSONDecodeError, TypeError, UnicodeDecodeError):
+        return resp
+    if isinstance(data, dict) and data.get("model") == FASTLLM_MODEL_SLUG:
+        data["model"] = requested_model
+        return JSONResponse(data)
+    return resp
+
+
+def _rewrite_stream_model(event: bytes, public_model: str) -> bytes:
+    """Restore the public model in one complete OpenAI SSE event."""
+    if not (FASTLLM_MODE and public_model):
+        return event
+    separator = b"\r\n\r\n" if event.endswith(b"\r\n\r\n") else b"\n\n"
+    lines = event[:-len(separator)].splitlines() if event.endswith(separator) else event.splitlines()
+    data_lines = [line[5:].lstrip() for line in lines if line.startswith(b"data:")]
+    if not data_lines:
+        return event
+    payload = b"\n".join(data_lines)
+    if payload == b"[DONE]":
+        return event
+    try:
+        data = json.loads(payload)
+    except (json.JSONDecodeError, UnicodeDecodeError):
+        return event
+    if not isinstance(data, dict) or data.get("model") != FASTLLM_MODEL_SLUG:
+        return event
+    data["model"] = public_model
+    return (b"data: " + json.dumps(data, ensure_ascii=False,
+                                    separators=(",", ":")).encode()
+            + separator)
+
+
+def _restore_public_model(oai: dict, requested_model: str) -> dict:
+    """Restore the public model name in a parsed OpenAI completion dict (used
+    before Anthropic conversion) when serving FastLLM."""
+    if (FASTLLM_MODE and isinstance(oai, dict)
+            and oai.get("model") == FASTLLM_MODEL_SLUG and requested_model):
+        oai["model"] = requested_model
+    return oai
+
 
 def parse_or_models(raw: str) -> list[dict]:
     try:
@@ -491,9 +619,24 @@ class BackendScheduler:
             _, item = await self._queue.get()
             self.active += 1
             try:
-                async with httpx.AsyncClient(timeout=600) as c:
+                outbound = item.body
+                if FASTLLM_MODE:
+                    outbound = prepare_fastllm_body(item.body, FASTLLM_CHAT_TEMPLATE)
+                async with httpx.AsyncClient(timeout=QUEUE_TIMEOUT + 60) as c:
                     resp = await c.post(
-                        f"{BACKEND_URL}/v1/chat/completions", json=item.body)
+                        f"{BACKEND_URL}/v1/chat/completions", json=outbound)
+                    if FASTLLM_MODE and resp.status_code == 200:
+                        try:
+                            adapted = adapt_fastllm_response(resp.json())
+                            resp = httpx.Response(
+                                status_code=200,
+                                content=json.dumps(adapted).encode(),
+                                headers={**resp.headers,
+                                         "content-type": "application/json"},
+                                request=resp.request,
+                            )
+                        except Exception:
+                            pass
                     item.response = resp
                     item.event.set()
             except Exception as e:
@@ -864,6 +1007,21 @@ async def _pick_backend(body: dict) -> str:
     return best
 
 
+async def _tcp_backend_ready(timeout: float = 3) -> bool:
+    """TCP readiness for backends without an HTTP /health endpoint (FastLLM)."""
+    from urllib.parse import urlparse
+    parsed = urlparse(BACKEND_URL)
+    host = parsed.hostname or "127.0.0.1"
+    port = parsed.port or 80
+    try:
+        _, writer = await asyncio.wait_for(
+            asyncio.open_connection(host, port), timeout=timeout)
+        writer.close()
+        await writer.wait_closed()
+        return True
+    except Exception:
+        return False
+
 # ─── Process manager ────────────────────────────────────────────
 
 class LlamaManager:
@@ -874,9 +1032,17 @@ class LlamaManager:
         self._adopted = False
 
     async def start(self):
+        if FASTLLM_MODE:
+            # External FastLLM backend — never spawn; only health-probe it.
+            self._adopted = True
+            self.proc = None
+            asyncio.create_task(self.monitor())
+            print(f"[manager] FastLLM backend {BACKEND_URL} configured; "
+                  f"llama-server spawn disabled", flush=True)
+            return
         try:
             async with httpx.AsyncClient(timeout=3) as c:
-                r = await c.get(f"{BACKEND_URL}/health")
+                r = await c.get(f"{BACKEND_URL}{BACKEND_HEALTH_PATH}")
                 if r.status_code in (200, 503):
                     print(f"[manager] adopting existing backend on port {BACKEND_PORT}", flush=True)
                     self.proc = None
@@ -934,7 +1100,7 @@ class LlamaManager:
                     f"llama-server exited early with code {self.proc.returncode}")
             try:
                 async with httpx.AsyncClient() as c:
-                    r = await c.get(f"{BACKEND_URL}/health", timeout=3)
+                    r = await c.get(f"{BACKEND_URL}{BACKEND_HEALTH_PATH}", timeout=3)
                     if r.status_code == 200:
                         BACKEND_READY = True
                         return
@@ -968,12 +1134,15 @@ class LlamaManager:
                 continue
 
             try:
-                async with httpx.AsyncClient() as c:
-                    r = await c.get(
-                        f"{BACKEND_URL}/health", timeout=HEALTH_TIMEOUT)
-                    BACKEND_READY = r.status_code == 200
-                    if r.status_code not in (200, 503):
-                        print(f"[manager] unexpected health status {r.status_code}", flush=True)
+                if FASTLLM_MODE:
+                    BACKEND_READY = await _tcp_backend_ready(timeout=HEALTH_TIMEOUT)
+                else:
+                    async with httpx.AsyncClient() as c:
+                        r = await c.get(
+                            f"{BACKEND_URL}{BACKEND_HEALTH_PATH}", timeout=HEALTH_TIMEOUT)
+                        BACKEND_READY = r.status_code == 200
+                        if r.status_code not in (200, 503):
+                            print(f"[manager] unexpected health status {r.status_code}", flush=True)
             except Exception:
                 pass
             backoff = 5
@@ -1146,6 +1315,10 @@ async def openai_chat(request: Request):
             body.setdefault("reasoning", {})["budget"] = budget
 
     _convert_images(body.get("messages", []))
+    requested_model = body.get("model", "")
+    # Route public aliases to the FastLLM backend slug on outbound payloads.
+    if requested_model:
+        body["model"] = _to_backend_model(requested_model)
 
     route = route_for_model(body.get("model", ""))
     is_heretic = route["local_only"]
@@ -1180,7 +1353,10 @@ async def openai_chat(request: Request):
                             pass
             return JSONResponse({"error": "all backends busy"}, status_code=503)
         return StreamingResponse(
-            _local_stream(f"{BACKEND_URL}/v1/chat/completions", body, request),
+            _local_stream(
+                f"{BACKEND_URL}/v1/chat/completions", body, request,
+                requested_model, allow_fallback=not is_heretic,
+            ),
             media_type="text/event-stream",
         )
 
@@ -1199,8 +1375,10 @@ async def openai_chat(request: Request):
         prefix_tracker.reserve(body.get("messages", []))
         try:
             resp = await scheduler.submit(body, priority, timeout=QUEUE_TIMEOUT * 2)
-            return Response(content=resp.content, status_code=resp.status_code,
-                          media_type=resp.headers.get("content-type", "application/json"))
+            return _rewrite_local_response(
+                Response(content=resp.content, status_code=resp.status_code,
+                         media_type=resp.headers.get("content-type", "application/json")),
+                requested_model)
         except asyncio.TimeoutError:
             return JSONResponse({"error": "local backend busy, retry later"}, status_code=503)
         except (httpx.ConnectError, httpx.TimeoutException):
@@ -1215,8 +1393,10 @@ async def openai_chat(request: Request):
             to = QUEUE_TIMEOUT * 2 if is_heretic else 1
             resp = await scheduler.submit(body, priority, timeout=to)
             if resp.status_code == 200:
-                return Response(content=resp.content, status_code=200,
-                              media_type=resp.headers.get("content-type", "application/json"))
+                return _rewrite_local_response(
+                    Response(content=resp.content, status_code=200,
+                             media_type=resp.headers.get("content-type", "application/json")),
+                    requested_model)
             print(f"[route] local non-200 {resp.status_code}", flush=True)
         except asyncio.TimeoutError:
             last_err = "local_timeout"
@@ -1285,11 +1465,14 @@ async def anthropic_messages(request: Request):
     stream = body.get("stream", False)
     openai_body = _anthropic_to_openai(body)
     _convert_images(openai_body.get("messages", []))
+    requested_model = openai_body.get("model", "")
+    # Route public aliases to the FastLLM backend slug on outbound payloads.
+    if requested_model:
+        openai_body["model"] = _to_backend_model(requested_model)
 
     route = route_for_model(openai_body.get("model", ""))
     is_heretic = route["local_only"]
     priority = route["priority"]
-
     if stream:
         if not is_heretic and FALLBACK_ENABLED and not BENCHMARK_MODE and _over_context(openai_body):
             try:
@@ -1315,7 +1498,7 @@ async def anthropic_messages(request: Request):
                 return StreamingResponse(_ctx_overflow_stream(), media_type="text/event-stream")
             return JSONResponse({"error": "context exceeds limit, fallback failed"}, status_code=429)
         return StreamingResponse(
-            _anthropic_stream_limited(openai_body, request),
+            _anthropic_stream_limited(openai_body, request, requested_model),
             media_type="text/event-stream",
         )
 
@@ -1337,7 +1520,7 @@ async def anthropic_messages(request: Request):
         try:
             resp = await scheduler.submit(openai_body, priority, timeout=QUEUE_TIMEOUT * 2)
             if resp.status_code == 200:
-                return JSONResponse(_openai_to_anthropic(resp.json()))
+                return JSONResponse(_openai_to_anthropic(_restore_public_model(resp.json(), requested_model)))
             return Response(content=resp.content, status_code=resp.status_code,
                           media_type="application/json")
         except asyncio.TimeoutError:
@@ -1354,7 +1537,7 @@ async def anthropic_messages(request: Request):
             to = QUEUE_TIMEOUT * 2 if is_heretic else 1
             resp = await scheduler.submit(openai_body, priority, timeout=to)
             if resp.status_code == 200:
-                return JSONResponse(_openai_to_anthropic(resp.json()))
+                return JSONResponse(_openai_to_anthropic(_restore_public_model(resp.json(), requested_model)))
             print(f"[route] local non-200 {resp.status_code}", flush=True)
         except asyncio.TimeoutError:
             last_err = "local_timeout"
@@ -1403,11 +1586,15 @@ async def anthropic_count_tokens(request: Request):
     except ClientDisconnect:
         return Response(status_code=499)
     openai_body = _anthropic_to_openai(body)
+    openai_body["model"] = _to_backend_model(openai_body.get("model", ""))
     openai_body["max_tokens"] = 1
     openai_body["stream"] = False
+    count_body = openai_body
+    if FASTLLM_MODE:
+        count_body = prepare_fastllm_body(openai_body, FASTLLM_CHAT_TEMPLATE)
     async with httpx.AsyncClient(timeout=60) as client:
         resp = await client.post(
-            f"{BACKEND_URL}/v1/chat/completions", json=openai_body)
+            f"{BACKEND_URL}/v1/chat/completions", json=count_body)
         data = resp.json()
     usage = data.get("usage", {})
     return JSONResponse({
@@ -1609,14 +1796,41 @@ def _openai_to_anthropic(oai: dict) -> dict:
 
 # ─── Streaming ──────────────────────────────────────────────────
 
-async def _local_stream(url: str, body: dict, request: Request):
+async def _local_stream(
+    url: str,
+    body: dict,
+    request: Request,
+    public_model: str = "",
+    allow_fallback: bool = True,
+):
+    if FASTLLM_MODE:
+        body = prepare_fastllm_body(body, FASTLLM_CHAT_TEMPLATE)
     prefix_tracker.reserve(body.get("messages", []))
     local_failed = False
+    pending = b""
     try:
         async for chunk in _proxy_stream(url, body):
-            yield chunk
+            if FASTLLM_MODE:
+                pending += chunk
+                while True:
+                    crlf_end = pending.find(b"\r\n\r\n")
+                    lf_end = pending.find(b"\n\n")
+                    ends = [end for end in (crlf_end, lf_end) if end >= 0]
+                    if not ends:
+                        break
+                    end = min(ends)
+                    separator = (b"\r\n\r\n"
+                                 if pending.startswith(b"\r\n\r\n", end)
+                                 else b"\n\n")
+                    event_end = end + len(separator)
+                    event, pending = pending[:event_end], pending[event_end:]
+                    yield _rewrite_stream_model(event, public_model)
+            else:
+                yield chunk
             if await request.is_disconnected():
                 return
+        if pending:
+            yield _rewrite_stream_model(pending, public_model)
     except Exception:
         local_failed = True
     finally:
@@ -1630,7 +1844,7 @@ async def _local_stream(url: str, body: dict, request: Request):
             service_history.record("local", True)
 
     if local_failed:
-        if FALLBACK_ENABLED and not BENCHMARK_MODE:
+        if allow_fallback and FALLBACK_ENABLED and not BENCHMARK_MODE:
             try:
                 async for chunk in _nim_stream(body):
                     yield chunk
@@ -1662,7 +1876,7 @@ async def _local_stream(url: str, body: dict, request: Request):
         yield b"data: [DONE]\n\n"
 
 
-async def _anthropic_stream_limited(openai_body: dict, request: Request):
+async def _anthropic_stream_limited(openai_body: dict, request: Request, public_model: str = ""):
     route = route_for_model(openai_body.get("model", ""))
     timeout = QUEUE_TIMEOUT * 2 if route["local_only"] else QUEUE_TIMEOUT
     try:
@@ -1721,7 +1935,7 @@ async def _anthropic_stream_limited(openai_body: dict, request: Request):
     prefix_tracker.reserve(openai_body.get("messages", []))
     local_failed = False
     try:
-        async for chunk in _anthropic_stream(openai_body):
+        async for chunk in _anthropic_stream(openai_body, public_model):
             yield chunk
             if await request.is_disconnected():
                 return
@@ -1791,14 +2005,14 @@ async def _proxy_stream(url: str, body: dict):
                 yield chunk
 
 
-async def _anthropic_stream(openai_body: dict):
+async def _anthropic_stream(openai_body: dict, public_model: str = ""):
     msg_id = f"msg_{uuid.uuid4().hex[:24]}"
 
     yield _sse("message_start", {
         "type": "message_start",
         "message": {
             "id": msg_id, "type": "message", "role": "assistant",
-            "content": [], "model": openai_body.get("model", ""),
+            "content": [], "model": public_model or openai_body.get("model", ""),
             "stop_reason": None, "stop_sequence": None,
             "usage": {"input_tokens": 0, "output_tokens": 0},
         },
@@ -1810,9 +2024,12 @@ async def _anthropic_stream(openai_body: dict):
     in_tokens = 0
     out_tokens = 0
 
+    stream_body = openai_body
+    if FASTLLM_MODE:
+        stream_body = prepare_fastllm_body(openai_body, FASTLLM_CHAT_TEMPLATE)
     async with httpx.AsyncClient(timeout=600) as client:
         async with client.stream(
-            "POST", f"{BACKEND_URL}/v1/chat/completions", json=openai_body
+            "POST", f"{BACKEND_URL}/v1/chat/completions", json=stream_body
         ) as resp:
             async for line in resp.aiter_lines():
                 if not line.startswith("data: "):
@@ -1895,6 +2112,32 @@ def _sse(event: str, data: dict) -> str:
     return f"event: {event}\ndata: {json.dumps(data)}\n\n"
 
 
+# ─── Health ────────────────────────────────────────────────────
+
+@app.get("/health")
+async def health(request: Request):
+    """Unified health for whichever local backend is selected (llama-server or
+    the external FastLLM endpoint). Reflects the cached readiness flag by
+    default; pass ?probe=1 for a live check against the backend health path."""
+    ready = BACKEND_READY
+    if request.query_params.get("probe") == "1":
+        try:
+            if FASTLLM_MODE:
+                ready = await _tcp_backend_ready(timeout=HEALTH_TIMEOUT)
+            else:
+                async with httpx.AsyncClient(timeout=HEALTH_TIMEOUT) as client:
+                    r = await client.get(f"{BACKEND_URL}{BACKEND_HEALTH_PATH}")
+                    ready = r.status_code == 200
+        except Exception:
+            ready = False
+    return JSONResponse({
+        "status": "ok" if ready else "loading",
+        "backend": "fastllm" if FASTLLM_MODE else "llama",
+        "backend_url": BACKEND_URL,
+        "ready": ready,
+    })
+
+
 # ─── Pass-through ───────────────────────────────────────────────
 
 @app.api_route(
@@ -1946,6 +2189,11 @@ async def _shutdown():
 if __name__ == "__main__":
     print(f"[proxy] starting on {PROXY_HOST}:{PROXY_PORT}, "
           f"backend on port {BACKEND_PORT}", flush=True)
+    if FASTLLM_MODE:
+        print(f"[proxy] FastLLM backend: {BACKEND_URL} (slug {FASTLLM_MODEL_SLUG}, "
+              f"aliases {FASTLLM_PUBLIC_ALIASES}); llama-server spawn disabled", flush=True)
+    else:
+        print(f"[proxy] local backend: llama-server", flush=True)
     print(f"[proxy] auth token: {'set' if AUTH_TOKEN else 'EMPTY - INSECURE'}", flush=True)
     print(f"[proxy] tailscale + localhost bypass auth", flush=True)
 
