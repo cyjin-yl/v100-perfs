@@ -3,7 +3,7 @@
 > 硬件: 1× Tesla V100-PCIE-32GB (SM70, 32GB VRAM)
 > 模型: Qwen3.6-27B-AWQ (4-bit, 混合注意力架构: 16 full_attention + 48 linear_attention/GDN)
 > vLLM 分支: 1Cat-vLLM (SM70/V100 适配, FLASH_ATTN_V100 后端)
-> 日期: 2026-06-30 (§17 更新于 2026-07-01)
+> 日期: 2026-06-30 (§17 更新于 2026-07-01; §19 更新于 2026-07-31)
 
 ---
 
@@ -1399,8 +1399,89 @@ FastLLM既有split-KV/state-combine结构与FlashInfer-SM70后来探索的机制
 
 ### 19.4 与TurboQuant 256K的边界
 
-TurboQuant已有历史“2 agents、每slot上限256K、约99% prefix cache hit、多轮并发”结果;FastLLM是“单个冷261,888-token prompt + 256 decode”的exact-window请求。前者能证明压缩KV pool与并发吞吐,后者能证明冷prefill、精确页预算和单请求容量,但不能从两组数字推导引擎直接胜负。
+TurboQuant已有历史"2 agents、每slot上限256K、约99% prefix cache hit、多轮并发"结果;FastLLM是"单个冷261,888-token prompt + 256 decode"的exact-window请求。前者能证明压缩KV pool与并发吞吐,后者能证明冷prefill、精确页预算和单请求容量,但不能从两组数字推导引擎直接胜负。
 
-FastLLM上游实现已提交到 [ztxz16/fastllm#705](https://github.com/ztxz16/fastllm/pull/705),状态为OPEN/CLEAN。仍需在`b693ad8`分支tip重新跑128K/160K/256K exact-window矩阵,补齐最终XQA增量的长上下文端到端证据。性能验证后现场审计显示8000/8001/8002均未监听,FastLLM独立第五后端proxy也仍待完成;本节不宣称服务当前在线。
+FastLLM上游实现已提交到 [ztxz16/fastllm#705](https://github.com/ztxz16/fastllm/pull/705),状态为OPEN/CLEAN。
+
+### 19.5 Hybrid MTP 并发调度 (2026-07-31)
+
+**问题:** batched MTP2 在多请求场景下因 speculative state backup/restore 开销抵消了 batch kernel 收益,C4 聚合吞吐反而低于 C1。
+
+**方案:** 单请求保留 MTP2 (50.85 tok/s),多请求回退 plain batched decode (81.13 tok/s aggregate)。通过 `FASTLLM_QWEN35_BATCHED_MTP=0` 环境变量控制,默认仍为 true。
+
+| 配置 | C1 tok/s | C4 tok/s | C4/C1 |
+|------|---------|---------|-------|
+| Batched MTP2 | 49.22 | 47.57 | 0.97× |
+| Plain MTP0 | 35.88 | 81.06 | 2.26× |
+| **Hybrid (生产)** | **50.85** | **81.13** | **1.60×** |
+
+Hybrid C4 vs batched MTP2 C4: **+70.5%**。
+
+**机器结果:** `benchmarks/fastllm/results/fastllm_hybrid_mtp2_plain_batch_short_decode_c1_c4.json`
+
+### 19.6 Cold prefill 优化 (2026-07-31)
+
+**问题:** prefix snapshot interval 默认 16 pages (2,048 tokens) 强制 chunk=2048,导致 32K C1 TTFT ~40s。
+
+**修复:** 默认改为 64 pages (8,192 tokens),恢复 8K chunk 同时保留 prefix cache。
+
+| 指标 | 修复前 (2K chunk) | 修复后 (8K chunk) | 改善 |
+|------|------------------|------------------|------|
+| 32K C1 TTFT | 40.18 s | **34.40 s** | **-14.4%** |
+| Prefill 吞吐 | ~815 tok/s | **~954 tok/s** | +17% |
+| 峰值 VRAM | 24,746 MiB | 28,092 MiB | +13.5% |
+
+**机器结果:** `benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c1_32k_http_native_fp8_interleave_8k.json`
+
+### 19.7 Long-prefill interleave 公平性 (2026-07-31)
+
+**修复:** interleave 路径的 `Split` 产物 `cpuData=nullptr` 导致 SIGSEGV;修复后 C2 32K 两请求 TTFT 80.27/80.61s,spread 仅 **0.34s** (此前 staircase ~37s)。
+
+| 指标 | 值 |
+|------|-----|
+| C2 TTFT | 80.27 / 80.61 s |
+| TTFT spread | **0.34 s** |
+| Batch wall | 87.57 s |
+| 峰值 VRAM | 24,862 MiB |
+
+**注意:** interleave 改善的是公平性和取消粒度,不是总计算吞吐。
+
+**机器结果:** `benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c2_32k_http_native_fp8_interleave_batch5.json`
+
+### 19.8 FP8 共享池多并发容量 (2026-07-31)
+
+4×~52K prompt (合计 207,807 prompt + 256 completion tokens),FP8 E4M3 KV,interleave 8K chunk:
+
+| 指标 | 值 |
+|------|-----|
+| HTTP 状态 | 4× 200 |
+| finish_reason | 4× length |
+| Batch wall | 262.25 s |
+| TTFT 范围 | 225.94 – 239.73 s |
+| TTFT spread | 13.80 s |
+| 峰值 VRAM | **29,150 MiB** |
+| Malformed SSE | 0 |
+
+4×~60K (~240K total pool) 也在服务端全部完成且无 OOM/SIG,但缺完整客户端 usage artifact,仅作上界佐证。
+
+**机器结果:** `benchmarks/fastllm/results/fastllm_mtp2_fp8_208k_pool_c4_interleave_8k.json`
+
+### 19.9 生产配置 (2026-07-31)
+
+```bash
+FASTLLM_QWEN35_ENABLE_MTP=2 \
+FASTLLM_QWEN35_BATCHED_MTP=0 \
+FASTLLM_QWEN35_INTERLEAVE_LONG_PREFILL=1 \
+FASTLLM_QWEN35_MTP_PROFILE=2 \
+FASTLLM_CUDA_SM70_PAGED_XQA=1 \
+FASTLLM_CUDA_SM70_FLASH_ATTN=0 \
+./apiserver -p <model.gguf> -t 2 -l --atype float16 \
+  --kv_cache_dtype fp8_e4m3 --batch 5 --tokens 262144 \
+  --model_name qwen3.6-fastllm --port 8002 --device cuda --cuda_embedding
+```
+
+运行时 banner: `chunk=8192, decode_lanes=4, resident_lanes=4`。
+
+Thinking Proxy (`:8000`) → FastLLM (`:8002`) 链路已验证:非流式 HTTP 200 + 精确内容,流式 25 SSE events / 0 malformed / 1 `[DONE]`。
 
 ---
