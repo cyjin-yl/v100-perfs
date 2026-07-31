@@ -1,0 +1,166 @@
+{
+  "date": "2026-07-31",
+  "hardware": {
+    "gpu": "Tesla V100-PCIE-32GB",
+    "compute_capability": "SM70",
+    "vram_mib": 32768
+  },
+  "model": {
+    "name": "Qwen3.6-27B Fable Fusion",
+    "format": "GGUF IQ4_XS with one MTP layer",
+    "trunk_layers": 64,
+    "full_attention_layers": 16,
+    "linear_attention_layers": 48,
+    "kv_heads": 4,
+    "head_dim": 256
+  },
+  "implementation": {
+    "backend": "FastLLM native CUDA paged KV cache",
+    "llama_cpp_backend": false,
+    "activation_dtype": "float16",
+    "full_attention_k_dtype": "q8_0_kv",
+    "full_attention_v_dtype": "turbo3_kv",
+    "linear_attention_cache_dtype": "float16",
+    "k_row_bytes": 272,
+    "v_row_bytes": 100,
+    "packed_bytes_per_token": 23808,
+    "fp16_bytes_per_token": 65536,
+    "packed_to_fp16_ratio": 0.36328125,
+    "attention_compute": "bounded chunk dequantization to FP16 followed by cuBLAS attention",
+    "cuda_graph": false,
+    "enablement": {
+      "cli": "--kv_cache_dtype turbo3",
+      "environment": "FASTLLM_QWEN35_TURBO3_KV=1"
+    }
+  },
+  "capacity_profile": {
+    "token_pool": 524288,
+    "page_tokens": 128,
+    "pool_pages": 4096,
+    "batch": 2,
+    "mtp": 0,
+    "cuda_embedding": false,
+    "long_prefill_interleave": true,
+    "prefix_snapshot_interval_pages": 16,
+    "prefill_quantum_tokens": 2048,
+    "sm70_paged_xqa": true,
+    "experimental_sm70_flash_attention": false
+  },
+  "exact_request": {
+    "prompt_tokens": 261888,
+    "completion_limit": 256,
+    "total_window_tokens": 262144,
+    "termination": "length",
+    "raw_prompt_fixed_overhead_tokens": 43,
+    "prompt_unit": "leading-space a or b, each calibrated to exactly one token"
+  },
+  "single_exact_256k": {
+    "status": "PASS",
+    "http_status": 200,
+    "e2e_seconds": 890.21,
+    "sampled_vram_peak_mib": 28596,
+    "sse_json_events": 258,
+    "malformed_events": 0,
+    "done_count": 1,
+    "usage": {
+      "prompt_tokens": 261888,
+      "completion_tokens": 256,
+      "total_tokens": 262144
+    },
+    "finish_reason": "length",
+    "output": "integer continuation starts at 4 and increases monotonically",
+    "special_token_leak": false
+  },
+  "concurrent_exact_256k_c2": {
+    "status": "PASS",
+    "clean_process": true,
+    "independent_prefixes": ["leading-space a", "leading-space b"],
+    "prefix_page_sharing_possible": false,
+    "batch_wall_seconds": 1711.95,
+    "sampled_vram_peak_mib": 28798,
+    "requests": [
+      {
+        "id": "A",
+        "http_status": 200,
+        "sse_json_events": 258,
+        "sse_events_including_done": 259,
+        "malformed_events": 0,
+        "done_count": 1,
+        "usage": {
+          "prompt_tokens": 261888,
+          "completion_tokens": 256,
+          "total_tokens": 262144
+        },
+        "finish_reason": "length",
+        "output": "integer continuation starts at 4 and increases monotonically through 68",
+        "special_token_leak": false
+      },
+      {
+        "id": "B",
+        "http_status": 200,
+        "sse_json_events": 258,
+        "sse_events_including_done": 259,
+        "malformed_events": 0,
+        "done_count": 1,
+        "usage": {
+          "prompt_tokens": 261888,
+          "completion_tokens": 256,
+          "total_tokens": 262144
+        },
+        "finish_reason": "length",
+        "output": "integer continuation starts at 4 and increases monotonically through 68",
+        "special_token_leak": false
+      }
+    ],
+    "server_cuda_oom_or_signal_errors": 0
+  },
+  "production_acceptance": {
+    "topology": "Thinking Proxy :8000 -> FastLLM :8002",
+    "experimental_port_8003_listening": false,
+    "native_8002": {
+      "http_status": 200,
+      "malformed_events": 0,
+      "done_count": 1,
+      "finish_reason": "stop",
+      "usage": {
+        "prompt_tokens": 42,
+        "completion_tokens": 12,
+        "total_tokens": 54
+      },
+      "content": "4",
+      "special_token_leak": false
+    },
+    "thinking_proxy_8000": {
+      "non_stream_http_status": 200,
+      "stream_http_status": 200,
+      "stream_events_including_done": 21,
+      "stream_malformed_events": 0,
+      "stream_done_count": 1,
+      "finish_reason": "stop",
+      "usage": {
+        "prompt_tokens": 41,
+        "completion_tokens": 27,
+        "total_tokens": 68
+      },
+      "content": "4",
+      "reasoning_content_present": true,
+      "special_token_leak": false
+    }
+  },
+  "known_capacity_failures": [
+    {
+      "profile": "525312-token pool, MTP2, CUDA embedding, 8192-token prefill quantum",
+      "result": "OOM during temporary activation allocation"
+    },
+    {
+      "profile": "525312-token pool, MTP0, CPU embedding, 8192-token prefill quantum",
+      "result": "OOM during delayed large weight materialization"
+    }
+  ],
+  "notes": [
+    "The 524288-token pool is exactly two 262144-token lanes; production batch is limited to two.",
+    "The C2 test started from a fresh FastLLM process and used distinct first pages, so prefix-trie sharing could not reduce physical page use.",
+    "This is a correctness and capacity result. It is not a direct low-bit attention throughput claim.",
+    "The FP8 plus MTP2 plus CUDA embedding plus 8192-token chunk profile remains the short-context speed profile and is reported separately."
+  ]
+}

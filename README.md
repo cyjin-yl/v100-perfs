@@ -2,7 +2,7 @@
 
 在单块 Tesla V100-PCIE-32GB (SM70) 上对 **Qwen3.6-27B** 混合注意力模型进行的多引擎性能基准测试。
 
-覆盖 vLLM (1Cat-vLLM 1.2.0/1.2.1)、llama.cpp (上游 + TurboQuant fork)、推测解码 (DFlash/MTP)、多种量化级别和 KV cache 压缩方案。
+覆盖 vLLM (1Cat-vLLM 1.2.0/1.2.1)、llama.cpp（上游 + TurboQuant fork）、FastLLM 原生 TurboQuant/paged KV、推测解码（DFlash/MTP）、多种量化级别和 KV cache 压缩方案。
 
 ## 硬件
 
@@ -46,14 +46,17 @@
 | **FastLLM 短上下文混合调度** | IQ4_XS + 单请求 MTP2 / 多请求 plain batch + FP8 KV | **50.85** (单请求) / **81.13** (4 并发合计) | 262K 共享池 | 未验证 |
 | **FastLLM FP8 多并发容量** | IQ4_XS + 8K chunk + long-prefill interleave | — (4×约 52K，合计 207,807 prompt tokens) | 262K 共享池 | 未验证 |
 | **FastLLM 单序列 exact 256K 容量** | FastLLM IQ4_XS + MTP9 + FP8 E4M3 KV | — (冷 261,888-token prefill) | 256K | 未验证 |
+| **FastLLM 双序列 exact 256K 容量** | FastLLM 原生 Turbo3：IQ4_XS + K Q8_0 / V Turbo3 + MTP0 | —（双路冷 exact-window 容量验证） | **2×256K** | 未验证 |
 
 > 4×140K 配置在真实 agent 负载中, agent 通常是轮流工作而非同时生成。1-2 个 agent 活跃时单 agent 约 30 tok/s; 只有 4 个 agent 同时在 140K context 上并发解码时才会降到 5.5 tok/s (attention 计算量随 context 平方增长)。这个配置的核心价值是 "4 个 agent 各自拥有 140K 上下文", 这是单 V100-32GB 上能达到的最大并发 × 上下文组合。
 
 > FastLLM这一行是exact-window容量验证,不是与多轮steady-state tok/s的直接排名:256K请求以261,888-token冷prompt + 256-token decode完成,E2E 745.467 s,采样显存峰值31,088 MiB。完整worktree/git历史审计显示:既有native split-KV是5月已进入上游的FastLLM baseline,不是本次FlashInfer-SM70移植;当前PR真正落地的是`b693ad8`的Flash-Attention-V100式GQA6 XQA,其单层microbenchmark比原route快2.22×/3.37×/4.03× (8K/32K/128K KV)。FlashInfer-SM70 backend/prefill kernel未进入当前worktree,不声明其FastLLM性能。长上下文artifact早于最后的XQA commit,最终分支仍需重跑完整exact-window矩阵;详见[`docs/fastllm_benchmark.md`](docs/fastllm_benchmark.md)。
 
-> FastLLM 最新生产配置保留单请求 MTP2，并用 `FASTLLM_QWEN35_BATCHED_MTP=0` 让多请求走 plain batched decode；短 decode 的 4 并发 aggregate 从 batched MTP2 的 47.57 tok/s 提升到 81.13 tok/s，同时单请求保持 50.85 tok/s。`--batch 5` 现在同时传给 HTTP worker 和模型 scheduler；运行时 route 为 `chunk=8192, decode_lanes=4, resident_lanes=4`。
+> FastLLM 的 **FP8 速度 profile** 保留单请求 MTP2，并用 `FASTLLM_QWEN35_BATCHED_MTP=0` 让多请求走 plain batched decode；短 decode 的 4 并发 aggregate 从 batched MTP2 的 47.57 tok/s 提升到 81.13 tok/s，同时单请求保持 50.85 tok/s。`--batch 5` 同时传给 HTTP worker 和模型 scheduler；运行时 route 为 `chunk=8192, decode_lanes=4, resident_lanes=4`。当前 `:8002` 生产服务则是下述 Turbo3 容量 profile。
 
-> FastLLM 的 262K 与 Turbo4 的 256K 都是总共享池容量，不是每请求容量。FastLLM 正式 C4 容量结果为 4×约 52K，合计 207,807 prompt tokens，峰值 29,150 MiB；更高的 4×约 60K 仅保留“服务端四请求完成、无 OOM/SIG”的上界证据。Turbo4 的 256K 多并发结果实际使用 K=`q8_0`、V=`turbo4`。
+> FastLLM 的 262K 只指 FP8 速度配置的总共享池，不是每请求容量：正式 C4 结果为 4×约 52K，合计 207,807 prompt tokens，峰值 29,150 MiB；更高的 4×约 60K 仅保留“服务端四请求完成、无 OOM/SIG”的上界证据。FastLLM 原生 Turbo3 容量配置改为 524,288-token 共享池，并已从干净进程用两个不同首 page 的 prompt 完成 **2× exact 256K**：每路 usage 均为 261,888 prompt + 256 completion = 262,144，batch wall 1,711.95s，峰值 28,798 MiB。Turbo4 的 llama.cpp 256K 多并发结果实际使用 K=`q8_0`、V=`turbo4`。
+
+> FastLLM 当前生产链路为 Thinking Proxy `:8000` → FastLLM `:8002`，运行 Turbo3 容量 profile：`--kv_cache_dtype turbo3 --tokens 524288 --batch 2`，并显式设置 `FASTLLM_QWEN35_TURBO3_KV=1`。16 个 full-attention 层使用 K=`Q8_0_KV`、V=`TURBO3_KV`；48 个 linear-attention/GDN 层保持 FP16 recurrent state。首版 packed attention 按 bounded chunk 解压到 FP16 后复用 cuBLAS，因此这是容量/正确性结果，不是低比特直接计算的吞吐声明。
 
 ### V100 上的核心限制
 

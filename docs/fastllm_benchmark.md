@@ -7,12 +7,12 @@
 
 ## 结论摘要
 
-FastLLM 已能在单块 V100-32GB 上完整运行这份 Qwen3.6 27B GGUF，包括 IQ4_XS 权重、混合 full-attention/GDN、FP8 E4M3 KV、SM70 原生 paged XQA 和 MTP。当前实测最优生产策略不是“所有并发都启用 MTP”，而是：
+FastLLM 已能在单块 V100-32GB 上完整运行这份 Qwen3.6 27B GGUF，包括 IQ4_XS 权重、混合 full-attention/GDN、FP8 E4M3 KV、FastLLM 原生 Turbo3 packed KV、SM70 原生 paged XQA 和 MTP。实测需要把目标拆成两个 profile：
 
-- 单请求保留 MTP2，短 decode 为 **50.85 tok/s**；
-- 多请求显式关闭 batched MTP，改走 plain batched decode，四并发合计 **81.13 tok/s**；
-- long-prefill 使用 8,192-token chunk 和显式 interleave，避免长请求独占 scheduler；
-- 总 KV/token 容量为 262,144-token **共享池**，不是每请求 256K。
+- **速度 profile**：FP8 E4M3 KV、单请求 MTP2、多请求 plain batch、CUDA embedding、8,192-token prefill chunk；短 decode 为 C1 **50.85 tok/s**、C4 **81.13 tok/s aggregate**；
+- **容量 profile（当前生产）**：full-attention K=`Q8_0_KV`、V=`TURBO3_KV`，MTP0、CPU embedding、2,048-token prefill chunk、524,288-token 共享池与 `--batch 2`；
+- 容量 profile 已完成单路 exact 256K，以及从干净进程发起、首 page 不同且不可共享 prefix 的双路 exact 256K；每路都独立使用 262,144 tokens；
+- 两个 profile 的 MTP、embedding、chunk 与 KV 格式不同，不能把速度 profile 的 tok/s 归因给 Turbo3 容量路线。
 
 | 场景 | 配置 | 实测结果 | 结论 |
 |---|---|---:|---|
@@ -23,33 +23,33 @@ FastLLM 已能在单块 V100-32GB 上完整运行这份 Qwen3.6 27B GGUF，包�
 | 32K 冷 prefill，单请求 | prefix cache 开、8K snapshot interval | TTFT 34.40s，约 954 prompt tok/s | 基本追平 cache-off 基线 |
 | FP8 共享池，四并发 | 4×约 52K prompt | 总 207,807 prompt tokens，峰值 29,150 MiB | 完整协议与容量验收通过 |
 | 单请求 exact 256K | MTP9 + FP8 KV（历史矩阵） | E2E 745.47s，峰值 31,088 MiB | 容量通过，早于最终 XQA commit |
+| 单请求 exact 256K | FastLLM 原生 Turbo3 容量 profile | E2E 890.21s，峰值 28,596 MiB | exact usage、SSE 与输出正确 |
+| 双请求各 exact 256K | FastLLM 原生 Turbo3 容量 profile | batch wall 1,711.95s，峰值 28,798 MiB | 两路均 262,144 tokens，干净进程、独立 prefix |
 
 ## 当前生产配置
 
-生产链路为 Thinking Proxy `:8000` → FastLLM `:8002`。2026-07-31 最终探针确认：非流式与流式请求均为 HTTP 200，`finish_reason=stop`，usage 完整；流式响应为 25 个有效 SSE event、0 malformed、1 个 `[DONE]`，最终内容正确。实验端口 `:8003` 已停止。
+生产链路为 Thinking Proxy `:8000` → FastLLM `:8002`。当前上线的是双 256K 容量 profile，而不是前述 FP8 短上下文速度 profile。实验端口 `:8003` 已停止。
 
 ```bash
-FASTLLM_QWEN35_ENABLE_MTP=2 \
-FASTLLM_QWEN35_BATCHED_MTP=0 \
+FASTLLM_QWEN35_TURBO3_KV=1 \
+FASTLLM_QWEN35_ENABLE_MTP=0 \
 FASTLLM_QWEN35_INTERLEAVE_LONG_PREFILL=1 \
+FASTLLM_PREFIX_CACHE_SNAPSHOT_INTERVAL_PAGES=16 \
 FASTLLM_CUDA_SM70_PAGED_XQA=1 \
 FASTLLM_CUDA_SM70_FLASH_ATTN=0 \
-FASTLLM_QWEN35_MTP_PROFILE=2 \
 ./apiserver \
   -p /path/to/Qwen3.6-27B-IQ4_XS-MTP.gguf \
-  -t 2 -l --atype float16 --kv_cache_dtype fp8_e4m3 \
-  --batch 5 --tokens 262144 \
+  -t 2 -l --atype float16 --kv_cache_dtype turbo3 \
+  --batch 2 --tokens 524288 \
   --model_name qwen3.6-fastllm \
-  --port 8002 --device cuda --cuda_embedding
+  --port 8002 --device cuda
 ```
 
-首请求后的实际 route banner 为：
+Turbo3 必须由 CLI 和环境变量双重显式启用；只传 `--kv_cache_dtype turbo3` 会被门控拒绝。`--batch 2` 把 524,288-token pool 严格约束为两条 262,144-token lane。该配置不带 `--cuda_embedding`，并把 MTP 关闭，以保留 full-pool 下权重延迟加载与 prefill 激活所需的显存余量。
 
-```text
-[Qwen3.5 MTP] interleaved long prefill enabled: chunk=8192, decode_lanes=4, resident_lanes=4.
-```
+速度 profile 仍保留为短上下文吞吐基线：FP8 E4M3、MTP2、`FASTLLM_QWEN35_BATCHED_MTP=0`、CUDA embedding、8K chunk、`--batch 5 --tokens 262144`。它的 50.85/81.13 tok/s 不能直接外推到当前 Turbo3 容量服务。
 
-`FASTLLM_QWEN35_BATCHED_MTP` 默认仍为开启；生产显式设为 `0` 是基于本文 C1/C4 A/B 的 V100 专用选择。`FASTLLM_QWEN35_INTERLEAVE_LONG_PREFILL` 默认关闭，生产显式开启。`FASTLLM_CUDA_SM70_FLASH_ATTN` 必须保持关闭，原因见后文实验结果。
+2026-07-31 最终探针确认：FastLLM `:8002` native 流式请求为 HTTP 200、0 malformed、1 个 `[DONE]`、usage 完整且无 marker 泄漏；经 Thinking Proxy `:8000` 的非流式与流式请求均为 HTTP 200，最终 content 为 `4`，reasoning boundary、usage、`finish_reason=stop` 正确，流式为 21 个 event、0 malformed、1 个 `[DONE]`。
 
 ## 2026-07-31 调度与稳定性改动
 
@@ -157,6 +157,38 @@ TTFT 从 40.18s 降至 34.40s，改善 **14.4%**，并基本追平 cache-off 基
 
 - `benchmarks/fastllm/results/fastllm_mtp2_fp8_208k_pool_c4_interleave_8k.json`
 
+## FastLLM 原生 Turbo3 双 exact 256K
+
+这条路线不使用 llama.cpp 后端。FastLLM 把 packed KV 作为 paged cache 的物理 dtype：16 个 full-attention 层的 K 使用 `Q8_0_KV`，V 使用 `TURBO3_KV`；48 个 linear-attention/GDN 层保留普通 FP16 recurrent state，因为它们是固定状态而不是随 token 增长的 paged KV。
+
+head_dim=256 时，每个 K row 为 272 B，每个 V row 为 100 B。每 token 的 full-attention packed KV 为：
+
+```text
+16 layers × 4 KV heads × (272 + 100) bytes = 23,808 bytes/token
+```
+
+相同部分使用 FP16 K/V 时为 65,536 B/token，因此 packed/FP16 比例为 36.328%。524,288-token pool 的 packed KV 约为 11,904 MiB；相同容量的 FP16 KV 单是 full-attention 部分就需要 32,768 MiB。
+
+| 指标 | 单路 exact 256K | 双路各 exact 256K |
+|---|---:|---:|
+| pool | 524,288 tokens / 4,096 pages | 524,288 tokens / 4,096 pages |
+| 每路 usage | 261,888 prompt + 256 completion | 261,888 prompt + 256 completion |
+| 每路总窗口 | 262,144 | 262,144 |
+| E2E / batch wall | 890.21s | 1,711.95s |
+| SSE | 258 JSON events、0 malformed、1 `[DONE]` | 每路 258 JSON events、0 malformed、1 `[DONE]` |
+| finish | `length` | 两路均 `length` |
+| 输出 | 从 4 连续递增，无 marker | 两路均从 4 连续递增到 68，无 marker |
+| 采样峰值 | 28,596 MiB | 28,798 MiB |
+| CUDA/OOM/SIG 错误 | 0 | 0 |
+
+双路验证在一个全新 FastLLM 进程上直接并发发起，没有先跑校准或单路 exact。A prompt 使用单 token 单元 `" a"`，B 使用 `" b"`；两者固定开销都校准为 43 tokens，但从首个 128-token page 起就不同。因此 prefix trie 不可能通过共享旧 page “放水”，两个请求物理上必须各占 2,048 pages。
+
+首版 packed attention 是正确性/容量实现：按 bounded chunk 将 Q8/Turbo3 K/V 解压到 FP16，再复用 cuBLAS attention；不会 materialize 整个 256K 窗口，也尚未做低比特直接计算 kernel。Turbo3 自动绕过当前不可 capture 的 CUDA graph 路径。本文不把它描述为 decode 吞吐优化。
+
+容量边界也做过反例验证：525,312-token pool + MTP2 + CUDA embedding + 8K chunk 会在临时激活分配时 OOM；关闭 MTP/CUDA embedding 但仍用 525,312 pool + 8K chunk，也会在延迟的大权重 materialization 时因连续显存不足失败。最终稳定配置是精确 524,288-token pool、MTP0、CPU embedding 和 2K chunk。
+
+机器结果：`benchmarks/fastllm/results/fastllm_turbo3_c1_c2_exact_256k.json`。
+
 ## 历史 exact-window 长上下文矩阵
 
 这些结果使用 C++ apiserver、IQ4_XS、FP16 activation、FastLLM 原生 paged attention 和 MTP9。每个请求为 `context - 256` prompt tokens + 256 completion tokens。
@@ -259,7 +291,10 @@ TurboQuant 的“256K”同样是总 262,144-token pool，不是每请求 256K�
 - GGUF 内嵌模板使用 `{% macro %}`，FastLLM 自带 Jinja 子集不能直接解析；生产由 Thinking Proxy 用完整 Jinja2 渲染后发送 `raw_prompt=true`。
 - 当前模型只有 1 个 MTP layer；`nextn_predict_layers>1` 会拒绝加载。
 - 仅验证单块 V100，没有验证多 GPU tensor parallel。
-- FP16 KV 的 exact 256K 在 32GB 上确定 OOM；FP8 E4M3 KV 才能完成。
+- FP16 KV 的 exact 256K 在 32GB 上确定 OOM；FP8 E4M3 与 FastLLM 原生 Turbo3 packed KV 都已完成 exact 256K。
+- Turbo3 当前只为 CUDA Qwen3.5/3.6、head_dim=256 显式门控；普通 FP16/BF16/FP8、非 Qwen 模型和默认配置不走 packed 路径。
+- 当前 Turbo3 attention 会即时解压到 FP16/cuBLAS，容量收益已经验证，但不能据此宣称低比特直接计算的性能收益。
+- 双 256K 生产 profile 关闭 MTP 与 CUDA embedding，并使用 2K prefill quantum；需要短上下文吞吐时应切回独立的 FP8 速度 profile。
 - XQA 是 qLen1 decode specialization，不是通用 prefill kernel。
 - interleave 改善公平性，不减少 cold prefill 的总计算量。
 - 生产混合策略是 V100 实测选择；其他 GPU 应重新做 batched MTP 与 plain batch A/B。
@@ -268,9 +303,11 @@ TurboQuant 的“256K”同样是总 262,144-token pool，不是每请求 256K�
 
 以下验证均通过：
 
-- `apiserver` 编译；
-- `testApiServerSocket`；
-- 完整 `regressionOps`，包括 GGUF、Qwen3.5 long-prefill state、exact-window page budget、CUDA snapshot/paged batch、SM70 XQA；
+- `apiserver` 与 `regressionOps` 编译；
+- `FASTLLM_REGRESSION_ONLY=turbo3_kv ./build/regressionOps`，覆盖 packed 行字节、门控、异构 per-layer dtype、跨页 append/gather/dequantize、C1/C2 layout 和 legacy attention；
+- `testApiServerSocket` 与 usage accounting；
+- Turbo3 + MTP2 短请求端到端二轮 speculative validation；
+- Turbo3 单路 exact 256K、干净进程双路各 exact 256K；
 - 32K C1/C2、短 decode C1/C4、FP8 208K C4 端到端 HTTP/SSE/usage；
 - 8000→8002 最终生产非流式与流式探针。
 
@@ -285,6 +322,7 @@ TurboQuant 的“256K”同样是总 262,144-token pool，不是每请求 256K�
 - `benchmarks/fastllm/results/fastllm_mtp2_fp8_208k_pool_c4_interleave_8k.json`
 - `benchmarks/fastllm/results/fastllm_mtp9_fp8_longctx_final.json`
 - `benchmarks/fastllm/results/fastllm_sm70_paged_xqa.json`
+- `benchmarks/fastllm/results/fastllm_turbo3_c1_c2_exact_256k.json`
 - `benchmarks/turboquant/results/llama_tq4_256k_agents{1,2,4,5}.json`
 
 ## 构建说明

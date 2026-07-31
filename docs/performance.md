@@ -1466,22 +1466,41 @@ Hybrid C4 vs batched MTP2 C4: **+70.5%**。
 
 **机器结果:** `benchmarks/fastllm/results/fastllm_mtp2_fp8_208k_pool_c4_interleave_8k.json`
 
-### 19.9 生产配置 (2026-07-31)
+### 19.9 FastLLM 原生 Turbo3 双 exact 256K（2026-07-31）
+
+这条容量路线不使用 llama.cpp 后端。FastLLM 的 16 个 full-attention 层使用 K=`Q8_0_KV`、V=`TURBO3_KV`，48 个 linear-attention/GDN 层保持 FP16 recurrent state。head_dim=256 时 K/V row 分别为 272/100 B，每 token packed KV 为 23,808 B，是同范围 FP16 K/V 的 36.328%。
+
+| 指标 | 单路 exact 256K | 双路各 exact 256K |
+|------|------------------:|------------------:|
+| 每路 usage | 261,888 + 256 = 262,144 | 261,888 + 256 = 262,144 |
+| E2E / batch wall | 890.21 s | 1,711.95 s |
+| 峰值 VRAM | 28,596 MiB | 28,798 MiB |
+| SSE | 0 malformed / 1 `[DONE]` | 每路 0 malformed / 1 `[DONE]` |
+| finish_reason | `length` | 两路均 `length` |
+| 输出 | 从 4 连续递增，无 marker | 两路均从 4 连续递增，无 marker |
+
+双路测试从干净 FastLLM 进程直接发起，A/B prompt 从首个 128-token page 起不同，不能命中同一 prefix trie page；524,288-token pool 的 4,096 pages 因而物理上各分配 2,048 pages。服务日志无 CUDA/OOM/SIG 错误。
+
+首版 packed attention 按 bounded chunk 解压到 FP16 后复用 cuBLAS，不 materialize 整窗，也尚不是低比特直接计算 kernel；这是容量与正确性结果，不宣称 Turbo3 decode 提速。525,312 pool、MTP/CUDA embedding 或 8K chunk 的高附加配置在32GB边界出现过激活/权重 materialization OOM，稳定容量配置为精确 524,288 pool、MTP0、CPU embedding和2K quantum。
+
+**机器结果:** `benchmarks/fastllm/results/fastllm_turbo3_c1_c2_exact_256k.json`
+
+### 19.10 当前生产配置（2026-07-31）
 
 ```bash
-FASTLLM_QWEN35_ENABLE_MTP=2 \
-FASTLLM_QWEN35_BATCHED_MTP=0 \
+FASTLLM_QWEN35_TURBO3_KV=1 \
+FASTLLM_QWEN35_ENABLE_MTP=0 \
 FASTLLM_QWEN35_INTERLEAVE_LONG_PREFILL=1 \
-FASTLLM_QWEN35_MTP_PROFILE=2 \
+FASTLLM_PREFIX_CACHE_SNAPSHOT_INTERVAL_PAGES=16 \
 FASTLLM_CUDA_SM70_PAGED_XQA=1 \
 FASTLLM_CUDA_SM70_FLASH_ATTN=0 \
 ./apiserver -p <model.gguf> -t 2 -l --atype float16 \
-  --kv_cache_dtype fp8_e4m3 --batch 5 --tokens 262144 \
-  --model_name qwen3.6-fastllm --port 8002 --device cuda --cuda_embedding
+  --kv_cache_dtype turbo3 --batch 2 --tokens 524288 \
+  --model_name qwen3.6-fastllm --port 8002 --device cuda
 ```
 
-运行时 banner: `chunk=8192, decode_lanes=4, resident_lanes=4`。
+Turbo3 必须由 `--kv_cache_dtype turbo3` 与 `FASTLLM_QWEN35_TURBO3_KV=1` 双重显式启用。当前 Thinking Proxy `:8000` → FastLLM `:8002` 链路已验收：非流式/流式均 HTTP 200，最终 content=`4`、reasoning boundary、usage 与 `finish_reason=stop` 正确；流式 21 events、0 malformed、1 `[DONE]`。实验端口 `:8003` 已停止。
 
-Thinking Proxy (`:8000`) → FastLLM (`:8002`) 链路已验证:非流式 HTTP 200 + 精确内容,流式 25 SSE events / 0 malformed / 1 `[DONE]`。
+旧 FP8 + MTP2 + CUDA embedding + 8K chunk 配置仍是短上下文速度 profile，C1/C4 为 50.85/81.13 tok/s aggregate；它与当前 Turbo3 容量 profile 的 MTP、embedding、chunk、pool 均不同，不能直接比较吞吐。
 
 ---
