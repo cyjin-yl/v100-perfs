@@ -1,0 +1,26 @@
+{
+  "schema": "fastllm-short-decode-v1",
+  "label": "mtp2-batch-propagated-c1-c4",
+  "route": {"mtp_drafts":2,"decode_lanes":4,"resident_lanes":4,"max_batch":5,"kv_cache_dtype":"fp8_e4m3"},
+  "workload": {"prompt_tokens_per_request": "112-114", "target_output_tokens_per_request":256},
+  "c1": {
+    "batch_wall_sec":5.20064318400016,
+    "completion_tokens":256,
+    "aggregate_completion_tps":49.22468066788104,
+    "requests":[{"status":200,"latency_sec":5.197816734999884,"prompt_tokens":114,"completion_tokens":256,"finish":"length","done":1,"malformed":0}]
+  },
+  "c4": {
+    "batch_wall_sec":21.525767772000282,
+    "completion_tokens":1024,
+    "aggregate_completion_tps":47.57089321255113,
+    "per_request_tps":[11.969921669610486,11.894253219759275,11.971663662650347,11.893407080864264],
+    "requests":[
+      {"status":200,"latency_sec":21.386940288000275,"prompt_tokens":112,"completion_tokens":256,"finish":"length","done":1,"malformed":0},
+      {"status":200,"latency_sec":21.52299898699997,"prompt_tokens":113,"completion_tokens":256,"finish":"length","done":1,"malformed":0},
+      {"status":200,"latency_sec":21.38382828099979,"prompt_tokens":112,"completion_tokens":256,"finish":"length","done":1,"malformed":0},
+      {"status":200,"latency_sec":21.524530209000222,"prompt_tokens":113,"completion_tokens":256,"finish":"length","done":1,"malformed":0}
+    ]
+  },
+  "c4_over_c1":0.9664032872759903,
+  "captured_at":"2026-07-31"
+}

@@ -1,13 +1,14 @@
 import json
 import os
 import unittest
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from unittest import mock
 
 import fastllm_adapter
 
 
-TEMPLATE = Path(__file__).parent / "chat_templates" / "qwen3.6_merged.jinja"
+TEMPLATE = Path(__file__).parent / "chat_templates" / "qwen3.6_gguf_original.jinja"
 
 
 class FastLLMAdapterTests(unittest.TestCase):
@@ -41,13 +42,13 @@ class FastLLMAdapterTests(unittest.TestCase):
         self.assertIsNot(actual, body)
         self.assertTrue(actual["raw_prompt"])
         self.assertEqual(actual["prompt"].count("<|im_start|>assistant"), 1)
-        self.assertIn("get_weather(city: string)", actual["prompt"])
+        self.assertIn('"name": "get_weather"', actual["prompt"])
         self.assertIn("What is the weather in Paris?", actual["prompt"])
         self.assertTrue(actual["prompt"].endswith("<think>\n\n</think>\n\n"))
         self.assertEqual(actual["messages"], body["messages"])
         self.assertEqual(actual["max_tokens"], 64)
 
-    def test_prepare_body_adds_qwen_end_marker_stop(self):
+    def test_prepare_body_adds_all_qwen_end_marker_stops(self):
         body = {
             "model": "qwen3.6-fastllm",
             "messages": [{"role": "user", "content": "Say ready."}],
@@ -55,7 +56,20 @@ class FastLLMAdapterTests(unittest.TestCase):
 
         actual = fastllm_adapter.prepare_fastllm_body(body, TEMPLATE)
 
-        self.assertEqual(actual["stop"], ["<|im_end|>"])
+        self.assertEqual(actual["stop"], ["<|im_end|>", "<|endoftext|>"])
+
+    def test_prepare_body_preserves_and_deduplicates_caller_stops(self):
+        body = {
+            "model": "qwen3.6-fastllm",
+            "messages": [{"role": "user", "content": "Say ready."}],
+            "stop": ["CUSTOM", "<|endoftext|>"],
+        }
+
+        actual = fastllm_adapter.prepare_fastllm_body(body, TEMPLATE)
+
+        self.assertEqual(
+            actual["stop"], ["CUSTOM", "<|endoftext|>", "<|im_end|>"]
+        )
 
     def test_prepare_body_renders_plain_assistant_history_without_tool_calls(self):
         body = {
@@ -73,6 +87,42 @@ class FastLLMAdapterTests(unittest.TestCase):
         self.assertIn("First answer.", actual["prompt"])
         self.assertIn("Follow up.", actual["prompt"])
         self.assertEqual(actual["messages"], body["messages"])
+
+    def test_concurrent_followups_keep_latest_turn_isolated(self):
+        nonces = ["NOVA-314", "EMBER-527", "QUARTZ-608", "TIDAL-891"]
+        shared_history = [
+            {"role": "user", "content": "Remember OLD-SHARED-100."},
+            {"role": "assistant", "content": "Remembered OLD-SHARED-100."},
+        ]
+        bodies = [
+            {
+                "model": "qwen3.6-fastllm",
+                "messages": [
+                    *shared_history,
+                    {"role": "user", "content": f"Latest marker: {nonce}"},
+                ],
+                "chat_template_kwargs": {"enable_thinking": False},
+            }
+            for nonce in nonces
+        ]
+
+        with ThreadPoolExecutor(max_workers=len(bodies)) as executor:
+            prepared = list(executor.map(
+                lambda body: fastllm_adapter.prepare_fastllm_body(
+                    body, TEMPLATE
+                ),
+                bodies,
+            ))
+
+        for index, actual in enumerate(prepared):
+            prompt = actual["prompt"]
+            self.assertIn("OLD-SHARED-100", prompt)
+            self.assertIn(f"Latest marker: {nonces[index]}", prompt)
+            for foreign_nonce in nonces[:index] + nonces[index + 1:]:
+                self.assertNotIn(foreign_nonce, prompt)
+            self.assertNotIn("prompt", bodies[index])
+            self.assertNotIn("raw_prompt", bodies[index])
+            self.assertNotIn("stop", bodies[index])
 
     def test_prepare_body_renders_historical_tool_call_and_result(self):
         body = {
@@ -179,6 +229,40 @@ class FastLLMAdapterTests(unittest.TestCase):
         actual = fastllm_adapter.adapt_fastllm_response(response)
 
         self.assertEqual(actual["choices"][0]["message"]["content"], "READY")
+
+    def test_adapt_response_strips_endoftext_tail_without_reasoning(self):
+        response = {
+            "choices": [{
+                "message": {
+                    "role": "assistant",
+                    "content": "READY<|endoftext|><|im_start|>user\nNEXT",
+                },
+                "finish_reason": "stop",
+            }],
+        }
+
+        actual = fastllm_adapter.adapt_fastllm_response(response)
+
+        self.assertEqual(actual["choices"][0]["message"]["content"], "READY")
+
+    def test_adapt_response_strips_earliest_qwen_tail_after_reasoning(self):
+        response = {
+            "choices": [{
+                "message": {
+                    "role": "assistant",
+                    "content": "plan</think>\nREADY<|endoftext|><|im_end|>late",
+                },
+                "finish_reason": "stop",
+            }],
+        }
+
+        actual = fastllm_adapter.adapt_fastllm_response(response)
+
+        self.assertEqual(actual["choices"][0]["message"]["content"], "READY")
+        self.assertEqual(
+            actual["choices"][0]["message"]["reasoning_content"], "plan"
+        )
+
 
 
 if __name__ == "__main__":

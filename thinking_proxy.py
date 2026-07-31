@@ -102,7 +102,7 @@ FASTLLM_ENABLED = bool(FASTLLM_BACKEND_URL)
 FASTLLM_MODE = FASTLLM_ENABLED
 FASTLLM_CHAT_TEMPLATE = Path(os.environ.get(
     "FASTLLM_CHAT_TEMPLATE",
-    os.path.join(PROJECT_DIR, "chat_templates", "qwen3.6_merged.jinja"),
+    os.path.join(PROJECT_DIR, "chat_templates", "qwen3.6_gguf_original.jinja"),
 ))
 LLAMA_ENABLED = os.environ.get("LLAMA_ENABLED", "1") == "1"
 if FASTLLM_MODE and QUEUE_TIMEOUT < 600:
@@ -370,6 +370,8 @@ def _rewrite_stream_model(event: bytes, public_model: str) -> bytes:
     return (b"data: " + json.dumps(data, ensure_ascii=False,
                                     separators=(",", ":")).encode()
             + separator)
+
+
 
 
 def _restore_public_model(oai: dict, requested_model: str) -> dict:
@@ -1825,6 +1827,13 @@ async def _local_stream(
                     event_end = end + len(separator)
                     event, pending = pending[:event_end], pending[event_end:]
                     yield _rewrite_stream_model(event, public_model)
+                    data_lines = [
+                        line[5:].lstrip()
+                        for line in event.splitlines()
+                        if line.startswith(b"data:")
+                    ]
+                    if b"\n".join(data_lines) == b"[DONE]":
+                        return
             else:
                 yield chunk
             if await request.is_disconnected():
@@ -1994,6 +2003,21 @@ async def _anthropic_stream_limited(openai_body: dict, request: Request, public_
         yield _sse("error", {"error": {"message": "stream error"}})
 
 
+async def _iter_sse_payloads(lines):
+    data_lines = []
+    async for line in lines:
+        if line:
+            if line.startswith("data:"):
+                data_lines.append(line[5:].lstrip())
+            continue
+        if not data_lines:
+            continue
+        yield "\n".join(data_lines)
+        data_lines.clear()
+    if data_lines:
+        yield "\n".join(data_lines)
+
+
 async def _proxy_stream(url: str, body: dict):
     async with httpx.AsyncClient(timeout=600) as client:
         async with client.stream("POST", url, json=body) as resp:
@@ -2020,9 +2044,10 @@ async def _anthropic_stream(openai_body: dict, public_model: str = ""):
 
     block_idx = 0
     cur_type = None
-    finish_reason = "stop"
+    finish_reason = None
     in_tokens = 0
     out_tokens = 0
+    saw_json_event = False
 
     stream_body = openai_body
     if FASTLLM_MODE:
@@ -2031,16 +2056,18 @@ async def _anthropic_stream(openai_body: dict, public_model: str = ""):
         async with client.stream(
             "POST", f"{BACKEND_URL}/v1/chat/completions", json=stream_body
         ) as resp:
-            async for line in resp.aiter_lines():
-                if not line.startswith("data: "):
-                    continue
-                data = line[6:]
+            if resp.status_code != 200:
+                err_body = await resp.aread()
+                raise RuntimeError(
+                    f"backend returned {resp.status_code}: {err_body.decode()[:200]}")
+            async for data in _iter_sse_payloads(resp.aiter_lines()):
                 if data == "[DONE]":
                     break
                 try:
                     ev = json.loads(data)
-                except json.JSONDecodeError:
-                    continue
+                except json.JSONDecodeError as exc:
+                    raise RuntimeError("malformed backend SSE event") from exc
+                saw_json_event = True
 
                 choices = ev.get("choices", [])
                 if not choices:
@@ -2092,6 +2119,8 @@ async def _anthropic_stream(openai_body: dict, public_model: str = ""):
                 if u:
                     in_tokens = u.get("prompt_tokens", in_tokens)
                     out_tokens = u.get("completion_tokens", out_tokens)
+    if not saw_json_event or finish_reason is None:
+        raise RuntimeError("backend stream ended without a terminal event")
 
     if cur_type is not None:
         yield _sse("content_block_stop", {

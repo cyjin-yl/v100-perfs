@@ -63,6 +63,28 @@ def estimate_tokens(text: str) -> int:
     return max(1, int(len(text) * 0.3))
 
 
+def iter_sse_data(lines):
+    data_lines: list[str] = []
+    for raw in lines:
+        line = raw.decode("utf-8", errors="ignore").rstrip("\r\n")
+        if line:
+            if line.startswith("data:"):
+                data_lines.append(line[5:].lstrip())
+            continue
+        if not data_lines:
+            continue
+        payload = "\n".join(data_lines)
+        data_lines.clear()
+        if payload == "[DONE]":
+            yield None
+        else:
+            yield json.loads(payload)
+
+    if data_lines:
+        payload = "\n".join(data_lines)
+        yield None if payload == "[DONE]" else json.loads(payload)
+
+
 def call_chat(
     endpoint: str,
     model: str,
@@ -100,24 +122,18 @@ def call_chat(
     prompt_tokens = 0
     completion_tokens = 0
     if stream:
-        for raw in response:
-            line = raw.decode("utf-8", errors="ignore").strip()
-            if not line or line == "data: [DONE]":
-                continue
-            if line.startswith("data: "):
-                line = line[6:]
-            try:
-                chunk = json.loads(line)
-            except json.JSONDecodeError:
-                continue
-            # Usage-only chunk has empty choices
+        for chunk in iter_sse_data(response):
+            if chunk is None:
+                break
             choices = chunk.get("choices")
             if choices:
                 delta = choices[0].get("delta", {})
+                reasoning_content = delta.get("reasoning_content")
                 content = delta.get("content")
-                if content:
+                if reasoning_content or content:
                     if first_token_time is None:
                         first_token_time = now()
+                if content:
                     content_chunks.append(content)
             usage = chunk.get("usage")
             if usage:

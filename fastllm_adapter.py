@@ -25,6 +25,8 @@ _TOOL_CALL_RE = re.compile(
 _PARAMETER_RE = re.compile(
     r"<parameter=([^>\n]+)>\s*(.*?)\s*</parameter>", re.DOTALL
 )
+_QWEN_STOP_MARKERS = ("<|im_end|>", "<|endoftext|>")
+
 
 
 def _raise_exception(message: str) -> None:
@@ -75,11 +77,15 @@ def prepare_fastllm_body(
     prepared["raw_prompt"] = True
     stops = prepared.get("stop")
     if stops is None:
-        prepared["stop"] = ["<|im_end|>"]
+        merged_stops = []
     elif isinstance(stops, str):
-        prepared["stop"] = [stops, "<|im_end|>"] if stops != "<|im_end|>" else [stops]
-    elif "<|im_end|>" not in stops:
-        prepared["stop"] = [*stops, "<|im_end|>"]
+        merged_stops = [stops]
+    else:
+        merged_stops = list(stops)
+    for marker in _QWEN_STOP_MARKERS:
+        if marker not in merged_stops:
+            merged_stops.append(marker)
+    prepared["stop"] = merged_stops
     return prepared
 
 
@@ -110,13 +116,21 @@ def parse_fastllm_tool_calls(content: str) -> list[dict[str, Any]]:
     return calls
 
 
+def _truncate_qwen_tail(content: str) -> str:
+    positions = [
+        position for marker in _QWEN_STOP_MARKERS
+        if (position := content.find(marker)) >= 0
+    ]
+    return content[:min(positions)] if positions else content
+
+
 def _split_reasoning(content: str) -> tuple[str, str]:
     if "</think>" not in content:
-        return "", content.strip()
+        return "", _truncate_qwen_tail(content).strip()
     reasoning, answer = content.split("</think>", 1)
     if "<think>" in reasoning:
         reasoning = reasoning.split("<think>", 1)[1]
-    answer = answer.split("<|im_end|>", 1)[0]
+    answer = _truncate_qwen_tail(answer)
     return reasoning.strip(), answer.strip()
 
 

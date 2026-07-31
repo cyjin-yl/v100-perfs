@@ -1,0 +1,42 @@
+{
+  "schema": "fastllm-cold-http-v1",
+  "label": "c4-208k-pool-http-native-fp8-interleave-8k",
+  "route": {
+    "mtp_drafts": 2,
+    "sm70_paged_xqa": true,
+    "sm70_flash_attn": false,
+    "interleave_long_prefill": true,
+    "decode_lanes": 4,
+    "resident_lanes": 4,
+    "prefix_cache": true,
+    "prefix_snapshot_interval_pages": 64,
+    "kv_cache_dtype": "fp8_e4m3",
+    "batch_capacity": 5,
+    "token_capacity": 262144
+  },
+  "workload": {
+    "concurrency": 4,
+    "fill_fragment": " a",
+    "fill_repetitions": 51800,
+    "target_output_tokens_per_request": 64,
+    "cold_prefix": "unique nonce in first prompt page",
+    "endpoint": "http://127.0.0.1:8003/v1/chat/completions"
+  },
+  "requests": [
+    {"request_id":0,"http_status":200,"latency_sec":244.74612841799996,"ttft_sec":225.9369938099999,"decode_span_sec":18.809134608,"finish_reason":"length","usage":{"completion_tokens":64,"prompt_tokens":51953,"total_tokens":52017},"malformed_events":0,"done_count":1,"leaked_special_token":false},
+    {"request_id":1,"http_status":200,"latency_sec":261.748696399,"ttft_sec":235.0934596839999,"decode_span_sec":26.655236715,"finish_reason":"length","usage":{"completion_tokens":64,"prompt_tokens":51952,"total_tokens":52016},"malformed_events":0,"done_count":1,"leaked_special_token":false},
+    {"request_id":2,"http_status":200,"latency_sec":261.23252946799994,"ttft_sec":239.7347483310001,"decode_span_sec":21.497781137,"finish_reason":"length","usage":{"completion_tokens":64,"prompt_tokens":51953,"total_tokens":52017},"malformed_events":0,"done_count":1,"leaked_special_token":false},
+    {"request_id":3,"http_status":200,"latency_sec":262.09499109499995,"ttft_sec":230.561039626,"decode_span_sec":31.533951469,"finish_reason":"length","usage":{"completion_tokens":64,"prompt_tokens":51949,"total_tokens":52013},"malformed_events":0,"done_count":1,"leaked_special_token":false}
+  ],
+  "aggregate": {
+    "batch_wall_sec": 262.2538404559996,
+    "prompt_tokens": 207807,
+    "completion_tokens": 256,
+    "cold_prefill_tokens_per_sec_to_last_ttft": 866.8205232938627,
+    "completion_tokens_per_sec_e2e": 0.9761534837959834,
+    "ttft_spread_sec": 13.7977545210002
+  },
+  "vram_mib": {"start":24554,"peak":29150,"end":27070,"samples":502},
+  "apiserver_pid": 2300837,
+  "captured_at": "2026-07-31"
+}

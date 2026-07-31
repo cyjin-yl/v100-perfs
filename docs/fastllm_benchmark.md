@@ -1,200 +1,297 @@
-# FastLLM on V100 — Qwen3.6 Fable Fusion Performance
+# FastLLM 在 V100 上运行 Qwen3.6 Fable Fusion 的性能报告
 
-**Date:** 2026-07-28  
-**Hardware:** NVIDIA V100 (SM70, 32GB VRAM, 64GB system RAM)
-**Software:** Fedora 44, GCC 16.1.1 (system), GCC 12.4.0 (conda), CUDA 12.9  
-**Model:** Qwen3.6-27B-Fable-Fus-711-UnHeretic-NM-DAU-NEO-MAX-NEO-LOW-MTP-IQ4_XS.gguf (IQ4_XS, 64 trunk layers + 1 MTP head)  
+**更新日期：** 2026-07-31
+**硬件：** NVIDIA Tesla V100-PCIE-32GB（SM70，32 GiB VRAM），64 GiB 系统内存
+**软件：** Fedora 44、CUDA 12.9、GCC 16.1.1（系统）/ 12.4.0（conda）
+**模型：** `Qwen3.6-27B-Fable-Fus-711-UnHeretic-NM-DAU-NEO-MAX-NEO-LOW-MTP-IQ4_XS.gguf`（64 个主干层 + 1 个 MTP 层）
 
-## Outcome
+## 结论摘要
 
-FastLLM now **runs full inference** (trunk + MTP9) on this model with the upstream-PR build—see §Patches. Exact-window requests completed at 128K and 160K with FP16 KV, and at 256K with FP8 E4M3 KV. A final-binary rerun also completed exact 128K, 160K, and 256K windows under the production FP8-KV configuration. MTP9 remained active. The native SM70 paged XQA decode specialization remains production-enabled for its supported shape. The new Flash-Attention-V100-inspired qLen2..10 FP8 paged-prefill specialization is retained as an experimental opt-in only: focused numeric tests and attention microbenchmarks pass, but end-to-end MTP output diverged from native and steady decode throughput regressed, so production keeps this route disabled.
+FastLLM 已能在单块 V100-32GB 上完整运行这份 Qwen3.6 27B GGUF，包括 IQ4_XS 权重、混合 full-attention/GDN、FP8 E4M3 KV、SM70 原生 paged XQA 和 MTP。当前实测最优生产策略不是“所有并发都启用 MTP”，而是：
 
-## What works
+- 单请求保留 MTP2，短 decode 为 **50.85 tok/s**；
+- 多请求显式关闭 batched MTP，改走 plain batched decode，四并发合计 **81.13 tok/s**；
+- long-prefill 使用 8,192-token chunk 和显式 interleave，避免长请求独占 scheduler；
+- 总 KV/token 容量为 262,144-token **共享池**，不是每请求 256K。
 
-1. **Model load** — all 65 blocks + tokenizer + IQ4_XS dequant → GPU in ~2m30s.
-2. **`/generate` raw prompt** — HTTP 200, correct output, streaming and non-stream OpenAI SSE.
-3. **SM70 IQ4_XS MMQ** — auto-selected for `k>=128`, F16 activations, DP4A accumulation. Fallback to legacy MMVQ for narrow projections.
-4. **MTP9 speculative decode** — 9 drafts/step, exact acceptance, single-GPU copy-validation path.
-5. **GDN (linear attention)** — `cuda-transposed-recurrent` with QKVZ+BA fused layout.
-6. **V100 native paged attention + SM70 XQA** — FastLLM's existing native split-KV fallback predates this work. `b693ad8` adds a Qwen3.6 GQA6 XQA specialization that adapts the KV-head reuse strategy exercised in Flash-Attention-V100 to FastLLM's page-128 layout. Exact FP16 `page128/Q24/KV4/D256/GQA6/qLen1` decode uses XQA by default; prefill remains the existing chunked-cuBLAS native path.
+| 场景 | 配置 | 实测结果 | 结论 |
+|---|---|---:|---|
+| 短 decode，单请求 | MTP2 | 50.85 tok/s | 保留 MTP2 |
+| 短 decode，四并发 | batched MTP2 | 47.57 tok/s aggregate | recurrent-state snapshot/rollback 开销过高 |
+| 短 decode，四并发 | plain batch | 81.06 tok/s aggregate | V100 的底层 batch kernel 有效 |
+| 短 decode，四并发 | 单请求 MTP2 + 多请求 plain batch | **81.13 tok/s aggregate** | 当前最优混合策略 |
+| 32K 冷 prefill，单请求 | prefix cache 开、8K snapshot interval | TTFT 34.40s，约 954 prompt tok/s | 基本追平 cache-off 基线 |
+| FP8 共享池，四并发 | 4×约 52K prompt | 总 207,807 prompt tokens，峰值 29,150 MiB | 完整协议与容量验收通过 |
+| 单请求 exact 256K | MTP9 + FP8 KV（历史矩阵） | E2E 745.47s，峰值 31,088 MiB | 容量通过，早于最终 XQA commit |
 
-## Known limitations
+## 当前生产配置
 
-- **Chat template:** The embedded GGUF Jinja template uses `{% macro %}`, which FastLLM's Jinja parser does not support. Use raw `/generate` with pre-formatted ChatML, or deploy the Thinking Proxy with proxy-side Jinja2 rendering.
-- **MTP layer count:** This runtime supports the model's single MTP layer and rejects `nextn_predict_layers>1` at load time.
-- **Multi-GPU TP:** Single V100 only — not validated with tensor parallelism.
-- **Long-context capacity:** FP16 KV completes at 128K and 160K but cannot fit an exact 256K request on this 32GB card: the process reaches 31,642 MiB and then fails an additional 874,086,400-byte `lm_head.weight` CUDA allocation. FP8 E4M3 KV completes exact 256K with a 31,088 MiB sampled peak.
-- **XQA scope:** The SM70 XQA specialization is a `qLen=1` decode kernel, not a general prefill kernel. MTP9 target validation uses `qLen=10` and intentionally remains on the native causal prefill path; greedy/seed `qLen=1` decode can use XQA.
-- **Deployment state (audited after the benchmark):** These are completed benchmark results, not evidence of a currently running service. Ports 8000/8001/8002 were not listening and no GPU inference process was active at the latest audit.
+生产链路为 Thinking Proxy `:8000` → FastLLM `:8002`。2026-07-31 最终探针确认：非流式与流式请求均为 HTTP 200，`finish_reason=stop`，usage 完整；流式响应为 25 个有效 SSE event、0 malformed、1 个 `[DONE]`，最终内容正确。实验端口 `:8003` 已停止。
 
-## V100 attention provenance and test boundary
+```bash
+FASTLLM_QWEN35_ENABLE_MTP=2 \
+FASTLLM_QWEN35_BATCHED_MTP=0 \
+FASTLLM_QWEN35_INTERLEAVE_LONG_PREFILL=1 \
+FASTLLM_CUDA_SM70_PAGED_XQA=1 \
+FASTLLM_CUDA_SM70_FLASH_ATTN=0 \
+FASTLLM_QWEN35_MTP_PROFILE=2 \
+./apiserver \
+  -p /path/to/Qwen3.6-27B-IQ4_XS-MTP.gguf \
+  -t 2 -l --atype float16 --kv_cache_dtype fp8_e4m3 \
+  --batch 5 --tokens 262144 \
+  --model_name qwen3.6-fastllm \
+  --port 8002 --device cuda --cuda_embedding
+```
 
-The complete Git history and the surviving `.config/superpowers` worktree establish three distinct states:
+首请求后的实际 route banner 为：
 
-| Code path / workstream | FastLLM status | Provenance | Verified result |
-|------------------------|----------------|------------|-----------------|
-| Existing native paged attention | Already upstream before this work | `38b4b8b8` added the low-compute-capability native fallback on 2026-05-31; `adb30fd0` optimized SM70 memory bandwidth; `bd9a24ad` added bounded chunked-cuBLAS prefill | Exact-window 128K/160K/256K service matrix completed on this baseline; paged metadata/CUDA graph regressions pass |
-| FlashInfer-SM70 | **Not landed in the current FastLLM worktree or PR #705** | No independent backend, planner, Volta MMA compatibility layer, BM32/`ALL_P` prefill kernel, or corresponding FastLLM benchmark artifact is present. Bundled upstream FlashInfer remains disabled on CC 7.0 | No FastLLM performance result is claimed |
-| Flash-Attention-V100-style XQA | Landed in `b693ad8` as `FastllmSm70PagedXqaSplitKernel` plus the existing combine kernel | Adapts work-by-KV-head and K/V reuse across six Q heads to FastLLM's page-128 Q24/KV4/D256 layout; it is a FastLLM-native rewrite, not a byte-for-byte copy | 2.22×/3.37×/4.03× single-layer decode speedup at 8K/32K/128K KV, plus focused/full regressions and short 27B smoke |
+```text
+[Qwen3.5 MTP] interleaved long prefill enabled: chunk=8192, decode_lanes=4, resident_lanes=4.
+```
 
-Real V100 prefill logs `Native paged prefill uses chunked cublas attention`; therefore no FlashInfer-SM70 or Flash-Attention-V100 BM32/`ALL_P` prefill speedup is attributed to FastLLM. The existing native fallback's split-KV/state-combine structure is similar to mechanisms explored in FlashInfer-SM70, but full history proves it was added months earlier and is not a port from that later workstream.
+`FASTLLM_QWEN35_BATCHED_MTP` 默认仍为开启；生产显式设为 `0` 是基于本文 C1/C4 A/B 的 V100 专用选择。`FASTLLM_QWEN35_INTERLEAVE_LONG_PREFILL` 默认关闭，生产显式开启。`FASTLLM_CUDA_SM70_FLASH_ATTN` 必须保持关闭，原因见后文实验结果。
 
-The exact-window JSON files were produced before `b693ad8`; they validate the existing native stack but not the final GQA6 XQA increment. After `b693ad8`, the XQA increment was validated by focused/full regressions, a three-shape microbenchmark, and short greedy/MTP9 real-model smoke. Repeating the 128K/160K/256K matrix on the final branch remains outstanding.
+## 2026-07-31 调度与稳定性改动
 
-## Patches applied
+### apiserver batch 参数传播
 
-The isolated upstream branch for PR [ztxz16/fastllm#705](https://github.com/ztxz16/fastllm/pull/705) contains the Qwen3.5 GGUF/runtime, MTP9, SM70 IQ4_XS, native SM70 paged XQA, apiserver, and regression changes described below.
+此前 `--batch 5` 只限制 HTTP worker 的并发数，没有写入 `model->maxBatch`。Qwen3.5 模型 scheduler 因而看到默认值并退回单 lane；表面上请求并发进入，GPU 模型层仍基本串行。
 
-### 1. Qwen3.5/3.6 GGUF adapter (`src/model.cpp`, `third_party/gguf/*`)
-- Architecture alias `qwen35`→`qwen3_5`
-- `block_count` correction (65→64 trunk + 1 MTP)
-- `attention.key_length` → `head_dim`, `ssm.*` → linear-attention metadata
-- V-head tiled→grouped inverse permutation at load time (`GGUFWeightReplaceUntileVHeads`)
-- Norm pre-offset recognition independent of V-head layout
-- `FASTLLM_QWEN35_GGUF_VHEAD_TILED=0` override for pre-grouped GGUFs
-- `CreateLLMModelFromFile()` magic-based GGUF dispatch (fixes `std::bad_alloc`)
+现在 clamp 后的 batch 值同时设置：
 
-### 2. Qwen3.5 runtime (`src/models/qwen3_5.cpp`, `include/models/qwen3_5.h`)
-- KV metadata initialization (`num_key_value_heads` shadowing fix, linear-attention metadata)
-- Grouped vs tiled TP out-proj scheme selection via `ggufOutProjColumnsTiled`
-- MTP logging/profile infrastructure
+- `workQueue.maxActivateQueryNumber`；
+- `workQueue.model->maxBatch`。
 
-### 3. SM70 IQ4_XS MMQ (`src/devices/cuda/fastllm-iq4xs-sm70.cu`)
-- DP4A matrix-multiply-quantized kernel for SM70/V100
-- F16/F32/BF16 activations, Q8_1 D4 quantization, per-stream persistent scratch
-- env-gated (`FASTLLM_CUDA_SM70_IQ4XS_MMQ=0` to disable)
+这与 pytools 入口已有的 `model->maxBatch = batch` 语义一致。运行时 scheduler 因此得到 4 个安全 decode lane（单 GPU snapshot 上限为 4）。
 
-### 4. Existing V100 native attention and new SM70 paged XQA (`src/devices/cuda/attention/paged/*`)
-- Upstream commits `38b4b8b8`, `adb30fd0`, and `bd9a24ad` supply the existing native split-KV/graph-stable state management and chunked-cuBLAS prefill; these are baseline FastLLM code, not part of our port
-- `b693ad8` adds the exact SM70 decode route, adapting the GQA6 K/V-reuse strategy exercised in Flash-Attention-V100 to page 128, Q24/KV4, D256, and `qLen=1`
-- One four-warp split-KV block reuses each K/V load across six Q heads; the existing second kernel combines split online-softmax state
-- Stable per-thread-stream scratch supports CUDA graph capture/replay and concurrent PTDS workers
-- Enabled by default for the exact shape; `FASTLLM_CUDA_SM70_PAGED_XQA=0` restores the original native route
-- Ineligible dtypes/layouts/shapes, non-contiguous output views, and `qLen>1` safely fall back before launch
+### long-prefill 崩溃修复
 
-### 5. CPU rounding fix (`src/devices/cpu/cpudevice.cpp`)
-- `_mm256_cvtps_epi32` → `_mm256_cvttps_epi32` (truncation, not round-to-nearest, matching scalar path).
+最初的 interleave 路径在 `Split(fullInputIds, ...)` 后直接读取 `selectedInputIds.cpuData`。真实 V100 崩溃现场的指令为 `vmovss (%rsi)`，且 `rsi=0`：`Split` 产物可供 GPU 使用，但不保证存在 CPU buffer。
 
-### 6. Apiserver hardening (`example/apiserver/apiserver.cpp`)
-- Tokenizer buffer UAF fix (direct init instead of assign-after-declare)
-- Readiness probe no longer deadlocks
-- HTTPS/OpenAI SSE chat completions + streaming
-- OpenAI `stop` string/array parsing through the loaded model tokenizer, with atomic rejection of unsupported multi-token stops
-- Socket writes use full-write handling; SSE termination and stop behavior have focused tests
+修复后：
 
-### 7. Parallel regression test suite (`test/ops/regressionOps.cpp`)
-All focused regressions pass: GGUF config aliases, V-head layout, grouped override, embedding/direct memory, projection layout resolution, TP out-proj scheme, CPU embedding low-mem AWQ Linear, MTP9 snapshots/greedy, CUDA graph ownership, paged batches, etc.
+- token ids 直接从 `FillLLMInputs` 的原始 CPU tensor 按 offset 读取；
+- position ids 按最后一维逐行复制；
+- input/position slice 都增加边界断言。
 
-## Performance
+修复后的 32K C1、32K C2、208K C4 和约 240K 服务端压力轮次均未再出现 SIGSEGV。
 
-### Exact-window service results
+### prefill 驻留数与 decode 批宽解耦
 
-Long-context testing used the C++ apiserver with `--atype float16`, MTP9, IQ4_XS MMQ, and FastLLM's existing native paged-attention stack. Exact raw-prompt token counts were confirmed by the server's final `usage`. Each request contains `context - 256` prompt tokens and requests 256 completion tokens. The output continued the terminal `Count upward: 1, 2, 3,` instruction from 4 in every successful run. These artifacts predate the final `b693ad8` GQA6 XQA specialization.
+long-prefill 每个请求拥有独立的 KV、GDN recurrent state、MTP cache、cursor、ticket 和 page reservation。显式开启 interleave 后，prefill resident lane 可以在 page reservation 约束下独立于 batched MTP fast-path；每次 GPU forward 仍只执行一个 prefill quantum，decode 批宽也没有被不安全地放宽。
 
-The final traces began at 21–152 MiB, and the previously observed ComfyUI PID was no longer running. These results are therefore **exclusive-GPU capacity/performance measurements**, not coexistence measurements.
+### 单请求 MTP、多请求 plain batch
 
-| Context | KV dtype | Prompt + decode | TTFT | E2E | Sampled VRAM peak | Result |
-|---------|----------|-----------------|------|-----|-------------------|--------|
-| 128K | FP16 | 130,816 + 256 | Not captured | 318.76s | 28,049 MiB | HTTP 200; exact usage 131,072 |
-| 160K | FP16 | 163,584 + 256 | 344.53s | 381.13s | 30,529 MiB | HTTP 200; exact usage 163,840 |
-| 256K | FP16 | 261,888 + 256 | — | — | 31,642 MiB before failure | OOM while allocating 874,086,400-byte `lm_head.weight`; disabling CUDA embedding repeats the same failure |
-| 256K | FP8 E4M3 | 261,888 + 256 | Not reliably captured | 745.47s | 31,088 MiB | HTTP 200; exact usage 262,144 |
+V100 上 batched MTP 每步需要为大量 linear-attention 层和多个请求备份/恢复 recurrent state，还要执行 batched draft；这些复制与 rollback 成本超过了 target batch 的收益。
 
-For the 160K run, the measured prefill rate to the first content chunk was 474.81 prompt tok/s. The remaining 256-token stream took 36.61s (6.99 tok/s). No TTFT claim is made for 128K because that client was non-streaming. No TTFT claim is made for 256K because the measurement client timestamped the initial OpenAI `role=assistant` metadata chunk rather than the first non-empty content token.
+新增 `FASTLLM_QWEN35_BATCHED_MTP` 门控：
 
-MTP profile counters confirm actual speculative validation rather than a no-op flag. The final cumulative profiles recorded:
+- 默认开启，保持兼容；
+- 显式设为 `0/false/no/off` 时，多请求跳过 `Qwen35MTPBatchForward`，走已有 plain batched fallback；
+- 单请求仍走原 `Qwen35MTPForward`，因此保留 MTP2 加速。
 
-| Context | Speculative validations | Full / partial / reject-0 | Avg commit | Avg matched draft |
-|---------|-------------------------|---------------------------|------------|-------------------|
-| 128K | 17 | 10 / 6 / 1 | 1.74 | 0.74 |
-| 160K | 18 | 9 / 8 / 1 | 1.74 | 0.74 |
-| 256K FP8 | 22 | 8 / 12 / 2 | 1.72 | 0.72 |
+## 多请求 decode 吞吐
 
-The earlier long-context timeouts were caused by two corrected runtime issues: post-prefill MTP cache replay and exact-window single-token page-budget fallback. The official `ftllm bench` attempt is still excluded because its internal FP32 GGUF warmup entered a different path and aborted with a cuBLAS error.
+workload 为约 108–114 prompt tokens、每请求固定 256 completion tokens、`temperature=0`。每条请求均为 HTTP 200、`finish_reason=length`、0 malformed、1 个 `[DONE]`，usage 与目标 token 数一致。
 
-Validation chronology: the three exact-window artifacts were written at approximately 06:50 on 2026-07-29; `b693ad8` was committed at 09:19, and the XQA summary artifact was written at approximately 09:34. Do not interpret the table above as a post-XQA end-to-end A/B.
+| 路线 | C1 aggregate | C4 aggregate | C4/C1 | C4 单请求速度 |
+|---|---:|---:|---:|---:|
+| batched MTP2 | 49.22 tok/s | 47.57 tok/s | 0.97× | 约 11.9 tok/s |
+| plain MTP0 | 35.88 tok/s | 81.06 tok/s | 2.26× | 约 20.28 tok/s |
+| **混合：C1 MTP2 / C4 plain batch** | **50.85 tok/s** | **81.13 tok/s** | **1.60×** | **约 20.30 tok/s** |
 
-### Post-`b693ad8` SM70 paged XQA decode microbenchmark
+混合路线的 C4 相对 batched MTP2 C4 提升 **70.5%**，同时没有牺牲单请求速度。机器结果：
 
-This is a **single-layer attention microbenchmark**, not end-to-end model throughput. It measures the final FastLLM-native XQA specialization: work is grouped by KV head and each K/V load is reused across six Q heads, adapting the strategy exercised in Flash-Attention-V100 to page 128. The pre-existing split scheduling/state reduction is FastLLM baseline code and is not attributed to FlashInfer-SM70. The comparison is against FastLLM's original per-Q-head native split decode on the same V100, with batch 1, FP16 Q/K/V, page size 128, Q24/KV4, D256, five warmup iterations, and 30 CUDA-event-timed iterations. The paged cache is resident on the GPU and the full two-kernel XQA sequence is timed.
+- `benchmarks/fastllm/results/fastllm_mtp2_short_decode_batch_propagated_c1_c4.json`
+- `benchmarks/fastllm/results/fastllm_hybrid_mtp2_plain_batch_short_decode_c1_c4.json`
 
-| KV tokens | Original per-Q-head native | SM70 XQA | Speedup |
-|----------:|---------------------------:|---------:|--------:|
-| 8,192 | 0.397 ms | 0.179 ms | **2.22×** |
-| 32,768 | 1.739 ms | 0.516 ms | **3.37×** |
-| 131,072 | 5.774 ms | 1.433 ms | **4.03×** |
+## 冷 cache-miss prefill
 
-The final phase-1 cubin uses 136 registers and 30,912 bytes of shared memory, with zero local memory/spill. Focused coverage includes non-sequential physical pages, partial final pages, batch 2 with nonzero `pageStart`, CUDA graph capture/instantiate/replay, two concurrent per-thread default streams, unsupported groups, and non-contiguous output rejection. The complete `regressionOps` suite also passes.
+Qwen3.5 linear-prefix snapshot 原默认间隔为 16 pages，即 2,048 tokens。它会把正常的 8,192-token prefill chunk 压成 2,048，并且每请求默认只保留 4 个 snapshot，覆盖范围只有约 8K。已有 A/B 表明这会显著拖慢完全冷 miss。
 
-The retained smoke summary records HTTP 200 for the 27B IQ4_XS greedy request and the production route string `SM70 paged XQA enabled`. A separate MTP9 smoke returned HTTP 200 with speculative full/partial acceptance; its `qLen=10` target-validation calls correctly stayed on the existing native path. The raw post-`b693ad8` service log was not retained, so the machine-readable JSON is summary evidence rather than a replayable raw-log artifact.
+默认间隔现改为 64 pages，即 8,192 tokens；环境变量 `FASTLLM_PREFIX_CACHE_SNAPSHOT_INTERVAL_PAGES` 仍可覆盖。prefix cache 仍然开启，并没有为了跑分而关闭。
 
-Machine-readable result: `benchmarks/fastllm/results/fastllm_sm70_paged_xqa.json`.
+| 路线 | 32K C1 TTFT | 冷 prefill 速率 | 峰值显存 |
+|---|---:|---:|---:|
+| snapshot interval 2K（cache-on） | 40.18s | 816 tok/s | 24,746 MiB |
+| cache-off、8K chunk | 34.20s | 959 tok/s | 28,090 MiB |
+| **cache-on、8K snapshot interval** | **34.40s** | **954 tok/s** | **28,092 MiB** |
 
+TTFT 从 40.18s 降至 34.40s，改善 **14.4%**，并基本追平 cache-off 基线。机器结果：
 
-### Final-binary FP8 long-context validation
+- `benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c1_32k_http_native_fp8_interleave_8k.json`
 
-The final production binary was rerun with MTP9, FP16 activations, FP8 E4M3 KV, batch capacity 5, a 262,144-token cache, CUDA embedding, and the experimental qLen2..10 route disabled. Raw prompts used the calibrated fragment `" a"`, which encoded as exactly one token at both 1,024 and 2,048 repetitions. Each case requested 64 output tokens, and server `usage` exactly matched the target window.
+## long-prefill interleave 的公平性边界
 
-FastLLM emits one JSON event across multiple SSE `data:` fields. The final verifier therefore joined all `data:` fields through the blank-line event boundary before parsing JSON. Every case produced 66 valid JSON events, zero malformed events, one `[DONE]`, `finish_reason=stop`, a non-empty 128-character response, no leaked `<|im_start|>`/`<|im_end|>` tail, and the same response SHA-256.
+32K C2 在 batch 传播与 resident-lane 修复后得到：
 
-| Total window | Prompt + decode | E2E | Sampled VRAM peak | Protocol/correctness |
-|-------------:|-----------------|----:|------------------:|----------------------|
-| 131,072 | 131,008 + 64 | 240.35s | 27,968 MiB | HTTP 200; exact usage; 66 events; 0 malformed; one `[DONE]` |
-| 163,840 | 163,776 + 64 | 330.78s | 28,220 MiB | HTTP 200; exact usage; 66 events; 0 malformed; one `[DONE]` |
-| 262,144 | 262,080 + 64 | 695.89s | 28,436 MiB | HTTP 200; exact usage; 66 events; 0 malformed; one `[DONE]` |
+- TTFT：80.27s / 80.61s；
+- TTFT spread：0.34s；
+- batch wall：87.57s；
+- 峰值显存：24,862 MiB；
+- 两请求均 HTTP 200、64 completion tokens、0 malformed、1 个 `[DONE]`。
 
-Machine-readable result: `benchmarks/fastllm/results/fastllm_mtp9_fp8_longctx_final.json`.
+旧 gate-off C2 的 TTFT 为 34.19s / 71.34s，呈明显阶梯；interleave 让两个长请求在 8K/2K quantum 边界轮转，消除了后排请求的长期饥饿。它不会减少单 GPU 上 cold prefill 的总 FLOPs，所以不能把公平性改善写成总吞吐提升。
 
-### qLen2..10 SM70 FP8 paged-prefill experiment
+机器结果：
 
-The experimental `FASTLLM_CUDA_SM70_FLASH_ATTN=1` route specializes the Qwen3.5/3.6 MTP validation shape: V100 SM70, FP16 Q/output, FP8 E4M3 paged KV, page 128, Q24/KV4, D256, GQA6, batch 1..5, and per-request qLen 2..10. It is not FlashInfer: it is a FastLLM-local Volta WMMA kernel adapted from the tiled causal/paged online-softmax structure in the local Flash-Attention-V100 source. Unsupported shapes fall back to native attention. The default KV ceiling is 512 tokens because the CUDA-event microbenchmark crossed from 1.70× faster at KV512 to 0.90× at KV1024; an independent environment variable can raise the ceiling for experiments.
+- `benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c2_32k_http_native_fp8_interleave_batch5.json`
 
-Focused numeric coverage passes for qLen2/qLen10, ragged batch 5, non-sequential physical pages, partial pages, KV8192 under an explicit test override, default long-KV rejection without output modification, and route-disabled fallback. The attention-only microbenchmark measured 0.212 ms versus 0.705 ms native at qLen10/KV273 (3.33×), and 0.120 ms versus 2.743 ms for the ragged batch-5 fixture (22.82×).
+## FP8 共享池多并发容量
 
-Those kernel-level gains did **not** justify production enablement. In the authenticated three-turn agent workload, steady decode throughput fell from 11.24 to 8.81 tok/s at concurrency 1. At concurrency 5, steady aggregate throughput fell from 10.84 to 8.41 tok/s, while sampled VRAM remained effectively flat. Generated lengths also differed, so aggregate throughput is not a pure speed comparison; the per-request decode metric is the cleaner negative signal. More importantly, a fixed greedy prompt was stable across repeated native runs but produced a different SHA-256 and token count under the opt-in route. The numeric tolerance is therefore adequate for an experimental attention regression, not for production output equivalence. The route remains default-off.
+`--tokens 262144` 是整个服务的 token/KV 共享池，不是每请求上限。正式完整 C4 验收使用 4×约 52K 的独立 cold prompt：
 
-| Agents | Native steady aggregate | Opt-in steady aggregate | Native avg decode | Opt-in avg decode | Native / opt-in VRAM peak |
-|-------:|------------------------:|------------------------:|------------------:|------------------:|---------------------------:|
-| 1 | 10.00 tok/s | 4.64 tok/s | 11.24 tok/s | 8.81 tok/s | 26,652 / 26,624 MiB |
-| 2 | 10.28 tok/s | 7.41 tok/s | 11.93 tok/s | 9.50 tok/s | 26,666 / 26,674 MiB |
-| 5 | 10.84 tok/s | 8.41 tok/s | 12.57 tok/s | 9.81 tok/s | 26,782 / 26,672 MiB |
+| 指标 | 结果 |
+|---|---:|
+| prompt tokens 合计 | 207,807 |
+| completion tokens 合计 | 256 |
+| batch wall | 262.25s |
+| TTFT 范围 | 225.94–239.73s |
+| TTFT spread | 13.80s |
+| 峰值显存 | 29,150 MiB |
+| 协议 | 4× HTTP 200；usage 正确；0 malformed；每请求 1 个 `[DONE]` |
 
-The benchmark's first turn is classified as JIT warmup and later turns as steady state; this is not a strict prompt-cache cold/warm measurement. Its shared-prefix ratio is only an estimate, not a server cache-hit counter. The harness now accepts an optional bearer-token environment variable without storing the token and propagates worker-thread request failures instead of writing misleading zero-request artifacts.
+另一次 4×约 60K（约 240K prompt pool）压力轮次在服务日志中四请求全部 `Response client finish`，没有 OOM、SIGSEGV 或 CUDA error；但客户端执行器中止，未保留完整 usage/TTFT artifact，因此只作为容量上界佐证，不替代 208K 正式结果。
 
-Machine-readable results: `benchmarks/fastllm/results/fastllm_mtp9_agents{1,2,5}_short_native.json` and `fastllm_mtp9_agents{1,2,5}_short_sm70_flash.json`, with corresponding `_raw.json` files.
+机器结果：
 
-## TurboQuant 256K reference
+- `benchmarks/fastllm/results/fastllm_mtp2_fp8_208k_pool_c4_interleave_8k.json`
 
-The retained TurboQuant result uses two agents with 262,144 tokens per slot, 117,964 shared-prefix tokens, and 256 output tokens. Steady-state aggregate throughput was 15.65 tok/s (7.78 tok/s per request), with 32.92s average latency. Its workload, prefix reuse, concurrency, and cache format differ from the cold exact-window FastLLM measurement, so the figures are retained as deployment evidence rather than presented as a direct A/B.
+## 历史 exact-window 长上下文矩阵
 
-Result artifacts:
+这些结果使用 C++ apiserver、IQ4_XS、FP16 activation、FastLLM 原生 paged attention 和 MTP9。每个请求为 `context - 256` prompt tokens + 256 completion tokens。
+
+| 总窗口 | KV dtype | TTFT | E2E | 采样峰值 | 结果 |
+|---:|---|---:|---:|---:|---|
+| 128K | FP16 | 未可靠采集 | 318.76s | 28,049 MiB | HTTP 200，exact usage |
+| 160K | FP16 | 344.53s | 381.13s | 30,529 MiB | HTTP 200，exact usage |
+| 256K | FP16 | — | — | 31,642 MiB 后失败 | 申请额外 874,086,400-byte `lm_head.weight` 时 OOM |
+| 256K | FP8 E4M3 | 未可靠采集 | 745.47s | 31,088 MiB | HTTP 200，exact usage |
+
+最终生产 FP8 binary 还完成了 128K/160K/256K 三档 64-token 输出矩阵：E2E 分别 240.35/330.78/695.89s，峰值 27,968/28,220/28,436 MiB；全部 HTTP 200、66 个有效 event、0 malformed、1 个 `[DONE]`。
+
+机器结果：
+
 - `benchmarks/fastllm/results/fastllm_mtp9_128k_exact.json`
 - `benchmarks/fastllm/results/fastllm_mtp9_160k_exact.json`
 - `benchmarks/fastllm/results/fastllm_mtp9_256k_exact.json`
 - `benchmarks/fastllm/results/fastllm_mtp9_fp8_longctx_final.json`
+
+历史 exact-window artifact 早于最终 `b693ad8` XQA commit，因此它们验证 native stack 容量，不构成最终 XQA 的长上下文端到端 A/B。
+
+## V100 attention 路线与来源边界
+
+| 路线 | 当前状态 | 来源 | 已验证范围 |
+|---|---|---|---|
+| FastLLM 原生 paged attention | 既有 baseline | `38b4b8b8`、`adb30fd0`、`bd9a24ad` | exact-window 矩阵、paged metadata/CUDA graph 回归 |
+| FlashInfer-SM70 | **未进入当前 worktree/PR** | 没有独立 backend/planner/Volta prefill kernel | 不声明 FastLLM 性能 |
+| Flash-Attention-V100 风格 SM70 XQA | `b693ad8` 落地 | 面向 page128/Q24/KV4/D256/GQA6 的 FastLLM-native 重写 | qLen1 decode microbenchmark、回归与短 smoke |
+
+真实 V100 prefill 日志为 `Native paged prefill uses chunked cublas attention`。因此本文不把 FlashInfer-SM70 或 Flash-Attention-V100 BM32/`ALL_P` prefill 的性能归因给 FastLLM。
+
+### SM70 paged XQA 单层 microbenchmark
+
+这是单层 attention microbenchmark，不是端到端模型吞吐。配置为 batch1、FP16 Q/K/V、page128、Q24/KV4、D256，5 次 warmup + 30 次 CUDA event 计时。
+
+| KV tokens | 原 per-Q-head native | SM70 XQA | 加速 |
+|---:|---:|---:|---:|
+| 8,192 | 0.397 ms | 0.179 ms | **2.22×** |
+| 32,768 | 1.739 ms | 0.516 ms | **3.37×** |
+| 131,072 | 5.774 ms | 1.433 ms | **4.03×** |
+
+机器结果：`benchmarks/fastllm/results/fastllm_sm70_paged_xqa.json`。
+
+## qLen2..10 SM70 FP8 paged-prefill 实验
+
+`FASTLLM_CUDA_SM70_FLASH_ATTN=1` 是本地实验性 Volta WMMA 路线，不是 FlashInfer。单层 microbenchmark 在小 KV 上有收益，但端到端输出与 native 不等价，steady decode 也退化：
+
+| Agents | Native steady aggregate | 实验路线 steady aggregate | Native avg decode | 实验路线 avg decode |
+|---:|---:|---:|---:|---:|
+| 1 | 10.00 tok/s | 4.64 tok/s | 11.24 tok/s | 8.81 tok/s |
+| 2 | 10.28 tok/s | 7.41 tok/s | 11.93 tok/s | 9.50 tok/s |
+| 5 | 10.84 tok/s | 8.41 tok/s | 12.57 tok/s | 9.81 tok/s |
+
+固定 greedy prompt 在 native 重复运行中稳定，但实验路线产生不同 token 数和 SHA-256，因此该路线保持默认关闭，生产显式设 `FASTLLM_CUDA_SM70_FLASH_ATTN=0`。
+
+## TurboQuant 256K 共享池参考
+
+TurboQuant 的“256K”同样是总 262,144-token pool，不是每请求 256K。实际 KV 为 K=`q8_0`、V=`turbo4`。并发 C1/C2/C4/C5 aggregate 分别为：
+
+| 并发 | aggregate throughput |
+|---:|---:|
+| 1 | 20.714 tok/s |
+| 2 | 29.732 tok/s |
+| 4 | 35.689 tok/s |
+| 5 | 38.652 tok/s |
+
+这些结果的引擎、KV 格式、prompt reuse 和 workload 与 FastLLM cold exact-window 不同，只作为部署容量参考，不做直接 A/B。
+
+## 主要补丁与功能状态
+
+### Qwen3.5/3.6 GGUF 与 runtime
+
+- `qwen35` → `qwen3_5` architecture alias；
+- 65 blocks 纠正为 64 trunk + 1 MTP；
+- `attention.key_length`、`ssm.*` 与 linear-attention metadata 映射；
+- V-head tiled/grouped 逆置换与 `FASTLLM_QWEN35_GGUF_VHEAD_TILED=0` override；
+- GGUF magic dispatch、KV metadata、TP out-proj scheme 与 MTP profile。
+
+### SM70 IQ4_XS 与 attention
+
+- SM70 DP4A IQ4_XS MMQ，窄 projection 回退 legacy MMVQ；
+- 原生 split-KV/chunked-cuBLAS attention；
+- page128/Q24/KV4/D256/GQA6 qLen1 XQA；
+- unsupported dtype/layout/shape 和 qLen>1 安全回退。
+
+### apiserver 与 OpenAI 协议
+
+- tokenizer buffer UAF 修复；
+- 无 body GET/readiness 不再死锁；
+- full socket write 与正确 chunked/SSE 终止；
+- 多行 SSE event；
+- request-driven stop string/array 与多-token stop sequence；
+- reasoning boundary、stream/non-stream tool call；
+- abort handle generation 防复用竞态；
+- proxy-side 原 GGUF Jinja2 rendering。
+
+## 已知限制
+
+- GGUF 内嵌模板使用 `{% macro %}`，FastLLM 自带 Jinja 子集不能直接解析；生产由 Thinking Proxy 用完整 Jinja2 渲染后发送 `raw_prompt=true`。
+- 当前模型只有 1 个 MTP layer；`nextn_predict_layers>1` 会拒绝加载。
+- 仅验证单块 V100，没有验证多 GPU tensor parallel。
+- FP16 KV 的 exact 256K 在 32GB 上确定 OOM；FP8 E4M3 KV 才能完成。
+- XQA 是 qLen1 decode specialization，不是通用 prefill kernel。
+- interleave 改善公平性，不减少 cold prefill 的总计算量。
+- 生产混合策略是 V100 实测选择；其他 GPU 应重新做 batched MTP 与 plain batch A/B。
+
+## 验证状态
+
+以下验证均通过：
+
+- `apiserver` 编译；
+- `testApiServerSocket`；
+- 完整 `regressionOps`，包括 GGUF、Qwen3.5 long-prefill state、exact-window page budget、CUDA snapshot/paged batch、SM70 XQA；
+- 32K C1/C2、短 decode C1/C4、FP8 208K C4 端到端 HTTP/SSE/usage；
+- 8000→8002 最终生产非流式与流式探针。
+
+仅因硬件条件跳过双 GPU 相关测试；Triton chunk GDN 测试在未启用对应环境时按预期跳过。
+
+## 机器结果索引
+
+- `benchmarks/fastllm/results/fastllm_hybrid_mtp2_plain_batch_short_decode_c1_c4.json`
+- `benchmarks/fastllm/results/fastllm_mtp2_short_decode_batch_propagated_c1_c4.json`
+- `benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c1_32k_http_native_fp8_interleave_8k.json`
+- `benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c2_32k_http_native_fp8_interleave_batch5.json`
+- `benchmarks/fastllm/results/fastllm_mtp2_fp8_208k_pool_c4_interleave_8k.json`
+- `benchmarks/fastllm/results/fastllm_mtp9_fp8_longctx_final.json`
 - `benchmarks/fastllm/results/fastllm_sm70_paged_xqa.json`
-- `benchmarks/fastllm/results/fastllm_mtp9_agents{1,2,5}_short_{native,sm70_flash}.json`
-- `benchmarks/turboquant/results/llama_tq3_iq4_256k_2slot_short.json`
+- `benchmarks/turboquant/results/llama_tq4_256k_agents{1,2,4,5}.json`
 
-## Build notes
+## 构建说明
 
-See `docs/HANDOFF_fastllm.md` (§3) for the reference build procedure. Key prerequisites:
-- CUDA toolkit with an SM70-compatible compiler
-- A host compiler version supported by that CUDA toolkit
-- `libnuma` development headers when NUMA support is enabled
-- Build parallelism: `-j4` max (swap thrashing at `-j8`)
+参考 `docs/HANDOFF_fastllm.md` 的构建章节。关键前提：
 
-## Service deployment
-
-```bash
-# tmux session: fastllm
-ulimit -c 0
-cd /path/to/fastllm/build
-FASTLLM_QWEN35_ENABLE_MTP=9 FASTLLM_QWEN35_MTP_PROFILE=2 ./apiserver \
-  -p /path/to/model.gguf \
-  -t 2 -l --atype float16 --kv_cache_dtype fp8_e4m3 \
-  --batch 5 --tokens 262144 --model_name qwen3.6-fastllm \
-  --port 8002 --device cuda --cuda_embedding
-```
-
-The checked-in proxy renders the macro-heavy Qwen template with Jinja2, sends `raw_prompt=true`, rewrites the public model name on the response, and keeps FastLLM failures local instead of invoking cloud fallback. The live deployment is running on proxy port 8000 with FastLLM on 8002. Production intentionally leaves `FASTLLM_CUDA_SM70_FLASH_ATTN` unset; setting it to `1` enables the experimental qLen2..10 route described above.
+- 支持 SM70 的 CUDA toolkit；
+- 与 CUDA 版本兼容的 host compiler；
+- 启用 NUMA 时安装 `libnuma` 开发头文件；
+- 大型 CUDA translation unit 建议限制构建并行度，避免系统 swap 抖动。
