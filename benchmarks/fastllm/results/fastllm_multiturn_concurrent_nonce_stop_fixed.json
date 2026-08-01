@@ -1,0 +1,62 @@
+[
+  {
+    "expected": "NOVA-314",
+    "status": 200,
+    "elapsed_s": 2.4425407380000688,
+    "finish_reason": "stop",
+    "usage": {
+      "completion_tokens": 16,
+      "prompt_tokens": 115,
+      "total_tokens": 131
+    },
+    "content": "NOVA-314",
+    "exact_expected": true,
+    "foreign_nonces": [],
+    "leaked_special_token": false
+  },
+  {
+    "expected": "EMBER-527",
+    "status": 200,
+    "elapsed_s": 1.7701494279997423,
+    "finish_reason": "stop",
+    "usage": {
+      "completion_tokens": 15,
+      "prompt_tokens": 115,
+      "total_tokens": 130
+    },
+    "content": "EMBER-527",
+    "exact_expected": true,
+    "foreign_nonces": [],
+    "leaked_special_token": false
+  },
+  {
+    "expected": "QUARTZ-608",
+    "status": 200,
+    "elapsed_s": 3.107698135000188,
+    "finish_reason": "stop",
+    "usage": {
+      "completion_tokens": 17,
+      "prompt_tokens": 117,
+      "total_tokens": 134
+    },
+    "content": "QUARTZ-608",
+    "exact_expected": true,
+    "foreign_nonces": [],
+    "leaked_special_token": false
+  },
+  {
+    "expected": "ORBIT-735",
+    "status": 200,
+    "elapsed_s": 3.4230271290000527,
+    "finish_reason": "stop",
+    "usage": {
+      "completion_tokens": 16,
+      "prompt_tokens": 116,
+      "total_tokens": 132
+    },
+    "content": "ORBIT-735",
+    "exact_expected": true,
+    "foreign_nonces": [],
+    "leaked_special_token": false
+  }
+]

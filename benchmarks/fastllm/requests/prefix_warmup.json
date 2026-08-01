@@ -1,0 +1,20 @@
+{
+  "id": "prefix_warmup",
+  "body": {
+    "model": "qwen3.6-fastllm",
+    "raw_prompt": true,
+    "max_tokens": 8,
+    "temperature": 0,
+    "stream": true,
+    "stream_options": {
+      "include_usage": true
+    }
+  },
+  "repeat": {
+    "field": "prompt",
+    "prefix": "<|im_start|>user\nprefix-cache-warmup\n",
+    "unit": " w",
+    "count": 256,
+    "suffix": "<|im_end|>\n<|im_start|>assistant\n"
+  }
+}

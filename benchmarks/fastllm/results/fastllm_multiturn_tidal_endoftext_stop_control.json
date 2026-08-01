@@ -1,0 +1,50 @@
+{
+  "status": 200,
+  "elapsed_s": 1.339463052999985,
+  "request": {
+    "model": "qwen3.6-27b-heretic",
+    "messages": [
+      {
+        "role": "user",
+        "content": "记住旧标记 OLD-SHARED-100。"
+      },
+      {
+        "role": "assistant",
+        "content": "好的，我记住了旧标记 OLD-SHARED-100。"
+      },
+      {
+        "role": "user",
+        "content": "这是最新一轮。只回答方括号中的最新标记：[TIDAL-891]。不要输出旧标记或任何解释。"
+      }
+    ],
+    "max_tokens": 64,
+    "temperature": 0,
+    "reasoning_effort": "none",
+    "stop": [
+      "<|endoftext|>"
+    ]
+  },
+  "response": {
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "logprobs": null,
+        "message": {
+          "content": "[TIDA-891]",
+          "role": "assistant"
+        },
+        "stop_reason": null
+      }
+    ],
+    "created": 1785389099,
+    "id": "fastllm-9ea8171d-3b2eb-f1881-42de0-bac19549dbc49",
+    "model": "qwen3.6-27b-heretic",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 11,
+      "prompt_tokens": 116,
+      "total_tokens": 127
+    }
+  }
+}

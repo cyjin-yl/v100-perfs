@@ -1,0 +1,266 @@
+{
+  "benchmark": "fastllm_feature_http",
+  "configuration": {
+    "concurrency": 1,
+    "maximum_prop_deltas": {},
+    "request_ids": [
+      "prefix_seed_a",
+      "prefix_shared_variant",
+      "prefix_pressure_b",
+      "prefix_restore_a"
+    ],
+    "required_prop_deltas": {
+      "prefix_cache_disk_hits": 1.0,
+      "prefix_cache_disk_read_bytes": 1.0,
+      "prefix_cache_disk_write_bytes": 1.0,
+      "prefix_cache_gpu_hit_pages": 1.0
+    },
+    "runs": 1,
+    "timeout_seconds": 1800.0
+  },
+  "created_at_utc": "2026-08-01T19:54:22.509014+00:00",
+  "endpoint": "http://127.0.0.1:8002",
+  "environment": {
+    "gpu": {
+      "available": false,
+      "error": "Failed to initialize NVML: Driver/library version mismatch\nNVML library version: 580.173"
+    },
+    "platform": "Linux-6.19.14-300.fc44.x86_64-x86_64-with-glibc2.43",
+    "python": "3.12.11",
+    "user_metadata": {
+      "date": "2026-08-01",
+      "gpu": "Tesla_V100_PCIE_32GB",
+      "profile": "turbo3_mtp2_prefix_tier_aligned",
+      "scenario": "prefix"
+    }
+  },
+  "props_after": {
+    "activation_dtype": "float16",
+    "backend": "fastllm",
+    "cpu_request_swap_disk_enabled": false,
+    "cpu_request_swap_disk_read_bytes": 0.0,
+    "cpu_request_swap_disk_read_mib_per_second": 0.0,
+    "cpu_request_swap_disk_restores": 0.0,
+    "cpu_request_swap_disk_spills": 0.0,
+    "cpu_request_swap_disk_write_bytes": 0.0,
+    "cpu_request_swap_enabled": false,
+    "cpu_request_swap_suspended": 0,
+    "cpu_request_swap_zstd_enabled": false,
+    "default_max_tokens": 16384,
+    "kv_cache_dtype": "turbo3",
+    "max_batch": 5,
+    "model": "qwen3.6-fastllm",
+    "paged_cache_snapshot_zstd_compress_calls": 0.0,
+    "paged_cache_snapshot_zstd_compress_input_bytes": 0.0,
+    "paged_cache_snapshot_zstd_compress_output_bytes": 0.0,
+    "paged_cache_snapshot_zstd_compress_seconds": 0.0,
+    "paged_cache_snapshot_zstd_decompress_calls": 0.0,
+    "paged_cache_snapshot_zstd_decompress_input_bytes": 0.0,
+    "paged_cache_snapshot_zstd_decompress_output_bytes": 0.0,
+    "paged_cache_snapshot_zstd_decompress_seconds": 0.0,
+    "prefix_cache_cpu_hit_pages": 0.0,
+    "prefix_cache_cpu_tier_bytes": 0.0,
+    "prefix_cache_cpu_tier_enabled": true,
+    "prefix_cache_disk_hits": 0.0,
+    "prefix_cache_disk_live_bytes": 233442550.0,
+    "prefix_cache_disk_read_bytes": 0.0,
+    "prefix_cache_disk_read_mib_per_second": 0.0,
+    "prefix_cache_disk_tier_enabled": true,
+    "prefix_cache_disk_write_bytes": 233442550.0,
+    "prefix_cache_gpu_hit_pages": 0.0,
+    "prefix_cache_recompute_tokens_per_second": 931.793583850628,
+    "prefix_cache_zstd_decompress_mib_per_second": 0.0,
+    "token_pool": 16384
+  },
+  "props_before": {
+    "activation_dtype": "float16",
+    "backend": "fastllm",
+    "cpu_request_swap_disk_enabled": false,
+    "cpu_request_swap_disk_read_bytes": 0.0,
+    "cpu_request_swap_disk_read_mib_per_second": 0.0,
+    "cpu_request_swap_disk_restores": 0.0,
+    "cpu_request_swap_disk_spills": 0.0,
+    "cpu_request_swap_disk_write_bytes": 0.0,
+    "cpu_request_swap_enabled": false,
+    "cpu_request_swap_suspended": 0,
+    "cpu_request_swap_zstd_enabled": false,
+    "default_max_tokens": 16384,
+    "kv_cache_dtype": "turbo3",
+    "max_batch": 5,
+    "model": "qwen3.6-fastllm",
+    "paged_cache_snapshot_zstd_compress_calls": 0.0,
+    "paged_cache_snapshot_zstd_compress_input_bytes": 0.0,
+    "paged_cache_snapshot_zstd_compress_output_bytes": 0.0,
+    "paged_cache_snapshot_zstd_compress_seconds": 0.0,
+    "paged_cache_snapshot_zstd_decompress_calls": 0.0,
+    "paged_cache_snapshot_zstd_decompress_input_bytes": 0.0,
+    "paged_cache_snapshot_zstd_decompress_output_bytes": 0.0,
+    "paged_cache_snapshot_zstd_decompress_seconds": 0.0,
+    "prefix_cache_cpu_hit_pages": 0.0,
+    "prefix_cache_cpu_tier_bytes": 0.0,
+    "prefix_cache_cpu_tier_enabled": true,
+    "prefix_cache_disk_hits": 0.0,
+    "prefix_cache_disk_live_bytes": 0.0,
+    "prefix_cache_disk_read_bytes": 0.0,
+    "prefix_cache_disk_read_mib_per_second": 0.0,
+    "prefix_cache_disk_tier_enabled": true,
+    "prefix_cache_disk_write_bytes": 0.0,
+    "prefix_cache_gpu_hit_pages": 0.0,
+    "prefix_cache_recompute_tokens_per_second": 44.559048781676,
+    "prefix_cache_zstd_decompress_mib_per_second": 0.0,
+    "token_pool": 16384
+  },
+  "requests": [
+    {
+      "content": "<think>\n\n</think>\n\n12083",
+      "content_sha256": "ac5edf92429a0e1d7b696fa48108b3e0a635b1f2232703c30df56cc1a7d9a9f9",
+      "done_events": 1,
+      "event_count": 12,
+      "finish_reason": "stop",
+      "iteration": 0,
+      "malformed_events": 0,
+      "reasoning_content": "",
+      "reasoning_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "request_id": "prefix_seed_a",
+      "request_sha256": "7d4132337aed8461e76eac050da7f76fb1969f61452c18ed28c93b9e4eaba24e",
+      "response_bytes": 4810,
+      "response_sha256": "c05c60e1a7ef03d00eda301f742121cc73f62992907e9a9daba3dc2e3ab04294",
+      "status": 200,
+      "transport_error": null,
+      "ttft_seconds": 12.39939889498055,
+      "usage": {
+        "completion_tokens": 9,
+        "prompt_tokens": 12128,
+        "total_tokens": 12137
+      },
+      "wall_seconds": 12.742193556856364
+    },
+    {
+      "content": "<think>\n\n</think>\n\n12081<|im_end|>\n<|im_start|>user\nprefix-seed-b\nContinue the text",
+      "content_sha256": "aadd15d2aa1b44ab9e60ef0b304792e4bd3a5f5b224a009d65ea9c16c0186b74",
+      "done_events": 1,
+      "event_count": 35,
+      "finish_reason": "length",
+      "iteration": 0,
+      "malformed_events": 0,
+      "reasoning_content": "",
+      "reasoning_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "request_id": "prefix_shared_variant",
+      "request_sha256": "9d634012dca87471bab40919ac047efe86e12eff039a80759c9bcd2c221f3980",
+      "response_bytes": 14558,
+      "response_sha256": "b7d00677df4871f43ea2bdac243ad455df1810e67cc5acc58d91df2acee5024a",
+      "status": 200,
+      "transport_error": null,
+      "ttft_seconds": 12.42321859486401,
+      "usage": {
+        "completion_tokens": 32,
+        "prompt_tokens": 12128,
+        "total_tokens": 12160
+      },
+      "wall_seconds": 13.541533739771694
+    },
+    {
+      "content": "<think>\n\n</think>\n\nThe next integer after 12083 is 12084.<|im_end|>\n<|im_start",
+      "content_sha256": "be76f573cef66f0de4adfa4fb65761a379073f3d2afb06c71f40296d093b2f6b",
+      "done_events": 1,
+      "event_count": 35,
+      "finish_reason": "length",
+      "iteration": 0,
+      "malformed_events": 0,
+      "reasoning_content": "",
+      "reasoning_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "request_id": "prefix_pressure_b",
+      "request_sha256": "ac7089dd24663e5c763c0841d37ecebf1a5be141896e063edf56f12e97c63473",
+      "response_bytes": 14551,
+      "response_sha256": "8d904c9f10e5fd3db81792cc87cd715b518e7d6e1ac4c9a138e43747b016e846",
+      "status": 200,
+      "transport_error": null,
+      "ttft_seconds": 12.905862718820572,
+      "usage": {
+        "completion_tokens": 32,
+        "prompt_tokens": 12128,
+        "total_tokens": 12160
+      },
+      "wall_seconds": 13.944069732911885
+    },
+    {
+      "content": "<think>\n\n</think>\n\n12083",
+      "content_sha256": "ac5edf92429a0e1d7b696fa48108b3e0a635b1f2232703c30df56cc1a7d9a9f9",
+      "done_events": 1,
+      "event_count": 12,
+      "finish_reason": "stop",
+      "iteration": 0,
+      "malformed_events": 0,
+      "reasoning_content": "",
+      "reasoning_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "request_id": "prefix_restore_a",
+      "request_sha256": "7d4132337aed8461e76eac050da7f76fb1969f61452c18ed28c93b9e4eaba24e",
+      "response_bytes": 4810,
+      "response_sha256": "93f550da6f43dbcf6bfc33b44523fd54fd4b5a6c6e2c50b745b67faf3c5dfd2a",
+      "status": 200,
+      "transport_error": null,
+      "ttft_seconds": 12.836581707932055,
+      "usage": {
+        "completion_tokens": 9,
+        "prompt_tokens": 12128,
+        "total_tokens": 12137
+      },
+      "wall_seconds": 13.199529652949423
+    }
+  ],
+  "scenario": {
+    "expected_token_pool": 16384,
+    "mode": "prefix",
+    "request_files": [
+      "/run/media/ezra/13D010B6FDBC1A06/1CatVLLM/v100-perfs/benchmarks/fastllm/requests/prefix_seed_a.json",
+      "/run/media/ezra/13D010B6FDBC1A06/1CatVLLM/v100-perfs/benchmarks/fastllm/requests/prefix_shared_variant.json",
+      "/run/media/ezra/13D010B6FDBC1A06/1CatVLLM/v100-perfs/benchmarks/fastllm/requests/prefix_pressure_b.json",
+      "/run/media/ezra/13D010B6FDBC1A06/1CatVLLM/v100-perfs/benchmarks/fastllm/requests/prefix_restore_a.json"
+    ]
+  },
+  "schema_version": 1,
+  "summary": {
+    "by_request": {
+      "prefix_pressure_b": {
+        "runs": 1,
+        "ttft_median_seconds": 12.905862718820572,
+        "wall_max_seconds": 13.944069732911885,
+        "wall_median_seconds": 13.944069732911885,
+        "wall_min_seconds": 13.944069732911885
+      },
+      "prefix_restore_a": {
+        "runs": 1,
+        "ttft_median_seconds": 12.836581707932055,
+        "wall_max_seconds": 13.199529652949423,
+        "wall_median_seconds": 13.199529652949423,
+        "wall_min_seconds": 13.199529652949423
+      },
+      "prefix_seed_a": {
+        "runs": 1,
+        "ttft_median_seconds": 12.39939889498055,
+        "wall_max_seconds": 12.742193556856364,
+        "wall_median_seconds": 12.742193556856364,
+        "wall_min_seconds": 12.742193556856364
+      },
+      "prefix_shared_variant": {
+        "runs": 1,
+        "ttft_median_seconds": 12.42321859486401,
+        "wall_max_seconds": 13.541533739771694,
+        "wall_median_seconds": 13.541533739771694,
+        "wall_min_seconds": 13.541533739771694
+      }
+    },
+    "request_count": 4
+  },
+  "validation": {
+    "errors": [
+      "required prop prefix_cache_disk_hits delta 0.0 is below 1.0",
+      "required prop prefix_cache_disk_read_bytes delta 0.0 is below 1.0",
+      "required prop prefix_cache_gpu_hit_pages delta 0.0 is below 1.0",
+      "page-aligned shared-prefix hit was not faster than seed prefill",
+      "disk prefix restore was not faster than recompute"
+    ],
+    "passed": false
+  },
+  "warmup_result": "fastllm_turbo3_prefix_tier_16k_acceptance_warmup.json"
+}

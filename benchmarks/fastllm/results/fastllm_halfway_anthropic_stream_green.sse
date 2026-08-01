@@ -1,0 +1,9 @@
+event: message_start
+data: {"type": "message_start", "message": {"id": "msg_4e315eff4cf348eea2c00c70", "type": "message", "role": "assistant", "content": [], "model": "qwen3.6-27b-heretic", "stop_reason": null, "stop_sequence": null, "usage": {"input_tokens": 0, "output_tokens": 0}}}
+
+event: message_delta
+data: {"type": "message_delta", "delta": {"stop_reason": "end_turn", "stop_sequence": null}, "usage": {"input_tokens": 0, "output_tokens": 0}}
+
+event: message_stop
+data: {"type": "message_stop"}
+

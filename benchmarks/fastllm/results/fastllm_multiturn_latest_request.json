@@ -1,0 +1,20 @@
+{
+  "model": "qwen3.6-27b-heretic",
+  "messages": [
+    {
+      "role": "user",
+      "content": "记住第一轮标记：OLD-ALPHA-731。"
+    },
+    {
+      "role": "assistant",
+      "content": "好的，我记住了第一轮标记 OLD-ALPHA-731。"
+    },
+    {
+      "role": "user",
+      "content": "这是最新一轮。只回答最新标记 CURRENT-BETA-942，不要回答旧标记。"
+    }
+  ],
+  "temperature": 0.0,
+  "max_tokens": 64,
+  "stream": false
+}

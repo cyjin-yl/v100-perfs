@@ -1,0 +1,47 @@
+{
+  "route": "sm70_flash_and_xqa_requested",
+  "http_status": 200,
+  "benchmark": {
+    "steady_ttft_sec_avg": 0.6297989222221076,
+    "steady_decode_tok_per_sec_avg": 38.98727815338925,
+    "steady_e2e_tok_per_sec_avg": 23.18155306555196,
+    "steady_total_throughput_tok_per_sec": 2.1067785847943235,
+    "raw_prompt_tokens": [250, 293, 338, 394, 454],
+    "raw_completion_tokens": [64, 64, 64, 21, 33]
+  },
+  "correctness_v2": {
+    "model": "qwen3.6-27b-heretic",
+    "content": "<thinking lang=\"en\">\nThe user wants me to act as a helpful",
+    "reasoning_content": "The user is asking me to respond to a request that involves a potentially sensitive topic. I need to be careful not to hallucinate or make up information. I should focus on being helpful and informative while staying within the guidelines.\n",
+    "finish_reason": "stop",
+    "usage": {
+      "prompt_tokens": 60,
+      "completion_tokens": 64,
+      "total_tokens": 124
+    },
+    "content_sha256": "caaf2573720a03b8c845fb33de6ec10bac6c44430249f03084c9a9fc8fdfc5d9",
+    "reasoning_sha256": "8944ec4df7dfb2fce42d1388cca1e77422315186860ac66f0d8c20c3b46864fd",
+    "content_equal_native": false,
+    "reasoning_equal_native": false,
+    "usage_equal_native": false,
+    "leaked_tags": ["<thinking lang=\"en\">"]
+  },
+  "route_evidence": [
+    "[Qwen3.5 MTP] enabled: layers=1, drafts_per_step=2",
+    "[Fastllm] Native paged prefill uses chunked cublas attention.",
+    "[FastLLM] SM70 FlashAttention FP8 paged prefill enabled (Volta WMMA, page128, batch1..5, qLen2..10, KV<=512, Q24/KV4 D256 GQA6)."
+  ],
+  "missing_route_evidence": [
+    "[FastLLM] SM70 paged XQA enabled (FP16 page128 Q24/KV4 D256 GQA6)."
+  ],
+  "production_eligible": false,
+  "rejection_reasons": [
+    "SM70 FlashAttention route was materially slower than native.",
+    "Fixed temperature-zero output diverged and leaked a thinking tag into content.",
+    "XQA was requested but no XQA route-hit log was observed."
+  ],
+  "listen_recv_q_after": {
+    "8000": 0,
+    "8002": 0
+  }
+}

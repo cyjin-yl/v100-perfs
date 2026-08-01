@@ -1,0 +1,12 @@
+{
+  "model": "qwen3.6-27b-heretic",
+  "messages": [
+    {
+      "role": "user",
+      "content": "请用八点介绍《原神》的核心玩法，每点只写一句，最后另写一句总结。必须给出完整八点和总结。"
+    }
+  ],
+  "temperature": 0.0,
+  "max_tokens": 1024,
+  "stream": false
+}

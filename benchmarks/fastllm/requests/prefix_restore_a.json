@@ -1,0 +1,20 @@
+{
+  "id": "prefix_restore_a",
+  "body": {
+    "model": "qwen3.6-fastllm",
+    "raw_prompt": true,
+    "max_tokens": 32,
+    "temperature": 0,
+    "stream": true,
+    "stream_options": {
+      "include_usage": true
+    }
+  },
+  "repeat": {
+    "field": "prompt",
+    "prefix": "<|im_start|>user\nprefix-seed-a\nContinue the text.\n",
+    "unit": " a",
+    "count": 12082,
+    "suffix": "\nReturn the next integer after 12082.<|im_end|>\n<|im_start|>assistant\n"
+  }
+}

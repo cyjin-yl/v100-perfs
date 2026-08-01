@@ -129,7 +129,7 @@ class LocalOnlyStreamTests(unittest.IsolatedAsyncioTestCase):
             ]
 
         self.assertEqual(cloud_calls, 0)
-        self.assertIn(b'"finish_reason": "error"', b"".join(chunks))
+        self.assertIn(b'"code": "backend_reloading"', b"".join(chunks))
         self.assertTrue(b"".join(chunks).endswith(b"data: [DONE]\n\n"))
 
     async def test_fastllm_done_stops_consuming_upstream_immediately(self):
@@ -273,5 +273,213 @@ class AnthropicStreamTests(unittest.IsolatedAsyncioTestCase):
             _ = [chunk async for chunk in thinking_proxy._anthropic_stream(body)]
 
 
+
+class BackendReloadingTests(unittest.IsolatedAsyncioTestCase):
+    class JsonRequest:
+        def __init__(self, body, method="POST", path="/v1/chat/completions"):
+            self._body = body
+            self.method = method
+            self.headers = {}
+            self.query_params = {}
+            self.url = type("URL", (), {"path": path})()
+
+        async def json(self):
+            return dict(self._body)
+
+        async def body(self):
+            return json.dumps(self._body).encode()
+
+        async def is_disconnected(self):
+            return False
+
+    @staticmethod
+    def assert_reloading_response(testcase, response):
+        testcase.assertEqual(response.status_code, 503)
+        payload = json.loads(response.body)
+        testcase.assertEqual(payload["error"]["type"], "service_unavailable")
+        testcase.assertEqual(payload["error"]["code"], "backend_reloading")
+
+    async def test_openai_initial_stream_protocol_error_is_http_503(self):
+        request = self.JsonRequest({
+            "model": "qwen3.6-27b-heretic",
+            "messages": [{"role": "user", "content": "test"}],
+            "stream": True,
+        })
+        with (
+            mock.patch.object(thinking_proxy.scheduler, "acquire_stream"),
+            mock.patch.object(
+                thinking_proxy.scheduler, "release_stream") as release_stream,
+            mock.patch.object(thinking_proxy.backend_penalty, "record_failure"),
+            mock.patch.object(thinking_proxy.service_history, "record"),
+            mock.patch.object(
+                thinking_proxy, "prepare_fastllm_body", side_effect=lambda b, _: b),
+            mock.patch.object(
+                thinking_proxy, "_open_backend_stream",
+                side_effect=thinking_proxy.httpx.RemoteProtocolError("empty reply")),
+        ):
+            response = await thinking_proxy.openai_chat(request)
+        self.assert_reloading_response(self, response)
+        release_stream.assert_called_once()
+
+    async def test_openai_stream_preparation_failure_releases_slot(self):
+        request = self.JsonRequest({
+            "model": "qwen3.6-27b-heretic",
+            "messages": [{"role": "user", "content": "test"}],
+            "stream": True,
+        })
+        with (
+            mock.patch.object(thinking_proxy.scheduler, "acquire_stream"),
+            mock.patch.object(
+                thinking_proxy.scheduler, "release_stream") as release_stream,
+            mock.patch.object(
+                thinking_proxy, "prepare_fastllm_body",
+                side_effect=ValueError("bad rendered prompt")),
+            self.assertRaisesRegex(ValueError, "bad rendered prompt"),
+        ):
+            await thinking_proxy.openai_chat(request)
+        release_stream.assert_called_once()
+
+    async def test_openai_nonstream_protocol_error_is_http_503(self):
+        request = self.JsonRequest({
+            "model": "qwen3.6-27b-heretic",
+            "messages": [{"role": "user", "content": "test"}],
+            "stream": False,
+        })
+        with mock.patch.object(
+                thinking_proxy.scheduler, "submit",
+                side_effect=thinking_proxy.httpx.RemoteProtocolError("empty reply")):
+            response = await thinking_proxy.openai_chat(request)
+        self.assert_reloading_response(self, response)
+
+    async def test_count_tokens_protocol_error_is_http_503(self):
+        request = self.JsonRequest({
+            "model": "qwen3.6-27b-heretic",
+            "messages": [{"role": "user", "content": "test"}],
+        }, path="/v1/messages/count_tokens")
+
+        class FailingClient:
+            async def __aenter__(self):
+                return self
+
+            async def __aexit__(self, exc_type, exc, tb):
+                return False
+
+            async def post(self, *args, **kwargs):
+                raise thinking_proxy.httpx.RemoteProtocolError("empty reply")
+
+        with (
+            mock.patch.object(
+                thinking_proxy, "prepare_fastllm_body", side_effect=lambda b, _: b),
+            mock.patch.object(
+                thinking_proxy.httpx, "AsyncClient", return_value=FailingClient()),
+        ):
+            response = await thinking_proxy.anthropic_count_tokens(request)
+        self.assert_reloading_response(self, response)
+
+    async def test_passthrough_protocol_error_is_http_503(self):
+        request = self.JsonRequest({}, method="GET", path="/props")
+
+        class FailingClient:
+            async def __aenter__(self):
+                return self
+
+            async def __aexit__(self, exc_type, exc, tb):
+                return False
+
+            async def request(self, *args, **kwargs):
+                raise thinking_proxy.httpx.RemoteProtocolError("empty reply")
+
+        with mock.patch.object(
+                thinking_proxy.httpx, "AsyncClient", return_value=FailingClient()):
+            response = await thinking_proxy.passthrough("props", request)
+        self.assert_reloading_response(self, response)
+
+    async def test_midstream_error_is_structured_sse_and_done(self):
+        async def failing_local_stream(url, body):
+            yield b'data: {"choices":[{"delta":{"content":"ok"}}]}\n\n'
+            raise thinking_proxy.httpx.RemoteProtocolError("truncated body")
+
+        request = self.JsonRequest({})
+        body = {"model": "qwen3.6-fastllm", "messages": [], "stream": True}
+        with (
+            mock.patch.object(
+                thinking_proxy, "prepare_fastllm_body", side_effect=lambda b, _: b),
+            mock.patch.object(thinking_proxy, "_proxy_stream", failing_local_stream),
+            mock.patch.object(thinking_proxy.prefix_tracker, "reserve"),
+            mock.patch.object(thinking_proxy.prefix_tracker, "record"),
+            mock.patch.object(thinking_proxy.scheduler, "release_stream"),
+            mock.patch.object(thinking_proxy.backend_penalty, "record_failure"),
+            mock.patch.object(thinking_proxy.service_history, "record"),
+        ):
+            chunks = [chunk async for chunk in thinking_proxy._local_stream(
+                "http://127.0.0.1:8002/v1/chat/completions", body, request,
+                allow_fallback=False)]
+        output = b"".join(chunks)
+        self.assertIn(b'"type": "service_unavailable"', output)
+        self.assertIn(b'"code": "backend_reloading"', output)
+        self.assertTrue(output.endswith(b"data: [DONE]\n\n"))
+
+class StreamFallbackBoundaryTests(unittest.IsolatedAsyncioTestCase):
+    async def test_openai_fallback_advances_only_before_first_byte(self):
+        calls = []
+
+        async def nim(body):
+            calls.append("nim")
+            if False:
+                yield b""
+            raise RuntimeError("nim unavailable")
+
+        async def openrouter(body):
+            calls.append("or")
+            yield b'data: {"choices":[{"delta":{"content":"ok"}}]}\n\n'
+
+        async def zen(body):
+            calls.append("zen")
+            yield b"should not run"
+
+        with (
+            mock.patch.object(thinking_proxy, "_nim_stream", nim),
+            mock.patch.object(thinking_proxy, "_or_stream", openrouter),
+            mock.patch.object(thinking_proxy, "_zen_stream", zen),
+            mock.patch.object(thinking_proxy, "OR_API_KEY", "enabled"),
+            mock.patch.object(thinking_proxy, "ZEN_API_KEY", "enabled"),
+        ):
+            output = b"".join([
+                chunk async for chunk in thinking_proxy._fallback_openai_stream({})])
+        self.assertEqual(calls, ["nim", "or"])
+        self.assertIn(b'"content":"ok"', output)
+        self.assertTrue(output.endswith(b"data: [DONE]\n\n"))
+
+    async def test_anthropic_partial_local_stream_never_starts_cloud_message(self):
+        cloud_calls = 0
+
+        async def partial_local(body, public_model=""):
+            yield thinking_proxy._sse("message_start", {
+                "type": "message_start", "message": {"id": "partial"}})
+            raise thinking_proxy.httpx.RemoteProtocolError("truncated body")
+
+        async def cloud(body):
+            nonlocal cloud_calls
+            cloud_calls += 1
+            return {"choices": [{"message": {"content": "cloud"}}]}
+
+        request = BackendReloadingTests.JsonRequest({})
+        body = {"model": "qwen3.6-fastllm", "messages": [], "stream": True}
+        with (
+            mock.patch.object(thinking_proxy, "_anthropic_stream", partial_local),
+            mock.patch.object(thinking_proxy, "_nim_chat", cloud),
+            mock.patch.object(thinking_proxy.scheduler, "acquire_stream"),
+            mock.patch.object(thinking_proxy.scheduler, "release_stream"),
+            mock.patch.object(thinking_proxy.prefix_tracker, "reserve"),
+            mock.patch.object(thinking_proxy.prefix_tracker, "record"),
+            mock.patch.object(thinking_proxy, "FALLBACK_ENABLED", True),
+            mock.patch.object(thinking_proxy, "BENCHMARK_MODE", False),
+        ):
+            output = "".join([
+                chunk async for chunk in thinking_proxy._anthropic_stream_limited(
+                    body, request, "qwen3.6-27b-awq")])
+        self.assertEqual(cloud_calls, 0)
+        self.assertEqual(output.count("event: message_start"), 1)
+        self.assertIn('"code": "backend_reloading"', output)
 if __name__ == "__main__":
     unittest.main()

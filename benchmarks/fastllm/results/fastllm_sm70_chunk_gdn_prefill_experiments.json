@@ -1,0 +1,75 @@
+{
+  "benchmark": "fastllm_sm70_chunk_gdn_prefill_experiments",
+  "scope": "FastLLM generic ChunkGatedDeltaRulePrefill operator on Tesla V100; Qwen3.6 27B production shape, not end-to-end model throughput",
+  "hardware": {
+    "gpu": "NVIDIA Tesla V100-PCIE-32GB",
+    "compute_capability": "7.0"
+  },
+  "shape": {
+    "batch": 1,
+    "heads": 48,
+    "chunks": 32,
+    "chunk_size": 64,
+    "tokens": 2048,
+    "key_dimension": 128,
+    "value_dimension": 128,
+    "dtype": "float16"
+  },
+  "method": {
+    "input_preparation_timed": false,
+    "warmup_calls_per_variant": 1,
+    "timed_calls_per_variant": 5,
+    "synchronization": "FastllmCudaSyncCurrentThreadStream after each timed group",
+    "note": "Production service remained resident on the same GPU, so small cross-run differences are treated as load/clock noise. Only large, repeatable regressions are conclusive."
+  },
+  "correctness": {
+    "baseline_vs_fused_h_o": {
+      "recurrent_state_atol": 0.002,
+      "recurrent_state_rtol": 0.002,
+      "core_output_atol": 0.002,
+      "core_output_rtol": 0.002,
+      "status": "PASS"
+    },
+    "baseline_vs_async_gather_fused_preprocess": {
+      "atol": 0.0,
+      "rtol": 0.0,
+      "status": "PASS"
+    },
+    "baseline_vs_persistent_scratch": {
+      "atol": 0.0,
+      "rtol": 0.0,
+      "status": "PASS"
+    }
+  },
+  "runs_ms": [
+    {
+      "baseline": 2.04016,
+      "async_gather": 3.17281,
+      "fused_preprocess": 3.96344,
+      "combined_async_gather_fused_preprocess": 3.93171,
+      "fused_h_o": 12.5773
+    },
+    {
+      "baseline": 2.8722,
+      "persistent_scratch": 3.78068,
+      "async_gather": 2.47892,
+      "fused_preprocess": 2.72002,
+      "combined_async_gather_fused_preprocess": 3.26756,
+      "fused_h_o": 12.7987
+    }
+  ],
+  "gates": {
+    "FASTLLM_CUDA_SM70_FUSED_CHUNK_GDN_PREFILL": "FP16 instantiation of existing fused H/O algorithm for exact SM70 64x128x128 shape",
+    "FASTLLM_CUDA_CHUNK_GDN_ASYNC_GATHER": "move per-chunk V gather from legacy stream 0 to cudaStreamPerThread",
+    "FASTLLM_CUDA_CHUNK_GDN_FUSED_PREPROCESS": "fuse decay scale generation, recurrent-state scaling, and K transpose/scale",
+    "FASTLLM_CUDA_CHUNK_GDN_PERSISTENT_SCRATCH": "per-thread/per-device grow-only single-block scratch arena"
+  },
+  "defaults": "all gates disabled",
+  "conclusion": {
+    "fused_h_o": "Conclusive negative result: 12.58-12.80 ms versus 2.04-2.87 ms baseline, approximately 4.4x-6.2x slower.",
+    "async_gather": "No stable benefit; result direction changed across runs and remained within shared-GPU clock/load noise.",
+    "fused_preprocess": "No stable benefit; result direction changed across runs and remained within shared-GPU clock/load noise.",
+    "persistent_scratch": "Negative in the measured run; allocator mutex/vector scan is not a material part of this operator's steady-state cost.",
+    "production_decision": "Do not enable any experimental gate in the production profile. Preserve gates as default-off experiments with exact fallback and focused regression coverage."
+  }
+}

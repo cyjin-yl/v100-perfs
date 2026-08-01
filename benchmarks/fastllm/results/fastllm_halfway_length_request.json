@@ -1,0 +1,12 @@
+{
+  "model": "qwen3.6-27b-heretic",
+  "messages": [
+    {
+      "role": "user",
+      "content": "请从1开始逐项列出整数直到500，每个整数后附一段不同的十字说明。必须完整列到500，不要总结、不要省略、不要提前结束。"
+    }
+  ],
+  "temperature": 0.0,
+  "max_tokens": 256,
+  "stream": false
+}

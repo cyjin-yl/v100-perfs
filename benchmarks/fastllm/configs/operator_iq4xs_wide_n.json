@@ -1,0 +1,44 @@
+{
+  "name": "fastllm_sm70_iq4xs_wide_n_internal_ab",
+  "command": [
+    "/home/ezra/.config/superpowers/worktrees/fastllm/qwen35-gguf-sm70-v2/build-v2/regressionOps"
+  ],
+  "cwd": "/home/ezra/.config/superpowers/worktrees/fastllm/qwen35-gguf-sm70-v2",
+  "warmups": 1,
+  "runs": 5,
+  "timeout_seconds": 900,
+  "variants": [
+    {
+      "name": "internal_direct_then_tiled",
+      "env": {
+        "FASTLLM_REGRESSION_ONLY": "sm70_iq4xs_wide_n_tile",
+        "LD_LIBRARY_PATH": "/home/ezra/.conda/envs/tsenv/lib"
+      }
+    }
+  ],
+  "metrics": {
+    "direct_ms": {
+      "regex": "direct=([0-9.]+) ms",
+      "unit": "ms",
+      "lower_is_better": true
+    },
+    "tiled_ms": {
+      "regex": "tiled=([0-9.]+) ms",
+      "unit": "ms",
+      "lower_is_better": true
+    },
+    "reported_speedup": {
+      "regex": "speedup=([0-9.]+)x",
+      "unit": "ratio",
+      "lower_is_better": false
+    }
+  },
+  "correctness": {
+    "status": "wide-N tile regression: (PASS)"
+  },
+  "metadata": {
+    "gpu": "Tesla V100-PCIE-32GB",
+    "compute_capability": "7.0",
+    "shape": "n2048_m17408_k5120_iq4_xs_fp16"
+  }
+}

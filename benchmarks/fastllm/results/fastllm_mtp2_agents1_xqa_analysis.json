@@ -1,0 +1,29 @@
+{
+  "route": "xqa_requested_flash_disabled",
+  "actual_route": "native",
+  "benchmark": {
+    "steady_ttft_sec_avg": 0.5974813522771001,
+    "steady_decode_tok_per_sec_avg": 42.14597837320052,
+    "steady_e2e_tok_per_sec_avg": 30.29324195820228,
+    "steady_total_throughput_tok_per_sec": 20.298245177792367,
+    "raw_prompt_tokens": [250, 293, 338, 382, 442],
+    "raw_completion_tokens": [64, 64, 64, 64, 64]
+  },
+  "correctness_v2": {
+    "content_equal_native": true,
+    "reasoning_equal_native": true,
+    "usage_equal_native": true,
+    "content_sha256": "f3c0a447c92a73066875a794fc73044504bac1285407e7aa96321eb67506b117",
+    "reasoning_sha256": "72a92452765cbb81aea451b69b800346c2bad56abe4abc3b8da24bbce0fe7286",
+    "leaked_tags": []
+  },
+  "route_evidence": [
+    "[Qwen3.5 MTP] enabled: layers=1, drafts_per_step=2",
+    "[Fastllm] FlashInfer attention disabled on GPU 0 (CC 7.0), using native attention.",
+    "[Fastllm] Native paged prefill uses chunked cublas attention."
+  ],
+  "missing_route_evidence": [
+    "[FastLLM] SM70 paged XQA enabled (FP16 page128 Q24/KV4 D256 GQA6)."
+  ],
+  "conclusion": "The XQA environment variable was enabled, but this end-to-end workload never hit the XQA route. Performance differences versus the native A round are cold-start variance and cannot justify enabling XQA in production."
+}

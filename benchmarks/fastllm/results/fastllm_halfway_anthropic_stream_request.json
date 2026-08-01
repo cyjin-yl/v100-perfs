@@ -1,0 +1,12 @@
+{
+  "model": "qwen3.6-27b-heretic",
+  "max_tokens": 64,
+  "temperature": 0.0,
+  "stream": true,
+  "messages": [
+    {
+      "role": "user",
+      "content": "这是流式截断测试。请从1开始逐项列出整数直到100，每项附一句说明，必须完整列完。"
+    }
+  ]
+}

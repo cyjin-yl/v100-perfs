@@ -1,0 +1,171 @@
+{
+  "benchmark": "fastllm_feature_http",
+  "configuration": {
+    "concurrency": 2,
+    "maximum_prop_deltas": {
+      "cpu_request_swap_disk_spills": 0.0
+    },
+    "request_ids": [
+      "resident_decode_32k_a",
+      "resident_decode_32k_b"
+    ],
+    "required_prop_deltas": {},
+    "runs": 1,
+    "timeout_seconds": 1800.0
+  },
+  "created_at_utc": "2026-08-01T18:16:31.037258+00:00",
+  "endpoint": "http://127.0.0.1:8002",
+  "environment": {
+    "gpu": {
+      "available": false,
+      "error": "Failed to initialize NVML: Driver/library version mismatch\nNVML library version: 580.173"
+    },
+    "platform": "Linux-6.19.14-300.fc44.x86_64-x86_64-with-glibc2.43",
+    "python": "3.12.11",
+    "user_metadata": {
+      "profile": "turbo3_mtp2_pool262144_resident_plain_batch_off_steady"
+    }
+  },
+  "props_after": {
+    "activation_dtype": "float16",
+    "backend": "fastllm",
+    "cpu_request_swap_disk_enabled": true,
+    "cpu_request_swap_disk_read_bytes": 0.0,
+    "cpu_request_swap_disk_read_mib_per_second": 0.0,
+    "cpu_request_swap_disk_restores": 0.0,
+    "cpu_request_swap_disk_spills": 0.0,
+    "cpu_request_swap_disk_write_bytes": 0.0,
+    "cpu_request_swap_enabled": true,
+    "cpu_request_swap_suspended": 0,
+    "cpu_request_swap_zstd_enabled": true,
+    "default_max_tokens": 16384,
+    "kv_cache_dtype": "turbo3",
+    "max_batch": 5,
+    "model": "qwen3.6-fastllm",
+    "paged_cache_snapshot_zstd_compress_calls": 0.0,
+    "paged_cache_snapshot_zstd_compress_input_bytes": 0.0,
+    "paged_cache_snapshot_zstd_compress_output_bytes": 0.0,
+    "paged_cache_snapshot_zstd_compress_seconds": 0.0,
+    "paged_cache_snapshot_zstd_decompress_calls": 0.0,
+    "paged_cache_snapshot_zstd_decompress_input_bytes": 0.0,
+    "paged_cache_snapshot_zstd_decompress_output_bytes": 0.0,
+    "paged_cache_snapshot_zstd_decompress_seconds": 0.0,
+    "prefix_cache_cpu_tier_bytes": 0.0,
+    "prefix_cache_cpu_tier_enabled": false,
+    "prefix_cache_disk_hits": 0.0,
+    "prefix_cache_disk_live_bytes": 0.0,
+    "prefix_cache_disk_read_bytes": 0.0,
+    "prefix_cache_disk_read_mib_per_second": 0.0,
+    "prefix_cache_disk_tier_enabled": false,
+    "prefix_cache_disk_write_bytes": 0.0,
+    "token_pool": 262144
+  },
+  "props_before": {
+    "activation_dtype": "float16",
+    "backend": "fastllm",
+    "cpu_request_swap_disk_enabled": true,
+    "cpu_request_swap_disk_read_bytes": 0.0,
+    "cpu_request_swap_disk_read_mib_per_second": 0.0,
+    "cpu_request_swap_disk_restores": 0.0,
+    "cpu_request_swap_disk_spills": 0.0,
+    "cpu_request_swap_disk_write_bytes": 0.0,
+    "cpu_request_swap_enabled": true,
+    "cpu_request_swap_suspended": 0,
+    "cpu_request_swap_zstd_enabled": true,
+    "default_max_tokens": 16384,
+    "kv_cache_dtype": "turbo3",
+    "max_batch": 5,
+    "model": "qwen3.6-fastllm",
+    "paged_cache_snapshot_zstd_compress_calls": 0.0,
+    "paged_cache_snapshot_zstd_compress_input_bytes": 0.0,
+    "paged_cache_snapshot_zstd_compress_output_bytes": 0.0,
+    "paged_cache_snapshot_zstd_compress_seconds": 0.0,
+    "paged_cache_snapshot_zstd_decompress_calls": 0.0,
+    "paged_cache_snapshot_zstd_decompress_input_bytes": 0.0,
+    "paged_cache_snapshot_zstd_decompress_output_bytes": 0.0,
+    "paged_cache_snapshot_zstd_decompress_seconds": 0.0,
+    "prefix_cache_cpu_tier_bytes": 0.0,
+    "prefix_cache_cpu_tier_enabled": false,
+    "prefix_cache_disk_hits": 0.0,
+    "prefix_cache_disk_live_bytes": 0.0,
+    "prefix_cache_disk_read_bytes": 0.0,
+    "prefix_cache_disk_read_mib_per_second": 0.0,
+    "prefix_cache_disk_tier_enabled": false,
+    "prefix_cache_disk_write_bytes": 0.0,
+    "token_pool": 262144
+  },
+  "requests": [
+    {
+      "content": "<think>\n\n</think>\n\n1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12\n13\n14\n15\n16\n17\n18\n19\n20\n21\n22\n23\n24\n25\n26\n27\n28\n29\n30\n31\n32\n33\n34\n35\n36\n37\n38\n39\n40\n41\n42\n43\n44\n4",
+      "content_sha256": "8697ab45bc91d27ade83a4b6d42e13d338071c0c3155d34d04b5fa79143c49a1",
+      "done_events": 1,
+      "event_count": 131,
+      "finish_reason": "length",
+      "iteration": 0,
+      "malformed_events": 0,
+      "reasoning_content": "",
+      "reasoning_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "request_id": "resident_decode_32k_a",
+      "request_sha256": "924dc294e9353c4767d023f4ca9263d950ea9fee967e68e4f8851fe6e62dfb4b",
+      "response_bytes": 55076,
+      "response_sha256": "e93c814d35abdc9061a16423254863b30fbaf16a235d4e8ce7562a54dd4dea89",
+      "status": 200,
+      "transport_error": null,
+      "ttft_seconds": 73.92473432794213,
+      "usage": {
+        "completion_tokens": 128,
+        "prompt_tokens": 32661,
+        "total_tokens": 32789
+      },
+      "wall_seconds": 83.31335821608081
+    },
+    {
+      "content": "<think>\n\n</think>\n\n1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12\n13\n14\n15\n16\n17\n18\n19\n20\n21\n22\n23\n24\n25\n26\n27\n28\n29\n30\n31\n32\n33\n34\n35\n36\n37\n38\n39\n40\n41\n42\n43\n44\n4",
+      "content_sha256": "8697ab45bc91d27ade83a4b6d42e13d338071c0c3155d34d04b5fa79143c49a1",
+      "done_events": 1,
+      "event_count": 131,
+      "finish_reason": "length",
+      "iteration": 0,
+      "malformed_events": 0,
+      "reasoning_content": "",
+      "reasoning_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "request_id": "resident_decode_32k_b",
+      "request_sha256": "ebe74d78f5dc5cc53b36b1a6874d78b0f373565e419f787582b9ea37e4b20c4a",
+      "response_bytes": 55076,
+      "response_sha256": "28f45eecf6c0a8d8488b38a8decbfc8174596540ae4260e33c9e3e3db39e5fd8",
+      "status": 200,
+      "transport_error": null,
+      "ttft_seconds": 77.09504132298753,
+      "usage": {
+        "completion_tokens": 128,
+        "prompt_tokens": 32661,
+        "total_tokens": 32789
+      },
+      "wall_seconds": 89.39416898274794
+    }
+  ],
+  "schema_version": 1,
+  "summary": {
+    "by_request": {
+      "resident_decode_32k_a": {
+        "runs": 1,
+        "ttft_median_seconds": 73.92473432794213,
+        "wall_max_seconds": 83.31335821608081,
+        "wall_median_seconds": 83.31335821608081,
+        "wall_min_seconds": 83.31335821608081
+      },
+      "resident_decode_32k_b": {
+        "runs": 1,
+        "ttft_median_seconds": 77.09504132298753,
+        "wall_max_seconds": 89.39416898274794,
+        "wall_median_seconds": 89.39416898274794,
+        "wall_min_seconds": 89.39416898274794
+      }
+    },
+    "request_count": 2
+  },
+  "validation": {
+    "errors": [],
+    "passed": true
+  }
+}

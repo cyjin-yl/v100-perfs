@@ -1,0 +1,204 @@
+{
+  "benchmark": "fastllm_feature_http",
+  "configuration": {
+    "concurrency": 2,
+    "maximum_prop_deltas": {
+      "cpu_request_swap_disk_spills": 0.0
+    },
+    "request_ids": [
+      "resident_32k_a",
+      "resident_32k_b"
+    ],
+    "required_prop_deltas": {},
+    "runs": 2,
+    "timeout_seconds": 1800.0
+  },
+  "created_at_utc": "2026-08-01T17:16:49.090014+00:00",
+  "endpoint": "http://127.0.0.1:8002",
+  "environment": {
+    "gpu": {
+      "available": false,
+      "error": "Failed to initialize NVML: Driver/library version mismatch\nNVML library version: 580.173"
+    },
+    "platform": "Linux-6.19.14-300.fc44.x86_64-x86_64-with-glibc2.43",
+    "python": "3.12.11",
+    "user_metadata": {
+      "date": "2026-08-01",
+      "profile": "turbo3_mtp2_pool262144"
+    }
+  },
+  "props_after": {
+    "activation_dtype": "float16",
+    "backend": "fastllm",
+    "cpu_request_swap_disk_enabled": true,
+    "cpu_request_swap_disk_read_bytes": 0.0,
+    "cpu_request_swap_disk_read_mib_per_second": 0.0,
+    "cpu_request_swap_disk_restores": 0.0,
+    "cpu_request_swap_disk_spills": 0.0,
+    "cpu_request_swap_disk_write_bytes": 0.0,
+    "cpu_request_swap_enabled": true,
+    "cpu_request_swap_suspended": 0,
+    "cpu_request_swap_zstd_enabled": true,
+    "default_max_tokens": 16384,
+    "kv_cache_dtype": "turbo3",
+    "max_batch": 5,
+    "model": "qwen3.6-fastllm",
+    "prefix_cache_cpu_tier_bytes": 0.0,
+    "prefix_cache_cpu_tier_enabled": false,
+    "prefix_cache_disk_hits": 0.0,
+    "prefix_cache_disk_live_bytes": 0.0,
+    "prefix_cache_disk_read_bytes": 0.0,
+    "prefix_cache_disk_read_mib_per_second": 0.0,
+    "prefix_cache_disk_tier_enabled": false,
+    "prefix_cache_disk_write_bytes": 0.0,
+    "token_pool": 262144
+  },
+  "props_before": {
+    "activation_dtype": "float16",
+    "backend": "fastllm",
+    "cpu_request_swap_disk_enabled": true,
+    "cpu_request_swap_disk_read_bytes": 0.0,
+    "cpu_request_swap_disk_read_mib_per_second": 0.0,
+    "cpu_request_swap_disk_restores": 0.0,
+    "cpu_request_swap_disk_spills": 0.0,
+    "cpu_request_swap_disk_write_bytes": 0.0,
+    "cpu_request_swap_enabled": true,
+    "cpu_request_swap_suspended": 0,
+    "cpu_request_swap_zstd_enabled": true,
+    "default_max_tokens": 16384,
+    "kv_cache_dtype": "turbo3",
+    "max_batch": 5,
+    "model": "qwen3.6-fastllm",
+    "prefix_cache_cpu_tier_bytes": 0.0,
+    "prefix_cache_cpu_tier_enabled": false,
+    "prefix_cache_disk_hits": 0.0,
+    "prefix_cache_disk_live_bytes": 0.0,
+    "prefix_cache_disk_read_bytes": 0.0,
+    "prefix_cache_disk_read_mib_per_second": 0.0,
+    "prefix_cache_disk_tier_enabled": false,
+    "prefix_cache_disk_write_bytes": 0.0,
+    "token_pool": 262144
+  },
+  "requests": [
+    {
+      "content": "<think>\n\n</think>\n\nIt looks like your message is filled with repeated \"a\"s. Could you clarify what you'd like help with? I'm here to assist! ��",
+      "content_sha256": "166f525fbc7b4271ceab7b7305a6d5450ea31cf69bb907f38181720092e2e830",
+      "done_events": 1,
+      "event_count": 38,
+      "finish_reason": "stop",
+      "iteration": 0,
+      "malformed_events": 0,
+      "reasoning_content": "",
+      "reasoning_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "request_id": "resident_32k_a",
+      "request_sha256": "d28eba10693371284c5553e9d3f829744a6f306847069a91782d68404a7902af",
+      "response_bytes": 15880,
+      "response_sha256": "32fd8dc94a6da0f7d74587c980bff53e60508fe04ab34d43c81b345b96938851",
+      "status": 200,
+      "transport_error": null,
+      "ttft_seconds": 87.18013660982251,
+      "usage": {
+        "completion_tokens": 35,
+        "prompt_tokens": 32704,
+        "total_tokens": 32739
+      },
+      "wall_seconds": 91.3203411786817
+    },
+    {
+      "content": "<think>\n\n</think>\n\nIt looks like your message is filled with repeated \"a\"s. Could you clarify what you'd like help with? I'm here to assist! ��",
+      "content_sha256": "166f525fbc7b4271ceab7b7305a6d5450ea31cf69bb907f38181720092e2e830",
+      "done_events": 1,
+      "event_count": 38,
+      "finish_reason": "stop",
+      "iteration": 0,
+      "malformed_events": 0,
+      "reasoning_content": "",
+      "reasoning_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "request_id": "resident_32k_b",
+      "request_sha256": "1e7a4c3460ddb985f4a102298c38e5e7b25e834267834b994744d1f26bbef962",
+      "response_bytes": 15880,
+      "response_sha256": "fca31f25b25d45027818f38ea198983004114242f44db64c0d04973c8db34a5b",
+      "status": 200,
+      "transport_error": null,
+      "ttft_seconds": 84.22153290733695,
+      "usage": {
+        "completion_tokens": 35,
+        "prompt_tokens": 32704,
+        "total_tokens": 32739
+      },
+      "wall_seconds": 89.31590777123347
+    },
+    {
+      "content": "<think>\n\n</think>\n\nIt looks like your message is filled with repeated \"a\"s. Could you clarify what you'd like help with? I'm here to assist! ��",
+      "content_sha256": "166f525fbc7b4271ceab7b7305a6d5450ea31cf69bb907f38181720092e2e830",
+      "done_events": 1,
+      "event_count": 38,
+      "finish_reason": "stop",
+      "iteration": 1,
+      "malformed_events": 0,
+      "reasoning_content": "",
+      "reasoning_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "request_id": "resident_32k_a",
+      "request_sha256": "d28eba10693371284c5553e9d3f829744a6f306847069a91782d68404a7902af",
+      "response_bytes": 15880,
+      "response_sha256": "9244d1e29c0b98dd6e24ec3bf72ce37d443c2d09a80f950ebc830d130daf8c6e",
+      "status": 200,
+      "transport_error": null,
+      "ttft_seconds": 76.61865758290514,
+      "usage": {
+        "completion_tokens": 35,
+        "prompt_tokens": 32704,
+        "total_tokens": 32739
+      },
+      "wall_seconds": 80.75061060581356
+    },
+    {
+      "content": "<think>\n\n</think>\n\nIt looks like your message is filled with repeated \"a\"s. Could you clarify what you'd like help with? I'm here to assist! ��",
+      "content_sha256": "166f525fbc7b4271ceab7b7305a6d5450ea31cf69bb907f38181720092e2e830",
+      "done_events": 1,
+      "event_count": 38,
+      "finish_reason": "stop",
+      "iteration": 1,
+      "malformed_events": 0,
+      "reasoning_content": "",
+      "reasoning_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "request_id": "resident_32k_b",
+      "request_sha256": "1e7a4c3460ddb985f4a102298c38e5e7b25e834267834b994744d1f26bbef962",
+      "response_bytes": 15880,
+      "response_sha256": "32548c51b76d021d7efe8868f056cb219a53f2a0ad1a6d457201045a6b4df26c",
+      "status": 200,
+      "transport_error": null,
+      "ttft_seconds": 73.73361288383603,
+      "usage": {
+        "completion_tokens": 35,
+        "prompt_tokens": 32704,
+        "total_tokens": 32739
+      },
+      "wall_seconds": 78.74653867864981
+    }
+  ],
+  "schema_version": 1,
+  "summary": {
+    "by_request": {
+      "resident_32k_a": {
+        "runs": 2,
+        "ttft_median_seconds": 81.89939709636383,
+        "wall_max_seconds": 91.3203411786817,
+        "wall_median_seconds": 86.03547589224763,
+        "wall_min_seconds": 80.75061060581356
+      },
+      "resident_32k_b": {
+        "runs": 2,
+        "ttft_median_seconds": 78.97757289558649,
+        "wall_max_seconds": 89.31590777123347,
+        "wall_median_seconds": 84.03122322494164,
+        "wall_min_seconds": 78.74653867864981
+      }
+    },
+    "request_count": 4
+  },
+  "validation": {
+    "errors": [],
+    "passed": true
+  }
+}

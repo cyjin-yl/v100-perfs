@@ -1,0 +1,172 @@
+{
+  "benchmark": "fastllm_feature_http",
+  "configuration": {
+    "concurrency": 1,
+    "maximum_prop_deltas": {
+      "cpu_request_swap_disk_spills": 0.0
+    },
+    "request_ids": [
+      "resident_32k_b",
+      "resident_32k_c"
+    ],
+    "required_prop_deltas": {},
+    "runs": 1,
+    "timeout_seconds": 1800.0
+  },
+  "created_at_utc": "2026-08-01T17:35:00.905034+00:00",
+  "endpoint": "http://127.0.0.1:8002",
+  "environment": {
+    "gpu": {
+      "available": false,
+      "error": "Failed to initialize NVML: Driver/library version mismatch\nNVML library version: 580.173"
+    },
+    "platform": "Linux-6.19.14-300.fc44.x86_64-x86_64-with-glibc2.43",
+    "python": "3.12.11",
+    "user_metadata": {
+      "date": "2026-08-01",
+      "profile": "turbo3_mtp2_pool32768_single_controls"
+    }
+  },
+  "props_after": {
+    "activation_dtype": "float16",
+    "backend": "fastllm",
+    "cpu_request_swap_disk_enabled": true,
+    "cpu_request_swap_disk_read_bytes": 39091176.0,
+    "cpu_request_swap_disk_read_mib_per_second": 352.177354920757,
+    "cpu_request_swap_disk_restores": 1.0,
+    "cpu_request_swap_disk_spills": 1.0,
+    "cpu_request_swap_disk_write_bytes": 39091176.0,
+    "cpu_request_swap_enabled": true,
+    "cpu_request_swap_suspended": 0,
+    "cpu_request_swap_zstd_enabled": true,
+    "default_max_tokens": 16384,
+    "kv_cache_dtype": "turbo3",
+    "max_batch": 5,
+    "model": "qwen3.6-fastllm",
+    "paged_cache_snapshot_zstd_compress_calls": 32.0,
+    "paged_cache_snapshot_zstd_compress_input_bytes": 48758784.0,
+    "paged_cache_snapshot_zstd_compress_output_bytes": 39091211.0,
+    "paged_cache_snapshot_zstd_compress_seconds": 0.069222886,
+    "paged_cache_snapshot_zstd_decompress_calls": 31.0,
+    "paged_cache_snapshot_zstd_decompress_input_bytes": 38271976.0,
+    "paged_cache_snapshot_zstd_decompress_output_bytes": 47939584.0,
+    "paged_cache_snapshot_zstd_decompress_seconds": 0.037767607,
+    "prefix_cache_cpu_tier_bytes": 0.0,
+    "prefix_cache_cpu_tier_enabled": false,
+    "prefix_cache_disk_hits": 0.0,
+    "prefix_cache_disk_live_bytes": 0.0,
+    "prefix_cache_disk_read_bytes": 0.0,
+    "prefix_cache_disk_read_mib_per_second": 0.0,
+    "prefix_cache_disk_tier_enabled": false,
+    "prefix_cache_disk_write_bytes": 0.0,
+    "token_pool": 32768
+  },
+  "props_before": {
+    "activation_dtype": "float16",
+    "backend": "fastllm",
+    "cpu_request_swap_disk_enabled": true,
+    "cpu_request_swap_disk_read_bytes": 39091176.0,
+    "cpu_request_swap_disk_read_mib_per_second": 352.177354920757,
+    "cpu_request_swap_disk_restores": 1.0,
+    "cpu_request_swap_disk_spills": 1.0,
+    "cpu_request_swap_disk_write_bytes": 39091176.0,
+    "cpu_request_swap_enabled": true,
+    "cpu_request_swap_suspended": 0,
+    "cpu_request_swap_zstd_enabled": true,
+    "default_max_tokens": 16384,
+    "kv_cache_dtype": "turbo3",
+    "max_batch": 5,
+    "model": "qwen3.6-fastllm",
+    "paged_cache_snapshot_zstd_compress_calls": 32.0,
+    "paged_cache_snapshot_zstd_compress_input_bytes": 48758784.0,
+    "paged_cache_snapshot_zstd_compress_output_bytes": 39091211.0,
+    "paged_cache_snapshot_zstd_compress_seconds": 0.069222886,
+    "paged_cache_snapshot_zstd_decompress_calls": 31.0,
+    "paged_cache_snapshot_zstd_decompress_input_bytes": 38271976.0,
+    "paged_cache_snapshot_zstd_decompress_output_bytes": 47939584.0,
+    "paged_cache_snapshot_zstd_decompress_seconds": 0.037767607,
+    "prefix_cache_cpu_tier_bytes": 0.0,
+    "prefix_cache_cpu_tier_enabled": false,
+    "prefix_cache_disk_hits": 0.0,
+    "prefix_cache_disk_live_bytes": 0.0,
+    "prefix_cache_disk_read_bytes": 0.0,
+    "prefix_cache_disk_read_mib_per_second": 0.0,
+    "prefix_cache_disk_tier_enabled": false,
+    "prefix_cache_disk_write_bytes": 0.0,
+    "token_pool": 32768
+  },
+  "requests": [
+    {
+      "content": "<think>\n\n</think>\n\nIt looks like your message is filled with repeated \"a\"s. Could you clarify what you'd like help with? I'm here to assist! ��",
+      "content_sha256": "166f525fbc7b4271ceab7b7305a6d5450ea31cf69bb907f38181720092e2e830",
+      "done_events": 1,
+      "event_count": 38,
+      "finish_reason": "stop",
+      "iteration": 0,
+      "malformed_events": 0,
+      "reasoning_content": "",
+      "reasoning_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "request_id": "resident_32k_b",
+      "request_sha256": "1e7a4c3460ddb985f4a102298c38e5e7b25e834267834b994744d1f26bbef962",
+      "response_bytes": 15880,
+      "response_sha256": "1174ccfdd02048382c3dc940566d1f2962d652057429e52b36388941862b07e8",
+      "status": 200,
+      "transport_error": null,
+      "ttft_seconds": 38.62710008677095,
+      "usage": {
+        "completion_tokens": 35,
+        "prompt_tokens": 32704,
+        "total_tokens": 32739
+      },
+      "wall_seconds": 43.148121614940464
+    },
+    {
+      "content": "<think>\n\n</think>\n\nIt looks like your message is filled with repeated characters. Could you please clarify your question or provide more details so I can assist you better? ��",
+      "content_sha256": "c97c60b490c3e8f274e26bfab6d0f82b36fef20f0ca94b7e5375c33348e88d7a",
+      "done_events": 1,
+      "event_count": 37,
+      "finish_reason": "stop",
+      "iteration": 0,
+      "malformed_events": 0,
+      "reasoning_content": "",
+      "reasoning_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "request_id": "resident_32k_c",
+      "request_sha256": "0b347c385486c937db9dc9cd39f85b728232749deee3501125f963f214617ba4",
+      "response_bytes": 15489,
+      "response_sha256": "ff97b045a7107d145a0e3951e2f81fcbef71e0f519da21875f37349a2d9cfc1c",
+      "status": 200,
+      "transport_error": null,
+      "ttft_seconds": 38.83570269495249,
+      "usage": {
+        "completion_tokens": 34,
+        "prompt_tokens": 32704,
+        "total_tokens": 32738
+      },
+      "wall_seconds": 43.23533732118085
+    }
+  ],
+  "schema_version": 1,
+  "summary": {
+    "by_request": {
+      "resident_32k_b": {
+        "runs": 1,
+        "ttft_median_seconds": 38.62710008677095,
+        "wall_max_seconds": 43.148121614940464,
+        "wall_median_seconds": 43.148121614940464,
+        "wall_min_seconds": 43.148121614940464
+      },
+      "resident_32k_c": {
+        "runs": 1,
+        "ttft_median_seconds": 38.83570269495249,
+        "wall_max_seconds": 43.23533732118085,
+        "wall_median_seconds": 43.23533732118085,
+        "wall_min_seconds": 43.23533732118085
+      }
+    },
+    "request_count": 2
+  },
+  "validation": {
+    "errors": [],
+    "passed": true
+  }
+}

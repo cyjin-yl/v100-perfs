@@ -1,0 +1,79 @@
+{
+  "benchmark": "fastllm_feature_http_reference",
+  "profile": "turbo3_mtp2_pool32768_single_controls",
+  "requests": [
+    {
+      "content": "<think>\n\n</think>\n\nIt looks like your message is filled with repeated \"a\"s. Could you please clarify your question or provide more details so I can assist you better? ��",
+      "content_sha256": "5250b3438917566e7bb4e77ba81a59cec85719f7e73c4ca48c6f16c7c048bd09",
+      "done_events": 1,
+      "event_count": 39,
+      "finish_reason": "stop",
+      "iteration": 0,
+      "malformed_events": 0,
+      "reasoning_content": "",
+      "reasoning_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "request_id": "resident_32k_a",
+      "request_sha256": "d28eba10693371284c5553e9d3f829744a6f306847069a91782d68404a7902af",
+      "response_bytes": 16327,
+      "response_sha256": "d22e25d5e0607a4f4d978fb0852a8614f1f9a72efbcf9201956a03efd7db6961",
+      "status": 200,
+      "transport_error": null,
+      "ttft_seconds": 38.58585512964055,
+      "usage": {
+        "completion_tokens": 36,
+        "prompt_tokens": 32704,
+        "total_tokens": 32740
+      },
+      "wall_seconds": 43.23701960267499
+    },
+    {
+      "content": "<think>\n\n</think>\n\nIt looks like your message is filled with repeated \"a\"s. Could you clarify what you'd like help with? I'm here to assist! ��",
+      "content_sha256": "166f525fbc7b4271ceab7b7305a6d5450ea31cf69bb907f38181720092e2e830",
+      "done_events": 1,
+      "event_count": 38,
+      "finish_reason": "stop",
+      "iteration": 0,
+      "malformed_events": 0,
+      "reasoning_content": "",
+      "reasoning_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "request_id": "resident_32k_b",
+      "request_sha256": "1e7a4c3460ddb985f4a102298c38e5e7b25e834267834b994744d1f26bbef962",
+      "response_bytes": 15880,
+      "response_sha256": "1174ccfdd02048382c3dc940566d1f2962d652057429e52b36388941862b07e8",
+      "status": 200,
+      "transport_error": null,
+      "ttft_seconds": 38.62710008677095,
+      "usage": {
+        "completion_tokens": 35,
+        "prompt_tokens": 32704,
+        "total_tokens": 32739
+      },
+      "wall_seconds": 43.148121614940464
+    },
+    {
+      "content": "<think>\n\n</think>\n\nIt looks like your message is filled with repeated characters. Could you please clarify your question or provide more details so I can assist you better? ��",
+      "content_sha256": "c97c60b490c3e8f274e26bfab6d0f82b36fef20f0ca94b7e5375c33348e88d7a",
+      "done_events": 1,
+      "event_count": 37,
+      "finish_reason": "stop",
+      "iteration": 0,
+      "malformed_events": 0,
+      "reasoning_content": "",
+      "reasoning_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "request_id": "resident_32k_c",
+      "request_sha256": "0b347c385486c937db9dc9cd39f85b728232749deee3501125f963f214617ba4",
+      "response_bytes": 15489,
+      "response_sha256": "ff97b045a7107d145a0e3951e2f81fcbef71e0f519da21875f37349a2d9cfc1c",
+      "status": 200,
+      "transport_error": null,
+      "ttft_seconds": 38.83570269495249,
+      "usage": {
+        "completion_tokens": 34,
+        "prompt_tokens": 32704,
+        "total_tokens": 32738
+      },
+      "wall_seconds": 43.23533732118085
+    }
+  ],
+  "schema_version": 1
+}

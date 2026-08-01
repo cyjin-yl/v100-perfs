@@ -1,0 +1,20 @@
+{
+  "id": "prefix_pressure_b",
+  "body": {
+    "model": "qwen3.6-fastllm",
+    "raw_prompt": true,
+    "max_tokens": 32,
+    "temperature": 0,
+    "stream": true,
+    "stream_options": {
+      "include_usage": true
+    }
+  },
+  "repeat": {
+    "field": "prompt",
+    "prefix": "<|im_start|>user\nprefix-pressure-b\nContinue the text.\n",
+    "unit": " b",
+    "count": 12083,
+    "suffix": "\nReturn the next integer after 12083.<|im_end|>\n<|im_start|>assistant\n"
+  }
+}

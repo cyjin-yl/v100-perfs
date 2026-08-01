@@ -1,0 +1,61 @@
+{
+  "schema": "fastllm-cold-http-v1",
+  "label": "c1-32k-http-native-fp8-prefix-cache-snapshot32",
+  "route": {
+    "mtp_drafts": 2,
+    "sm70_paged_xqa": true,
+    "sm70_flash_attn": false,
+    "prefix_cache": true,
+    "kv_cache_dtype": "fp8_e4m3",
+    "batch_capacity": 5,
+    "token_capacity": 262144,
+    "prefix_cache_snapshot_interval_pages": 32,
+    "prefill_chunk_tokens": 4096
+  },
+  "workload": {
+    "concurrency": 1,
+    "fill_fragment": " a",
+    "fill_repetitions": 32670,
+    "target_output_tokens_per_request": 64,
+    "cold_prefix": "unique nonce in first prompt page",
+    "endpoint": "http://127.0.0.1:8002/v1/chat/completions"
+  },
+  "requests": [
+    {
+      "request_id": 0,
+      "http_status": 200,
+      "latency_sec": 43.540731256000235,
+      "ttft_sec": 40.720643552999945,
+      "decode_span_sec": 2.8197176920003257,
+      "finish_reason": "length",
+      "usage": {
+        "completion_tokens": 64,
+        "prompt_tokens": 32797,
+        "total_tokens": 32861
+      },
+      "event_count": 67,
+      "malformed_events": 0,
+      "done_count": 1,
+      "output_chars": 79,
+      "output_preview": "<think>\n\n</think>\n\n4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20",
+      "leaked_special_token": false
+    }
+  ],
+  "aggregate": {
+    "batch_wall_sec": 43.55919928399986,
+    "prompt_tokens": 32797,
+    "completion_tokens": 64,
+    "cold_prefill_tokens_per_sec_to_last_ttft": 805.4145793966412,
+    "completion_tokens_per_sec_e2e": 1.469264840768284,
+    "decode_tokens_per_sec_span": 22.697307670754096
+  },
+  "vram_mib": {
+    "stop": true,
+    "start": 23242,
+    "peak": 25900,
+    "end": 23700,
+    "samples": 384
+  },
+  "apiserver_pid": 3802429,
+  "captured_at": "2026-07-30T08:02:34.836Z"
+}

@@ -849,6 +849,30 @@ def _is_h2(model: str) -> bool:
     return "haiku" in model.lower()
 
 
+async def _fallback_openai_stream(body: dict):
+    providers = [_nim_stream]
+    if OR_API_KEY:
+        providers.append(_or_stream)
+    if ZEN_API_KEY:
+        providers.append(_zen_stream)
+
+    for provider in providers:
+        yielded = False
+        try:
+            async for chunk in provider(body):
+                yielded = True
+                yield chunk
+            yield b"data: [DONE]\n\n"
+            return
+        except Exception:
+            if yielded:
+                break
+    yield b"data: " + json.dumps(
+        {"choices": [{"index": 0, "delta": {}, "finish_reason": "error"}]}
+    ).encode() + b"\n\n"
+    yield b"data: [DONE]\n\n"
+
+
 async def _rescue_stream(gen):
     """Wrap a backend stream so that mid-stream errors yield OpenAI error SSE
     instead of crashing the whole StreamingResponse."""
@@ -860,6 +884,45 @@ async def _rescue_stream(gen):
             {"choices": [{"index": 0, "delta": {}, "finish_reason": "error"}]}
         ).encode() + b"\n\n"
     yield b"data: [DONE]\n\n"
+
+def _backend_reloading_error():
+    return {
+        "error": {
+            "message": "FastLLM backend is reloading; retry shortly.",
+            "type": "service_unavailable",
+            "param": None,
+            "code": "backend_reloading",
+        }
+    }
+
+
+def _backend_reloading_response():
+    return JSONResponse(_backend_reloading_error(), status_code=503)
+
+
+def _backend_reloading_sse():
+    payload = _backend_reloading_error()
+    payload["status"] = 503
+    return b"data: " + json.dumps(payload).encode() + b"\n\n"
+
+
+async def _open_backend_stream(url: str, body: dict, timeout: float = 600):
+    client = httpx.AsyncClient(timeout=timeout)
+    try:
+        request = client.build_request("POST", url, json=body)
+        response = await client.send(request, stream=True)
+    except BaseException:
+        await client.aclose()
+        raise
+    return client, response
+
+
+async def _close_backend_stream(opened_stream):
+    client, response = opened_stream
+    try:
+        await response.aclose()
+    finally:
+        await client.aclose()
 
 
 async def _cc_chat(anthropic_body: dict) -> dict:
@@ -1337,30 +1400,29 @@ async def openai_chat(request: Request):
             if is_heretic:
                 return JSONResponse({"error": "queue timeout"}, status_code=503)
             if FALLBACK_ENABLED and not BENCHMARK_MODE:
-                try:
-                    return StreamingResponse(
-                        _rescue_stream(_nim_stream(body)), media_type="text/event-stream")
-                except Exception:
-                    if OR_API_KEY:
-                        try:
-                            return StreamingResponse(
-                                _rescue_stream(_or_stream(body)), media_type="text/event-stream")
-                        except Exception:
-                            pass
-                    if ZEN_API_KEY:
-                        try:
-                            return StreamingResponse(
-                                _rescue_stream(_zen_stream(body)), media_type="text/event-stream")
-                        except Exception:
-                            pass
+                return StreamingResponse(
+                    _fallback_openai_stream(body),
+                    media_type="text/event-stream")
             return JSONResponse({"error": "all backends busy"}, status_code=503)
+        stream_url = f"{BACKEND_URL}/v1/chat/completions"
+        try:
+            stream_body = (prepare_fastllm_body(body, FASTLLM_CHAT_TEMPLATE)
+                           if FASTLLM_MODE else body)
+            opened_stream = await _open_backend_stream(stream_url, stream_body)
+        except httpx.TransportError:
+            scheduler.release_stream()
+            backend_penalty.record_failure("local")
+            service_history.record("local", False)
+            return _backend_reloading_response()
+        except BaseException:
+            scheduler.release_stream()
+            raise
         return StreamingResponse(
             _local_stream(
-                f"{BACKEND_URL}/v1/chat/completions", body, request,
-                requested_model, allow_fallback=not is_heretic,
-            ),
-            media_type="text/event-stream",
-        )
+                stream_url, stream_body, request, requested_model,
+                allow_fallback=not is_heretic,
+                opened_stream=opened_stream, body_is_prepared=True),
+            media_type="text/event-stream")
 
     if not is_heretic and FALLBACK_ENABLED and not BENCHMARK_MODE and _over_context(body):
         try:
@@ -1383,8 +1445,8 @@ async def openai_chat(request: Request):
                 requested_model)
         except asyncio.TimeoutError:
             return JSONResponse({"error": "local backend busy, retry later"}, status_code=503)
-        except (httpx.ConnectError, httpx.TimeoutException):
-            return JSONResponse({"error": "backend unavailable"}, status_code=503)
+        except httpx.TransportError:
+            return _backend_reloading_response()
 
     last_err = ""
     backend = await _pick_backend(body) if not is_heretic else "local"
@@ -1403,9 +1465,9 @@ async def openai_chat(request: Request):
         except asyncio.TimeoutError:
             last_err = "local_timeout"
             print(f"[route] local timeout ({to}s)", flush=True)
-        except (httpx.ConnectError, httpx.TimeoutException):
+        except httpx.TransportError:
             last_err = "local_down"
-            print(f"[route] local down", flush=True)
+            print("[route] local down", flush=True)
         if is_heretic:
             return JSONResponse({"error": f"local backend {last_err}"}, status_code=503)
 
@@ -1527,8 +1589,8 @@ async def anthropic_messages(request: Request):
                           media_type="application/json")
         except asyncio.TimeoutError:
             return JSONResponse({"error": "local backend busy, retry later"}, status_code=503)
-        except (httpx.ConnectError, httpx.TimeoutException):
-            return JSONResponse({"error": "backend unavailable"}, status_code=503)
+        except httpx.TransportError:
+            return _backend_reloading_response()
 
     last_err = ""
     backend = await _pick_backend(openai_body) if not is_heretic else "local"
@@ -1544,9 +1606,9 @@ async def anthropic_messages(request: Request):
         except asyncio.TimeoutError:
             last_err = "local_timeout"
             print(f"[route] local timeout ({to}s)", flush=True)
-        except (httpx.ConnectError, httpx.TimeoutException):
+        except httpx.TransportError:
             last_err = "local_down"
-            print(f"[route] local down", flush=True)
+            print("[route] local down", flush=True)
         if is_heretic:
             return JSONResponse({"error": f"local backend {last_err}"}, status_code=503)
 
@@ -1594,10 +1656,13 @@ async def anthropic_count_tokens(request: Request):
     count_body = openai_body
     if FASTLLM_MODE:
         count_body = prepare_fastllm_body(openai_body, FASTLLM_CHAT_TEMPLATE)
-    async with httpx.AsyncClient(timeout=60) as client:
-        resp = await client.post(
-            f"{BACKEND_URL}/v1/chat/completions", json=count_body)
-        data = resp.json()
+    try:
+        async with httpx.AsyncClient(timeout=60) as client:
+            resp = await client.post(
+                f"{BACKEND_URL}/v1/chat/completions", json=count_body)
+            data = resp.json()
+    except httpx.TransportError:
+        return _backend_reloading_response()
     usage = data.get("usage", {})
     return JSONResponse({
         "input_tokens": usage.get("prompt_tokens", 0),
@@ -1804,14 +1869,18 @@ async def _local_stream(
     request: Request,
     public_model: str = "",
     allow_fallback: bool = True,
+    opened_stream=None,
+    body_is_prepared: bool = False,
 ):
-    if FASTLLM_MODE:
+    if FASTLLM_MODE and not body_is_prepared:
         body = prepare_fastllm_body(body, FASTLLM_CHAT_TEMPLATE)
     prefix_tracker.reserve(body.get("messages", []))
     local_failed = False
     pending = b""
     try:
-        async for chunk in _proxy_stream(url, body):
+        stream = (_proxy_stream(url, body, opened_stream=opened_stream)
+                  if opened_stream is not None else _proxy_stream(url, body))
+        async for chunk in stream:
             if FASTLLM_MODE:
                 pending += chunk
                 while True:
@@ -1879,9 +1948,7 @@ async def _local_stream(
                         return
                     except Exception:
                         pass
-        yield b"data: " + json.dumps(
-            {"choices": [{"index": 0, "delta": {}, "finish_reason": "error"}]}
-        ).encode() + b"\n\n"
+        yield _backend_reloading_sse()
         yield b"data: [DONE]\n\n"
 
 
@@ -1943,8 +2010,10 @@ async def _anthropic_stream_limited(openai_body: dict, request: Request, public_
         return
     prefix_tracker.reserve(openai_body.get("messages", []))
     local_failed = False
+    yielded_local_event = False
     try:
         async for chunk in _anthropic_stream(openai_body, public_model):
+            yielded_local_event = True
             yield chunk
             if await request.is_disconnected():
                 return
@@ -1955,6 +2024,9 @@ async def _anthropic_stream_limited(openai_body: dict, request: Request, public_
         scheduler.release_stream()
 
     if local_failed:
+        if yielded_local_event:
+            yield _sse("error", _backend_reloading_error())
+            return
         if not route["local_only"] and FALLBACK_ENABLED and not BENCHMARK_MODE:
             nim_data = None
             try:
@@ -2000,7 +2072,7 @@ async def _anthropic_stream_limited(openai_body: dict, request: Request, public_
             })
             yield _sse("message_stop", {"type": "message_stop"})
             return
-        yield _sse("error", {"error": {"message": "stream error"}})
+        yield _sse("error", _backend_reloading_error())
 
 
 async def _iter_sse_payloads(lines):
@@ -2018,15 +2090,19 @@ async def _iter_sse_payloads(lines):
         yield "\n".join(data_lines)
 
 
-async def _proxy_stream(url: str, body: dict):
-    async with httpx.AsyncClient(timeout=600) as client:
-        async with client.stream("POST", url, json=body) as resp:
-            if resp.status_code != 200:
-                err_body = await resp.aread()
-                raise RuntimeError(
-                    f"backend returned {resp.status_code}: {err_body.decode()[:200]}")
-            async for chunk in resp.aiter_bytes():
-                yield chunk
+async def _proxy_stream(url: str, body: dict, opened_stream=None):
+    if opened_stream is None:
+        opened_stream = await _open_backend_stream(url, body)
+    _, resp = opened_stream
+    try:
+        if resp.status_code != 200:
+            err_body = await resp.aread()
+            raise RuntimeError(
+                f"backend returned {resp.status_code}: {err_body.decode()[:200]}")
+        async for chunk in resp.aiter_bytes():
+            yield chunk
+    finally:
+        await _close_backend_stream(opened_stream)
 
 
 async def _anthropic_stream(openai_body: dict, public_model: str = ""):
@@ -2192,10 +2268,8 @@ async def passthrough(path: str, request: Request):
                 status_code=resp.status_code,
                 media_type=resp.headers.get("content-type"),
             )
-    except httpx.ConnectError:
-        return JSONResponse(
-            {"error": "backend loading", "status": "unavailable"},
-            status_code=503)
+    except httpx.TransportError:
+        return _backend_reloading_response()
 
 
 # ─── Startup / shutdown ─────────────────────────────────────────

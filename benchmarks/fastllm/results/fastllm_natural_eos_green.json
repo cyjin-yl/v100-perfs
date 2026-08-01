@@ -1,0 +1,27 @@
+{
+  "status": 200,
+  "elapsed_s": 0.6701010499999975,
+  "response": {
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "logprobs": null,
+        "message": {
+          "content": "DONE",
+          "role": "assistant"
+        },
+        "stop_reason": null
+      }
+    ],
+    "created": 1785388901,
+    "id": "fastllm-d48bc661-3213a-e863c-21d0c-f07ff1510da1f",
+    "model": "qwen3.6-27b-heretic",
+    "object": "chat.completion",
+    "usage": {
+      "completion_tokens": 11,
+      "prompt_tokens": 42,
+      "total_tokens": 53
+    }
+  }
+}

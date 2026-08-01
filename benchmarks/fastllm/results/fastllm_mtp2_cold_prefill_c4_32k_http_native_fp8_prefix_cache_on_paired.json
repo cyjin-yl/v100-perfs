@@ -1,0 +1,116 @@
+{
+  "schema": "fastllm-cold-http-v1",
+  "label": "c4-32k-http-native-fp8-prefix-cache-on-paired",
+  "route": {
+    "mtp_drafts": 2,
+    "sm70_paged_xqa": true,
+    "sm70_flash_attn": false,
+    "prefix_cache": true,
+    "kv_cache_dtype": "fp8_e4m3",
+    "batch_capacity": 5,
+    "token_capacity": 262144
+  },
+  "workload": {
+    "concurrency": 4,
+    "fill_fragment": " a",
+    "fill_repetitions": 32670,
+    "target_output_tokens_per_request": 64,
+    "cold_prefix": "unique nonce in first prompt page",
+    "endpoint": "http://127.0.0.1:8002/v1/chat/completions"
+  },
+  "requests": [
+    {
+      "request_id": 0,
+      "http_status": 200,
+      "latency_sec": 86.86630011199996,
+      "ttft_sec": 84.05029549299995,
+      "decode_span_sec": 2.8158264269998763,
+      "finish_reason": "length",
+      "usage": {
+        "completion_tokens": 64,
+        "prompt_tokens": 32795,
+        "total_tokens": 32859
+      },
+      "event_count": 67,
+      "malformed_events": 0,
+      "done_count": 1,
+      "output_chars": 79,
+      "output_preview": "<think>\n\n</think>\n\n4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20",
+      "leaked_special_token": false
+    },
+    {
+      "request_id": 1,
+      "http_status": 200,
+      "latency_sec": 43.29733439700003,
+      "ttft_sec": 40.48202563900011,
+      "decode_span_sec": 2.8147588419998066,
+      "finish_reason": "length",
+      "usage": {
+        "completion_tokens": 64,
+        "prompt_tokens": 32797,
+        "total_tokens": 32861
+      },
+      "event_count": 67,
+      "malformed_events": 0,
+      "done_count": 1,
+      "output_chars": 79,
+      "output_preview": "<think>\n\n</think>\n\n4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20",
+      "leaked_special_token": false
+    },
+    {
+      "request_id": 2,
+      "http_status": 200,
+      "latency_sec": 130.42151312800007,
+      "ttft_sec": 127.61485166099993,
+      "decode_span_sec": 2.8059872860000468,
+      "finish_reason": "length",
+      "usage": {
+        "completion_tokens": 64,
+        "prompt_tokens": 32795,
+        "total_tokens": 32859
+      },
+      "event_count": 67,
+      "malformed_events": 0,
+      "done_count": 1,
+      "output_chars": 79,
+      "output_preview": "<think>\n\n</think>\n\n4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20",
+      "leaked_special_token": false
+    },
+    {
+      "request_id": 3,
+      "http_status": 200,
+      "latency_sec": 174.03546120599984,
+      "ttft_sec": 171.23295041699987,
+      "decode_span_sec": 2.8022228550000583,
+      "finish_reason": "length",
+      "usage": {
+        "completion_tokens": 64,
+        "prompt_tokens": 32795,
+        "total_tokens": 32859
+      },
+      "event_count": 67,
+      "malformed_events": 0,
+      "done_count": 1,
+      "output_chars": 79,
+      "output_preview": "<think>\n\n</think>\n\n4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20",
+      "leaked_special_token": false
+    }
+  ],
+  "aggregate": {
+    "batch_wall_sec": 174.04970342899998,
+    "prompt_tokens": 131182,
+    "completion_tokens": 256,
+    "cold_prefill_tokens_per_sec_to_last_ttft": 766.1025502424349,
+    "completion_tokens_per_sec_e2e": 1.4708442183840318,
+    "decode_tokens_per_sec_span": 1.916839883875149
+  },
+  "vram_mib": {
+    "stop": true,
+    "start": 23576,
+    "peak": 24754,
+    "end": 23710,
+    "samples": 1525
+  },
+  "apiserver_pid": 3773141,
+  "captured_at": "2026-07-30T07:50:21.615Z"
+}

@@ -1,0 +1,24 @@
+{
+  "model": "qwen3.6-fastllm",
+  "messages": [
+    {
+      "role": "user",
+      "content": "这是流式截断测试。请从1开始逐项列出整数直到100，每项附一句说明，必须完整列完。"
+    }
+  ],
+  "max_tokens": 64,
+  "temperature": 0.0,
+  "top_p": 1.0,
+  "stream": true,
+  "chat_template_kwargs": {
+    "enable_thinking": true
+  },
+  "reasoning": {
+    "budget": 4096
+  },
+  "prompt": "<|im_start|>user\n这是流式截断测试。请从1开始逐项列出整数直到100，每项附一句说明，必须完整列完。<|im_end|>\n<|im_start|>assistant\n<think>\n",
+  "raw_prompt": true,
+  "stop": [
+    "<|im_end|>"
+  ]
+}

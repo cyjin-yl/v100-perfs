@@ -1,0 +1,35 @@
+{
+  "route": "native",
+  "http_status": 200,
+  "benchmark": {
+    "steady_ttft_sec_avg": 0.6027019779818753,
+    "steady_decode_tok_per_sec_avg": 41.97810269931806,
+    "steady_e2e_tok_per_sec_avg": 30.13275661533154,
+    "steady_total_throughput_tok_per_sec": 12.503980567034597,
+    "raw_prompt_tokens": [250, 293, 338, 382, 442],
+    "raw_completion_tokens": [64, 64, 64, 64, 64]
+  },
+  "correctness_v2": {
+    "model": "qwen3.6-27b-heretic",
+    "content": "Yes, I'm fine—thanks for asking!",
+    "reasoning_content": "The user is asking if I'm OK and wants a brief reply in English. I should respond politely and concisely.\n",
+    "finish_reason": "stop",
+    "usage": {
+      "prompt_tokens": 60,
+      "completion_tokens": 45,
+      "total_tokens": 105
+    },
+    "content_sha256": "f3c0a447c92a73066875a794fc73044504bac1285407e7aa96321eb67506b117",
+    "reasoning_sha256": "72a92452765cbb81aea451b69b800346c2bad56abe4abc3b8da24bbce0fe7286",
+    "leaked_tags": []
+  },
+  "route_evidence": [
+    "[Qwen3.5 MTP] enabled: layers=1, drafts_per_step=2",
+    "[Fastllm] FlashInfer attention disabled on GPU 0 (CC 7.0), using native attention.",
+    "[Fastllm] Native paged prefill uses chunked cublas attention."
+  ],
+  "listen_recv_q_after": {
+    "8000": 0,
+    "8002": 0
+  }
+}

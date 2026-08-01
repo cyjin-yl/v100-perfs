@@ -1,0 +1,77 @@
+{
+  "schema": "fastllm-cold-http-v1",
+  "label": "c2-32k-http-native-fp8",
+  "route": {
+    "mtp_drafts": 2,
+    "sm70_paged_xqa": true,
+    "sm70_flash_attn": false,
+    "kv_cache_dtype": "fp8_e4m3",
+    "batch_capacity": 5,
+    "token_capacity": 262144
+  },
+  "workload": {
+    "concurrency": 2,
+    "fill_fragment": " a",
+    "fill_repetitions": 32670,
+    "target_output_tokens_per_request": 64,
+    "cold_prefix": "unique nonce in first prompt page",
+    "endpoint": "http://127.0.0.1:8002/v1/chat/completions"
+  },
+  "requests": [
+    {
+      "request_id": 0,
+      "http_status": 200,
+      "latency_sec": 43.1297728629997,
+      "ttft_sec": 40.21346388699953,
+      "decode_span_sec": 2.9160109450006857,
+      "finish_reason": "length",
+      "usage": {
+        "completion_tokens": 64,
+        "prompt_tokens": 32733,
+        "total_tokens": 32797
+      },
+      "event_count": 66,
+      "malformed_events": 0,
+      "done_count": 1,
+      "output_chars": 64,
+      "output_preview": " 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 2",
+      "leaked_special_token": false
+    },
+    {
+      "request_id": 1,
+      "http_status": 200,
+      "latency_sec": 86.07817741800007,
+      "ttft_sec": 83.17729435200057,
+      "decode_span_sec": 2.8995176440002397,
+      "finish_reason": "length",
+      "usage": {
+        "completion_tokens": 64,
+        "prompt_tokens": 32731,
+        "total_tokens": 32795
+      },
+      "event_count": 66,
+      "malformed_events": 0,
+      "done_count": 1,
+      "output_chars": 64,
+      "output_preview": " 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 2",
+      "leaked_special_token": false
+    }
+  ],
+  "aggregate": {
+    "batch_wall_sec": 86.07844354700018,
+    "prompt_tokens": 65464,
+    "completion_tokens": 128,
+    "cold_prefill_tokens_per_sec_to_last_ttft": 787.0417102407883,
+    "completion_tokens_per_sec_e2e": 1.4870157350151203,
+    "decode_tokens_per_sec_span": 2.790899602353242
+  },
+  "vram_mib": {
+    "stop": true,
+    "start": 23746,
+    "peak": 24852,
+    "end": 23874,
+    "samples": 749
+  },
+  "apiserver_pid": 3639664,
+  "captured_at": "2026-07-30T06:35:49.173Z"
+}

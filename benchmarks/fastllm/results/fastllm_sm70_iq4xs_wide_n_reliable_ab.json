@@ -1,0 +1,218 @@
+{
+  "benchmark": "fastllm_feature_command_ab",
+  "configuration": {
+    "command": [
+      "/home/ezra/.config/superpowers/worktrees/fastllm/qwen35-gguf-sm70-v2/build-v2/regressionOps"
+    ],
+    "correctness": {
+      "status": "wide-N tile regression: (PASS)"
+    },
+    "cwd": "/home/ezra/.config/superpowers/worktrees/fastllm/qwen35-gguf-sm70-v2",
+    "metrics": {
+      "direct_ms": {
+        "lower_is_better": true,
+        "regex": "direct=([0-9.]+) ms",
+        "unit": "ms"
+      },
+      "reported_speedup": {
+        "lower_is_better": false,
+        "regex": "speedup=([0-9.]+)x",
+        "unit": "ratio"
+      },
+      "tiled_ms": {
+        "lower_is_better": true,
+        "regex": "tiled=([0-9.]+) ms",
+        "unit": "ms"
+      }
+    },
+    "runs": 5,
+    "variants": [
+      {
+        "env": {
+          "FASTLLM_REGRESSION_ONLY": "sm70_iq4xs_wide_n_tile",
+          "LD_LIBRARY_PATH": "/home/ezra/.conda/envs/tsenv/lib"
+        },
+        "name": "internal_direct_then_tiled"
+      }
+    ],
+    "warmups": 1
+  },
+  "created_at_utc": "2026-08-01T17:48:40.892479+00:00",
+  "environment": {
+    "executable": {
+      "available": true,
+      "mtime_ns": 1785605036228311448,
+      "path": "/home/ezra/.config/superpowers/worktrees/fastllm/qwen35-gguf-sm70-v2/build-v2/regressionOps",
+      "sha256": "14f6cd074de1311d23a61c5d6a16d677f42fedf245a5385fb6e06c9f3fd3b43d",
+      "size_bytes": 51103160
+    },
+    "gpu": {
+      "available": false,
+      "error": "Failed to initialize NVML: Driver/library version mismatch\nNVML library version: 580.173"
+    },
+    "platform": "Linux-6.19.14-300.fc44.x86_64-x86_64-with-glibc2.43",
+    "python": "3.12.11",
+    "user_metadata": {
+      "compute_capability": "7.0",
+      "date": "2026-08-01",
+      "gpu": "Tesla V100-PCIE-32GB",
+      "shape": "n2048_m17408_k5120_iq4_xs_fp16"
+    }
+  },
+  "name": "fastllm_sm70_iq4xs_wide_n_internal_ab",
+  "runs": [
+    {
+      "correctness": {
+        "status": "PASS"
+      },
+      "iteration": 0,
+      "metrics": {
+        "direct_ms": 6.61914,
+        "reported_speedup": 1.47878,
+        "tiled_ms": 4.47607
+      },
+      "output_sha256": "912f4529687669b86cb6dcf4ef1da2671f25ece796bcb1a51b51d77ef31136e5",
+      "parse_errors": [],
+      "return_code": 0,
+      "stderr": "",
+      "stdout": "CPU Instruction Info: [AVX2: ON] [AVX512F: OFF] [AVX512_VNNI: OFF] [AVX512_BF16: OFF] [AMX: OFF] \n[FastLLM] SM70 IQ4_XS wide-N tiling enabled: tile=1024.\nSM70 IQ4_XS wide-N tile n2048_m17408_k5120: direct=6.61914 ms tiled=4.47607 ms speedup=1.47878x\nSM70 IQ4_XS wide-N tile regression: PASS\n",
+      "transport_error": null,
+      "variant": "internal_direct_then_tiled",
+      "wall_seconds": 0.4074418041855097
+    },
+    {
+      "correctness": {
+        "status": "PASS"
+      },
+      "iteration": 1,
+      "metrics": {
+        "direct_ms": 6.69647,
+        "reported_speedup": 1.50357,
+        "tiled_ms": 4.4537
+      },
+      "output_sha256": "9d2d07f2987bb56b6f2e15e9bb5cacf790bbf798836304ffd7a5af280776a177",
+      "parse_errors": [],
+      "return_code": 0,
+      "stderr": "",
+      "stdout": "CPU Instruction Info: [AVX2: ON] [AVX512F: OFF] [AVX512_VNNI: OFF] [AVX512_BF16: OFF] [AMX: OFF] \n[FastLLM] SM70 IQ4_XS wide-N tiling enabled: tile=1024.\nSM70 IQ4_XS wide-N tile n2048_m17408_k5120: direct=6.69647 ms tiled=4.4537 ms speedup=1.50357x\nSM70 IQ4_XS wide-N tile regression: PASS\n",
+      "transport_error": null,
+      "variant": "internal_direct_then_tiled",
+      "wall_seconds": 0.38931172201409936
+    },
+    {
+      "correctness": {
+        "status": "PASS"
+      },
+      "iteration": 2,
+      "metrics": {
+        "direct_ms": 6.68233,
+        "reported_speedup": 1.48149,
+        "tiled_ms": 4.51055
+      },
+      "output_sha256": "e8d8d5c77b1df905220406931bd3b0a72659310f4d8a192e14dd8af63e01c04b",
+      "parse_errors": [],
+      "return_code": 0,
+      "stderr": "",
+      "stdout": "CPU Instruction Info: [AVX2: ON] [AVX512F: OFF] [AVX512_VNNI: OFF] [AVX512_BF16: OFF] [AMX: OFF] \n[FastLLM] SM70 IQ4_XS wide-N tiling enabled: tile=1024.\nSM70 IQ4_XS wide-N tile n2048_m17408_k5120: direct=6.68233 ms tiled=4.51055 ms speedup=1.48149x\nSM70 IQ4_XS wide-N tile regression: PASS\n",
+      "transport_error": null,
+      "variant": "internal_direct_then_tiled",
+      "wall_seconds": 0.38493405003100634
+    },
+    {
+      "correctness": {
+        "status": "PASS"
+      },
+      "iteration": 3,
+      "metrics": {
+        "direct_ms": 6.67266,
+        "reported_speedup": 1.48204,
+        "tiled_ms": 4.50235
+      },
+      "output_sha256": "105deba03931de3b227d29fad9ae4650475e1caf65d1f99586686218b2d24791",
+      "parse_errors": [],
+      "return_code": 0,
+      "stderr": "",
+      "stdout": "CPU Instruction Info: [AVX2: ON] [AVX512F: OFF] [AVX512_VNNI: OFF] [AVX512_BF16: OFF] [AMX: OFF] \n[FastLLM] SM70 IQ4_XS wide-N tiling enabled: tile=1024.\nSM70 IQ4_XS wide-N tile n2048_m17408_k5120: direct=6.67266 ms tiled=4.50235 ms speedup=1.48204x\nSM70 IQ4_XS wide-N tile regression: PASS\n",
+      "transport_error": null,
+      "variant": "internal_direct_then_tiled",
+      "wall_seconds": 0.3777511869557202
+    },
+    {
+      "correctness": {
+        "status": "PASS"
+      },
+      "iteration": 4,
+      "metrics": {
+        "direct_ms": 6.79732,
+        "reported_speedup": 1.5057,
+        "tiled_ms": 4.5144
+      },
+      "output_sha256": "f95185b5f63ea84ba3d504d38f43690e31da6956ca5b21ab90f77f6dd3f2383b",
+      "parse_errors": [],
+      "return_code": 0,
+      "stderr": "",
+      "stdout": "CPU Instruction Info: [AVX2: ON] [AVX512F: OFF] [AVX512_VNNI: OFF] [AVX512_BF16: OFF] [AMX: OFF] \n[FastLLM] SM70 IQ4_XS wide-N tiling enabled: tile=1024.\nSM70 IQ4_XS wide-N tile n2048_m17408_k5120: direct=6.79732 ms tiled=4.5144 ms speedup=1.5057x\nSM70 IQ4_XS wide-N tile regression: PASS\n",
+      "transport_error": null,
+      "variant": "internal_direct_then_tiled",
+      "wall_seconds": 0.37094259401783347
+    }
+  ],
+  "schema_version": 1,
+  "summary": {
+    "baseline": "internal_direct_then_tiled",
+    "metrics": {
+      "direct_ms": {
+        "internal_direct_then_tiled": {
+          "max": 6.79732,
+          "median": 6.68233,
+          "min": 6.61914,
+          "speedup_vs_baseline": 1.0,
+          "values": [
+            6.61914,
+            6.69647,
+            6.68233,
+            6.67266,
+            6.79732
+          ]
+        },
+        "unit": "ms"
+      },
+      "reported_speedup": {
+        "internal_direct_then_tiled": {
+          "max": 1.5057,
+          "median": 1.48204,
+          "min": 1.47878,
+          "speedup_vs_baseline": 1.0,
+          "values": [
+            1.47878,
+            1.50357,
+            1.48149,
+            1.48204,
+            1.5057
+          ]
+        },
+        "unit": "ratio"
+      },
+      "tiled_ms": {
+        "internal_direct_then_tiled": {
+          "max": 4.5144,
+          "median": 4.50235,
+          "min": 4.4537,
+          "speedup_vs_baseline": 1.0,
+          "values": [
+            4.47607,
+            4.4537,
+            4.51055,
+            4.50235,
+            4.5144
+          ]
+        },
+        "unit": "ms"
+      }
+    }
+  },
+  "validation": {
+    "errors": [],
+    "passed": true
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "id": "resident_32k_b",
+  "body": {
+    "model": "qwen3.6-fastllm",
+    "raw_prompt": true,
+    "max_tokens": 128,
+    "temperature": 0,
+    "stream": true,
+    "stream_options": {
+      "include_usage": true
+    }
+  },
+  "repeat": {
+    "field": "prompt",
+    "prefix": "<|im_start|>user\nresident-batch-b\nContinue the text.\n",
+    "unit": " a",
+    "count": 32670,
+    "suffix": "<|im_end|>\n<|im_start|>assistant\n"
+  }
+}
