@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "date": "2026-08-01",
+  "purpose": "Classify the apparent 3154.8 prompt-token/s value in the existing single-V100 1Cat-vLLM 1.2.1 run without rerunning inference.",
+  "source_artifacts": {
+    "server_log": "benchmarks/vllm-121/v121.log",
+    "request_trace": "benchmarks/vllm-121/v121_agents1_raw.json",
+    "summary": "benchmarks/vllm-121/v121_agents1.json",
+    "launcher": "scripts/start_121.sh"
+  },
+  "observed_configuration": {
+    "gpu_count": 1,
+    "tensor_parallel_size": 1,
+    "model": "Qwen3.6-27B-AWQ",
+    "quantization": "awq",
+    "kv_cache_dtype": "fp8_e5m2",
+    "attention_backend": "FLASH_ATTN_V100",
+    "max_num_batched_tokens": 8192,
+    "max_num_seqs": 2,
+    "chunked_prefill": true,
+    "prefix_caching": true,
+    "async_scheduling": true,
+    "enforce_eager": true,
+    "cuda_graphs": false,
+    "torch_compile": false,
+    "gdn_prefill_backend": "Triton/FLA",
+    "flashqla_gdn_decode": true,
+    "awq_turbomind_dense": true
+  },
+  "logged_metric": {
+    "timestamp": "07-01 16:44:15",
+    "avg_prompt_throughput_tokens_per_second": 3154.8,
+    "prefix_cache_hit_rate": 0.0,
+    "vllm_log_stats_interval_seconds": 10.0
+  },
+  "matching_cold_request": {
+    "agent_id": 0,
+    "turn": 1,
+    "prompt_tokens": 31549,
+    "completion_tokens": 256,
+    "ttft_seconds": 70.77652595902327,
+    "latency_seconds": 82.22485722199781,
+    "prompt_tokens_divided_by_ttft": 445.75513664326485,
+    "prompt_tokens_divided_by_log_interval": 3154.9
+  },
+  "classification": {
+    "logger_bucket_match_absolute_tokens_per_second": 0.1000000000003638,
+    "conclusion": "The 3154.8 value is a 10-second logging-bucket rate, not end-to-end cold-prefill throughput. The matching request's client-observed cold prompt rate is 445.76 prompt tokens/s when computed from prompt_tokens/TTFT.",
+    "evidence_strength": "The 31549-token request divided by vLLM's 10-second default log interval is 3154.9 tokens/s, within 0.1 tokens/s of the logged 3154.8. The request trace independently records a 70.7765-second TTFT.",
+    "limitations": [
+      "The cold request includes first-inference Triton JIT warnings, so 445.76 tokens/s is not a warmed cache-miss ceiling.",
+      "Later requests have substantial prefix-cache reuse and cannot be used as full-prompt cold-prefill measurements.",
+      "This artifact is TP1 on one V100, not a dual-V100 TP2 result.",
+      "Do not compare this logger bucket value with FastLLM prompt_tokens/TTFT figures."
+    ]
+  },
+  "direct_comparison_policy": {
+    "accepted_prefill_rate_formula": "request.prompt_tokens / request.ttft_seconds for a verified cache miss after route warmup",
+    "required_matching_fields": [
+      "model architecture and active parameter count",
+      "weight quantization",
+      "GPU count and tensor-parallel degree",
+      "prompt token IDs and length",
+      "KV dtype",
+      "prefill chunk size",
+      "cache-hit state",
+      "warmup/JIT state"
+    ]
+  }
+}

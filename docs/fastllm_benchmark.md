@@ -133,12 +133,13 @@ TTFT 从 40.18s 降至 34.40s，改善 **14.4%**，并基本追平 cache-off 基
 
 默认关闭的 `FASTLLM_QWEN35_PREFILL_PROFILE` 仅用于阶段归因。稳态每个 2K quantum 中，48 层 GDN 约 0.72s、MLP 约 1.25s；full attention 从短上下文约 0.10s 增至长上下文约 0.82s；packed append 约 8.5ms。因此 append 不是主要瓶颈，正式 wall time 也不使用 profile-on 数据。
 
-`ChunkGatedDeltaRulePrefill` 已是 FastLLM 公共 operator。针对真实 `B1/H48/32×64/K128/V128/FP16` shape 做了四项通用 CUDA backend 实验，全部 env gate 默认关闭且不支持时保留原 cuBLAS fallback：
+`ChunkGatedDeltaRulePrefill` 已是 FastLLM 公共 operator。针对真实 `B1/H48/32×64/K128/V128/FP16` shape 做了五项通用 CUDA backend 实验，全部 env gate 默认关闭且不支持时保留原 cuBLAS fallback：
 
 - SM70 FP16 fused H/O：数值在 `2e-3` 绝对/相对容差内通过，但为 12.58–12.80ms，原 cuBLAS 为 2.04–2.87ms，慢约 4.4–6.2 倍；
 - per-thread stream async gather：bit-exact，但不同轮次收益方向相反，没有稳定收益；
 - fused state/K preprocess：bit-exact，但没有跨轮稳定收益；
 - per-thread/per-device persistent scratch：bit-exact，实测 3.78ms 对 baseline 2.87ms，为负收益。
+- SM70 FP16 WMMA 单 CTA/head：state/output 在 `2e-3` 绝对/相对容差内通过；最佳 128-value-column 共享 state 调度为 3.052ms，对同轮 cuBLAS 1.870ms 慢 63.2%；32-column 四 CTA/head 调度进一步退化为 3.972ms。因此保留最佳实现用于可复现门控，但生产禁用。
 
 生产 profile 不开启以上任何实验 gate。它们作为失败安全、可复现的通用层实验保留，防止后续重复走同一路线。机器结果：`benchmarks/fastllm/results/fastllm_sm70_chunk_gdn_prefill_experiments.json`。
 

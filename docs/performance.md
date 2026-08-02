@@ -1504,3 +1504,45 @@ Turbo3 必须由 `--kv_cache_dtype turbo3` 与 `FASTLLM_QWEN35_TURBO3_KV=1` 双�
 旧 FP8 + MTP2 + CUDA embedding + 8K chunk 配置仍是短上下文速度 profile，C1/C4 为 50.85/81.13 tok/s aggregate；它与当前 Turbo3 容量 profile 的 MTP、embedding、chunk、pool 均不同，不能直接比较吞吐。
 
 ---
+
+## 20. VastLLM 与 vLLM 基座能力边界（2026-08-01）
+
+源码路径审计表明，FastLLM v2 并非缺少 continuous batching：`basellm::NewMainLoop` 已按活跃请求组成 decode batch，也能合并短 prefill；Qwen3.5/3.6 还有 MTP page budget、resident decode batch、CPU swap、long-prefill quantum、分页 prefix trie、decode CUDA Graph、NCCL TP persistent worker 和后台生成线程。因此不能把 1Cat-vLLM 的全部领先计为“vLLM 基座收益”，更不能把 Flash-Attention-V100、FlashQLA、AWQ TurboMind 或 FP8 KV kernel 收益混入调度架构。
+
+可移植且应原生重做的基座能力按依赖顺序为：
+
+| 优先级 | vLLM 机制 | VastLLM 原生等价实现 | 预期收益边界 |
+|---|---|---|---|
+| P0 | phase-free token-budget scheduler | POD `SchedulePlan`，统一表示 request row、query offset/length、computed tokens、block row 和 flags | 单个 cold 32K 中性；long prefill 与短请求并存及多请求吞吐强正向 |
+| P0 | persistent `InputBatch` | 按 max batch/tokens/blocks 一次分配 pinned host/device arena，add/remove/compact 只更新 dirty ranges | decode CPU gap、H2D 碎片和 allocator 比例下降 |
+| P0 | common attention metadata | 公共 `AttentionBatchMetadata` 描述 flat tokens、query starts、seq lens、block tables 和 slot mappings，paged attention/GDN/graph 共用 | 使能真正 ragged batch；本身不是 kernel 加速 |
+| P1 | atomic KV cache-group admission | 在现有 `PagedCacheManager`、trie 和 GPU/CPU/NVMe tier 之上增加跨 layer/K/V/TP/GDN/MTP snapshot 的 `Reserve -> Commit/Rollback` | 内存压力、prefix hit 和 preemption 下正向 |
+| P1 | shape-bucket CUDA Graph dispatcher | 先统一已有 decode graph，再对 graph-safe operator 做 padded token/request bucket；padding row 只指向 null block | 短 decode 和非精确 batch shape 正向 |
+| P1 | async scheduler/output pipeline | 先用 condition variable/output consumer 去除 busy poll；persistent 双 buffer 稳定后再试 2-deep execute | 高并发 CPU bubble 和 stream latency 正向 |
+| 保留 | process-per-rank TP | 继续使用 FastLLM thread-per-rank persistent worker；各 rank 消费同一 immutable plan | 没有证据表明改成进程会提高 V100 TP |
+
+真正 ragged continuous batch 的验收边界是 backend 直接消费同一 flat plan；如果 Qwen 路径仍触发 `runSplitBatchForward` 逐请求递归，则 scheduler 改造只能算控制面完成，不能声明吞吐能力已交付。相同地，`num_common_prefix_blocks` 是基座 metadata，只有 attention backend 实现 shared-prefix/cascade 计算后才有算力收益。
+
+明确不移植 Python scheduler、PyTorch/ATen、`torch.compile`、Inductor/FX PIECEWISE 和 vLLM process topology。可借鉴的是执行合同、持久地址、metadata builder、graph descriptor 和事务语义。
+
+最小 A/B 必须固定模型、量化、GPU 和 prompt arrival trace，分别报告：
+
+- 单 cold 32K 与 32K 运行中注入短请求的 p50/p95 TTFT；
+- concurrency 1/8/16/32 的 aggregate throughput、GPU idle gap、CPU assembly、H2D 和 allocator 时间；
+- fixed-greedy logits/token hash、prefix page boundary、batch add/remove/compact、abort/stop；
+- GDN/MTP state、KV reservation rollback、graph bucket 内非精确 shape；
+- startup-to-ready 与 ready 后 first request，禁止把 warmup 成本和首请求收益相抵后只报一个 wall time。
+
+这个边界把“vLLM 基座架构优势”与“SM70 专用 operator 优势”分账：前者可以进入 VastLLM 通用 runtime，后者仍按独立 kernel gate、fallback、correctness oracle 和实机 A/B 验收。
+
+---
+
+## 21. vLLM `Avg prompt throughput` 口径归因（2026-08-01）
+
+已有 1Cat-vLLM 1.2.1 日志中的 `Avg prompt throughput: 3154.8 tokens/s` 不是一个 31.5K cold prompt 的端到端 prefill 速度。对应请求有 31,549 prompt tokens；vLLM 默认每 10 秒输出一次统计，`31549 / 10 = 3154.9`，与日志值只差 0.1 tokens/s。客户端 trace 的真实 TTFT 是 70.7765s，因此同一请求按 `prompt_tokens / TTFT` 计算为 **445.76 prompt tok/s**。
+
+该请求的 prefix cache hit rate 为 0，但包含首次 Triton JIT warning，所以 445.76 tok/s 也不是 warm cache-miss 上限。更关键的是，launcher 和日志均显示 `tensor_parallel_size=1`、单张 V100；它不能作为“双 V100 TP2 约 2500 tok/s”证据。
+
+后续跨引擎 prefill 只接受：同模型与活跃参数、同量化、同 GPU/TP、同 token IDs/长度、同 KV dtype、同 chunk、确认 cache miss，并在 route warmup 后以 `prompt_tokens / client-observed TTFT` 计速。vLLM 周期 logger bucket 只能用于服务窗口吞吐，不能与 FastLLM 单请求 TTFT 速率直接比较。
+
+机器归因：`benchmarks/vllm-121/v121_prefill_metric_attribution.json`。

@@ -39,6 +39,13 @@
       "atol": 0.0,
       "rtol": 0.0,
       "status": "PASS"
+    },
+    "baseline_vs_sm70_wmma": {
+      "recurrent_state_atol": 0.002,
+      "recurrent_state_rtol": 0.002,
+      "core_output_atol": 0.002,
+      "core_output_rtol": 0.002,
+      "status": "PASS"
     }
   },
   "runs_ms": [
@@ -56,13 +63,42 @@
       "fused_preprocess": 2.72002,
       "combined_async_gather_fused_preprocess": 3.26756,
       "fused_h_o": 12.7987
+    },
+    {
+      "baseline": 1.87001,
+      "persistent_scratch": 1.87457,
+      "async_gather": 1.8715,
+      "fused_preprocess": 2.13345,
+      "combined_async_gather_fused_preprocess": 2.13245,
+      "fused_h_o": 8.05794,
+      "sm70_wmma_v128": 3.05226
+    },
+    {
+      "baseline": 1.87072,
+      "persistent_scratch": 1.87117,
+      "async_gather": 1.87013,
+      "fused_preprocess": 2.13299,
+      "combined_async_gather_fused_preprocess": 2.13362,
+      "fused_h_o": 8.02808,
+      "sm70_wmma_v32": 3.97228
+    },
+    {
+      "variant": "retained_v128_validation_repeat",
+      "baseline": 1.86785,
+      "persistent_scratch": 1.87346,
+      "async_gather": 1.86881,
+      "fused_preprocess": 2.13784,
+      "combined_async_gather_fused_preprocess": 2.13322,
+      "fused_h_o": 8.01797,
+      "sm70_wmma_v128": 3.09965
     }
   ],
   "gates": {
     "FASTLLM_CUDA_SM70_FUSED_CHUNK_GDN_PREFILL": "FP16 instantiation of existing fused H/O algorithm for exact SM70 64x128x128 shape",
     "FASTLLM_CUDA_CHUNK_GDN_ASYNC_GATHER": "move per-chunk V gather from legacy stream 0 to cudaStreamPerThread",
     "FASTLLM_CUDA_CHUNK_GDN_FUSED_PREPROCESS": "fuse decay scale generation, recurrent-state scaling, and K transpose/scale",
-    "FASTLLM_CUDA_CHUNK_GDN_PERSISTENT_SCRATCH": "per-thread/per-device grow-only single-block scratch arena"
+    "FASTLLM_CUDA_CHUNK_GDN_PERSISTENT_SCRATCH": "per-thread/per-device grow-only single-block scratch arena",
+    "FASTLLM_CUDA_SM70_WMMA_CHUNK_GDN_PREFILL": "single-CTA/head SM70 FP16 WMMA recurrent-core prototype for exact 64x128x128 shape; best V128 schedule retained"
   },
   "defaults": "all gates disabled",
   "conclusion": {
@@ -70,6 +106,7 @@
     "async_gather": "No stable benefit; result direction changed across runs and remained within shared-GPU clock/load noise.",
     "fused_preprocess": "No stable benefit; result direction changed across runs and remained within shared-GPU clock/load noise.",
     "persistent_scratch": "Negative in the measured run; allocator mutex/vector scan is not a material part of this operator's steady-state cost.",
+    "sm70_wmma": "Conclusive negative result. The retained one-CTA/head V128 schedule was 3.05226 ms versus 1.87001 ms cuBLAS (63.2% slower); a four-CTA/head V32 schedule was 3.97228 ms versus 1.87072 ms and was discarded.",
     "production_decision": "Do not enable any experimental gate in the production profile. Preserve gates as default-off experiments with exact fallback and focused regression coverage."
   }
 }
