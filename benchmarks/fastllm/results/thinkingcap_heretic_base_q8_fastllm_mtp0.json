@@ -1,0 +1,382 @@
+{
+  "benchmark": "fastllm_feature_http",
+  "configuration": {
+    "concurrency": 1,
+    "maximum_prop_deltas": {},
+    "request_ids": [
+      "arithmetic_126",
+      "exact_instruction",
+      "balance_scale_reasoning",
+      "required_tool_call",
+      "vision_red_pixel"
+    ],
+    "required_prop_deltas": {},
+    "runs": 2,
+    "timeout_seconds": 600.0
+  },
+  "created_at_utc": "2026-08-09T21:20:56.803085+00:00",
+  "endpoint": "http://127.0.0.1:18082",
+  "environment": {
+    "gpu": {
+      "available": true,
+      "query": "--query-gpu=name,uuid,driver_version,memory.total",
+      "rows": [
+        "Tesla V100-PCIE-32GB, GPU-cfcc5463-762e-9653-1069-5650dce02da7, 580.173.02, 32768"
+      ]
+    },
+    "platform": "Linux-7.1.7-200.fc44.x86_64-x86_64-with-glibc2.43",
+    "python": "3.14.6",
+    "user_metadata": {
+      "device": "cuda",
+      "fastllm_binary": "build/apiserver_17a099ff",
+      "kv": "turbo3",
+      "model": "ThinkingCap-Qwen3.6-27B-heretic-Q8_0.gguf",
+      "mtp": "0"
+    }
+  },
+  "props_after": {
+    "_error": "HTTPError: HTTP Error 502: Bad Gateway"
+  },
+  "props_before": {
+    "activation_dtype": "float16",
+    "backend": "fastllm",
+    "cpu_request_swap_disk_enabled": false,
+    "cpu_request_swap_disk_read_bytes": 0.0,
+    "cpu_request_swap_disk_read_mib_per_second": 0.0,
+    "cpu_request_swap_disk_restores": 0.0,
+    "cpu_request_swap_disk_spills": 0.0,
+    "cpu_request_swap_disk_write_bytes": 0.0,
+    "cpu_request_swap_enabled": false,
+    "cpu_request_swap_suspended": 0,
+    "cpu_request_swap_zstd_enabled": false,
+    "default_max_tokens": 16384,
+    "kv_cache_dtype": "turbo3",
+    "max_batch": 5,
+    "model": "qwen3.6-fastllm",
+    "multimodal_projector_loaded": true,
+    "paged_cache_snapshot_zstd_compress_calls": 0.0,
+    "paged_cache_snapshot_zstd_compress_input_bytes": 0.0,
+    "paged_cache_snapshot_zstd_compress_output_bytes": 0.0,
+    "paged_cache_snapshot_zstd_compress_seconds": 0.0,
+    "paged_cache_snapshot_zstd_decompress_calls": 0.0,
+    "paged_cache_snapshot_zstd_decompress_input_bytes": 0.0,
+    "paged_cache_snapshot_zstd_decompress_output_bytes": 0.0,
+    "paged_cache_snapshot_zstd_decompress_seconds": 0.0,
+    "prefix_cache_cpu_hit_pages": 0.0,
+    "prefix_cache_cpu_tier_bytes": 0.0,
+    "prefix_cache_cpu_tier_enabled": false,
+    "prefix_cache_disk_hits": 0.0,
+    "prefix_cache_disk_live_bytes": 0.0,
+    "prefix_cache_disk_read_bytes": 0.0,
+    "prefix_cache_disk_read_mib_per_second": 0.0,
+    "prefix_cache_disk_tier_enabled": false,
+    "prefix_cache_disk_write_bytes": 0.0,
+    "prefix_cache_gpu_hit_pages": 0.0,
+    "prefix_cache_persistence_checkpoint_count": 0.0,
+    "prefix_cache_persistence_enabled": false,
+    "prefix_cache_persistence_last_duration_ms": 0.0,
+    "prefix_cache_persistence_last_error": "",
+    "prefix_cache_persistence_loaded_generation": 0.0,
+    "prefix_cache_persistence_payload_bytes": 0.0,
+    "prefix_cache_persistence_restore_hits": 0.0,
+    "prefix_cache_recompute_tokens_per_second": 0.0,
+    "prefix_cache_zstd_compress_calls": 0.0,
+    "prefix_cache_zstd_compress_input_bytes": 0.0,
+    "prefix_cache_zstd_compress_output_bytes": 0.0,
+    "prefix_cache_zstd_compress_seconds": 0.0,
+    "prefix_cache_zstd_decompress_calls": 0.0,
+    "prefix_cache_zstd_decompress_input_bytes": 0.0,
+    "prefix_cache_zstd_decompress_mib_per_second": 0.0,
+    "prefix_cache_zstd_decompress_output_bytes": 0.0,
+    "prefix_cache_zstd_decompress_seconds": 0.0,
+    "token_pool": 65536
+  },
+  "requests": [
+    {
+      "content": "\n\n126",
+      "content_sha256": "ffdf174b2f18dff1d3fc983546db325fc1bcb7cc4090ea63bbb1fc5b14b91524",
+      "done_events": 1,
+      "event_count": 159,
+      "finish_reason": "stop",
+      "iteration": 0,
+      "malformed_events": 0,
+      "reasoning_content": "Here's a thinking process:\n\n1.  **Analyze User Input:**\n   - Operation: 84 * 3 / 2\n   - Requirement: Reply with only the integer result.\n\n2.  **Perform Calculation:**\n   - 84 * 3 = 252\n   - 252 / 2 = 126\n\n3.  **Verify Result:**\n   - 84 * 3 / 2 = 126\n   - It's an integer.\n   - Matches requirement.\n\n4.  **Format Output:**\n   - Only the integer result: 126\n\n5.  **Final Response:** 126✅\n",
+      "reasoning_sha256": "f4616f95ab7a21c14217801c9e69a7d420f221112929c1fe3d60ac22d08728fe",
+      "request_id": "arithmetic_126",
+      "request_sha256": "9302f2c7c4864e22857aca7a045fa369bf1887fb550a07acf780b83969fad776",
+      "response_bytes": 68600,
+      "response_sha256": "518235a6857f8ac912f4163236afb272937272c40190d5dd6c0f92ab2a9d37d4",
+      "status": 200,
+      "transport_error": null,
+      "ttft_seconds": 8.594335124000281,
+      "usage": {
+        "completion_tokens": 157,
+        "prompt_tokens": 28,
+        "total_tokens": 185
+      },
+      "wall_seconds": 16.62206682299984
+    },
+    {
+      "content": "\n\nTHINKINGCAP_OK",
+      "content_sha256": "56939aa401b501f731c92064e3750b4a1d7927c90ab5b4836c9ea75fb4c6b80c",
+      "done_events": 1,
+      "event_count": 133,
+      "finish_reason": "stop",
+      "iteration": 0,
+      "malformed_events": 0,
+      "reasoning_content": "Thinking Process:\n\n1.  **Analyze the Request:** The user wants the model to reply with exactly \"THINKINGCAP_OK\" and nothing else.\n2.  **Verify Constraints:** The output must be strictly the string \"THINKINGCAP_OK\". No punctuation, no extra words, no newlines (unless implied by the system, but usually \"nothing else\" means just the token).\n3.  **Formulate Output:** \"THINKINGCAP_OK\".\n4.  **Final Check:** Does the output match the instruction? Yes.\n\nOutput: THINKINGCAP_OK\n",
+      "reasoning_sha256": "c35edbf1ade1203365726922da3a2df11d444173195b59a154782850a9f5ed93",
+      "request_id": "exact_instruction",
+      "request_sha256": "c3655a1b181298df151882788e359cef5a2f848435112c142d1b63c76511eef3",
+      "response_bytes": 57467,
+      "response_sha256": "52ca77a9252096881ae9037ba8ab60e7ba8f5ae4d2e763512212829d113a0267",
+      "status": 200,
+      "transport_error": null,
+      "ttft_seconds": 0.3571187870002177,
+      "usage": {
+        "completion_tokens": 131,
+        "prompt_tokens": 37,
+        "total_tokens": 168
+      },
+      "wall_seconds": 7.14594940400093
+    },
+    {
+      "content": "\n\n**2**\n\n**Strategy:** \n1. Split the coins into three groups of three. Weigh two groups against each other. The heavier side contains the heavy coin; if they balance, it's in the unweighed group.\n2. Take the three suspect coins, weigh one against another. The heavier side reveals it; if they balance, the third unweighed coin is the heavy one.",
+      "content_sha256": "8320811ce94e7e152fbfa6b9eb9cb607c3ad7e10521ff373595e1d813c86972a",
+      "done_events": 1,
+      "event_count": 688,
+      "finish_reason": "stop",
+      "iteration": 0,
+      "malformed_events": 0,
+      "reasoning_content": "Here's a thinking process:\n\n1.  **Analyze User Input:**\n   - 9 visually identical coins\n   - Exactly one is heavier\n   - Tool: Balance scale\n   - Question: Minimum number of weighings guaranteed to find it?\n   - Output required: The number and a concise strategy.\n\n2.  **Identify Core Problem:**\n   - This is a classic coin weighing problem.\n   - With a balance scale, each weighing has 3 possible outcomes: left heavy, right heavy, or balanced.\n   - Information theory: To distinguish among N possibilities, we need at least $\\lceil \\log_3(N) \\rceil$ weighings.\n   - Here, N = 9 (any of the 9 coins could be the heavy one).\n   - $\\log_3(9) = 2$. So theoretically, 2 weighings are sufficient.\n\n3.  **Verify with Strategy:**\n   - Can we actually do it in 2 weighings?\n   - Strategy:\n     - Weighing 1: Put 3 coins on left, 3 on right, leave 3 aside.\n     - Outcomes:\n       - If left heavy: heavy coin is in left group of 3.\n       - If right heavy: heavy coin is in right group of 3.\n       - If balanced: heavy coin is in the aside group of 3.\n     - Now we have identified a group of 3 coins containing the heavy one.\n     - Weighing 2: Take 2 coins from that group of 3. Put 1 on left, 1 on right, leave 1 aside.\n     - Outcomes:\n       - If left heavy: left coin is heavy.\n       - If right heavy: right coin is heavy.\n       - If balanced: aside coin is heavy.\n   - This guarantees finding the heavy coin in exactly 2 weighings.\n\n4.  **Formulate Output:**\n   - Number: 2\n   - Strategy: Concise description of the two-step process.\n   - Check constraints: \"Give the number and a concise strategy.\"\n   - Draft: 2. Divide the coins into three groups of three. Weigh two groups against each other. If one side is heavier, the heavy coin is in that group; if they balance, it's in the unweighed group. Then, take the three suspect coins, weigh one against another. The heavier side reveals the coin, or if they balance, the third unweighed coin is the heavy one.\n\n5.  **Final Review:**\n   - Matches classic solution.\n   - Mathematically sound ($\\log_3 9 = 2$).\n   - Concise.\n   - Directly answers the prompt.\n   - Ready.✅\n",
+      "reasoning_sha256": "572d3d0b466b3ce8ac73025aaea41c1fba66ea598b4da997ce7c5d82dbdcdb84",
+      "request_id": "balance_scale_reasoning",
+      "request_sha256": "307c1e5a0725c4da43c26d36ced55b7e46cd529ee96cf48d2ee3df1c23498062",
+      "response_bytes": 297910,
+      "response_sha256": "0ed63918dcb2015da6ce68b8876cecb570942b02cfbd0984de1d2683fae17967",
+      "status": 200,
+      "transport_error": null,
+      "ttft_seconds": 0.34766127999864693,
+      "usage": {
+        "completion_tokens": 686,
+        "prompt_tokens": 49,
+        "total_tokens": 735
+      },
+      "wall_seconds": 35.735522510998635
+    },
+    {
+      "content": "\n\nget_weather(location=\"北京\")",
+      "content_sha256": "15d3c0e6d800d8f2d7e3f6b4a749a7779b65fc7190ae5f737fb5f7fac8d449d3",
+      "done_events": 1,
+      "event_count": 458,
+      "finish_reason": "stop",
+      "iteration": 0,
+      "malformed_events": 0,
+      "reasoning_content": "Here's a thinking process:\n\n1.  **Analyze User Input:**\n   - **Query:** \"请查询北京今天的天气。\" (Please check today's weather in Beijing.)\n   - **Constraint:** \"必须调用 get_weather 工具，不要自行回答。\" (Must call the `get_weather` tool, do not answer on your own.)\n\n2.  **Identify Key Requirements:**\n   - Location: 北京 (Beijing)\n   - Time: 今天 (Today)\n   - Tool to use: `get_weather`\n   - Constraint: Do not generate a direct answer without using the tool.\n\n3.  **Determine Tool Parameters:**\n   - The tool is `get_weather`.\n   - Typical parameters for a weather tool: `location` (or `city`), `date` (optional, defaults to today).\n   - I need to call `get_weather(location=\"北京\")`.\n\n4.  **Formulate Tool Call:**\n   - I will generate a tool call in the expected format. Since I'm an AI, I'll output the tool call directly as requested.\n   - Format: `get_weather(location=\"北京\")`\n\n5.  **Check Constraints:**\n   - Must call `get_weather`? Yes.\n   - Do not answer on my own? Yes, I will only output the tool call and wait for the result.\n\n6.  **Final Output Generation:**\n   - I will output the tool call exactly as required. No extra text. (In a typical function-calling setup, I'd output a structured call, but I'll keep it simple and direct as per the prompt.)\n   - I'll use the standard format: `get_weather(location=\"北京\")` or similar. Since the prompt says \"必须调用 get_weather 工具\", I'll just output the call.\n\n   Let's produce the response. \n   Note: In many AI systems, the tool call is formatted as a JSON or specific syntax. I'll use a clear, standard representation.\n   `get_weather(location=\"北京\")` is sufficient. I'll output that.✅\n",
+      "reasoning_sha256": "ab537034c02ab429a1d399988a7a65acaee8ecd23a2e9d5aea5e2277b3ae207e",
+      "request_id": "required_tool_call",
+      "request_sha256": "1cef74eb71413b5c6becd7a80bec560b76d25a4c08ded688ae0ae8920d831728",
+      "response_bytes": 198806,
+      "response_sha256": "6295b29f729b69a561812f38794fa4243aadab81c90d10c827453176176dea94",
+      "status": 200,
+      "transport_error": null,
+      "ttft_seconds": 0.30311470400010876,
+      "usage": {
+        "completion_tokens": 456,
+        "prompt_tokens": 27,
+        "total_tokens": 483
+      },
+      "wall_seconds": 23.670957354001075
+    },
+    {
+      "content": "\n\nred",
+      "content_sha256": "b71c984416c5a3e3dde04c96c9e173c4cda649bc499e969f4b0e71d409986156",
+      "done_events": 1,
+      "event_count": 7,
+      "finish_reason": "stop",
+      "iteration": 0,
+      "malformed_events": 0,
+      "reasoning_content": "b\n",
+      "reasoning_sha256": "0263829989b6fd954f72baaf2fc64bc2e2f01d692d4de72986ea808f6e99813f",
+      "request_id": "vision_red_pixel",
+      "request_sha256": "7ccfb9631ac964307430021dcb621b3df93c158ccb725a46a5b74bc379ceb2f0",
+      "response_bytes": 2701,
+      "response_sha256": "2d8bd3541df7d205205ced8340757d6ddb93f1685901ae13e924596b60d0ce0f",
+      "status": 200,
+      "transport_error": null,
+      "ttft_seconds": 0.49833158500041463,
+      "usage": {
+        "completion_tokens": 5,
+        "prompt_tokens": 31,
+        "total_tokens": 36
+      },
+      "wall_seconds": 0.7505944509994151
+    },
+    {
+      "content": "\n\n126",
+      "content_sha256": "ffdf174b2f18dff1d3fc983546db325fc1bcb7cc4090ea63bbb1fc5b14b91524",
+      "done_events": 1,
+      "event_count": 159,
+      "finish_reason": "stop",
+      "iteration": 1,
+      "malformed_events": 0,
+      "reasoning_content": "Here's a thinking process:\n\n1.  **Analyze User Input:**\n   - Operation: 84 * 3 / 2\n   - Requirement: Reply with only the integer result.\n\n2.  **Perform Calculation:**\n   - 84 * 3 = 252\n   - 252 / 2 = 126\n\n3.  **Verify Result:**\n   - 84 * 3 / 2 = 126\n   - It's an integer.\n   - Matches requirement.\n\n4.  **Format Output:**\n   - Only the integer result: 126\n\n5.  **Final Response:** 126✅\n",
+      "reasoning_sha256": "f4616f95ab7a21c14217801c9e69a7d420f221112929c1fe3d60ac22d08728fe",
+      "request_id": "arithmetic_126",
+      "request_sha256": "9302f2c7c4864e22857aca7a045fa369bf1887fb550a07acf780b83969fad776",
+      "response_bytes": 68600,
+      "response_sha256": "efa5d7cbc6736d497b88bf6b9ceed2acdb111a6e22c035cc9e56176371b72130",
+      "status": 200,
+      "transport_error": null,
+      "ttft_seconds": 0.2887186019997898,
+      "usage": {
+        "completion_tokens": 157,
+        "prompt_tokens": 28,
+        "total_tokens": 185
+      },
+      "wall_seconds": 8.27785339699949
+    },
+    {
+      "content": "\n\nTHINKINGCAP_OK",
+      "content_sha256": "56939aa401b501f731c92064e3750b4a1d7927c90ab5b4836c9ea75fb4c6b80c",
+      "done_events": 1,
+      "event_count": 133,
+      "finish_reason": "stop",
+      "iteration": 1,
+      "malformed_events": 0,
+      "reasoning_content": "Thinking Process:\n\n1.  **Analyze the Request:** The user wants the model to reply with exactly \"THINKINGCAP_OK\" and nothing else.\n2.  **Verify Constraints:** The output must be strictly the string \"THINKINGCAP_OK\". No punctuation, no extra words, no newlines (unless implied by the system, but usually \"nothing else\" means just the token).\n3.  **Formulate Output:** \"THINKINGCAP_OK\".\n4.  **Final Check:** Does the output match the instruction? Yes.\n\nOutput: THINKINGCAP_OK\n",
+      "reasoning_sha256": "c35edbf1ade1203365726922da3a2df11d444173195b59a154782850a9f5ed93",
+      "request_id": "exact_instruction",
+      "request_sha256": "c3655a1b181298df151882788e359cef5a2f848435112c142d1b63c76511eef3",
+      "response_bytes": 57467,
+      "response_sha256": "0987a739d84414500a6dbff746439beb4e60f0b78d24da34422d255fb18a371d",
+      "status": 200,
+      "transport_error": null,
+      "ttft_seconds": 0.3291923550004867,
+      "usage": {
+        "completion_tokens": 131,
+        "prompt_tokens": 37,
+        "total_tokens": 168
+      },
+      "wall_seconds": 6.997509151000486
+    },
+    {
+      "content": "\n\n**2**\n\n**Strategy:** \n1. Split the coins into three groups of three. Weigh two groups against each other. The heavier side contains the heavy coin; if they balance, it's in the unweighed group.\n2. Take the three suspect coins, weigh one against another. The heavier side reveals it; if they balance, the third unweighed coin is the heavy one.",
+      "content_sha256": "8320811ce94e7e152fbfa6b9eb9cb607c3ad7e10521ff373595e1d813c86972a",
+      "done_events": 1,
+      "event_count": 688,
+      "finish_reason": "stop",
+      "iteration": 1,
+      "malformed_events": 0,
+      "reasoning_content": "Here's a thinking process:\n\n1.  **Analyze User Input:**\n   - 9 visually identical coins\n   - Exactly one is heavier\n   - Tool: Balance scale\n   - Question: Minimum number of weighings guaranteed to find it?\n   - Output required: The number and a concise strategy.\n\n2.  **Identify Core Problem:**\n   - This is a classic coin weighing problem.\n   - With a balance scale, each weighing has 3 possible outcomes: left heavy, right heavy, or balanced.\n   - Information theory: To distinguish among N possibilities, we need at least $\\lceil \\log_3(N) \\rceil$ weighings.\n   - Here, N = 9 (any of the 9 coins could be the heavy one).\n   - $\\log_3(9) = 2$. So theoretically, 2 weighings are sufficient.\n\n3.  **Verify with Strategy:**\n   - Can we actually do it in 2 weighings?\n   - Strategy:\n     - Weighing 1: Put 3 coins on left, 3 on right, leave 3 aside.\n     - Outcomes:\n       - If left heavy: heavy coin is in left group of 3.\n       - If right heavy: heavy coin is in right group of 3.\n       - If balanced: heavy coin is in the aside group of 3.\n     - Now we have identified a group of 3 coins containing the heavy one.\n     - Weighing 2: Take 2 coins from that group of 3. Put 1 on left, 1 on right, leave 1 aside.\n     - Outcomes:\n       - If left heavy: left coin is heavy.\n       - If right heavy: right coin is heavy.\n       - If balanced: aside coin is heavy.\n   - This guarantees finding the heavy coin in exactly 2 weighings.\n\n4.  **Formulate Output:**\n   - Number: 2\n   - Strategy: Concise description of the two-step process.\n   - Check constraints: \"Give the number and a concise strategy.\"\n   - Draft: 2. Divide the coins into three groups of three. Weigh two groups against each other. If one side is heavier, the heavy coin is in that group; if they balance, it's in the unweighed group. Then, take the three suspect coins, weigh one against another. The heavier side reveals the coin, or if they balance, the third unweighed coin is the heavy one.\n\n5.  **Final Review:**\n   - Matches classic solution.\n   - Mathematically sound ($\\log_3 9 = 2$).\n   - Concise.\n   - Directly answers the prompt.\n   - Ready.✅\n",
+      "reasoning_sha256": "572d3d0b466b3ce8ac73025aaea41c1fba66ea598b4da997ce7c5d82dbdcdb84",
+      "request_id": "balance_scale_reasoning",
+      "request_sha256": "307c1e5a0725c4da43c26d36ced55b7e46cd529ee96cf48d2ee3df1c23498062",
+      "response_bytes": 297910,
+      "response_sha256": "79565596d879b463e771e01ddba3048bfc2c6680a44e17c5407ff19f6cf22692",
+      "status": 200,
+      "transport_error": null,
+      "ttft_seconds": 0.33061816100052965,
+      "usage": {
+        "completion_tokens": 686,
+        "prompt_tokens": 49,
+        "total_tokens": 735
+      },
+      "wall_seconds": 35.86141731000134
+    },
+    {
+      "content": "\n\nget_weather(location=\"北京\")",
+      "content_sha256": "15d3c0e6d800d8f2d7e3f6b4a749a7779b65fc7190ae5f737fb5f7fac8d449d3",
+      "done_events": 1,
+      "event_count": 458,
+      "finish_reason": "stop",
+      "iteration": 1,
+      "malformed_events": 0,
+      "reasoning_content": "Here's a thinking process:\n\n1.  **Analyze User Input:**\n   - **Query:** \"请查询北京今天的天气。\" (Please check today's weather in Beijing.)\n   - **Constraint:** \"必须调用 get_weather 工具，不要自行回答。\" (Must call the `get_weather` tool, do not answer on your own.)\n\n2.  **Identify Key Requirements:**\n   - Location: 北京 (Beijing)\n   - Time: 今天 (Today)\n   - Tool to use: `get_weather`\n   - Constraint: Do not generate a direct answer without using the tool.\n\n3.  **Determine Tool Parameters:**\n   - The tool is `get_weather`.\n   - Typical parameters for a weather tool: `location` (or `city`), `date` (optional, defaults to today).\n   - I need to call `get_weather(location=\"北京\")`.\n\n4.  **Formulate Tool Call:**\n   - I will generate a tool call in the expected format. Since I'm an AI, I'll output the tool call directly as requested.\n   - Format: `get_weather(location=\"北京\")`\n\n5.  **Check Constraints:**\n   - Must call `get_weather`? Yes.\n   - Do not answer on my own? Yes, I will only output the tool call and wait for the result.\n\n6.  **Final Output Generation:**\n   - I will output the tool call exactly as required. No extra text. (In a typical function-calling setup, I'd output a structured call, but I'll keep it simple and direct as per the prompt.)\n   - I'll use the standard format: `get_weather(location=\"北京\")` or similar. Since the prompt says \"必须调用 get_weather 工具\", I'll just output the call.\n\n   Let's produce the response. \n   Note: In many AI systems, the tool call is formatted as a JSON or specific syntax. I'll use a clear, standard representation.\n   `get_weather(location=\"北京\")` is sufficient. I'll output that.✅\n",
+      "reasoning_sha256": "ab537034c02ab429a1d399988a7a65acaee8ecd23a2e9d5aea5e2277b3ae207e",
+      "request_id": "required_tool_call",
+      "request_sha256": "1cef74eb71413b5c6becd7a80bec560b76d25a4c08ded688ae0ae8920d831728",
+      "response_bytes": 198806,
+      "response_sha256": "6a3f5c4e83b0f73481c5a62f0604a96f6e451abd5022385c32bd3bfa7b21b385",
+      "status": 200,
+      "transport_error": null,
+      "ttft_seconds": 0.2935719649995008,
+      "usage": {
+        "completion_tokens": 456,
+        "prompt_tokens": 27,
+        "total_tokens": 483
+      },
+      "wall_seconds": 23.629030325999338
+    },
+    {
+      "content": "",
+      "content_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "done_events": 0,
+      "event_count": 0,
+      "finish_reason": null,
+      "iteration": 1,
+      "malformed_events": 0,
+      "reasoning_content": "",
+      "reasoning_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "request_id": "vision_red_pixel",
+      "request_sha256": "7ccfb9631ac964307430021dcb621b3df93c158ccb725a46a5b74bc379ceb2f0",
+      "response_bytes": 0,
+      "response_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "status": 502,
+      "transport_error": "",
+      "ttft_seconds": null,
+      "usage": {},
+      "wall_seconds": 2.1786540810007864
+    }
+  ],
+  "schema_version": 1,
+  "summary": {
+    "by_request": {
+      "arithmetic_126": {
+        "runs": 2,
+        "ttft_median_seconds": 4.4415268630000355,
+        "wall_max_seconds": 16.62206682299984,
+        "wall_median_seconds": 12.449960109999665,
+        "wall_min_seconds": 8.27785339699949
+      },
+      "balance_scale_reasoning": {
+        "runs": 2,
+        "ttft_median_seconds": 0.3391397204995883,
+        "wall_max_seconds": 35.86141731000134,
+        "wall_median_seconds": 35.79846991049999,
+        "wall_min_seconds": 35.735522510998635
+      },
+      "exact_instruction": {
+        "runs": 2,
+        "ttft_median_seconds": 0.3431555710003522,
+        "wall_max_seconds": 7.14594940400093,
+        "wall_median_seconds": 7.071729277500708,
+        "wall_min_seconds": 6.997509151000486
+      },
+      "required_tool_call": {
+        "runs": 2,
+        "ttft_median_seconds": 0.29834333449980477,
+        "wall_max_seconds": 23.670957354001075,
+        "wall_median_seconds": 23.649993840000207,
+        "wall_min_seconds": 23.629030325999338
+      },
+      "vision_red_pixel": {
+        "runs": 2,
+        "ttft_median_seconds": 0.49833158500041463,
+        "wall_max_seconds": 2.1786540810007864,
+        "wall_median_seconds": 1.4646242660001008,
+        "wall_min_seconds": 0.7505944509994151
+      }
+    },
+    "request_count": 10
+  },
+  "validation": {
+    "errors": [
+      "vision_red_pixel iteration 1: HTTP status is 502, expected 200",
+      "vision_red_pixel iteration 1: [DONE] event count is 0, expected 1",
+      "vision_red_pixel iteration 1: finish_reason is missing",
+      "vision_red_pixel iteration 1: usage token counts are not non-negative integers"
+    ],
+    "passed": false
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "benchmark": "thinkingcap_heretic_raw_base_q8_negative_control",
+  "created_at_utc": "2026-08-09T21:20:56Z",
+  "hardware": {
+    "gpu": "Tesla V100-PCIE-32GB",
+    "compute_capability": "7.0",
+    "memory_total_mib": 32768,
+    "driver": "580.173.02"
+  },
+  "runtime": {
+    "binary": "build/apiserver",
+    "binary_sha256": "17a099ff50221bf79989284e8efd9635d53335a1e0355e7473fa8f8ce1d3d21f",
+    "endpoint": "http://127.0.0.1:18082",
+    "activation_dtype": "float16",
+    "kv_cache_dtype": "turbo3",
+    "max_batch": 5,
+    "token_pool": 65536,
+    "environment": {
+      "FASTLLM_QWEN35_ENABLE_MTP": "0",
+      "FASTLLM_QWEN35_TURBO3_KV": "1"
+    }
+  },
+  "model": {
+    "path": "/run/media/ezra/13D010B6FDBC1A06/1CatVLLM/models/ThinkingCap-Qwen3.6-27B-heretic-GGUF/ThinkingCap-Qwen3.6-27B-heretic-Q8_0.gguf",
+    "size_bytes": 28595762848,
+    "projector": "/run/media/ezra/13D010B6FDBC1A06/1CatVLLM/models/ThinkingCap-Qwen3.6-27B-GGUF/mmproj-ThinkingCap-Qwen3.6-27B-f16.gguf"
+  },
+  "result": {
+    "artifact": "thinkingcap_heretic_base_q8_fastllm_mtp0.json",
+    "requests_completed_http_200": 9,
+    "requests_attempted": 10,
+    "validation_passed": false,
+    "failed_fixture": "vision_red_pixel iteration 1",
+    "failure": "HTTP 502 with zero SSE events; the FastLLM base process exited with code 1 after the request sequence",
+    "server_log": "supervised process heretic-base-q8 log cursor 23782"
+  },
+  "interpretation": "This raw un-grafted Q8 control is a negative compatibility result for the full multimodal fixture at the tested settings. It is not evidence that the validated composite Q8 MTP0/MTP2 artifacts are invalid; those separate arms completed all 10 requests. Do not use this arm as a production recommendation without isolating the vision crash."
+}

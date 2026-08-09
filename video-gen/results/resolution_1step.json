@@ -1,0 +1,667 @@
+{
+  "schema": "v100-perfs/minimax-h3/1",
+  "started": "2026-08-09T21:22:19.304352+00:00",
+  "host": "doesworkstation",
+  "endpoint": "http://127.0.0.1:8188",
+  "workflow": "/run/media/ezra/13D010B6FDBC1A06/1CatVLLM/v100-perfs/video-gen/workflows/minimax_h3_v100_t2v_api.json",
+  "workflow_sha256": "b9c0594349aa25a1896d5e5fffa17421d5413ed9f228c6a2f8ffad5a39b54e70",
+  "matrix": "resolution",
+  "steps": 1,
+  "repeat": 1,
+  "timeout_seconds": 1800.0,
+  "idle_timeout_seconds": 600.0,
+  "min_free_vram_gib": 30.0,
+  "frame_rule": "ceil(max(5, requested_seconds*24)) rounded up to n % 17 == 5",
+  "baseline_stats": {
+    "system": {
+      "os": "linux",
+      "ram_total": 66680070144,
+      "ram_free": 55251369984,
+      "comfyui_version": "0.30.0",
+      "required_frontend_version": "1.47.12",
+      "installed_templates_version": "0.11.27",
+      "required_templates_version": "0.11.27",
+      "comfy_package_versions": [
+        {
+          "name": "comfyui-frontend-package",
+          "installed": "1.47.12",
+          "required": "1.47.12"
+        },
+        {
+          "name": "comfyui-workflow-templates",
+          "installed": "0.11.27",
+          "required": "0.11.27"
+        },
+        {
+          "name": "comfyui-embedded-docs",
+          "installed": "0.5.9",
+          "required": "0.5.9"
+        },
+        {
+          "name": "comfy-kitchen",
+          "installed": "0.2.26",
+          "required": "0.2.26"
+        },
+        {
+          "name": "comfy-aimdo",
+          "installed": "0.4.11",
+          "required": "0.4.11"
+        }
+      ],
+      "python_version": "3.12.11 | packaged by conda-forge | (main, Jun  4 2025, 14:45:31) [GCC 13.3.0]",
+      "pytorch_version": "2.10.0+cu128",
+      "embedded_python": false,
+      "deploy_environment": "local-git",
+      "argv": [
+        "main.py",
+        "--listen",
+        "0.0.0.0",
+        "--port",
+        "8188",
+        "--reserve-vram",
+        "2",
+        "--cache-none",
+        "--disable-pinned-memory",
+        "--force-fp16",
+        "--fp16-text-enc"
+      ]
+    },
+    "devices": [
+      {
+        "name": "cuda:0 Tesla V100-PCIE-32GB : cudaMallocAsync",
+        "type": "cuda",
+        "index": 0,
+        "vram_total": 34072559616,
+        "vram_free": 33730527232,
+        "torch_vram_total": 0,
+        "torch_vram_free": 0
+      }
+    ]
+  },
+  "runs": [
+    {
+      "kind": "resolution",
+      "label": "mp_0.1",
+      "target_mp": 0.1,
+      "width": 416,
+      "height": 224,
+      "requested_seconds": 2.0,
+      "frames": 56,
+      "actual_seconds": 2.3333333333333335,
+      "steps": 1,
+      "repeat": 1,
+      "client_id": "31d3117e-2260-449f-85ac-0917073c5198",
+      "run_id": "20260809T212220Z_resolution_mp_0.1_s1_01",
+      "prompt_id": "a633952f-62be-456f-8d9f-778045c350b4",
+      "submitted": "2026-08-09T21:22:20.255188+00:00",
+      "execution_started": "2026-08-09T21:22:20.394000+00:00",
+      "finished": "2026-08-09T21:31:08.363000+00:00",
+      "timing_source": "history_messages",
+      "queue_wait_s": 0.139,
+      "execution_wall_s": 527.969,
+      "end_to_end_s": 528.108,
+      "wall_s": 527.969,
+      "status": "success",
+      "completed": true,
+      "messages": [
+        [
+          "execution_start",
+          {
+            "prompt_id": "a633952f-62be-456f-8d9f-778045c350b4",
+            "timestamp": 1786310540394
+          }
+        ],
+        [
+          "execution_cached",
+          {
+            "nodes": [],
+            "prompt_id": "a633952f-62be-456f-8d9f-778045c350b4",
+            "timestamp": 1786310540474
+          }
+        ],
+        [
+          "execution_success",
+          {
+            "prompt_id": "a633952f-62be-456f-8d9f-778045c350b4",
+            "timestamp": 1786311068363
+          }
+        ]
+      ],
+      "node_errors": {},
+      "video": {
+        "filename": "MiniMaxH3_bench_20260809T212220Z_resolution_mp_0.1_s1_01_00001_.mp4",
+        "subfolder": "video",
+        "type": "output"
+      },
+      "vram_free_before": 33730527232,
+      "vram_free_min_sampled": 2044083276,
+      "vram_free_after": 33624227776,
+      "cancellation_dispatched": null,
+      "cancellation_error": null,
+      "last_poll_error": null,
+      "last_poll_stats": {
+        "system": {
+          "os": "linux",
+          "ram_total": 66680070144,
+          "ram_free": 52127223808,
+          "comfyui_version": "0.30.0",
+          "required_frontend_version": "1.47.12",
+          "installed_templates_version": "0.11.27",
+          "required_templates_version": "0.11.27",
+          "comfy_package_versions": [
+            {
+              "name": "comfyui-frontend-package",
+              "installed": "1.47.12",
+              "required": "1.47.12"
+            },
+            {
+              "name": "comfyui-workflow-templates",
+              "installed": "0.11.27",
+              "required": "0.11.27"
+            },
+            {
+              "name": "comfyui-embedded-docs",
+              "installed": "0.5.9",
+              "required": "0.5.9"
+            },
+            {
+              "name": "comfy-kitchen",
+              "installed": "0.2.26",
+              "required": "0.2.26"
+            },
+            {
+              "name": "comfy-aimdo",
+              "installed": "0.4.11",
+              "required": "0.4.11"
+            }
+          ],
+          "python_version": "3.12.11 | packaged by conda-forge | (main, Jun  4 2025, 14:45:31) [GCC 13.3.0]",
+          "pytorch_version": "2.10.0+cu128",
+          "embedded_python": false,
+          "deploy_environment": "local-git",
+          "argv": [
+            "main.py",
+            "--listen",
+            "0.0.0.0",
+            "--port",
+            "8188",
+            "--reserve-vram",
+            "2",
+            "--cache-none",
+            "--disable-pinned-memory",
+            "--force-fp16",
+            "--fp16-text-enc"
+          ]
+        },
+        "devices": [
+          {
+            "name": "cuda:0 Tesla V100-PCIE-32GB : cudaMallocAsync",
+            "type": "cuda",
+            "index": 0,
+            "vram_total": 34072559616,
+            "vram_free": 33624227776,
+            "torch_vram_total": 67108864,
+            "torch_vram_free": 57278400
+          }
+        ]
+      },
+      "system_stats": {
+        "system": {
+          "os": "linux",
+          "ram_total": 66680070144,
+          "ram_free": 52127232000,
+          "comfyui_version": "0.30.0",
+          "required_frontend_version": "1.47.12",
+          "installed_templates_version": "0.11.27",
+          "required_templates_version": "0.11.27",
+          "comfy_package_versions": [
+            {
+              "name": "comfyui-frontend-package",
+              "installed": "1.47.12",
+              "required": "1.47.12"
+            },
+            {
+              "name": "comfyui-workflow-templates",
+              "installed": "0.11.27",
+              "required": "0.11.27"
+            },
+            {
+              "name": "comfyui-embedded-docs",
+              "installed": "0.5.9",
+              "required": "0.5.9"
+            },
+            {
+              "name": "comfy-kitchen",
+              "installed": "0.2.26",
+              "required": "0.2.26"
+            },
+            {
+              "name": "comfy-aimdo",
+              "installed": "0.4.11",
+              "required": "0.4.11"
+            }
+          ],
+          "python_version": "3.12.11 | packaged by conda-forge | (main, Jun  4 2025, 14:45:31) [GCC 13.3.0]",
+          "pytorch_version": "2.10.0+cu128",
+          "embedded_python": false,
+          "deploy_environment": "local-git",
+          "argv": [
+            "main.py",
+            "--listen",
+            "0.0.0.0",
+            "--port",
+            "8188",
+            "--reserve-vram",
+            "2",
+            "--cache-none",
+            "--disable-pinned-memory",
+            "--force-fp16",
+            "--fp16-text-enc"
+          ]
+        },
+        "devices": [
+          {
+            "name": "cuda:0 Tesla V100-PCIE-32GB : cudaMallocAsync",
+            "type": "cuda",
+            "index": 0,
+            "vram_total": 34072559616,
+            "vram_free": 33624227776,
+            "torch_vram_total": 67108864,
+            "torch_vram_free": 57278400
+          }
+        ]
+      }
+    },
+    {
+      "kind": "resolution",
+      "label": "mp_0.2",
+      "target_mp": 0.2,
+      "width": 608,
+      "height": 352,
+      "requested_seconds": 2.0,
+      "frames": 56,
+      "actual_seconds": 2.3333333333333335,
+      "steps": 1,
+      "repeat": 1,
+      "client_id": "f64ec7e0-f5fa-4304-84c9-2862b8276470",
+      "run_id": "20260809T213113Z_resolution_mp_0.2_s1_01",
+      "prompt_id": "536c5308-fcec-4c99-a77e-e9b879ffc9a6",
+      "submitted": "2026-08-09T21:31:13.875843+00:00",
+      "execution_started": "2026-08-09T21:31:14.011000+00:00",
+      "finished": "2026-08-09T21:39:01.573000+00:00",
+      "timing_source": "history_messages",
+      "queue_wait_s": 0.135,
+      "execution_wall_s": 467.562,
+      "end_to_end_s": 467.697,
+      "wall_s": 467.562,
+      "status": "success",
+      "completed": true,
+      "messages": [
+        [
+          "execution_start",
+          {
+            "prompt_id": "536c5308-fcec-4c99-a77e-e9b879ffc9a6",
+            "timestamp": 1786311074011
+          }
+        ],
+        [
+          "execution_cached",
+          {
+            "nodes": [],
+            "prompt_id": "536c5308-fcec-4c99-a77e-e9b879ffc9a6",
+            "timestamp": 1786311074011
+          }
+        ],
+        [
+          "execution_success",
+          {
+            "prompt_id": "536c5308-fcec-4c99-a77e-e9b879ffc9a6",
+            "timestamp": 1786311541573
+          }
+        ]
+      ],
+      "node_errors": {},
+      "video": {
+        "filename": "MiniMaxH3_bench_20260809T213113Z_resolution_mp_0.2_s1_01_00001_.mp4",
+        "subfolder": "video",
+        "type": "output"
+      },
+      "vram_free_before": 33624227776,
+      "vram_free_min_sampled": 1836796940,
+      "vram_free_after": 33624227776,
+      "cancellation_dispatched": null,
+      "cancellation_error": null,
+      "last_poll_error": null,
+      "last_poll_stats": {
+        "system": {
+          "os": "linux",
+          "ram_total": 66680070144,
+          "ram_free": 51620315136,
+          "comfyui_version": "0.30.0",
+          "required_frontend_version": "1.47.12",
+          "installed_templates_version": "0.11.27",
+          "required_templates_version": "0.11.27",
+          "comfy_package_versions": [
+            {
+              "name": "comfyui-frontend-package",
+              "installed": "1.47.12",
+              "required": "1.47.12"
+            },
+            {
+              "name": "comfyui-workflow-templates",
+              "installed": "0.11.27",
+              "required": "0.11.27"
+            },
+            {
+              "name": "comfyui-embedded-docs",
+              "installed": "0.5.9",
+              "required": "0.5.9"
+            },
+            {
+              "name": "comfy-kitchen",
+              "installed": "0.2.26",
+              "required": "0.2.26"
+            },
+            {
+              "name": "comfy-aimdo",
+              "installed": "0.4.11",
+              "required": "0.4.11"
+            }
+          ],
+          "python_version": "3.12.11 | packaged by conda-forge | (main, Jun  4 2025, 14:45:31) [GCC 13.3.0]",
+          "pytorch_version": "2.10.0+cu128",
+          "embedded_python": false,
+          "deploy_environment": "local-git",
+          "argv": [
+            "main.py",
+            "--listen",
+            "0.0.0.0",
+            "--port",
+            "8188",
+            "--reserve-vram",
+            "2",
+            "--cache-none",
+            "--disable-pinned-memory",
+            "--force-fp16",
+            "--fp16-text-enc"
+          ]
+        },
+        "devices": [
+          {
+            "name": "cuda:0 Tesla V100-PCIE-32GB : cudaMallocAsync",
+            "type": "cuda",
+            "index": 0,
+            "vram_total": 34072559616,
+            "vram_free": 33624227776,
+            "torch_vram_total": 67108864,
+            "torch_vram_free": 57278400
+          }
+        ]
+      },
+      "system_stats": {
+        "system": {
+          "os": "linux",
+          "ram_total": 66680070144,
+          "ram_free": 51617722368,
+          "comfyui_version": "0.30.0",
+          "required_frontend_version": "1.47.12",
+          "installed_templates_version": "0.11.27",
+          "required_templates_version": "0.11.27",
+          "comfy_package_versions": [
+            {
+              "name": "comfyui-frontend-package",
+              "installed": "1.47.12",
+              "required": "1.47.12"
+            },
+            {
+              "name": "comfyui-workflow-templates",
+              "installed": "0.11.27",
+              "required": "0.11.27"
+            },
+            {
+              "name": "comfyui-embedded-docs",
+              "installed": "0.5.9",
+              "required": "0.5.9"
+            },
+            {
+              "name": "comfy-kitchen",
+              "installed": "0.2.26",
+              "required": "0.2.26"
+            },
+            {
+              "name": "comfy-aimdo",
+              "installed": "0.4.11",
+              "required": "0.4.11"
+            }
+          ],
+          "python_version": "3.12.11 | packaged by conda-forge | (main, Jun  4 2025, 14:45:31) [GCC 13.3.0]",
+          "pytorch_version": "2.10.0+cu128",
+          "embedded_python": false,
+          "deploy_environment": "local-git",
+          "argv": [
+            "main.py",
+            "--listen",
+            "0.0.0.0",
+            "--port",
+            "8188",
+            "--reserve-vram",
+            "2",
+            "--cache-none",
+            "--disable-pinned-memory",
+            "--force-fp16",
+            "--fp16-text-enc"
+          ]
+        },
+        "devices": [
+          {
+            "name": "cuda:0 Tesla V100-PCIE-32GB : cudaMallocAsync",
+            "type": "cuda",
+            "index": 0,
+            "vram_total": 34072559616,
+            "vram_free": 33624227776,
+            "torch_vram_total": 67108864,
+            "torch_vram_free": 57278400
+          }
+        ]
+      }
+    },
+    {
+      "kind": "resolution",
+      "label": "mp_0.3",
+      "target_mp": 0.3,
+      "width": 736,
+      "height": 416,
+      "requested_seconds": 2.0,
+      "frames": 56,
+      "actual_seconds": 2.3333333333333335,
+      "steps": 1,
+      "repeat": 1,
+      "client_id": "d32513ce-a3b2-46ae-a136-f488ed750ad7",
+      "run_id": "20260809T213904Z_resolution_mp_0.3_s1_01",
+      "prompt_id": "d7c34bcb-2445-4c11-9534-42d52315d532",
+      "submitted": "2026-08-09T21:39:04.898521+00:00",
+      "execution_started": "2026-08-09T21:39:05.045000+00:00",
+      "finished": "2026-08-09T21:40:32.975000+00:00",
+      "timing_source": "history_messages",
+      "queue_wait_s": 0.146,
+      "execution_wall_s": 87.93,
+      "end_to_end_s": 88.076,
+      "wall_s": 87.93,
+      "status": "error",
+      "completed": false,
+      "messages": [
+        [
+          "execution_start",
+          {
+            "prompt_id": "d7c34bcb-2445-4c11-9534-42d52315d532",
+            "timestamp": 1786311545045
+          }
+        ],
+        [
+          "execution_cached",
+          {
+            "nodes": [],
+            "prompt_id": "d7c34bcb-2445-4c11-9534-42d52315d532",
+            "timestamp": 1786311545045
+          }
+        ],
+        [
+          "execution_interrupted",
+          {
+            "prompt_id": "d7c34bcb-2445-4c11-9534-42d52315d532",
+            "node_id": "104",
+            "node_type": "MiniMaxH3ImageToVideo",
+            "executed": [
+              "11",
+              "24",
+              "13"
+            ],
+            "timestamp": 1786311632975
+          }
+        ]
+      ],
+      "node_errors": {},
+      "video": null,
+      "vram_free_before": 33624227776,
+      "vram_free_min_sampled": 26530051424,
+      "vram_free_after": 33624227776,
+      "cancellation_dispatched": null,
+      "cancellation_error": null,
+      "last_poll_error": null,
+      "last_poll_stats": {
+        "system": {
+          "os": "linux",
+          "ram_total": 66680070144,
+          "ram_free": 51253862400,
+          "comfyui_version": "0.30.0",
+          "required_frontend_version": "1.47.12",
+          "installed_templates_version": "0.11.27",
+          "required_templates_version": "0.11.27",
+          "comfy_package_versions": [
+            {
+              "name": "comfyui-frontend-package",
+              "installed": "1.47.12",
+              "required": "1.47.12"
+            },
+            {
+              "name": "comfyui-workflow-templates",
+              "installed": "0.11.27",
+              "required": "0.11.27"
+            },
+            {
+              "name": "comfyui-embedded-docs",
+              "installed": "0.5.9",
+              "required": "0.5.9"
+            },
+            {
+              "name": "comfy-kitchen",
+              "installed": "0.2.26",
+              "required": "0.2.26"
+            },
+            {
+              "name": "comfy-aimdo",
+              "installed": "0.4.11",
+              "required": "0.4.11"
+            }
+          ],
+          "python_version": "3.12.11 | packaged by conda-forge | (main, Jun  4 2025, 14:45:31) [GCC 13.3.0]",
+          "pytorch_version": "2.10.0+cu128",
+          "embedded_python": false,
+          "deploy_environment": "local-git",
+          "argv": [
+            "main.py",
+            "--listen",
+            "0.0.0.0",
+            "--port",
+            "8188",
+            "--reserve-vram",
+            "2",
+            "--cache-none",
+            "--disable-pinned-memory",
+            "--force-fp16",
+            "--fp16-text-enc"
+          ]
+        },
+        "devices": [
+          {
+            "name": "cuda:0 Tesla V100-PCIE-32GB : cudaMallocAsync",
+            "type": "cuda",
+            "index": 0,
+            "vram_total": 34072559616,
+            "vram_free": 33624227776,
+            "torch_vram_total": 67108864,
+            "torch_vram_free": 57278400
+          }
+        ]
+      },
+      "system_stats": {
+        "system": {
+          "os": "linux",
+          "ram_total": 66680070144,
+          "ram_free": 51251777536,
+          "comfyui_version": "0.30.0",
+          "required_frontend_version": "1.47.12",
+          "installed_templates_version": "0.11.27",
+          "required_templates_version": "0.11.27",
+          "comfy_package_versions": [
+            {
+              "name": "comfyui-frontend-package",
+              "installed": "1.47.12",
+              "required": "1.47.12"
+            },
+            {
+              "name": "comfyui-workflow-templates",
+              "installed": "0.11.27",
+              "required": "0.11.27"
+            },
+            {
+              "name": "comfyui-embedded-docs",
+              "installed": "0.5.9",
+              "required": "0.5.9"
+            },
+            {
+              "name": "comfy-kitchen",
+              "installed": "0.2.26",
+              "required": "0.2.26"
+            },
+            {
+              "name": "comfy-aimdo",
+              "installed": "0.4.11",
+              "required": "0.4.11"
+            }
+          ],
+          "python_version": "3.12.11 | packaged by conda-forge | (main, Jun  4 2025, 14:45:31) [GCC 13.3.0]",
+          "pytorch_version": "2.10.0+cu128",
+          "embedded_python": false,
+          "deploy_environment": "local-git",
+          "argv": [
+            "main.py",
+            "--listen",
+            "0.0.0.0",
+            "--port",
+            "8188",
+            "--reserve-vram",
+            "2",
+            "--cache-none",
+            "--disable-pinned-memory",
+            "--force-fp16",
+            "--fp16-text-enc"
+          ]
+        },
+        "devices": [
+          {
+            "name": "cuda:0 Tesla V100-PCIE-32GB : cudaMallocAsync",
+            "type": "cuda",
+            "index": 0,
+            "vram_total": 34072559616,
+            "vram_free": 33624227776,
+            "torch_vram_total": 67108864,
+            "torch_vram_free": 57278400
+          }
+        ]
+      }
+    }
+  ],
+  "finished": "2026-08-09T21:40:37.912482+00:00",
+  "total_wall_s": 1098.608
+}
