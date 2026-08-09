@@ -1,0 +1,225 @@
+{
+  "schema_version": 1,
+  "verified_at_utc": "2026-08-09T09:05:55.568559+00:00",
+  "model": "unsloth/DeepSeek-V4-Flash-0731-GGUF:UD-Q2_K_XL",
+  "modelscope_cache_revision": "b323ace6efd127442ae02b80d671c9ed95aca9a7",
+  "modelscope_content_hash_available": false,
+  "verification": {
+    "split1": {
+      "version": 3,
+      "tensor_count": 0,
+      "kv_count": 74,
+      "architecture": "deepseek4",
+      "split_count": 3,
+      "alignment": null,
+      "block_count": 43,
+      "expert_count": 256,
+      "file_header_bytes": 5257664,
+      "used_alignment": 32
+    },
+    "split2": {
+      "tensor_count": 688,
+      "split_no": 1,
+      "split_tensors_count": 1328,
+      "data_start": 44288,
+      "data_bytes": 49436969280
+    },
+    "split3": {
+      "tensor_count": 640,
+      "split_no": 2,
+      "split_tensors_count": 1328,
+      "data_start": 41664,
+      "data_bytes": 47390195456
+    },
+    "coverage": {
+      "split2_names": 688,
+      "split3_names": 640,
+      "overlap": [],
+      "union": 1328,
+      "missing_vs_canonical": [],
+      "unexpected_vs_canonical": []
+    },
+    "type_histogram": {
+      "q4_k": 1,
+      "f32": 662,
+      "q5_k": 127,
+      "q8_0": 318,
+      "iq3_xxs": 43,
+      "q6_k": 45,
+      "iq2_xs": 84,
+      "bf16": 43,
+      "i32": 3,
+      "mxfp4": 2
+    },
+    "mxfp4_tensors": [
+      "blk.26.ffn_down_exps.weight",
+      "blk.42.ffn_down_exps.weight"
+    ],
+    "packed_expert_shapes": {
+      "down:iq3_xxs": {
+        "count": 41,
+        "shape": [
+          2048,
+          4096,
+          256
+        ],
+        "uniform": true
+      },
+      "down:mxfp4": {
+        "count": 2,
+        "shape": [
+          2048,
+          4096,
+          256
+        ],
+        "uniform": true
+      },
+      "gate:iq2_xs": {
+        "count": 42,
+        "shape": [
+          4096,
+          2048,
+          256
+        ],
+        "uniform": true
+      },
+      "gate:iq3_xxs": {
+        "count": 1,
+        "shape": [
+          4096,
+          2048,
+          256
+        ],
+        "uniform": true
+      },
+      "up:iq2_xs": {
+        "count": 42,
+        "shape": [
+          4096,
+          2048,
+          256
+        ],
+        "uniform": true
+      },
+      "up:iq3_xxs": {
+        "count": 1,
+        "shape": [
+          4096,
+          2048,
+          256
+        ],
+        "uniform": true
+      }
+    },
+    "dense_shapes": {
+      "token_embd.weight": {
+        "dims": [
+          4096,
+          129280
+        ],
+        "type": "q5_k",
+        "split": "split2"
+      },
+      "output.weight": {
+        "dims": [
+          4096,
+          129280
+        ],
+        "type": "q4_k",
+        "split": "split2"
+      },
+      "output_norm.weight": {
+        "dims": [
+          4096
+        ],
+        "type": "f32",
+        "split": "split2"
+      },
+      "blk.0.attn_kv.weight": {
+        "dims": [
+          4096,
+          512
+        ],
+        "type": "q8_0",
+        "split": "split2"
+      },
+      "blk.0.attn_q_b.weight": {
+        "dims": [
+          1024,
+          32768
+        ],
+        "type": "q8_0",
+        "split": "split2"
+      },
+      "blk.0.ffn_gate_inp.weight": {
+        "dims": [
+          4096,
+          256
+        ],
+        "type": "bf16",
+        "split": "split2"
+      },
+      "blk.0.ffn_down_shexp.weight": {
+        "dims": [
+          2048,
+          4096
+        ],
+        "type": "q6_k",
+        "split": "split2"
+      },
+      "blk.2.attn_compressor_kv.weight": {
+        "dims": [
+          4096,
+          1024
+        ],
+        "type": "q8_0",
+        "split": "split2"
+      },
+      "blk.2.indexer.proj.weight": {
+        "dims": [
+          4096,
+          64
+        ],
+        "type": "f32",
+        "split": "split2"
+      },
+      "blk.0.ffn_gate_tid2eid.weight": {
+        "dims": [
+          6,
+          129280
+        ],
+        "type": "i32",
+        "split": "split2"
+      },
+      "blk.3.exp_probs_b.bias": {
+        "dims": [
+          256
+        ],
+        "type": "f32",
+        "split": "split2"
+      }
+    },
+    "total_tensor_bytes": 96827162972
+  },
+  "evidence": {
+    "command": "python /tmp/verify_q2_splits.py",
+    "script_sha256": "b895ba860cc1b1015f39a1193eba3ac7a86911cd9f502571f9a654082e37b6d8",
+    "preflight_header_sha256": {
+      "split2-header.range": "0ec970e011f57424a5917cfad58e02aa7ccb14dc63fb4be45d411338b0401f64",
+      "split3-header.range": "36bc01cf0a173ce601b927f7c344792544def6336c80a642b7fb17b645640b1d"
+    },
+    "split_files": {
+      "DeepSeek-V4-Flash-0731-UD-Q2_K_XL-00001-of-00003.gguf": {
+        "size_bytes": 5257664,
+        "sha256": "de65c5bb660817b95cc281bf54935f9d1bcc3b22535f2eae63b35a14c7c5724b"
+      },
+      "DeepSeek-V4-Flash-0731-UD-Q2_K_XL-00002-of-00003.gguf": {
+        "size_bytes": 49437013568
+      },
+      "DeepSeek-V4-Flash-0731-UD-Q2_K_XL-00003-of-00003.gguf": {
+        "size_bytes": 47390237120
+      }
+    },
+    "stderr": "SPLIT VERIFICATION PASSED: 1328 tensors, coverage exact, offsets padded-exact, tail aligned."
+  }
+}

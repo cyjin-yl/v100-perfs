@@ -69,19 +69,27 @@
 
 **GGUF 路线绕过了这个问题**: Q3_K_M 权重仅 ~14 GB, 给 KV cache 和 draft model 留出 ~16 GB。llama.cpp + GGUF 是 V100 上的最优路径。
 
+## MiniMax H3 video generation on V100
+
+The separate [video-gen/](video-gen/) chapter documents MiniMax H3 pruning and quantization options, ComfyUI/Director/Easy workflows, SM70 compatibility limits, community accelerators, and a reproducible resolution (`0.1–1.0 MP`) plus duration (`1–15 s`) benchmark harness. It keeps local V100 measurements separate from results reported on newer GPUs.
+
 ## 目录结构
 
 ```
 .
 ├── README.md                           # 本文件
-├── thinking_proxy.py                   # Thinking Proxy: API 翻译 + 认证 + 进程管理
+├── thinking_proxy.py                   # Thinking Proxy: API translation and process management
+├── video-gen/
+│   ├── README.md                       # MiniMax H3 V100 research and recommendations
+│   ├── bench_h3.py                     # Sequential ComfyUI API benchmark harness
+│   └── results/                        # Dated JSON benchmark artifacts
 ├── docs/
-│   ├── performance.md                  # 完整性能报告 (19 个章节, 含所有实测数据)
-│   ├── fastllm_benchmark.md            # FastLLM 混合调度、长上下文、MTP 与 SM70 XQA 中文报告
-│   ├── HANDOFF_fastllm.md              # FastLLM 上游 PR 与部署交接状态
-│   └── EXPERIENCE.md                   # 经验总结: SM70 踩坑、构建、调优
+│   ├── performance.md                  # Complete LLM performance report
+│   ├── fastllm_benchmark.md            # FastLLM scheduling, long context, MTP, and SM70 XQA report
+│   ├── HANDOFF_fastllm.md              # FastLLM upstream PR and deployment handoff
+│   └── EXPERIENCE.md                   # SM70 build and tuning experience
 ├── scripts/
-│   ├── start_proxy.sh                  # Thinking Proxy 启动 (管理 llama-server)
+│   ├── start_proxy.sh                  # Thinking Proxy 启动（外部/按需 FastLLM 或 llama-server）
 │   ├── start.sh                        # vLLM 1.2.0 生产 (51K ctx, multimodal)
 │   ├── start_120.sh                    # vLLM 1.2.0 纯文本 (20K ctx)
 │   ├── start_121.sh                    # vLLM 1.2.1 (98K ctx, fp8 KV)
@@ -112,6 +120,65 @@
 2. **CUDA 12.8/12.9 工具链** (系统 CUDA 13.x 不支持 SM70)
 3. 模型权重 (按上方表格自行下载)
 4. llama.cpp 编译 (见 `docs/EXPERIENCE.md` 的构建章节)
+
+### FastLLM 按需显存生命周期
+
+Thinking Proxy 默认只连接外部 FastLLM，不管理也不会向外部进程发送信号。要让常驻
+proxy 在首个本地请求时冷启动 FastLLM、空闲或显存压力下卸载，并在下次请求重新加载：
+
+```bash
+FASTLLM_OWNED=1 \
+FASTLLM_BACKEND_COMMAND='/absolute/path/apiserver --path /absolute/model.gguf --port 8002 --device cuda' \
+FASTLLM_BACKEND_URL=http://127.0.0.1:8002 \
+FASTLLM_IDLE_TIMEOUT=900 \
+FASTLLM_VRAM_HIGH_WATERMARK=0.92 \
+FASTLLM_VRAM_RESUME_WATERMARK=0.85 \
+./scripts/start_proxy.sh
+```
+
+`FASTLLM_BACKEND_COMMAND` 不经 shell 执行；请使用绝对路径。`FASTLLM_OWNED=1`
+时请求排队等待同一次冷启动，已排队但超时的请求不会发送；空闲/显存压力卸载先停止接收
+新 lease，等待在途流关闭，再终止该 proxy 自己创建的进程组。`/health` 的
+`lifecycle` 字段报告 `COLD/STARTING/READY/DRAINING/FAILED`、活动 lease、显存压力和
+重启代数。
+
+要在 owned FastLLM 卸载后恢复真实 prefix tensor/page cache，必须显式启用版本化磁盘
+checkpoint，并给出稳定且能唯一标识模型与 cache layout 的 key：
+
+```bash
+FASTLLM_PREFIX_CACHE_PERSIST=1 \
+FASTLLM_PREFIX_CACHE_PERSIST_KEY='qwen3.6-27b-iq4xs|kv=turbo3|page=2048|mtp=2' \
+FASTLLM_PREFIX_CACHE_DISK_DIR=/absolute/path/prefix-cache \
+FASTLLM_PREFIX_CACHE_CHECKPOINT_TIMEOUT=300 \
+./scripts/start_proxy.sh
+```
+
+权重、量化、KV dtype、page length 或 MTP layout 任一变化时都必须更换
+`FASTLLM_PREFIX_CACHE_PERSIST_KEY`。proxy 为每个 owned 子进程生成私有 control
+token；不要手工设置 `FASTLLM_PREFIX_CACHE_CONTROL_TOKEN`。正常 idle、显存压力或
+shutdown 会先停止接收新 lease、等待在途请求 drain，再 checkpoint，最后才向 owned
+进程组发信号。强制停止且仍有活动 lease 时跳过 checkpoint；checkpoint 失败会记录
+错误但不会阻止卸载。外部/adopted FastLLM 仍不会被 checkpoint、停止或发送信号。
+
+每代 archive 包含 paged trie、原始 page bytes，以及 Qwen3.6 linear-attention/GDN
+recurrent state 和 linear-attention MTP prefix snapshot。manifest 与 payload 都校验
+长度、维度、dtype、offset、checksum；生成目录和 `CURRENT` 指针以 rename + fsync
+发布，只保留当前及前一代。下一个 owned epoch 在接受请求前恢复；key、shape、dtype、
+page geometry 不兼容，或 manifest/payload 损坏时，整代 cache 被忽略并冷启动为空
+cache，不会部分恢复。
+
+FastLLM `/health` 暴露
+`prefix_cache_persistence_loaded_generation`、`checkpoint_count`、
+`restore_hits`、`payload_bytes`、`last_duration_ms` 和 `last_error`。proxy `/health`
+的 `lifecycle` 另有 `checkpoint_successes`、`checkpoint_failures`、
+`last_checkpoint_generation/pages/bytes/duration_ms/error`。可重复运行核心回归：
+
+```bash
+cmake --build fastllm/build --target regressionOps testCheckpointControl -j4
+FASTLLM_REGRESSION_ONLY=persistent_prefix_cache fastllm/build/regressionOps
+fastllm/build/testCheckpointControl
+(cd v100-perfs && python -m unittest -v test_thinking_proxy_lifecycle.py)
+```
 
 ### 运行基准测试
 

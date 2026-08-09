@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Thinking Proxy for llama-server (default) or an external FastLLM backend.
+Thinking Proxy for llama-server (default) or a FastLLM backend.
 
 - OpenAI /v1/chat/completions: transparent passthrough, maps reasoning_effort
   to chat_template_kwargs.enable_thinking.
@@ -9,15 +9,14 @@ Thinking Proxy for llama-server (default) or an external FastLLM backend.
 - Auth: Bearer token (OpenAI) or x-api-key (Anthropic).
   Tailscale (100.64.0.0/10) and localhost bypass auth.
 - Process manager: starts, health-checks, and auto-restarts llama-server.
-  In FastLLM mode the proxy NEVER spawns a backend; it only health-checks the
-  external FastLLM endpoint (see env below).
+  FastLLM remains external by default. With FASTLLM_OWNED=1 the proxy starts
+  one child on the first request, drains it after idle/VRAM pressure, and
+  never signals a process it did not spawn.
 
 Backend selection (env-driven; default is llama-server):
-  FASTLLM_BACKEND_URL   When set (e.g. http://127.0.0.1:8002) the proxy's
-                        "local" backend becomes this external FastLLM OpenAI
-                        endpoint instead of the self-managed llama-server.
-                        FastLLM is managed out-of-band (e.g. a tmux session)
-                        and is never spawned by this proxy.
+  FASTLLM_BACKEND_URL   Set the FastLLM OpenAI endpoint.
+  FASTLLM_OWNED         Opt in to proxy-owned cold-start/unload. Requires
+                        FASTLLM_BACKEND_COMMAND. Default 0 (external).
   FASTLLM_MODEL_SLUG    Backend slug sent in outbound payloads; never exposed
                         to clients. Default "qwen3.6-fastllm".
   FASTLLM_PUBLIC_ALIASES  Comma-separated public model names that route to
@@ -28,7 +27,8 @@ Backend selection (env-driven; default is llama-server):
                         silently fall through to cloud providers.
 
 When FASTLLM_BACKEND_URL is unset, behavior is unchanged from the original
-llama-server proxy.
+llama-server proxy. A new owned child starts a new tensor-cache epoch; only
+remote-provider routing hints survive child shutdown.
 
 Run:  python thinking_proxy.py
   or:  uvicorn thinking_proxy:app --host 0.0.0.0 --port 8000
@@ -39,12 +39,15 @@ import base64
 import datetime
 import hashlib
 import io
+import inspect
 import ipaddress
 import json
 import os
 import signal
 import sqlite3
 import sys
+import shlex
+import secrets
 import time
 import uuid
 from collections import OrderedDict
@@ -90,7 +93,7 @@ ZEN_MODELS = os.environ.get("ZEN_MODELS", "[]")
 
 CC_SWITCH_BASE_URL = os.environ.get("CC_SWITCH_BASE_URL", "http://127.0.0.1:15721")
 
-# ── FastLLM backend (optional, externally managed) ─────────────
+# ── FastLLM backend (external by default; owned lifecycle is opt-in) ──
 FASTLLM_BACKEND_URL = os.environ.get("FASTLLM_BACKEND_URL", "").rstrip("/")
 FASTLLM_MODEL_SLUG = os.environ.get("FASTLLM_MODEL_SLUG", "qwen3.6-fastllm")
 FASTLLM_PUBLIC_ALIASES = {
@@ -100,6 +103,44 @@ FASTLLM_PUBLIC_ALIASES = {
 }
 FASTLLM_ENABLED = bool(FASTLLM_BACKEND_URL)
 FASTLLM_MODE = FASTLLM_ENABLED
+FASTLLM_OWNED = os.environ.get("FASTLLM_OWNED", "0") == "1"
+FASTLLM_BACKEND_COMMAND = os.environ.get("FASTLLM_BACKEND_COMMAND", "").strip()
+FASTLLM_BACKEND_CWD = os.environ.get("FASTLLM_BACKEND_CWD", PROJECT_DIR)
+FASTLLM_BACKEND_LOG = os.environ.get(
+    "FASTLLM_BACKEND_LOG",
+    os.path.join(PROJECT_DIR, "fastllm_owned_backend.log"),
+)
+FASTLLM_START_TIMEOUT = float(os.environ.get("FASTLLM_START_TIMEOUT", "900"))
+FASTLLM_STOP_TIMEOUT = float(os.environ.get("FASTLLM_STOP_TIMEOUT", "30"))
+FASTLLM_IDLE_TIMEOUT = float(os.environ.get("FASTLLM_IDLE_TIMEOUT", "0"))
+FASTLLM_PREFIX_CACHE_PERSIST = os.environ.get(
+    "FASTLLM_PREFIX_CACHE_PERSIST", "0").strip().lower() in {
+        "1", "true", "yes", "on",
+    }
+FASTLLM_PREFIX_CACHE_CHECKPOINT_TIMEOUT = max(
+    1.0,
+    float(os.environ.get(
+        "FASTLLM_PREFIX_CACHE_CHECKPOINT_TIMEOUT", "300")),
+)
+FASTLLM_LIFECYCLE_INTERVAL = max(
+    1.0, float(os.environ.get("FASTLLM_LIFECYCLE_INTERVAL", "5")))
+FASTLLM_VRAM_MIN_FREE_BYTES = int(
+    float(os.environ.get("FASTLLM_VRAM_MIN_FREE_GIB", "0")) * 1024 ** 3)
+FASTLLM_VRAM_RESUME_FREE_BYTES = int(
+    float(os.environ.get(
+        "FASTLLM_VRAM_RESUME_FREE_GIB",
+        str(FASTLLM_VRAM_MIN_FREE_BYTES / 1024 ** 3),
+    )) * 1024 ** 3)
+FASTLLM_VRAM_HIGH_WATERMARK = float(
+    os.environ.get("FASTLLM_VRAM_HIGH_WATERMARK", "0"))
+FASTLLM_VRAM_RESUME_WATERMARK = float(
+    os.environ.get("FASTLLM_VRAM_RESUME_WATERMARK", "0"))
+FASTLLM_GPU_INDEX = os.environ.get("FASTLLM_GPU_INDEX", "0")
+if FASTLLM_OWNED and not FASTLLM_BACKEND_COMMAND:
+    raise RuntimeError(
+        "FASTLLM_OWNED=1 requires a non-empty FASTLLM_BACKEND_COMMAND")
+if FASTLLM_OWNED and not FASTLLM_MODE:
+    raise RuntimeError("FASTLLM_OWNED=1 requires FASTLLM_BACKEND_URL")
 FASTLLM_CHAT_TEMPLATE = Path(os.environ.get(
     "FASTLLM_CHAT_TEMPLATE",
     os.path.join(PROJECT_DIR, "chat_templates", "qwen3.6_gguf_original.jinja"),
@@ -279,6 +320,11 @@ class PrefixTracker:
             while len(cache) > self.local_slots:
                 cache.popitem(last=False)
 
+    def reset_local(self):
+        self._local.clear()
+        self._local_active.clear()
+        self._local_hits.clear()
+
     def all_hits(self, messages: list) -> dict:
         return {
             b: self.hit(messages, b)
@@ -287,6 +333,388 @@ class PrefixTracker:
 
 
 prefix_tracker = PrefixTracker(local_slots=2)
+
+
+class BackendLifecycleError(RuntimeError):
+    pass
+
+
+class BackendMemoryPressure(BackendLifecycleError):
+    pass
+
+
+async def _await_callback(result):
+    if inspect.isawaitable(result):
+        return await result
+    return result
+
+
+class BackendLease:
+    def __init__(self, manager):
+        self._manager = manager
+        self._released = False
+
+    async def release(self):
+        if self._released:
+            return
+        self._released = True
+        await self._manager._release()
+
+    async def __aenter__(self):
+        return self
+
+    async def __aexit__(self, exc_type, exc, traceback):
+        await self.release()
+
+
+class BackendLifecycleManager:
+    """Serialize backend epochs and account for every in-flight request."""
+
+    def __init__(
+        self,
+        *,
+        owned,
+        start_backend,
+        stop_backend,
+        probe_ready,
+        reset_local,
+        checkpoint_backend=None,
+        start_timeout=900.0,
+        readiness_interval=0.25,
+        idle_timeout=0.0,
+        minimum_free_bytes=0,
+        resume_free_bytes=0,
+        high_used_ratio=0.0,
+        resume_used_ratio=0.0,
+    ):
+        if minimum_free_bytes < 0 or resume_free_bytes < 0:
+            raise ValueError("VRAM thresholds must be non-negative")
+        if resume_free_bytes and resume_free_bytes < minimum_free_bytes:
+            raise ValueError("resume_free_bytes must be >= minimum_free_bytes")
+        high_used_ratio = float(high_used_ratio)
+        resume_used_ratio = float(resume_used_ratio)
+        if high_used_ratio and not 0.0 < high_used_ratio < 1.0:
+            raise ValueError("high_used_ratio must be between 0 and 1")
+        if resume_used_ratio and not 0.0 < resume_used_ratio < 1.0:
+            raise ValueError("resume_used_ratio must be between 0 and 1")
+        if high_used_ratio and resume_used_ratio >= high_used_ratio:
+            raise ValueError("resume_used_ratio must be below high_used_ratio")
+        self.owned = bool(owned)
+        self.start_backend = start_backend
+        self.stop_backend = stop_backend
+        self.probe_ready = probe_ready
+        self.checkpoint_backend = checkpoint_backend
+        self.reset_local = reset_local
+        self.start_timeout = float(start_timeout)
+        self.readiness_interval = max(0.01, float(readiness_interval))
+        self.idle_timeout = max(0.0, float(idle_timeout))
+        self.minimum_free_bytes = int(minimum_free_bytes)
+        self.resume_free_bytes = int(resume_free_bytes)
+        self.high_used_ratio = high_used_ratio
+        self.resume_used_ratio = resume_used_ratio
+        self.state = "COLD"
+        self.generation = 0
+        self.active = 0
+        self.last_idle_at = time.monotonic()
+        self.last_error = None
+        self.last_stop_reason = None
+        self.child = None
+        self.checkpoint_successes = 0
+        self.checkpoint_failures = 0
+        self.last_checkpoint_error = None
+        self.last_checkpoint_generation = 0
+        self.last_checkpoint_pages = 0
+        self.last_checkpoint_bytes = 0
+        self.last_checkpoint_duration_ms = 0.0
+        self._pressure = False
+        self._accepting = True
+        self._drained = asyncio.Event()
+        self._drained.set()
+        self._lock = asyncio.Lock()
+        self._stop_lock = asyncio.Lock()
+        self._activation_task = None
+
+    @property
+    def pressure(self):
+        return self._pressure
+
+    async def acquire(self, timeout=None):
+        async with self._lock:
+            if not self._accepting:
+                raise BackendLifecycleError(
+                    "FastLLM backend is draining for shutdown")
+            if self._pressure:
+                raise BackendMemoryPressure(
+                    "FastLLM activation is blocked by the VRAM free-space watermark")
+            if self.state in ("DRAINING", "STOPPING"):
+                raise BackendLifecycleError(
+                    "FastLLM backend is unloading")
+            if self.state == "READY":
+                self.active += 1
+                self._drained.clear()
+                return BackendLease(self)
+            task = self._activation_task
+            if task is None or task.done():
+                self.state = "STARTING"
+                self.last_error = None
+                task = asyncio.create_task(self._activate())
+                self._activation_task = task
+
+        waiter = asyncio.shield(task)
+        if timeout is None:
+            await waiter
+        else:
+            await asyncio.wait_for(waiter, timeout=max(0.0, float(timeout)))
+
+        async with self._lock:
+            if not self._accepting:
+                raise BackendLifecycleError(
+                    "FastLLM backend is draining for shutdown")
+            if self._pressure:
+                raise BackendMemoryPressure(
+                    "FastLLM became unavailable under VRAM pressure")
+            if self.state != "READY":
+                raise BackendLifecycleError(
+                    self.last_error or f"FastLLM backend is {self.state}")
+            self.active += 1
+            self._drained.clear()
+            return BackendLease(self)
+
+    async def wait_for_activation(self):
+        async with self._lock:
+            task = self._activation_task
+        if task is not None:
+            await asyncio.shield(task)
+
+    async def observe_child_exit(self, child):
+        async with self._lock:
+            if not self.owned or self.child is not child:
+                return False
+            self.child = None
+            self.state = "FAILED"
+            self.last_error = (
+                f"FastLLM backend exited with code {child.returncode}")
+            return True
+
+    async def _activate(self):
+        child = None
+        next_generation = self.generation + 1
+        try:
+            async with asyncio.timeout(self.start_timeout):
+                if self.owned:
+                    child = await _await_callback(
+                        self.start_backend(next_generation))
+                    while not await _await_callback(
+                        self.probe_ready(child)
+                    ):
+                        await asyncio.sleep(self.readiness_interval)
+                    await _await_callback(self.reset_local())
+            async with self._lock:
+                self.child = child
+                if self.owned:
+                    self.generation = next_generation
+                self.state = "READY"
+                self.last_error = None
+        except BaseException as exc:
+            if child is not None and self.owned:
+                try:
+                    await _await_callback(self.stop_backend(child))
+                except BaseException:
+                    pass
+            message = (
+                f"FastLLM backend activation failed: {type(exc).__name__}: {exc}")
+            async with self._lock:
+                self.child = None
+                self.state = "FAILED"
+                self.last_error = message
+            if isinstance(exc, asyncio.CancelledError):
+                raise
+            raise BackendLifecycleError(message) from exc
+
+    async def _release(self):
+        stop_for_pressure = False
+        async with self._lock:
+            if self.active <= 0:
+                raise BackendLifecycleError("backend lease accounting underflow")
+            self.active -= 1
+            if self.active == 0:
+                self.last_idle_at = time.monotonic()
+                self._drained.set()
+                stop_for_pressure = (
+                    self.state == "DRAINING" and self._pressure)
+        if stop_for_pressure:
+            await self.stop("memory_pressure")
+
+    async def check_idle(self, now=None):
+        if not self.owned or self.idle_timeout <= 0:
+            return False
+        timestamp = time.monotonic() if now is None else float(now)
+        async with self._lock:
+            should_stop = (
+                self.state == "READY"
+                and self.active == 0
+                and timestamp - self.last_idle_at >= self.idle_timeout
+            )
+        if not should_stop:
+            return False
+        return await self.stop("idle")
+
+    async def observe_memory(self, *, free_bytes, total_bytes):
+        if not self.owned or (
+            self.minimum_free_bytes <= 0 and self.high_used_ratio <= 0
+        ):
+            return False
+        free_bytes = int(free_bytes)
+        total_bytes = int(total_bytes)
+        if free_bytes < 0 or total_bytes <= 0 or free_bytes > total_bytes:
+            raise ValueError("invalid VRAM sample")
+        used_ratio = 1.0 - (free_bytes / total_bytes)
+        crossed_high = (
+            (self.minimum_free_bytes > 0
+             and free_bytes < self.minimum_free_bytes)
+            or (self.high_used_ratio > 0
+                and used_ratio >= self.high_used_ratio)
+        )
+        crossed_resume = (
+            (self.resume_free_bytes <= 0
+             or free_bytes >= self.resume_free_bytes)
+            and (self.resume_used_ratio <= 0
+                 or used_ratio <= self.resume_used_ratio)
+        )
+
+        stop_now = False
+        changed = False
+        async with self._lock:
+            if crossed_high:
+                changed = not self._pressure
+                self._pressure = True
+                if self.state == "READY":
+                    self.state = "DRAINING"
+                    stop_now = self.active == 0
+            elif self._pressure and crossed_resume:
+                self._pressure = False
+                changed = True
+                if self.state == "DRAINING" and self.active > 0:
+                    self.state = "READY"
+        if stop_now:
+            await self.stop("memory_pressure")
+        return changed
+
+    async def drain_and_stop(self, reason, timeout):
+        if not self.owned:
+            return False
+        async with self._lock:
+            self._accepting = False
+            if self.active > 0:
+                self.state = "DRAINING"
+                self.last_stop_reason = str(reason)
+        timed_out = False
+        try:
+            await asyncio.wait_for(
+                self._drained.wait(), timeout=max(0.0, float(timeout)))
+        except asyncio.TimeoutError:
+            timed_out = True
+        return await self.stop(reason, force=timed_out)
+
+    async def stop(self, reason, force=False):
+        if not self.owned:
+            return False
+        async with self._stop_lock:
+            activation = None
+            async with self._lock:
+                if self.active > 0 and not force:
+                    self.state = "DRAINING"
+                    self.last_stop_reason = str(reason)
+                    return False
+                if (
+                    self.state == "STARTING"
+                    and self._activation_task is not None
+                    and not self._activation_task.done()
+                ):
+                    activation = self._activation_task
+                    activation.cancel()
+                child = self.child
+                if activation is None and child is None:
+                    if self.state != "FAILED":
+                        self.state = "COLD"
+                    return False
+                self.state = "STOPPING"
+                self.last_stop_reason = str(reason)
+            if activation is not None:
+                await asyncio.gather(activation, return_exceptions=True)
+                async with self._lock:
+                    self.child = None
+                    self._activation_task = None
+                    self.state = "COLD"
+                    self.last_idle_at = time.monotonic()
+                return True
+            should_checkpoint = (
+                child is not None
+                and self.active == 0
+                and self.checkpoint_backend is not None
+            )
+            if should_checkpoint:
+                checkpoint_started = time.monotonic()
+                try:
+                    result = await _await_callback(
+                        self.checkpoint_backend(child))
+                    result = result if isinstance(result, dict) else {}
+                    duration_ms = float(result.get(
+                        "duration_ms",
+                        (time.monotonic() - checkpoint_started) * 1000.0,
+                    ))
+                    async with self._lock:
+                        self.checkpoint_successes += 1
+                        self.last_checkpoint_error = None
+                        self.last_checkpoint_generation = int(
+                            result.get("generation", 0))
+                        self.last_checkpoint_pages = int(
+                            result.get("pages", 0))
+                        self.last_checkpoint_bytes = int(
+                            result.get("bytes", 0))
+                        self.last_checkpoint_duration_ms = duration_ms
+                except Exception as exc:
+                    message = (
+                        "FastLLM prefix-cache checkpoint failed: "
+                        f"{type(exc).__name__}: {exc}"
+                    )
+                    async with self._lock:
+                        self.checkpoint_failures += 1
+                        self.last_checkpoint_error = message
+                        self.last_checkpoint_duration_ms = (
+                            time.monotonic() - checkpoint_started
+                        ) * 1000.0
+                    print(f"[lifecycle] {message}", flush=True)
+            try:
+                await _await_callback(self.stop_backend(child))
+            finally:
+                async with self._lock:
+                    if self.child is child:
+                        self.child = None
+                    self.state = "COLD"
+                    self.last_idle_at = time.monotonic()
+            return True
+
+    def snapshot(self):
+        return {
+            "owned": self.owned,
+            "state": self.state,
+            "generation": self.generation,
+            "active": self.active,
+            "accepting": self._accepting,
+            "pressure": self._pressure,
+            "last_error": self.last_error,
+            "last_stop_reason": self.last_stop_reason,
+            "checkpoint_successes": self.checkpoint_successes,
+            "checkpoint_failures": self.checkpoint_failures,
+            "last_checkpoint_error": self.last_checkpoint_error,
+            "last_checkpoint_generation":
+                self.last_checkpoint_generation,
+            "last_checkpoint_pages": self.last_checkpoint_pages,
+            "last_checkpoint_bytes": self.last_checkpoint_bytes,
+            "last_checkpoint_duration_ms":
+                self.last_checkpoint_duration_ms,
+        }
 
 
 # ─── Model routing config ────────────────────────────────────────
@@ -586,13 +1014,14 @@ async def _zen_stream(body: dict):
 # ─── Priority queue for local backend ────────────────────────────
 
 class _QueueItem:
-    __slots__ = ("body", "priority", "event", "response", "error")
+    __slots__ = ("body", "priority", "event", "response", "error", "cancelled")
     def __init__(self, body: dict, priority: int):
         self.body = body
         self.priority = priority
         self.event = asyncio.Event()
         self.response = None
         self.error = None
+        self.cancelled = False
 
     def __lt__(self, other):
         if self.priority != other.priority:
@@ -619,12 +1048,21 @@ class BackendScheduler:
     async def _worker(self):
         while True:
             _, item = await self._queue.get()
+            lease = None
+            sent = False
             self.active += 1
             try:
+                if item.cancelled:
+                    continue
+                lease = await backend_lifecycle.acquire(timeout=QUEUE_TIMEOUT)
+                if item.cancelled:
+                    continue
                 outbound = item.body
                 if FASTLLM_MODE:
-                    outbound = prepare_fastllm_body(item.body, FASTLLM_CHAT_TEMPLATE)
+                    outbound = prepare_fastllm_body(
+                        item.body, FASTLLM_CHAT_TEMPLATE)
                 async with httpx.AsyncClient(timeout=QUEUE_TIMEOUT + 60) as c:
+                    sent = True
                     resp = await c.post(
                         f"{BACKEND_URL}/v1/chat/completions", json=outbound)
                     if FASTLLM_MODE and resp.status_code == 200:
@@ -640,29 +1078,44 @@ class BackendScheduler:
                         except Exception:
                             pass
                     item.response = resp
+                    if not item.cancelled:
+                        item.event.set()
+            except Exception as exc:
+                if not item.cancelled:
+                    item.error = exc
                     item.event.set()
-            except Exception as e:
-                item.error = e
-                item.event.set()
             finally:
+                if lease is not None:
+                    await lease.release()
                 self.active -= 1
-                hit = False
-                ok = item.response and item.response.status_code == 200
-                if ok:
-                    try:
-                        data = item.response.json()
-                        u = data.get("usage", {})
-                        pt = u.get("prompt_tokens", 0)
-                        pe = u.get("prompt_tokens_evaluated", pt)
-                        hit = pt > 0 and pe is not None and pe < pt
-                    except Exception:
-                        pass
-                    backend_penalty.record_success("local")
-                    service_history.record("local", True)
-                else:
-                    backend_penalty.record_failure("local")
-                    service_history.record("local", False)
-                prefix_tracker.record(item.body.get("messages", []), "local", hit_confirmed=hit)
+                self._queue.task_done()
+                if sent:
+                    hit = False
+                    ok = item.response and item.response.status_code == 200
+                    if ok:
+                        try:
+                            data = item.response.json()
+                            usage = data.get("usage", {})
+                            prompt_tokens = usage.get("prompt_tokens", 0)
+                            evaluated = usage.get(
+                                "prompt_tokens_evaluated", prompt_tokens)
+                            hit = (
+                                prompt_tokens > 0
+                                and evaluated is not None
+                                and evaluated < prompt_tokens
+                            )
+                        except Exception:
+                            pass
+                        backend_penalty.record_success("local")
+                        service_history.record("local", True)
+                    else:
+                        backend_penalty.record_failure("local")
+                        service_history.record("local", False)
+                    prefix_tracker.record(
+                        item.body.get("messages", []),
+                        "local",
+                        hit_confirmed=hit,
+                    )
 
     async def submit(self, body: dict, priority: int, timeout: float | None = None):
         item = _QueueItem(body, priority)
@@ -670,6 +1123,7 @@ class BackendScheduler:
         try:
             await asyncio.wait_for(item.event.wait(), timeout=timeout)
         except asyncio.TimeoutError:
+            item.cancelled = True
             raise
         if item.error:
             raise item.error
@@ -907,22 +1361,30 @@ def _backend_reloading_sse():
 
 
 async def _open_backend_stream(url: str, body: dict, timeout: float = 600):
+    lease = await backend_lifecycle.acquire(
+        timeout=min(float(timeout), float(QUEUE_TIMEOUT)))
     client = httpx.AsyncClient(timeout=timeout)
     try:
         request = client.build_request("POST", url, json=body)
         response = await client.send(request, stream=True)
     except BaseException:
         await client.aclose()
+        await lease.release()
         raise
-    return client, response
+    return client, response, lease
 
 
 async def _close_backend_stream(opened_stream):
-    client, response = opened_stream
+    client, response = opened_stream[:2]
+    lease = opened_stream[2] if len(opened_stream) > 2 else None
     try:
         await response.aclose()
     finally:
-        await client.aclose()
+        try:
+            await client.aclose()
+        finally:
+            if lease is not None:
+                await lease.release()
 
 
 async def _cc_chat(anthropic_body: dict) -> dict:
@@ -1098,12 +1560,17 @@ class LlamaManager:
 
     async def start(self):
         if FASTLLM_MODE:
-            # External FastLLM backend — never spawn; only health-probe it.
+            # FastLLM has a separate lifecycle manager; this legacy manager
+            # only keeps the cached TCP readiness signal current.
             self._adopted = True
             self.proc = None
             asyncio.create_task(self.monitor())
-            print(f"[manager] FastLLM backend {BACKEND_URL} configured; "
-                  f"llama-server spawn disabled", flush=True)
+            ownership = "owned, cold-start" if FASTLLM_OWNED else "external"
+            print(
+                f"[manager] FastLLM backend {BACKEND_URL} configured "
+                f"({ownership}); llama-server spawn disabled",
+                flush=True,
+            )
             return
         try:
             async with httpx.AsyncClient(timeout=3) as c:
@@ -1226,6 +1693,206 @@ class LlamaManager:
 manager = LlamaManager()
 
 
+class OwnedFastLLMChild:
+    __slots__ = ("process", "generation", "_control_token")
+
+    def __init__(self, process, generation, control_token):
+        self.process = process
+        self.generation = int(generation)
+        self._control_token = str(control_token)
+
+    @property
+    def pid(self):
+        return self.process.pid
+
+    @property
+    def returncode(self):
+        return self.process.returncode
+
+    def __repr__(self):
+        return (
+            f"OwnedFastLLMChild(generation={self.generation}, "
+            f"pid={self.pid}, returncode={self.returncode})"
+        )
+
+
+async def _spawn_owned_fastllm(generation):
+    argv = shlex.split(FASTLLM_BACKEND_COMMAND)
+    if not argv:
+        raise BackendLifecycleError("FASTLLM_BACKEND_COMMAND is empty")
+    log_path = Path(FASTLLM_BACKEND_LOG)
+    log_path.parent.mkdir(parents=True, exist_ok=True)
+    log_file = open(log_path, "ab", buffering=0)
+    log_file.write(
+        f"\n[proxy] starting FastLLM generation {generation} at "
+        f"{datetime.datetime.now().isoformat()}\n".encode())
+    control_token = secrets.token_urlsafe(32)
+    child_env = os.environ.copy()
+    child_env["FASTLLM_PREFIX_CACHE_CONTROL_TOKEN"] = control_token
+    try:
+        process = await asyncio.create_subprocess_exec(
+            *argv,
+            stdin=asyncio.subprocess.DEVNULL,
+            stdout=log_file,
+            stderr=asyncio.subprocess.STDOUT,
+            cwd=FASTLLM_BACKEND_CWD,
+            env=child_env,
+            start_new_session=True,
+        )
+    finally:
+        log_file.close()
+    print(
+        f"[lifecycle] starting owned FastLLM generation {generation}, "
+        f"pid={process.pid}",
+        flush=True,
+    )
+    return OwnedFastLLMChild(process, generation, control_token)
+async def _checkpoint_owned_fastllm(child):
+    process = child.process
+    if process.returncode is not None:
+        raise BackendLifecycleError(
+            f"FastLLM backend exited with code {process.returncode} "
+            "before prefix-cache checkpoint")
+    if not child._control_token:
+        raise BackendLifecycleError(
+            "owned FastLLM control token is unavailable")
+    headers = {
+        "Authorization": f"Bearer {child._control_token}"
+    }
+    async with httpx.AsyncClient(
+            timeout=FASTLLM_PREFIX_CACHE_CHECKPOINT_TIMEOUT) as client:
+        response = await client.post(
+            f"{BACKEND_URL}/admin/prefix-cache/checkpoint",
+            headers=headers,
+        )
+    if response.status_code != 200:
+        detail = response.text[:512].replace("\n", " ")
+        raise BackendLifecycleError(
+            "FastLLM prefix-cache checkpoint returned "
+            f"HTTP {response.status_code}: {detail}")
+    result = response.json()
+    if not isinstance(result, dict) or result.get("status") != "ok":
+        raise BackendLifecycleError(
+            "FastLLM prefix-cache checkpoint returned an invalid response")
+    return result
+
+
+async def _stop_owned_fastllm(child):
+    global BACKEND_READY
+    BACKEND_READY = False
+    process = child.process
+    if process.returncode is not None:
+        await process.wait()
+        return
+    try:
+        os.killpg(process.pid, signal.SIGTERM)
+    except ProcessLookupError:
+        await process.wait()
+        return
+    try:
+        await asyncio.wait_for(
+            process.wait(), timeout=FASTLLM_STOP_TIMEOUT)
+    except asyncio.TimeoutError:
+        try:
+            os.killpg(process.pid, signal.SIGKILL)
+        except ProcessLookupError:
+            pass
+        await process.wait()
+    print(
+        f"[lifecycle] stopped owned FastLLM pid={process.pid}, "
+        f"code={process.returncode}",
+        flush=True,
+    )
+
+
+async def _probe_lifecycle_backend(child):
+    global BACKEND_READY
+    process = child.process
+    if process.returncode is not None:
+        raise BackendLifecycleError(
+            f"FastLLM backend exited with code {process.returncode}")
+    ready = await _tcp_backend_ready(timeout=HEALTH_TIMEOUT)
+    BACKEND_READY = ready
+    return ready
+
+
+def _reset_local_cache_expectations():
+    prefix_tracker.reset_local()
+
+
+backend_lifecycle = BackendLifecycleManager(
+    owned=FASTLLM_OWNED,
+    start_backend=_spawn_owned_fastllm,
+    stop_backend=_stop_owned_fastllm,
+    probe_ready=_probe_lifecycle_backend,
+    reset_local=_reset_local_cache_expectations,
+    checkpoint_backend=(
+        _checkpoint_owned_fastllm
+        if FASTLLM_PREFIX_CACHE_PERSIST
+        else None
+    ),
+    start_timeout=(
+        FASTLLM_START_TIMEOUT if FASTLLM_OWNED else HEALTH_TIMEOUT),
+    idle_timeout=FASTLLM_IDLE_TIMEOUT,
+    minimum_free_bytes=FASTLLM_VRAM_MIN_FREE_BYTES,
+    resume_free_bytes=FASTLLM_VRAM_RESUME_FREE_BYTES,
+    high_used_ratio=FASTLLM_VRAM_HIGH_WATERMARK,
+    resume_used_ratio=FASTLLM_VRAM_RESUME_WATERMARK,
+)
+lifecycle_watchdog_task = None
+
+
+async def _read_vram_sample():
+    if (
+        FASTLLM_VRAM_MIN_FREE_BYTES <= 0
+        and FASTLLM_VRAM_HIGH_WATERMARK <= 0
+    ):
+        return None
+    try:
+        process = await asyncio.create_subprocess_exec(
+            "nvidia-smi",
+            f"--id={FASTLLM_GPU_INDEX}",
+            "--query-gpu=memory.free,memory.total",
+            "--format=csv,noheader,nounits",
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.DEVNULL,
+        )
+        stdout, _ = await asyncio.wait_for(
+            process.communicate(), timeout=HEALTH_TIMEOUT)
+        if process.returncode != 0:
+            return None
+        values = stdout.decode().strip().splitlines()[0].split(",")
+        free_mib, total_mib = (int(value.strip()) for value in values[:2])
+        return free_mib * 1024 ** 2, total_mib * 1024 ** 2
+    except (IndexError, OSError, ValueError, asyncio.TimeoutError):
+        return None
+
+
+async def _lifecycle_watchdog():
+    while True:
+        await asyncio.sleep(FASTLLM_LIFECYCLE_INTERVAL)
+        child = backend_lifecycle.child
+        if child is not None and child.returncode is not None:
+            if await backend_lifecycle.observe_child_exit(child):
+                print(
+                    f"[lifecycle] owned FastLLM exited, "
+                    f"code={child.returncode}; next request will reload",
+                    flush=True,
+                )
+        await backend_lifecycle.check_idle()
+        sample = await _read_vram_sample()
+        if sample is not None:
+            changed = await backend_lifecycle.observe_memory(
+                free_bytes=sample[0], total_bytes=sample[1])
+            if changed:
+                print(
+                    f"[lifecycle] VRAM pressure="
+                    f"{backend_lifecycle.pressure}, "
+                    f"free={sample[0] / 1024 ** 3:.2f} GiB",
+                    flush=True,
+                )
+
+
 # ─── Auth middleware ─────────────────────────────────────────────
 
 NO_AUTH_PATHS = {"/health", "/", "/favicon.ico"}
@@ -1265,7 +1932,8 @@ class AuthMiddleware(BaseHTTPMiddleware):
         )
 
 
-_NATIVE_IMAGE_FORMATS = {"png", "jpeg", "jpg", "gif", "bmp"}
+# FastLLM's JPEG decoder corrupts vision embeddings; only PNG is native-safe.
+_NATIVE_IMAGE_FORMATS = {"png"}
 
 
 def _convert_images(messages):
@@ -1409,7 +2077,7 @@ async def openai_chat(request: Request):
             stream_body = (prepare_fastllm_body(body, FASTLLM_CHAT_TEMPLATE)
                            if FASTLLM_MODE else body)
             opened_stream = await _open_backend_stream(stream_url, stream_body)
-        except httpx.TransportError:
+        except (httpx.TransportError, BackendLifecycleError):
             scheduler.release_stream()
             backend_penalty.record_failure("local")
             service_history.record("local", False)
@@ -1445,7 +2113,7 @@ async def openai_chat(request: Request):
                 requested_model)
         except asyncio.TimeoutError:
             return JSONResponse({"error": "local backend busy, retry later"}, status_code=503)
-        except httpx.TransportError:
+        except (httpx.TransportError, BackendLifecycleError):
             return _backend_reloading_response()
 
     last_err = ""
@@ -1465,7 +2133,7 @@ async def openai_chat(request: Request):
         except asyncio.TimeoutError:
             last_err = "local_timeout"
             print(f"[route] local timeout ({to}s)", flush=True)
-        except httpx.TransportError:
+        except (httpx.TransportError, BackendLifecycleError):
             last_err = "local_down"
             print("[route] local down", flush=True)
         if is_heretic:
@@ -1589,7 +2257,7 @@ async def anthropic_messages(request: Request):
                           media_type="application/json")
         except asyncio.TimeoutError:
             return JSONResponse({"error": "local backend busy, retry later"}, status_code=503)
-        except httpx.TransportError:
+        except (httpx.TransportError, BackendLifecycleError):
             return _backend_reloading_response()
 
     last_err = ""
@@ -1606,7 +2274,7 @@ async def anthropic_messages(request: Request):
         except asyncio.TimeoutError:
             last_err = "local_timeout"
             print(f"[route] local timeout ({to}s)", flush=True)
-        except httpx.TransportError:
+        except (httpx.TransportError, BackendLifecycleError):
             last_err = "local_down"
             print("[route] local down", flush=True)
         if is_heretic:
@@ -1657,12 +2325,18 @@ async def anthropic_count_tokens(request: Request):
     if FASTLLM_MODE:
         count_body = prepare_fastllm_body(openai_body, FASTLLM_CHAT_TEMPLATE)
     try:
+        lease = await backend_lifecycle.acquire(timeout=QUEUE_TIMEOUT)
+    except (asyncio.TimeoutError, BackendLifecycleError):
+        return _backend_reloading_response()
+    try:
         async with httpx.AsyncClient(timeout=60) as client:
             resp = await client.post(
                 f"{BACKEND_URL}/v1/chat/completions", json=count_body)
             data = resp.json()
     except httpx.TransportError:
         return _backend_reloading_response()
+    finally:
+        await lease.release()
     usage = data.get("usage", {})
     return JSONResponse({
         "input_tokens": usage.get("prompt_tokens", 0),
@@ -1790,14 +2464,37 @@ def _anthropic_to_openai(body: dict) -> dict:
         result["top_k"] = body["top_k"]
 
     if body.get("tools"):
-        result["tools"] = [{
-            "type": "function",
-            "function": {
-                "name": t.get("name", ""),
-                "description": t.get("description", ""),
-                "parameters": t.get("input_schema", {}),
-            },
-        } for t in body["tools"]]
+        result["tools"] = []
+        for tool in body["tools"]:
+            if tool.get("type", "").startswith("web_search") and not tool.get(
+                "input_schema"
+            ):
+                name = "web_search"
+                description = tool.get(
+                    "description", "Search the web for current information."
+                )
+                parameters = {
+                    "type": "object",
+                    "properties": {
+                        "query": {
+                            "type": "string",
+                            "description": "The search query.",
+                        },
+                    },
+                    "required": ["query"],
+                }
+            else:
+                name = tool.get("name", "")
+                description = tool.get("description", "")
+                parameters = tool.get("input_schema", {})
+            result["tools"].append({
+                "type": "function",
+                "function": {
+                    "name": name,
+                    "description": description,
+                    "parameters": parameters,
+                },
+            })
         result.setdefault("tool_choice", "auto")
 
     tc = body.get("tool_choice")
@@ -2008,6 +2705,12 @@ async def _anthropic_stream_limited(openai_body: dict, request: Request, public_
             return
         yield _sse("error", {"error": {"message": "queue timeout"}})
         return
+    try:
+        lease = await backend_lifecycle.acquire(timeout=timeout)
+    except (asyncio.TimeoutError, BackendLifecycleError) as exc:
+        scheduler.release_stream()
+        yield _sse("error", {"error": {"message": str(exc)}})
+        return
     prefix_tracker.reserve(openai_body.get("messages", []))
     local_failed = False
     yielded_local_event = False
@@ -2022,6 +2725,7 @@ async def _anthropic_stream_limited(openai_body: dict, request: Request, public_
     finally:
         prefix_tracker.record(openai_body.get("messages", []), "local")
         scheduler.release_stream()
+        await lease.release()
 
     if local_failed:
         if yielded_local_event:
@@ -2093,7 +2797,7 @@ async def _iter_sse_payloads(lines):
 async def _proxy_stream(url: str, body: dict, opened_stream=None):
     if opened_stream is None:
         opened_stream = await _open_backend_stream(url, body)
-    _, resp = opened_stream
+    resp = opened_stream[1]
     try:
         if resp.status_code != 200:
             err_body = await resp.aread()
@@ -2191,6 +2895,33 @@ async def _anthropic_stream(openai_body: dict, public_model: str = ""):
                         "delta": {"type": "text_delta", "text": tc},
                     })
 
+
+                # Convert OpenAI tool_calls deltas to Anthropic tool_use blocks.
+                tcs = delta.get("tool_calls")
+                if tcs:
+                    for tc in tcs:
+                        tc_id = tc.get("id", f"toolu_{uuid.uuid4().hex[:24]}")
+                        fn = tc.get("function", {})
+                        fn_name = fn.get("name", "")
+                        fn_args = fn.get("arguments", "")
+                        if fn_name:
+                            if cur_type is not None:
+                                yield _sse("content_block_stop", {
+                                    "type": "content_block_stop", "index": block_idx})
+                                block_idx += 1
+                            yield _sse("content_block_start", {
+                                "type": "content_block_start", "index": block_idx,
+                                "content_block": {
+                                    "type": "tool_use", "id": tc_id,
+                                    "name": fn_name, "input": {},
+                                },
+                            })
+                            cur_type = "tool_use"
+                        if fn_args and cur_type == "tool_use":
+                            yield _sse("content_block_delta", {
+                                "type": "content_block_delta", "index": block_idx,
+                                "delta": {"type": "input_json_delta", "partial_json": fn_args},
+                            })
                 u = ev.get("usage")
                 if u:
                     in_tokens = u.get("prompt_tokens", in_tokens)
@@ -2221,14 +2952,20 @@ def _sse(event: str, data: dict) -> str:
 
 @app.get("/health")
 async def health(request: Request):
-    """Unified health for whichever local backend is selected (llama-server or
-    the external FastLLM endpoint). Reflects the cached readiness flag by
-    default; pass ?probe=1 for a live check against the backend health path."""
-    ready = BACKEND_READY
+    """Report backend state without activating an owned cold backend."""
+    lifecycle = backend_lifecycle.snapshot()
+    ready = (
+        lifecycle["state"] == "READY"
+        if FASTLLM_OWNED
+        else BACKEND_READY
+    )
     if request.query_params.get("probe") == "1":
         try:
             if FASTLLM_MODE:
-                ready = await _tcp_backend_ready(timeout=HEALTH_TIMEOUT)
+                ready = (
+                    lifecycle["state"] == "READY"
+                    and await _tcp_backend_ready(timeout=HEALTH_TIMEOUT)
+                )
             else:
                 async with httpx.AsyncClient(timeout=HEALTH_TIMEOUT) as client:
                     r = await client.get(f"{BACKEND_URL}{BACKEND_HEALTH_PATH}")
@@ -2240,6 +2977,7 @@ async def health(request: Request):
         "backend": "fastllm" if FASTLLM_MODE else "llama",
         "backend_url": BACKEND_URL,
         "ready": ready,
+        "lifecycle": lifecycle,
     })
 
 
@@ -2257,6 +2995,10 @@ async def passthrough(path: str, request: Request):
         if k.lower() not in ("host", "authorization", "x-api-key")
     }
     try:
+        lease = await backend_lifecycle.acquire(timeout=QUEUE_TIMEOUT)
+    except (asyncio.TimeoutError, BackendLifecycleError):
+        return _backend_reloading_response()
+    try:
         async with httpx.AsyncClient(timeout=600) as client:
             resp = await client.request(
                 request.method, url,
@@ -2270,19 +3012,33 @@ async def passthrough(path: str, request: Request):
             )
     except httpx.TransportError:
         return _backend_reloading_response()
+    finally:
+        await lease.release()
 
 
 # ─── Startup / shutdown ─────────────────────────────────────────
 
 @app.on_event("startup")
 async def _startup():
+    global lifecycle_watchdog_task
     asyncio.create_task(manager.start())
     asyncio.create_task(scheduler.start_workers())
+    if FASTLLM_OWNED:
+        lifecycle_watchdog_task = asyncio.create_task(
+            _lifecycle_watchdog())
     print("[proxy] starting in background, backend not ready yet", flush=True)
 
 
 @app.on_event("shutdown")
 async def _shutdown():
+    global lifecycle_watchdog_task
+    if lifecycle_watchdog_task is not None:
+        lifecycle_watchdog_task.cancel()
+        await asyncio.gather(
+            lifecycle_watchdog_task, return_exceptions=True)
+        lifecycle_watchdog_task = None
+    await backend_lifecycle.drain_and_stop(
+        "proxy_shutdown", timeout=FASTLLM_STOP_TIMEOUT)
     if not manager._adopted and manager.proc is not None:
         await manager.stop()
 

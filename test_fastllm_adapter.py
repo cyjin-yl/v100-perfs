@@ -48,6 +48,28 @@ class FastLLMAdapterTests(unittest.TestCase):
         self.assertEqual(actual["messages"], body["messages"])
         self.assertEqual(actual["max_tokens"], 64)
 
+    def test_prepare_body_keeps_multimodal_messages_for_backend_template(self):
+        body = {
+            "model": "qwen3.6-fastllm",
+            "messages": [{
+                "role": "user",
+                "content": [
+                    {"type": "text", "text": "What is shown?"},
+                    {
+                        "type": "image_url",
+                        "image_url": {"url": "data:image/png;base64,AAAA"},
+                    },
+                ],
+            }],
+        }
+
+        actual = fastllm_adapter.prepare_fastllm_body(body, TEMPLATE)
+
+        self.assertNotIn("raw_prompt", actual)
+        self.assertNotIn("prompt", actual)
+        self.assertEqual(actual["messages"], body["messages"])
+        self.assertEqual(actual["stop"], ["<|im_end|>", "<|endoftext|>"])
+
     def test_prepare_body_adds_all_qwen_end_marker_stops(self):
         body = {
             "model": "qwen3.6-fastllm",

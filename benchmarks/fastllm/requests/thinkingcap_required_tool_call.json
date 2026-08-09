@@ -1,0 +1,40 @@
+{
+  "id": "required_tool_call",
+  "body": {
+    "model": "qwen3.6-fastllm",
+    "messages": [
+      {
+        "role": "user",
+        "content": "请查询北京今天的天气。必须调用 get_weather 工具，不要自行回答。"
+      }
+    ],
+    "tools": [
+      {
+        "type": "function",
+        "function": {
+          "name": "get_weather",
+          "description": "Get current weather for a city.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "city": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "city"
+            ],
+            "additionalProperties": false
+          }
+        }
+      }
+    ],
+    "tool_choice": "auto",
+    "temperature": 0.0,
+    "max_tokens": 512,
+    "stream": true,
+    "stream_options": {
+      "include_usage": true
+    }
+  }
+}

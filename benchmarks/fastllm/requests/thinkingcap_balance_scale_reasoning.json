@@ -1,0 +1,18 @@
+{
+  "id": "balance_scale_reasoning",
+  "body": {
+    "model": "qwen3.6-fastllm",
+    "messages": [
+      {
+        "role": "user",
+        "content": "You have 9 visually identical coins. Exactly one is heavier. Using a balance scale, what is the minimum number of weighings guaranteed to find it? Give the number and a concise strategy."
+      }
+    ],
+    "temperature": 0.0,
+    "max_tokens": 1024,
+    "stream": true,
+    "stream_options": {
+      "include_usage": true
+    }
+  }
+}

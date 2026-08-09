@@ -1,3 +1,5 @@
+import base64
+import io
 import asyncio
 import json
 import os
@@ -79,6 +81,67 @@ class ModelRewriteTests(unittest.TestCase):
             json.loads(payload)["model"], "qwen3.6-27b-awq"
         )
 
+
+
+class AnthropicToolConversionTests(unittest.TestCase):
+    def test_builtin_web_search_gets_query_schema(self):
+        body = {
+            "model": "qwen3.6-27b-heretic",
+            "messages": [{"role": "user", "content": "Search the web"}],
+            "max_tokens": 128,
+            "tools": [{
+                "type": "web_search_20250305",
+                "name": "web_search",
+                "max_uses": 3,
+            }],
+        }
+
+        converted = thinking_proxy._anthropic_to_openai(body)
+
+        self.assertEqual(converted["tools"], [{
+            "type": "function",
+            "function": {
+                "name": "web_search",
+                "description": "Search the web for current information.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "query": {
+                            "type": "string",
+                            "description": "The search query.",
+                        },
+                    },
+                    "required": ["query"],
+                },
+            },
+        }])
+
+
+class ImageConversionTests(unittest.TestCase):
+    def test_jpeg_data_url_is_reencoded_as_png(self):
+        from PIL import Image
+
+        source = io.BytesIO()
+        Image.new("RGB", (1, 1), (255, 0, 0)).save(source, format="JPEG")
+        messages = [{
+            "role": "user",
+            "content": [{
+                "type": "image_url",
+                "image_url": {
+                    "url": (
+                        "data:image/jpeg;base64,"
+                        + base64.b64encode(source.getvalue()).decode()
+                    ),
+                },
+            }],
+        }]
+
+        thinking_proxy._convert_images(messages)
+
+        converted = messages[0]["content"][0]["image_url"]["url"]
+        self.assertTrue(converted.startswith("data:image/png;base64,"))
+        payload = base64.b64decode(converted.partition(",")[2])
+        self.assertTrue(payload.startswith(b"\x89PNG\r\n\x1a\n"))
 
 
 class LocalOnlyStreamTests(unittest.IsolatedAsyncioTestCase):
@@ -251,6 +314,49 @@ class AnthropicStreamTests(unittest.IsolatedAsyncioTestCase):
         self.assertIn('"input_tokens": 7, "output_tokens": 3', output)
         self.assertTrue(output.endswith("event: message_stop\n" +
                                         'data: {"type": "message_stop"}\n\n'))
+
+    async def test_tool_call_deltas_produce_anthropic_tool_use_block(self):
+        lines = [
+            'data: {"choices": [{"delta": {"tool_calls": [{"index": 0, "id": "call_search", "type": "function", "function": {"name": "web_search", "arguments": ""}}]}, "finish_reason": null}]}',
+            "",
+            'data: {"choices": [{"delta": {"tool_calls": [{"index": 0, "function": {"arguments": "{\\"query\\":"}}]}, "finish_reason": null}]}',
+            "",
+            'data: {"choices": [{"delta": {"tool_calls": [{"index": 0, "function": {"arguments": "\\"weather\\"}"}}]}, "finish_reason": null}]}',
+            "",
+            'data: {"choices": [{"delta": {"content": ""}, "finish_reason": "tool_calls"}], "usage": {"prompt_tokens": 11, "completion_tokens": 4}}',
+            "",
+            "data: [DONE]",
+            "",
+        ]
+        client = self._client_for(lines)
+        body = {"model": "qwen3.6-fastllm", "messages": [], "stream": True}
+        with (
+            mock.patch.object(
+                thinking_proxy, "prepare_fastllm_body", side_effect=lambda b, _: b
+            ),
+            mock.patch.object(
+                thinking_proxy.httpx, "AsyncClient", return_value=client
+            ),
+        ):
+            output = "".join([
+                chunk async for chunk in thinking_proxy._anthropic_stream(body)
+            ])
+
+        self.assertIn(
+            '"type": "tool_use", "id": "call_search", '
+            '"name": "web_search", "input": {}',
+            output,
+        )
+        self.assertIn(
+            '"type": "input_json_delta", "partial_json": "{\\"query\\":"',
+            output,
+        )
+        self.assertIn(
+            '"type": "input_json_delta", "partial_json": "\\"weather\\"}"',
+            output,
+        )
+        self.assertIn('"stop_reason": "tool_use"', output)
+        self.assertIn('"input_tokens": 11, "output_tokens": 4', output)
 
     async def test_done_without_terminal_event_is_an_error(self):
         lines = [

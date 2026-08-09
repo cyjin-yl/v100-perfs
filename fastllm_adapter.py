@@ -69,12 +69,29 @@ def render_fastllm_prompt(body: dict[str, Any], template_path: str | Path) -> st
     )
 
 
+
+
+def _body_has_images(body: dict[str, Any]) -> bool:
+    for message in body.get("messages") or []:
+        content = message.get("content", "")
+        if not isinstance(content, list):
+            continue
+        for block in content:
+            if isinstance(block, dict) and block.get("type") in {
+                "image",
+                "image_url",
+            }:
+                return True
+    return False
+
+
 def prepare_fastllm_body(
     body: dict[str, Any], template_path: str | Path
 ) -> dict[str, Any]:
     prepared = copy.deepcopy(body)
-    prepared["prompt"] = render_fastllm_prompt(body, template_path)
-    prepared["raw_prompt"] = True
+    if not _body_has_images(body):
+        prepared["prompt"] = render_fastllm_prompt(body, template_path)
+        prepared["raw_prompt"] = True
     stops = prepared.get("stop")
     if stops is None:
         merged_stops = []

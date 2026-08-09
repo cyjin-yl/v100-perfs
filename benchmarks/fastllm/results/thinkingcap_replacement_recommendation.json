@@ -1,0 +1,75 @@
+{
+  "benchmark": "thinkingcap_replacement_recommendation",
+  "created_at_utc": "2026-08-09T07:09:05Z",
+  "hardware": "Tesla V100-PCIE-32GB",
+  "runtime": "FastLLM native apiserver",
+  "decision": {
+    "status": "CONDITIONAL_REPLACE",
+    "replace_fable_with": "bottlecapai/ThinkingCap-Qwen3.6-27B-GGUF Q4_K_M",
+    "do_not_deploy": "Q6_K",
+    "reason": "Q4_K_M is materially faster than the existing Fable baseline and completed all five content fixtures. Cutover remains conditional because its required-tool fixture emitted the correct JSON payload in assistant content with finish_reason=stop rather than an OpenAI tool_calls delta."
+  },
+  "configuration": {
+    "activation_dtype": "float16",
+    "kv_cache_dtype": "turbo3",
+    "max_batch": 5,
+    "token_pool": 65536,
+    "mtp": 0,
+    "temperature": 0.0
+  },
+  "artifacts": {
+    "q4_result": "thinkingcap_q4_fastllm_mtp0.json",
+    "q6_result": "thinkingcap_q6_fastllm_mtp0.json",
+    "fable_results": "/tmp/thinkingcap_eval/results/fable_raw_*_final.json",
+    "q4_size_bytes": 16810713056,
+    "q4_local_sha256": "b0651e28555bde7d2459ce99f091319b1a547143463e8d49f2aa7f572675fe67",
+    "q6_size_bytes": 22430998496,
+    "q6_local_sha256": "37d93cb02a08e42a2b8e917d79efc340709b90546cac1fa655121ccadf4aa791",
+    "mmproj_size_bytes": 931145888,
+    "mmproj_local_sha256": "81a714ac5e8e15687371fc95a180953a29b732962f6616f791063ff127559412",
+    "hash_verification": "Q4, Q6, and mmproj local SHA-256 values match Hugging Face blobs=true metadata fetched directly at 2026-08-09T08:14:23Z",
+    "size_measurement": "Observed with stat on the three completed local files at 2026-08-09T07:09:05Z"
+  },
+  "performance": {
+    "q4_text_decode_tokens_per_second_range": [39.95, 45.15],
+    "q4_vision_decode_tokens_per_second_range": [23.52, 24.04],
+    "q6_decode_tokens_per_second_range": [15.84, 16.24],
+    "fable_text_decode_tokens_per_second_range": [27.09, 28.38],
+    "fable_vision_decode_tokens_per_second": 28.85,
+    "interpretation": "Q4 text decode is 40.8-66.7% faster than the observed Fable text range; Q4 vision decode is 16.7-18.5% slower. Q6 is 40.0-44.2% slower than the Fable text range and consumes 5.62 GB more model storage than Q4."
+  },
+  "quality": {
+    "q4": {
+      "arithmetic_126": "PASS: final content 126 in both runs",
+      "exact_instruction": "PASS: final content THINKINGCAP_OK in both runs",
+      "balance_scale_reasoning": "PASS: answer 2 with valid strategy in both runs",
+      "required_tool_call": "PAYLOAD_PASS_PROTOCOL_FAIL: {name:get_weather, arguments:{city:北京}} in assistant content; no OpenAI tool_calls delta",
+      "vision_red_pixel": "PASS: Red in both runs"
+    },
+    "q6": {
+      "arithmetic_126": "PASS",
+      "exact_instruction": "PASS",
+      "balance_scale_reasoning": "PASS",
+      "required_tool_call": "FAIL: emitted argument key location while schema requires city and additionalProperties=false",
+      "vision_red_pixel": "PASS"
+    },
+    "fable": {
+      "arithmetic_126": "FAIL: empty final content, finish_reason=length at 256 tokens",
+      "exact_instruction": "PASS",
+      "balance_scale_reasoning": "FAIL: empty final content, finish_reason=length at 1024 tokens",
+      "required_tool_call": "PROTOCOL_PASS: finish_reason=tool_calls; feature runner did not persist tool delta fields",
+      "vision_red_pixel": "PASS"
+    }
+  },
+  "cutover_gates": [
+    "Normalize Q4 textual tool JSON to native OpenAI tool_calls and verify an Anthropic tool_use round trip through thinking_proxy.py",
+    "Run Q4 MTP2 versus MTP0 greedy-parity and acceptance test; MTP direction approved, but MTP is not required for the initial replacement",
+    "Cross-check local Q4/Q6 sha256 against Hugging Face LFS metadata when network/API access recovers",
+    "Use the existing FastLLM native fallback profile; do not introduce llama.cpp"
+  ],
+  "negative_results": [
+    "Q6_K provided no fixture-quality gain over Q4_K_M, was approximately 2.5x slower for text decode, and violated the tool schema",
+    "Q4_K_M is not yet a transparent tool-calling replacement without protocol normalization",
+    "NVML peak-memory sampling was unavailable because the host had a 580.159 kernel module / 580.173 userspace library mismatch"
+  ]
+}

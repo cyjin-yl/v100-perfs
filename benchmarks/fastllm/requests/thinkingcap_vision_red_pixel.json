@@ -1,0 +1,29 @@
+{
+  "id": "vision_red_pixel",
+  "body": {
+    "model": "qwen3.6-fastllm",
+    "messages": [
+      {
+        "role": "user",
+        "content": [
+          {
+            "type": "image_url",
+            "image_url": {
+              "url": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=="
+            }
+          },
+          {
+            "type": "text",
+            "text": "What is the dominant color of this image? Reply with one color word."
+          }
+        ]
+      }
+    ],
+    "temperature": 0.0,
+    "max_tokens": 256,
+    "stream": true,
+    "stream_options": {
+      "include_usage": true
+    }
+  }
+}

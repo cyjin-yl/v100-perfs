@@ -1,0 +1,61 @@
+From 0036333 Mon Sep 17 00:00:00 2001
+Subject: [PATCH] Support Qwen3.6 GGUF models (qwen35 architecture) and fix IQ4_XS dequantize
+
+GGUF files for Qwen3.6 report `general.architecture = "qwen35"`, but
+fastllm's internal model type for the same family is "qwen3_5". Add the
+alias to the GGUF-to-fastllm type dictionary.
+
+Also fix IQ4_XS weight loading: the `to_float` function pointer was
+commented out in both `type_traits` tables, causing
+`WeightImportGGUFTensor: weight ... can't convert to fp32`. The
+`dequantize_row_iq4_xs` function exists in ggml-dequantize.cpp, it just
+wasn't wired in.
+
+Tested with Qwen3.6 27B GGUF (IQ4_XS, with MTP): model loads all blocks
+into GPU.
+
+Note: Qwen3.6 also introduces SSM (state space model) layers in each
+block that fastllm's qwen3_5 forward pass does not yet implement.
+Inference will deadlock until SSM support is added separately. This
+patch only fixes the GGUF metadata mapping and weight dequantization.
+
+---
+
+ src/model.cpp                   | 1 +
+ third_party/gguf/gguf.cpp       | 4 ++--
+ 2 files changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/src/model.cpp b/src/model.cpp
+--- a/src/model.cpp
++++ b/src/model.cpp
+@@ -2110,6 +2110,7 @@ namespace fastllm {
+         static std::map <std::string, std::string> ggufTypeToFastllmTypeDict = {
+             {"qwen2", "qwen2"}, // llama
+             {"qwen3moe", "qwen3_moe"}, {"qwen3_moe", "qwen3_moe"}, // qwen3_moe
++            {"qwen35", "qwen3_5"}, {"qwen3_5", "qwen3_5"}, // qwen3_5 (Qwen3.6 GGUF reports as qwen35)
+             {"glm4_moe", "glm4_moe"}, // glm4_moe
+             {"glm-dsa", "glm_moe_dsa"}, {"glm_moe_dsa", "glm_moe_dsa"}, // glm_moe_dsa
+             {"minimax_m2", "minimax_m2"}, // minimax_m2
+
+diff --git a/third_party/gguf/gguf.cpp b/third_party/gguf/gguf.cpp
+--- a/third_party/gguf/gguf.cpp
++++ b/third_party/gguf/gguf.cpp
+@@ -205,7 +205,7 @@
+         {GGML_TYPE_IQ4_XS, {/* type_name */"iq4_xs", /* blck_size */QK_K,
+             /* type_size */ sizeof(block_iq4_xs),/* is_quantized */  true,
+-            // .to_float                 = (ggml_to_float_t) dequantize_row_iq4_xs,
++            /* to_float */ (ggml_to_float_t) dequantize_row_iq4_xs,
+             // .from_float_ref           = (ggml_from_float_t)quantize_row_iq4_xs_ref,
+         }},
+@@ -545,7 +545,7 @@
+         {GGML_TYPE_IQ4_XS, {
+             .type_name                = "iq4_xs",
+             .blck_size                = QK_K,
+             .type_size                = sizeof(block_iq4_xs),
+             .is_quantized             = true,
+-            // .to_float                 = (ggml_to_float_t) dequantize_row_iq4_xs,
++            .to_float                 = (ggml_to_float_t) dequantize_row_iq4_xs,
+             // .from_float_ref           = (ggml_from_float_t)quantize_row_iq4_xs_ref,
+         }},
+-- 
+2.50.1

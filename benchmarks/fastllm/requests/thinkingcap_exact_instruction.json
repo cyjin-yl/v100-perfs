@@ -1,0 +1,22 @@
+{
+  "id": "exact_instruction",
+  "body": {
+    "model": "qwen3.6-fastllm",
+    "messages": [
+      {
+        "role": "system",
+        "content": "Follow the user's output-format instruction exactly."
+      },
+      {
+        "role": "user",
+        "content": "Reply with exactly THINKINGCAP_OK and nothing else."
+      }
+    ],
+    "temperature": 0.0,
+    "max_tokens": 256,
+    "stream": true,
+    "stream_options": {
+      "include_usage": true
+    }
+  }
+}
