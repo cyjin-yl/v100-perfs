@@ -31,6 +31,7 @@ FastLLM 已能在单块 V100-32GB 上完整运行这份 Qwen3.6 27B GGUF，包�
 | resident decode 实验 | C2，各 128 completion | gate-on wall 106.14s；gate-off 89.39s | resident plain decode batch 为负收益，默认关闭 |
 | Turbo3 CPU/disk swap L3 | 3×约 32K，32,768-token pool | 1 次增量 spill/restore；39,172,183 / 48,758,784 B；输出与单路 control 全匹配 | 超池完整状态轮转与 zstd/disk 恢复通过 |
 | Turbo3 page-aligned prefix tier | 12,128-token prompt，16,384-token pool | cold 12.414s；GPU hit 2.009s；NVMe restore 2.840s | partial hit、压力淘汰、磁盘恢复、输出一致性通过 |
+| Turbo3 跨进程 prefix generation | ThinkingCap Q4_K_M，10,830-token deterministic prefix，owned backend 两 epoch | cold TTFT 114.011s；restore 89.755s；2,048 restore hits；输出 hash 一致 | checkpoint/unload/restart/restore 与截断 generation fail-open 均通过；见 `benchmarks/fastllm/results/fastllm_persistent_prefix_cache_v100_smoke.json` |
 
 ## 当前生产配置
 

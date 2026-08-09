@@ -1,0 +1,115 @@
+{
+  "schema_version": 1,
+  "test": "fastllm_owned_backend_persistent_prefix_cache_v100",
+  "source_base_commit": "8c84540f",
+  "apiserver_sha256": "17a099ff50221bf79989284e8efd9635d53335a1e0355e7473fa8f8ce1d3d21f",
+  "model_sha256": "b0651e28555bde7d2459ce99f091319b1a547143463e8d49f2aa7f572675fe67",
+  "model_path": "models/ThinkingCap-Qwen3.6-27B-GGUF/ThinkingCap-Qwen3.6-27B-Q4_K_M.gguf",
+  "gpu": {
+    "name": "Tesla V100-PCIE-32GB",
+    "driver": "580.173.02",
+    "cuda_arch": "sm_70"
+  },
+  "kv_cache": "turbo3 (K=q8_0, V=turbo3, head_dim=256)",
+  "page_len": 128,
+  "cache_key": "thinkingcap-q4km-turbo3-page128-sm70-mtp0-fixed",
+  "cpu_registrations": {
+    "persistent_prefix_cache": "PASS (5 sub-tests: archive, paged trie, Qwen linear/MTP, process-restart, corruption fail-open)",
+    "paged_prefix_cache_policy": "PASS (per user, exit 0)",
+    "qwen35_long_prefill_state": "PASS (per user, exit 0)",
+    "proxy_lifecycle": "PASS (35 tests in test_thinking_proxy_fastllm + test_thinking_proxy_lifecycle)",
+    "start_proxy_sh_syntax": "PASS (bash -n)"
+  },
+  "request": {
+    "sha256": "f44c37577cfdbd95186fb0ce504fecb616ce37df9714c59dcfddb51eeb3dfca0",
+    "bytes": 55407,
+    "prefix_tokens": "~10800",
+    "max_tokens": 128,
+    "deterministic": true
+  },
+  "epoch1": {
+    "started_utc": "2026-08-09T19:23:27.515531+00:00",
+    "finished_utc": "2026-08-09T19:25:30.657689+00:00",
+    "http_status": 200,
+    "ttft_seconds": 114.0107264129997,
+    "elapsed_seconds": 123.14209607900011,
+    "usage": {
+      "completion_tokens": 128,
+      "prompt_tokens": 10830,
+      "total_tokens": 10958
+    },
+    "finish_reason": "length",
+    "output_sha256": "1700e90fd6fa6d5759f0e1add8d277798b853501f6c2933aad9193e7323049d5",
+    "loaded_generation": 0.0,
+    "restore_hits": 0.0,
+    "gpu_memory_used_mib_after": 24037
+  },
+  "epoch1_unload": {
+    "stop_wait_seconds": 68.49712488600017,
+    "checkpoint_successes": 1,
+    "checkpoint_pages": 2048,
+    "checkpoint_bytes": 275693105,
+    "checkpoint_duration_ms": 3306.188166,
+    "gpu_memory_used_mib_after": 327
+  },
+  "epoch2": {
+    "started_utc": "2026-08-09T19:27:06.393361+00:00",
+    "finished_utc": "2026-08-09T19:28:45.242277+00:00",
+    "http_status": 200,
+    "ttft_seconds": 89.75520413599997,
+    "elapsed_seconds": 98.84870486599993,
+    "usage": {
+      "completion_tokens": 128,
+      "prompt_tokens": 10830,
+      "total_tokens": 10958
+    },
+    "finish_reason": "length",
+    "output_sha256": "1700e90fd6fa6d5759f0e1add8d277798b853501f6c2933aad9193e7323049d5",
+    "outputs_identical_to_epoch1": true,
+    "ttft_delta_seconds": 24.255522276999727,
+    "ttft_speedup": 1.2702408457591716,
+    "loaded_generation": 1.0,
+    "restore_hits": 2048.0,
+    "gpu_hit_pages": 0.0
+  },
+  "epoch2_unload": {
+    "checkpoint_successes": 2,
+    "checkpoint_pages": 2048,
+    "checkpoint_bytes": 275693105,
+    "checkpoint_duration_ms": 3057.261775
+  },
+  "corruption_fail_open": {
+    "description": "Truncated gen-3 pages.bin to 1 byte, started fresh owned backend, sent same request, verified fail-open + output preserved + new checkpoint committed",
+    "apiserver_sha256": "17a099ff50221bf79989284e8efd9635d53335a1e0355e7473fa8f8ce1d3d21f",
+    "before": {
+      "current_generation": 3,
+      "pages_bytes": 224761966,
+      "manifest_bytes": 205922,
+      "pages_sha256": "be982f4483022116a77224d1656f3f1885cb36e71c0b8543d79da30bad1705b5",
+      "manifest_sha256": "a3dc2994d12bca5fc4b0a9633777dcce37bf84e0afd125d1992c4c0e16dc6ea9"
+    },
+    "after": {
+      "pages_bytes": 1,
+      "pages_sha256": "32ebb1abcc1c601ceb9c4e3c4faba0caa5b85bb98c4f1e6612c40faa528a91c9"
+    },
+    "epoch": {
+      "started_utc": "2026-08-09T19:35:38.250265+00:00",
+      "finished_utc": "2026-08-09T19:37:28.405160+00:00",
+      "http_status": 200,
+      "ttft_seconds": 101.08408070699988,
+      "elapsed_seconds": 110.15483333999964,
+      "output_sha256": "1700e90fd6fa6d5759f0e1add8d277798b853501f6c2933aad9193e7323049d5",
+      "output_identical_to_clean": true
+    },
+    "persistence_last_error": "persistent prefix cache pages size mismatch",
+    "loaded_generation": 0.0,
+    "restore_hits": 0.0,
+    "new_checkpoint_after_fail_open": {
+      "checkpoint_successes": 1,
+      "checkpoint_generation": 4,
+      "checkpoint_pages": 2048,
+      "checkpoint_bytes": 275693105
+    }
+  },
+  "source_commit": "35b7ab20029c13bbefcf197e92530eb448ef9cdc"
+}
