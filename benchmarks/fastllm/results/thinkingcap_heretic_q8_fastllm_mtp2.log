@@ -1,0 +1,261 @@
+CPU Instruction Info: [AVX2: ON] [AVX512F: OFF] [AVX512_VNNI: OFF] [AVX512_BF16: OFF] [AMX: OFF] 
+Load model from files:
+/run/media/ezra/13D010B6FDBC1A06/1CatVLLM/models/ThinkingCap-Qwen3.6-27B-heretic-GGUF/ThinkingCap-Qwen3.6-27B-heretic-Q8_0-plus-mtp.gguf
+Load multimodal projector from files:
+/run/media/ezra/13D010B6FDBC1A06/1CatVLLM/models/ThinkingCap-Qwen3.6-27B-GGUF/mmproj-ThinkingCap-Qwen3.6-27B-f16.gguf
+general.architecture = qwen35
+general.name = ThinkingCap Qwen3.6 27B Heretic-plus-mtp
+Load block_cnt = 65
+Load qwen35 main block_cnt = 64 (nextn = 1)
+Load num_attention_heads = 24
+Load num_key_value_heads = 4
+Load embed_dim = 5120
+Load max_positions = 262144
+Load rms_norm_eps = 0.000001
+Load eos_token_id = 248046
+Load chatTemplate = {%- set image_count = namespace(value=0) %}
+{%- set video_count = namespace(value=0) %}
+{%- macro render_content(content, do_vision_count, is_system_content=false) %}
+    {%- if content is string %}
+        {{- content }}
+    {%- elif content is iterable and content is not mapping %}
+        {%- for item in content %}
+            {%- if 'image' in item or 'image_url' in item or item.type == 'image' %}
+                {%- if is_system_content %}
+                    {{- raise_exception('System message cannot contain images.') }}
+                {%- endif %}
+                {%- if do_vision_count %}
+                    {%- set image_count.value = image_count.value + 1 %}
+                {%- endif %}
+                {%- if add_vision_id %}
+                    {{- 'Picture ' ~ image_count.value ~ ': ' }}
+                {%- endif %}
+                {{- '<|vision_start|><|image_pad|><|vision_end|>' }}
+            {%- elif 'video' in item or item.type == 'video' %}
+                {%- if is_system_content %}
+                    {{- raise_exception('System message cannot contain videos.') }}
+                {%- endif %}
+                {%- if do_vision_count %}
+                    {%- set video_count.value = video_count.value + 1 %}
+                {%- endif %}
+                {%- if add_vision_id %}
+                    {{- 'Video ' ~ video_count.value ~ ': ' }}
+                {%- endif %}
+                {{- '<|vision_start|><|video_pad|><|vision_end|>' }}
+            {%- elif 'text' in item %}
+                {{- item.text }}
+            {%- else %}
+                {{- raise_exception('Unexpected item type in content.') }}
+            {%- endif %}
+        {%- endfor %}
+    {%- elif content is none or content is undefined %}
+        {{- '' }}
+    {%- else %}
+        {{- raise_exception('Unexpected content type.') }}
+    {%- endif %}
+{%- endmacro %}
+{%- if not messages %}
+    {{- raise_exception('No messages provided.') }}
+{%- endif %}
+{%- if tools and tools is iterable and tools is not mapping %}
+    {{- '<|im_start|>system\n' }}
+    {{- "# Tools\n\nYou have access to the following functions:\n\n<tools>" }}
+    {%- for tool in tools %}
+        {{- "\n" }}
+        {{- tool | tojson }}
+    {%- endfor %}
+    {{- "\n</tools>" }}
+    {{- '\n\nIf you choose to call a function ONLY reply in the following format with NO suffix:\n\n<tool_call>\n<function=example_function_name>\n<parameter=example_parameter_1>\nvalue_1\n</parameter>\n<parameter=example_parameter_2>\nThis is the value for the second parameter\nthat can span\nmultiple lines\n</parameter>\n</function>\n</tool_call>\n\n<IMPORTANT>\nReminder:\n- Function calls MUST follow the specified format: an inner <function=...></function> block must be nested within <tool_call></tool_call> XML tags\n- Required parameters MUST be specified\n- You may provide optional reasoning for your function call in natural language BEFORE the function call, but NOT after\n- If there is no function call available, answer the question like normal with your current knowledge and do not tell the user about function calls\n</IMPORTANT>' }}
+    {%- if messages[0].role == 'system' %}
+        {%- set content = render_content(messages[0].content, false, true)|trim %}
+        {%- if content %}
+            {{- '\n\n' + content }}
+        {%- endif %}
+    {%- endif %}
+    {{- '<|im_end|>\n' }}
+{%- else %}
+    {%- if messages[0].role == 'system' %}
+        {%- set content = render_content(messages[0].content, false, true)|trim %}
+        {{- '<|im_start|>system\n' + content + '<|im_end|>\n' }}
+    {%- endif %}
+{%- endif %}
+{%- set ns = namespace(multi_step_tool=true, last_query_index=messages|length - 1) %}
+{%- for message in messages[::-1] %}
+    {%- set index = (messages|length - 1) - loop.index0 %}
+    {%- if ns.multi_step_tool and message.role == "user" %}
+        {%- set content = render_content(message.content, false)|trim %}
+        {%- if not(content.startswith('<tool_response>') and content.endswith('</tool_response>')) %}
+            {%- set ns.multi_step_tool = false %}
+            {%- set ns.last_query_index = index %}
+        {%- endif %}
+    {%- endif %}
+{%- endfor %}
+{%- if ns.multi_step_tool %}
+    {{- raise_exception('No user query found in messages.') }}
+{%- endif %}
+{%- for message in messages %}
+    {%- set content = render_content(message.content, true)|trim %}
+    {%- if message.role == "system" %}
+        {%- if not loop.first %}
+            {{- raise_exception('System message must be at the beginning.') }}
+        {%- endif %}
+    {%- elif message.role == "user" %}
+        {{- '<|im_start|>' + message.role + '\n' + content + '<|im_end|>' + '\n' }}
+    {%- elif message.role == "assistant" %}
+        {%- set reasoning_content = '' %}
+        {%- if message.reasoning_content is string %}
+            {%- set reasoning_content = message.reasoning_content %}
+        {%- else %}
+            {%- if '</think>' in content %}
+                {%- set reasoning_content = content.split('</think>')[0].rstrip('\n').split('<think>')[-1].lstrip('\n') %}
+                {%- set content = content.split('</think>')[-1].lstrip('\n') %}
+            {%- endif %}
+        {%- endif %}
+        {%- set reasoning_content = reasoning_content|trim %}
+        {%- if (preserve_thinking is defined and preserve_thinking is true) or (loop.index0 > ns.last_query_index) %}
+            {{- '<|im_start|>' + message.role + '\n<think>\n' + reasoning_content + '\n</think>\n\n' + content }}
+        {%- else %}
+            {{- '<|im_start|>' + message.role + '\n' + content }}
+        {%- endif %}
+        {%- if message.tool_calls and message.tool_calls is iterable and message.tool_calls is not mapping %}
+            {%- for tool_call in message.tool_calls %}
+                {%- if tool_call.function is defined %}
+                    {%- set tool_call = tool_call.function %}
+                {%- endif %}
+                {%- if loop.first %}
+                    {%- if content|trim %}
+                        {{- '\n\n<tool_call>\n<function=' + tool_call.name + '>\n' }}
+                    {%- else %}
+                        {{- '<tool_call>\n<function=' + tool_call.name + '>\n' }}
+                    {%- endif %}
+                {%- else %}
+                    {{- '\n<tool_call>\n<function=' + tool_call.name + '>\n' }}
+                {%- endif %}
+                {%- if tool_call.arguments is defined %}
+                    {%- for args_name, args_value in tool_call.arguments|items %}
+                        {{- '<parameter=' + args_name + '>\n' }}
+                        {%- set args_value = args_value | string if args_value is string else args_value | tojson | safe %}
+                        {{- args_value }}
+                        {{- '\n</parameter>\n' }}
+                    {%- endfor %}
+                {%- endif %}
+                {{- '</function>\n</tool_call>' }}
+            {%- endfor %}
+        {%- endif %}
+        {{- '<|im_end|>\n' }}
+    {%- elif message.role == "tool" %}
+        {%- if loop.previtem and loop.previtem.role != "tool" %}
+            {{- '<|im_start|>user' }}
+        {%- endif %}
+        {{- '\n<tool_response>\n' }}
+        {{- content }}
+        {{- '\n</tool_response>' }}
+        {%- if not loop.last and loop.nextitem.role != "tool" %}
+            {{- '<|im_end|>\n' }}
+        {%- elif loop.last %}
+            {{- '<|im_end|>\n' }}
+        {%- endif %}
+    {%- else %}
+        {{- raise_exception('Unexpected message role.') }}
+    {%- endif %}
+{%- endfor %}
+{%- if add_generation_prompt %}
+    {{- '<|im_start|>assistant\n' }}
+    {%- if enable_thinking is defined and enable_thinking is false %}
+        {{- '<think>\n\n</think>\n\n' }}
+    {%- else %}
+        {{- '<think>\n' }}
+    {%- endif %}
+{%- endif %}
+Loading 0 Loading 0 Loading 0 Loading 0 Loading 0 Loading 0 Loading 0 Loading 0 Loading 0 Loading 0 Loading 0 Loading 1 Loading 1 Loading 1 Loading 1 Loading 1 Loading 1 Loading 1 Loading 1 Loading 1 Loading 1 Loading 1 Loading 1 Loading 2 Loading 2 Loading 2 Loading 2 Loading 2 Loading 2 Loading 2 Loading 2 Loading 2 Loading 2 Loading 2 Loading 2 Loading 3 Loading 3 Loading 3 Loading 3 Loading 3 Loading 3 Loading 3 Loading 3 Loading 3 Loading 3 Loading 3 Loading 3 Loading 4 Loading 4 Loading 4 Loading 4 Loading 4 Loading 4 Loading 4 Loading 4 Loading 4 Loading 4 Loading 4 Loading 4 Loading 5 Loading 5 Loading 5 Loading 5 Loading 5 Loading 5 Loading 5 Loading 5 Loading 5 Loading 5 Loading 5 Loading 5 Loading 6 Loading 6 Loading 6 Loading 6 Loading 6 Loading 6 Loading 6 Loading 6 Loading 6 Loading 6 Loading 6 Loading 6 Loading 7 Loading 7 Loading 7 Loading 7 Loading 7 Loading 7 Loading 7 Loading 7 Loading 7 Loading 7 Loading 7 Loading 7 Loading 8 Loading 8 Loading 8 Loading 8 Loading 8 Loading 8 Loading 8 Loading 8 Loading 8 Loading 8 Loading 8 Loading 8 Loading 9 Loading 9 Loading 9 Loading 9 Loading 9 Loading 9 Loading 9 Loading 9 Loading 9 Loading 9 Loading 9 Loading 9 Loading 10 Loading 10 Loading 10 Loading 10 Loading 10 Loading 10 Loading 10 Loading 10 Loading 10 Loading 10 Loading 10 Loading 10 Loading 11 Loading 11 Loading 11 Loading 11 Loading 11 Loading 11 Loading 11 Loading 11 Loading 11 Loading 11 Loading 11 Loading 11 Loading 12 Loading 12 Loading 12 Loading 12 Loading 12 Loading 12 Loading 12 Loading 12 Loading 12 Loading 12 Loading 12 Loading 12 Loading 13 Loading 13 Loading 13 Loading 13 Loading 13 Loading 13 Loading 13 Loading 13 Loading 13 Loading 13 Loading 13 Loading 13 Loading 14 Loading 14 Loading 14 Loading 14 Loading 14 Loading 14 Loading 14 Loading 14 Loading 14 Loading 14 Loading 14 Loading 14 Loading 15 Loading 15 Loading 15 Loading 15 Loading 15 Loading 15 Loading 15 Loading 15 Loading 15 Loading 15 Loading 15 Loading 15 Loading 16 Loading 16 Loading 16 Loading 16 Loading 16 Loading 16 Loading 16 Loading 16 Loading 16 Loading 16 Loading 16 Loading 16 Loading 17 Loading 17 Loading 17 Loading 17 Loading 17 Loading 17 Loading 17 Loading 17 Loading 17 Loading 17 Loading 17 Loading 17 Loading 18 Loading 18 Loading 18 Loading 18 Loading 18 Loading 18 Loading 18 Loading 18 Loading 18 Loading 18 Loading 18 Loading 18 Loading 19 Loading 19 Loading 19 Loading 19 Loading 19 Loading 19 Loading 19 Loading 19 Loading 19 Loading 19 Loading 19 Loading 19 Loading 20 Loading 20 Loading 20 Loading 20 Loading 20 Loading 20 Loading 20 Loading 20 Loading 20 Loading 20 Loading 20 Loading 20 Loading 21 Loading 21 Loading 21 Loading 21 Loading 21 Loading 21 Loading 21 Loading 21 Loading 21 Loading 21 Loading 21 Loading 21 Loading 22 Loading 22 Loading 22 Loading 22 Loading 22 Loading 22 Loading 22 Loading 22 Loading 22 Loading 22 Loading 22 Loading 22 Loading 23 Loading 23 Loading 23 Loading 23 Loading 23 Loading 23 Loading 23 Loading 23 Loading 23 Loading 23 Loading 23 Loading 23 Loading 24 Loading 24 Loading 24 Loading 24 Loading 24 Loading 24 Loading 24 Loading 24 Loading 24 Loading 24 Loading 24 Loading 24 Loading 25 Loading 25 Loading 25 Loading 25 Loading 25 Loading 25 Loading 25 Loading 25 Loading 25 Loading 25 Loading 25 Loading 25 Loading 26 Loading 26 Loading 26 Loading 26 Loading 26 Loading 26 Loading 26 Loading 26 Loading 26 Loading 26 Loading 26 Loading 26 Loading 27 Loading 27 Loading 27 Loading 27 Loading 27 Loading 27 Loading 27 Loading 27 Loading 27 Loading 27 Loading 27 Loading 27 Loading 28 Loading 28 Loading 28 Loading 28 Loading 28 Loading 28 Loading 28 Loading 28 Loading 28 Loading 28 Loading 28 Loading 28 Loading 29 Loading 29 Loading 29 Loading 29 Loading 29 Loading 29 Loading 29 Loading 29 Loading 29 Loading 29 Loading 29 Loading 29 Loading 30 Loading 30 Loading 30 Loading 30 Loading 30 Loading 30 Loading 30 Loading 30 Loading 30 Loading 30 Loading 30 Loading 30 Loading 31 Loading 31 Loading 31 Loading 31 Loading 31 Loading 31 Loading 31 Loading 31 Loading 31 Loading 31 Loading 31 Loading 31 Loading 32 Loading 32 Loading 32 Loading 32 Loading 32 Loading 32 Loading 32 Loading 32 Loading 32 Loading 32 Loading 32 Loading 32 Loading 33 Loading 33 Loading 33 Loading 33 Loading 33 Loading 33 Loading 33 Loading 33 Loading 33 Loading 33 Loading 33 Loading 33 Loading 34 Loading 34 Loading 34 Loading 34 Loading 34 Loading 34 Loading 34 Loading 34 Loading 34 Loading 34 Loading 34 Loading 34 Loading 35 Loading 35 Loading 35 Loading 35 Loading 35 Loading 35 Loading 35 Loading 35 Loading 35 Loading 35 Loading 35 Loading 35 Loading 36 Loading 36 Loading 36 Loading 36 Loading 36 Loading 36 Loading 36 Loading 36 Loading 36 Loading 36 Loading 36 Loading 36 Loading 37 Loading 37 Loading 37 Loading 37 Loading 37 Loading 37 Loading 37 Loading 37 Loading 37 Loading 37 Loading 37 Loading 37 Loading 38 Loading 38 Loading 38 Loading 38 Loading 38 Loading 38 Loading 38 Loading 38 Loading 38 Loading 38 Loading 38 Loading 38 Loading 39 Loading 39 Loading 39 Loading 39 Loading 39 Loading 39 Loading 39 Loading 39 Loading 39 Loading 39 Loading 39 Loading 39 Loading 40 Loading 40 Loading 40 Loading 40 Loading 40 Loading 40 Loading 40 Loading 40 Loading 40 Loading 40 Loading 40 Loading 40 Loading 41 Loading 41 Loading 41 Loading 41 Loading 41 Loading 41 Loading 41 Loading 41 Loading 41 Loading 41 Loading 41 Loading 41 Loading 42 Loading 42 Loading 42 Loading 42 Loading 42 Loading 42 Loading 42 Loading 42 Loading 42 Loading 42 Loading 42 Loading 42 Loading 43 Loading 43 Loading 43 Loading 43 Loading 43 Loading 43 Loading 43 Loading 43 Loading 43 Loading 43 Loading 43 Loading 43 Loading 44 Loading 44 Loading 44 Loading 44 Loading 44 Loading 44 Loading 44 Loading 44 Loading 44 Loading 44 Loading 44 Loading 44 Loading 45 Loading 45 Loading 45 Loading 45 Loading 45 Loading 45 Loading 45 Loading 45 Loading 45 Loading 45 Loading 45 Loading 45 Loading 46 Loading 46 Loading 46 Loading 46 Loading 46 Loading 46 Loading 46 Loading 46 Loading 46 Loading 46 Loading 46 Loading 46 Loading 47 Loading 47 Loading 47 Loading 47 Loading 47 Loading 47 Loading 47 Loading 47 Loading 47 Loading 47 Loading 47 Loading 47 Loading 48 Loading 48 Loading 48 Loading 48 Loading 48 Loading 48 Loading 48 Loading 48 Loading 48 Loading 48 Loading 48 Loading 48 Loading 49 Loading 49 Loading 49 Loading 49 Loading 49 Loading 49 Loading 49 Loading 49 Loading 49 Loading 49 Loading 49 Loading 49 Loading 50 Loading 50 Loading 50 Loading 50 Loading 50 Loading 50 Loading 50 Loading 50 Loading 50 Loading 50 Loading 50 Loading 50 Loading 51 Loading 51 Loading 51 Loading 51 Loading 51 Loading 51 Loading 51 Loading 51 Loading 51 Loading 51 Loading 51 Loading 51 Loading 52 Loading 52 Loading 52 Loading 52 Loading 52 Loading 52 Loading 52 Loading 52 Loading 52 Loading 52 Loading 52 Loading 52 Loading 53 Loading 53 Loading 53 Loading 53 Loading 53 Loading 53 Loading 53 Loading 53 Loading 53 Loading 53 Loading 53 Loading 53 Loading 54 Loading 54 Loading 54 Loading 54 Loading 54 Loading 54 Loading 54 Loading 54 Loading 54 Loading 54 Loading 54 Loading 54 Loading 55 Loading 55 Loading 55 Loading 55 Loading 55 Loading 55 Loading 55 Loading 55 Loading 55 Loading 55 Loading 55 Loading 55 Loading 56 Loading 56 Loading 56 Loading 56 Loading 56 Loading 56 Loading 56 Loading 56 Loading 56 Loading 56 Loading 56 Loading 56 Loading 57 Loading 57 Loading 57 Loading 57 Loading 57 Loading 57 Loading 57 Loading 57 Loading 57 Loading 57 Loading 57 Loading 57 Loading 58 Loading 58 Loading 58 Loading 58 Loading 58 Loading 58 Loading 58 Loading 58 Loading 58 Loading 58 Loading 58 Loading 58 Loading 59 Loading 59 Loading 59 Loading 59 Loading 59 Loading 59 Loading 59 Loading 59 Loading 59 Loading 59 Loading 59 Loading 59 Loading 60 Loading 60 Loading 60 Loading 60 Loading 60 Loading 60 Loading 60 Loading 60 Loading 60 Loading 60 Loading 60 Loading 60 Loading 61 Loading 61 Loading 61 Loading 61 Loading 61 Loading 61 Loading 61 Loading 61 Loading 61 Loading 61 Loading 61 Loading 61 Loading 62 Loading 62 Loading 62 Loading 62 Loading 62 Loading 62 Loading 62 Loading 62 Loading 62 Loading 62 Loading 62 Loading 62 Loading 63 Loading 63 Loading 63 Loading 63 Loading 63 Loading 63 Loading 63 Loading 63 Loading 63 Loading 63 Loading 63 Loading 63 Loading 64 Loading 64 Loading 64 Loading 64 Loading 64 Loading 64 Loading 64 Loading 64 Loading 64 Loading 64 Loading 64 Loading 64 Loading 65 Loading 65 Loading 65 Loading 65 Loading 65 Loading 65 Loading 65 Loading 65 Loading 65 Loading 65 Loading 65 Loading 65 Loading 66 Loading 66 Loading 66 Loading 66 Loading 66 Loading 66 Loading 66 Loading 66 Loading 66 Loading 66 Loading 66 Loading 66 Loading 67 Loading 67 Loading 67 Loading 67 Loading 67 Loading 67 Loading 67 Loading 67 Loading 67 Loading 67 Loading 67 Loading 67 Loading 68 Loading 68 Loading 68 Loading 68 Loading 68 Loading 68 Loading 68 Loading 68 Loading 68 Loading 68 Loading 68 Loading 68 Loading 69 Loading 69 Loading 69 Loading 69 Loading 69 Loading 69 Loading 69 Loading 69 Loading 69 Loading 69 Loading 69 Loading 69 Loading 70 Loading 70 Loading 70 Loading 70 Loading 70 Loading 70 Loading 70 Loading 70 Loading 70 Loading 70 Loading 70 Loading 70 Loading 71 Loading 71 Loading 71 Loading 71 Loading 71 Loading 71 Loading 71 Loading 71 Loading 71 Loading 71 Loading 71 Loading 71 Loading 72 Loading 72 Loading 72 Loading 72 Loading 72 Loading 72 Loading 72 Loading 72 Loading 72 Loading 72 Loading 72 Loading 72 Loading 73 Loading 73 Loading 73 Loading 73 Loading 73 Loading 73 Loading 73 Loading 73 Loading 73 Loading 73 Loading 73 Loading 73 Loading 74 Loading 74 Loading 74 Loading 74 Loading 74 Loading 74 Loading 74 Loading 74 Loading 74 Loading 74 Loading 74 Loading 74 Loading 75 Loading 75 Loading 75 Loading 75 Loading 75 Loading 75 Loading 75 Loading 75 Loading 75 Loading 75 Loading 75 Loading 75 Loading 76 Loading 76 Loading 76 Loading 76 Loading 76 Loading 76 Loading 76 Loading 76 Loading 76 Loading 76 Loading 76 Loading 76 Loading 77 Loading 77 Loading 77 Loading 77 Loading 77 Loading 77 Loading 77 Loading 77 Loading 77 Loading 77 Loading 77 Loading 77 Loading 78 Loading 78 Loading 78 Loading 78 Loading 78 Loading 78 Loading 78 Loading 78 Loading 78 Loading 78 Loading 78 Loading 78 Loading 79 Loading 79 Loading 79 Loading 79 Loading 79 Loading 79 Loading 79 Loading 79 Loading 79 Loading 79 Loading 79 Loading 79 Loading 80 Loading 80 Loading 80 Loading 80 Loading 80 Loading 80 Loading 80 Loading 80 Loading 80 Loading 80 Loading 80 Loading 80 Loading 81 Loading 81 Loading 81 Loading 81 Loading 81 Loading 81 Loading 81 Loading 81 Loading 81 Loading 81 Loading 81 Loading 81 Loading 82 Loading 82 Loading 82 Loading 82 Loading 82 Loading 82 Loading 82 Loading 82 Loading 82 Loading 82 Loading 82 Loading 82 Loading 83 Loading 83 Loading 83 Loading 83 Loading 83 Loading 83 Loading 83 Loading 83 Loading 83 Loading 83 Loading 83 Loading 83 Loading 84 Loading 84 Loading 84 Loading 84 Loading 84 Loading 84 Loading 84 Loading 84 Loading 84 Loading 84 Loading 84 Loading 84 Loading 85 Loading 85 Loading 85 Loading 85 Loading 85 Loading 85 Loading 85 Loading 85 Loading 85 Loading 85 Loading 85 Loading 85 Loading 86 Loading 86 Loading 86 Loading 86 Loading 86 Loading 86 Loading 86 Loading 86 Loading 86 Loading 86 Loading 86 Loading 86 Loading 87 Loading 87 Loading 87 Loading 87 Loading 87 Loading 87 Loading 87 Loading 87 Loading 87 Loading 87 Loading 87 Loading 87 Loading 88 Loading 88 Loading 88 Loading 88 Loading 88 Loading 88 Loading 88 Loading 88 Loading 88 Loading 88 Loading 88 Loading 88 Loading 89 Loading 89 Loading 89 Loading 89 Loading 89 Loading 89 Loading 89 Loading 89 Loading 89 Loading 89 Loading 89 Loading 89 Loading 90 Loading 90 Loading 90 Loading 90 Loading 90 Loading 90 Loading 90 Loading 90 Loading 90 Loading 90 Loading 90 Loading 90 Loading 91 Loading 91 Loading 91 Loading 91 Loading 91 Loading 91 Loading 91 Loading 91 Loading 91 Loading 91 Loading 91 Loading 91 Loading 92 Loading 92 Loading 92 Loading 92 Loading 92 Loading 92 Loading 92 Loading 92 Loading 92 Loading 92 Loading 92 Loading 92 Loading 93 Loading 93 Loading 93 Loading 93 Loading 93 Loading 93 Loading 93 Loading 93 Loading 93 Loading 93 Loading 93 Loading 93 Loading 94 Loading 94 Loading 94 Loading 94 Loading 94 Loading 94 Loading 94 Loading 94 Loading 94 Loading 94 Loading 94 Loading 94 Loading 95 Loading 95 Loading 95 Loading 95 Loading 95 Loading 95 Loading 95 Loading 95 Loading 95 Loading 95 Loading 95 Loading 95 Loading 96 Loading 96 Loading 96 Loading 96 Loading 96 Loading 96 Loading 96 Loading 96 Loading 96 Loading 96 Loading 96 Loading 96 Loading 97 Loading 97 Loading 97 Loading 97 Loading 97 Loading 97 Loading 97 Loading 97 Loading 97 Loading 97 Loading 97 Loading 97 Loading 98 Loading 98 Loading 98 Loading 98 Loading 98 Loading 98 Loading 98 Loading 98 Loading 98 Loading 98 Loading 98 Loading 98 Loading 99 Loading 99 Loading 99 Loading 99 Loading 99 Loading 99 Loading 99 Loading 99 Loading 99 Loading 99 Loading 99 Loading 99 Loading 100 
+[Qwen3.5] Turbo3 paged KV enabled: K=q8_0, V=turbo3, head_dim=256.
+socket ready!
+bind ready!
+start...
+totalQueryNumber = 1
+Response client 15 finish
+totalQueryNumber = 2
+[Qwen3.5 MTP] enabled: layers=1, drafts_per_step=2, root_device=cuda:0, tp_devices=1, acceptance=exact, log_interval=64 validations.
+totalQueryNumber = 3
+Response client 15 finish
+[Fastllm] FlashInfer attention disabled on GPU 0 (CC 7.0), using native attention.
+[Fastllm] Native paged attention uses chunked cublas attention.
+totalQueryNumber = 4
+Response client 17 finish
+Response client 16 finish
+totalQueryNumber = 5
+Response client 45 finish
+totalQueryNumber = 6
+[Qwen3.5 MTP] pos_accept_rate=[98.44%, 92.19%].
+totalQueryNumber = 7
+Response client 17 finish
+totalQueryNumber = 8
+Response client 16 finish
+totalQueryNumber = 9
+Response client 45 finish
+totalQueryNumber = 10
+totalQueryNumber = 11
+Response client 45 finish
+Response client 17 finish
+totalQueryNumber = 12
+[Qwen3.5 MTP] pos_accept_rate=[96.88%, 88.28%].
+Response client 16 finish
+totalQueryNumber = 13
+[Qwen3.5 MTP] pos_accept_rate=[96.56%, 86.88%].
+[Qwen3.5 MTP] pos_accept_rate=[95.83%, 85.16%].
+[Qwen3.5 MTP] pos_accept_rate=[95.31%, 83.71%].
+[Qwen3.5 MTP] pos_accept_rate=[94.34%, 82.62%].
+[Qwen3.5 MTP] pos_accept_rate=[94.10%, 81.25%].
+[Qwen3.5 MTP] pos_accept_rate=[93.91%, 80.47%].
+Response client 46 finish
+totalQueryNumber = 14
+[Qwen3.5 MTP] pos_accept_rate=[94.03%, 80.40%].
+[Qwen3.5 MTP] pos_accept_rate=[94.01%, 80.60%].
+Response client 17 finish
+totalQueryNumber = 15
+[Qwen3.5 MTP] pos_accept_rate=[93.75%, 80.53%].
+[Qwen3.5 MTP] pos_accept_rate=[92.97%, 79.91%].
+Response client 16 finish
+totalQueryNumber = 16
+[Qwen3.5 MTP] pos_accept_rate=[92.40%, 79.27%].
+[Fastllm] Qwen3.5 GDN single-norm dry-run=eligible selected=cuda-transposed-recurrent head-map=grouped
+Response client 45 finish
+totalQueryNumber = 17
+Response client 17 finish
+totalQueryNumber = 18
+[Qwen3.5 MTP] pos_accept_rate=[92.48%, 79.39%].
+Response client 45 finish
+totalQueryNumber = 19
+[Qwen3.5 MTP] pos_accept_rate=[92.65%, 79.69%].
+Response client 17 finish
+totalQueryNumber = 20
+[Qwen3.5 MTP] pos_accept_rate=[92.80%, 79.77%].
+[Qwen3.5 MTP] pos_accept_rate=[92.60%, 79.36%].
+[Qwen3.5 MTP] pos_accept_rate=[92.50%, 78.83%].
+Response client 45 finish
+totalQueryNumber = 21
+[Qwen3.5 MTP] pos_accept_rate=[92.71%, 79.09%].
+[Qwen3.5 MTP] pos_accept_rate=[92.61%, 79.19%].
+Response client 17 finish
+totalQueryNumber = 22
+Response client 45 finish
+totalQueryNumber = 23
+Response client 17 finish
+Response client 16 finish
+totalQueryNumber = 24
+[Qwen3.5 MTP] pos_accept_rate=[92.19%, 78.67%].
+Response client 45 finish
+totalQueryNumber = 25
+[Qwen3.5 MTP] pos_accept_rate=[92.45%, 79.17%].
+Response client 16 finish
+totalQueryNumber = 26
+totalQueryNumber = 27
+Response client 16 finish
+[Qwen3.5 MTP] pos_accept_rate=[92.50%, 79.25%].
+[Qwen3.5 MTP] pos_accept_rate=[92.43%, 78.97%].
+[Qwen3.5 MTP] pos_accept_rate=[92.36%, 78.99%].
+[Qwen3.5 MTP] pos_accept_rate=[92.41%, 78.68%].
+Response client 17 finish
+totalQueryNumber = 28
+[Qwen3.5 MTP] pos_accept_rate=[92.51%, 79.04%].
+[Qwen3.5 MTP] pos_accept_rate=[92.14%, 78.59%].

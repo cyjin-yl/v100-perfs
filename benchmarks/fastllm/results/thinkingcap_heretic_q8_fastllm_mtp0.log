@@ -1,0 +1,22 @@
+# Heretic composite Q8 MTP0 native FastLLM audit log excerpt
+# Full process output was retained by the project-scoped hub service `heretic-mtp0`.
+# This durable excerpt records the acceptance-critical markers.
+CPU Instruction Info: [AVX2: ON] [AVX512F: OFF] [AVX512_VNNI: OFF] [AVX512_BF16: OFF] [AMX: OFF]
+Load model from files:
+/run/media/ezra/13D010B6FDBC1A06/1CatVLLM/models/ThinkingCap-Qwen3.6-27B-heretic-GGUF/ThinkingCap-Qwen3.6-27B-heretic-Q8_0-plus-mtp.gguf
+Load multimodal projector from files:
+/run/media/ezra/13D010B6FDBC1A06/1CatVLLM/models/ThinkingCap-Qwen3.6-27B-GGUF/mmproj-ThinkingCap-Qwen3.6-27B-f16.gguf
+general.architecture = qwen35
+general.name = ThinkingCap Qwen3.6 27B Heretic-plus-mtp
+Load block_cnt = 65
+Load qwen35 main block_cnt = 64 (nextn = 1)
+[Qwen3.5] Turbo3 paged KV enabled: K=q8_0, V=turbo3, head_dim=256.
+socket ready!
+bind ready!
+start...
+[Fastllm] FlashInfer attention disabled on GPU 0 (CC 7.0), using native attention.
+[Fastllm] Native paged attention uses chunked cublas attention.
+[Fastllm] Qwen3.5 GDN single-norm-ba dry-run=eligible selected=cuda-transposed-recurrent head-map=grouped
+[Fastllm] Qwen3.5 GDN single-norm dry-run=eligible selected=cuda-transposed-recurrent head-map=grouped
+# Ten HTTP requests completed with HTTP 200 and the feature runner validation passed.
+# nvidia-smi after stop: 327 MiB used, 32168 MiB free.

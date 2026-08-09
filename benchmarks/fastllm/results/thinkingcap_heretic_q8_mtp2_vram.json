@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "arm": "mtp2",
+  "model": "ThinkingCap-Qwen3.6-27B-heretic-Q8_0-plus-mtp.gguf",
+  "endpoint": "http://127.0.0.1:18082",
+  "sampler": {
+    "command": "nvidia-smi --query-gpu=timestamp,index,name,memory.total,memory.used,memory.free,utilization.gpu --format=csv,noheader,nounits --loop-ms=1000",
+    "interval_ms": 1000,
+    "gpu": "Tesla V100-PCIE-32GB",
+    "memory_total_mib": 32768,
+    "sample_window_utc": "2026-08-09T20:38:26Z/2026-08-09T20:48:16Z",
+    "sample_count": 557,
+    "initial_used_mib": 327,
+    "peak_used_mib": 32393,
+    "minimum_free_mib": 374,
+    "last_loaded_used_mib": 32121,
+    "after_unload_used_mib": 327,
+    "after_unload_free_mib": 32168,
+    "after_unload_utilization_percent": 0,
+    "nvml_query_status": "available"
+  },
+  "safety_gate": {
+    "required_post_warmup_free_mib": 512,
+    "observed_minimum_free_mib": 374,
+    "passed": false,
+    "next_arm": "mtp5",
+    "next_arm_status": "skipped"
+  },
+  "source_result": "thinkingcap_heretic_q8_fastllm_mtp2.json",
+  "process_stop": {
+    "hub_reported_exit": 137,
+    "interpretation": "The benchmark had already completed with validation.passed=true; the subsequent hub stop reported 137. nvidia-smi returned to the 327 MiB cold baseline, and no model process remained. This record does not classify the stop as an inference OOM."
+  },
+  "notes": [
+    "The sampler was started before the HTTP benchmark and stopped after all ten requests completed.",
+    "The native log confirms Qwen3.5 MTP layers=1, drafts_per_step=2, acceptance=exact and records positive acceptance-rate samples.",
+    "The 512 MiB post-warmup free-VRAM gate is not satisfied for this arm (374 MiB observed); MTP5 was therefore not launched."
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "arm": "mtp0",
+  "model": "ThinkingCap-Qwen3.6-27B-heretic-Q8_0-plus-mtp.gguf",
+  "endpoint": "http://127.0.0.1:18082",
+  "sampler": {
+    "command": "nvidia-smi --query-gpu=timestamp,index,name,memory.total,memory.used,memory.free,utilization.gpu --format=csv,noheader,nounits --loop-ms=1000",
+    "interval_ms": 1000,
+    "gpu": "Tesla V100-PCIE-32GB",
+    "memory_total_mib": 32768,
+    "sample_window_utc": "2026-08-09T20:31:46Z/2026-08-09T20:35:01Z",
+    "sample_count": 196,
+    "initial_used_mib": 327,
+    "peak_used_mib": 31525,
+    "minimum_free_mib": 970,
+    "last_loaded_used_mib": 31525,
+    "after_unload_used_mib": 327,
+    "after_unload_free_mib": 32168,
+    "after_unload_utilization_percent": 0,
+    "nvml_query_status": "available"
+  },
+  "source_result": "thinkingcap_heretic_q8_fastllm_mtp0.json",
+  "notes": [
+    "The sampler was started before the HTTP benchmark and stopped after all ten requests completed.",
+    "The process was then stopped; nvidia-smi confirmed return to the 327 MiB cold baseline.",
+    "The 512 MiB post-warmup free-VRAM gate is satisfied for this arm (970 MiB observed)."
+  ]
+}

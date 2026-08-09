@@ -1,0 +1,120 @@
+{
+  "schema_version": 1,
+  "benchmark": "thinkingcap_heretic_q8_replacement_recommendation",
+  "created_at_utc": "2026-08-09T20:48:11Z",
+  "hardware": {
+    "gpu": "Tesla V100-PCIE-32GB",
+    "compute_capability": "7.0",
+    "memory_total_mib": 32768,
+    "driver": "580.173.02"
+  },
+  "runtime": {
+    "backend": "FastLLM native apiserver",
+    "binary": "fastllm/build/apiserver",
+    "activation_dtype": "float16",
+    "kv_cache_dtype": "turbo3",
+    "max_batch": 5,
+    "token_pool": 65536,
+    "endpoint": "http://127.0.0.1:18082",
+    "projector_loaded": true,
+    "fixture_runs": 2,
+    "fixture_concurrency": 1,
+    "temperature": 0.0
+  },
+  "model": {
+    "name": "ThinkingCap-Qwen3.6-27B-heretic-Q8_0-plus-mtp",
+    "main_layers": 64,
+    "mtp_layers": 1,
+    "model_size_bytes": 28859077472,
+    "model_sha256": "d600236ae4111041d9831387a429d92f68513640337bea3d337937188a986a63",
+    "mmproj_size_bytes": 931145888,
+    "mmproj_sha256": "81a714ac5e8e15687371fc95a180953a29b732962f6616f791063ff127559412"
+  },
+  "decision": {
+    "status": "MTP2_VALIDATED_MTP5_BLOCKED",
+    "recommended_arm": "mtp2_experimental_only",
+    "production_cutover": "not_approved",
+    "reason": "MTP2 completed the ten-request HTTP/SSE fixture with validation.passed=true and native exact-acceptance logging. Its sampled peak was 32393 MiB, leaving only 374 MiB free, below the predeclared 512 MiB safety gate; MTP5 was consequently skipped. The tool-call fixture remains a protocol failure because the payload was emitted in assistant content rather than an OpenAI tool_calls delta."
+  },
+  "arms": {
+    "mtp0": {
+      "status": "validated",
+      "result": "thinkingcap_heretic_q8_fastllm_mtp0.json",
+      "vram": "thinkingcap_heretic_q8_mtp0_vram.json",
+      "validation_passed": true,
+      "http_200_requests": 10,
+      "peak_used_mib": 31525,
+      "minimum_free_mib": 970,
+      "after_unload_used_mib": 327,
+      "after_unload_free_mib": 32168
+    },
+    "mtp2": {
+      "status": "validated_with_safety_margin_failure",
+      "result": "thinkingcap_heretic_q8_fastllm_mtp2.json",
+      "vram": "thinkingcap_heretic_q8_mtp2_vram.json",
+      "log": "thinkingcap_heretic_q8_fastllm_mtp2.log",
+      "validation_passed": true,
+      "http_200_requests": 10,
+      "mtp_runtime_marker": "layers=1,drafts_per_step=2,acceptance=exact",
+      "peak_used_mib": 32393,
+      "minimum_free_mib": 374,
+      "after_unload_used_mib": 327,
+      "after_unload_free_mib": 32168
+    },
+    "mtp5": {
+      "status": "skipped",
+      "reason": "MTP2 minimum free VRAM was 374 MiB, below the 512 MiB post-warmup gate required before launching a larger draft arm."
+    }
+  },
+  "quality": {
+    "transport_validation": "PASS: 10/10 HTTP 200, one [DONE] per stream, zero malformed SSE events, complete usage accounting, and finish_reason=stop.",
+    "semantic_fixtures": {
+      "arithmetic_126": "PASS in both MTP2 runs",
+      "exact_instruction": "PASS in both MTP2 runs",
+      "balance_scale_reasoning": "PASS in both MTP2 runs: answer 2 with a valid two-weighing strategy",
+      "vision_red_pixel": "PASS in both MTP2 runs: Red",
+      "required_tool_call": "PAYLOAD_PASS_PROTOCOL_FAIL in both MTP2 runs: get_weather payload names Beijing but uses location; no OpenAI tool_calls delta was emitted, while the fixture schema requires city."
+    },
+    "mtp0_mtp2_parity": "Semantic fixture intent matched 5/5, but byte-level output parity was not established: arithmetic, exact-instruction, and vision final-content hashes matched; reasoning hashes and the reasoning/tool outputs differed. The fixtures do not include a server-enforced deterministic seed."
+  },
+  "performance": {
+    "mtp0_wall_medians_seconds": {
+      "arithmetic_126": 15.492726442000276,
+      "exact_instruction": 7.042080085000026,
+      "balance_scale_reasoning": 36.00694542950032,
+      "required_tool_call": 23.737145914499706,
+      "vision_red_pixel": 3.4751709914999083
+    },
+    "mtp2_wall_medians_seconds": {
+      "arithmetic_126": 5.132677213000079,
+      "exact_instruction": 4.462528080000306,
+      "balance_scale_reasoning": 21.77889348949975,
+      "required_tool_call": 11.61201862400003,
+      "vision_red_pixel": 24.047830594000516
+    },
+    "interpretation": "MTP2 reduced wall time for the four text/tool fixtures in this paired smoke, while the vision fixture was slower and showed high run-to-run variance. This is a feature-smoke observation, not a sustained decode benchmark."
+  },
+  "artifacts": {
+    "mtp0_result": "thinkingcap_heretic_q8_fastllm_mtp0.json",
+    "mtp0_vram": "thinkingcap_heretic_q8_mtp0_vram.json",
+    "mtp0_log": "thinkingcap_heretic_q8_fastllm_mtp0.log",
+    "mtp2_result": "thinkingcap_heretic_q8_fastllm_mtp2.json",
+    "mtp2_vram": "thinkingcap_heretic_q8_mtp2_vram.json",
+    "mtp2_log": "thinkingcap_heretic_q8_fastllm_mtp2.log",
+    "mtp2_auxiliary_result": "thinkingcap_q8_mtp2_fastllm_v100.json",
+    "mtp2_auxiliary_note": "A prior same-fixture MTP2 run on build/apiserver_17a099ff also passed validation; it has no paired V100 sampler, so the named mtp2_vram artifact remains the safety-gate source of truth.",
+    "request_fixtures": "benchmarks/fastllm/requests/thinkingcap_*.json"
+  },
+  "cutover_gates": [
+    "Normalize the assistant-content tool payload into native OpenAI tool_calls and verify an end-to-end proxy tool round trip.",
+    "Keep MTP2 optional until a deterministic seeded parity test is available and the deployment free-VRAM margin is acceptable.",
+    "Do not launch MTP5 on this V100 arm without at least 512 MiB free after warmup.",
+    "Retain the native FastLLM backend; do not introduce llama.cpp."
+  ],
+  "negative_results": [
+    "MTP5 was not run because MTP2 left 374 MiB free, below the 512 MiB safety gate.",
+    "MTP2 did not provide a byte-identical greedy output record against the prior MTP0 arm; the current fixtures lack a deterministic seed control.",
+    "The required-tool fixture remains protocol-incompatible despite a semantically recognizable payload.",
+    "Q8 composite size is 28.859 GB and leaves little headroom on a 32 GB V100; it is not a drop-in replacement recommendation for the existing Q4/Q6 decision."
+  ]
+}

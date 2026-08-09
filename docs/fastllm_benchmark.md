@@ -33,6 +33,31 @@ FastLLM 已能在单块 V100-32GB 上完整运行这份 Qwen3.6 27B GGUF，包�
 | Turbo3 page-aligned prefix tier | 12,128-token prompt，16,384-token pool | cold 12.414s；GPU hit 2.009s；NVMe restore 2.840s | partial hit、压力淘汰、磁盘恢复、输出一致性通过 |
 | Turbo3 跨进程 prefix generation | ThinkingCap Q4_K_M，10,830-token deterministic prefix，owned backend 两 epoch | cold TTFT 114.011s；restore 89.755s；2,048 restore hits；输出 hash 一致 | checkpoint/unload/restart/restore 与截断 generation fail-open 均通过；见 `benchmarks/fastllm/results/fastllm_persistent_prefix_cache_v100_smoke.json` |
 
+## ThinkingCap Heretic Q8 composite audit（2026-08-10）
+
+为评估带有原生 MTP 层的高比特 ThinkingCap 变体，使用 FastLLM 原生 `apiserver` 在同一 Tesla V100-32GB、同一 Turbo3 配置和同一五个 HTTP/SSE fixture 上分别运行 MTP0 与 MTP2。模型文件为 `ThinkingCap-Qwen3.6-27B-heretic-Q8_0-plus-mtp.gguf`，大小 28,859,077,472 bytes；视觉 projector 已加载。此项结果不改变前面的 Q4/Q6 替换结论。
+
+| arm | fixture | 峰值显存 | 最低空闲显存 | 结果 |
+|---|---:|---:|---:|---|
+| MTP0 | 10（5 个请求×2） | 31,525 MiB | 970 MiB | HTTP/SSE validation 通过 |
+| MTP2 | 10（5 个请求×2） | 32,393 MiB | 374 MiB | HTTP/SSE validation 通过；低于安全余量 |
+| MTP5 | 未运行 | — | — | MTP2 后低于 512 MiB 门控，按规则跳过 |
+
+MTP2 的原生日志确认 `layers=1`、`drafts_per_step=2`、`acceptance=exact`，并记录了正的 draft acceptance-rate。十个请求全部为 HTTP 200、每条流恰好一个 `[DONE]`、没有 malformed SSE，usage 守恒且 `finish_reason=stop`。算术、严格格式、称重推理和红色像素四类语义 fixture 均通过；工具 fixture 虽输出了可识别的 `get_weather` 北京参数，但仍把 payload 放在 assistant content 中，没有产生 OpenAI `tool_calls` delta，且参数名为 `location` 而不是 fixture schema 要求的 `city`。
+
+MTP0 与 MTP2 的 fixture 意图一致，但没有建立 byte-level greedy parity：算术、严格格式和视觉最终 content hash 相同，推理 hash 及称重/工具文本不同；现有 fixture 没有服务端可控的 deterministic seed。因此 MTP2 只能作为可选实验 arm，不能据此宣称透明替换。MTP2 运行后停止服务，`nvidia-smi` 回到 327 MiB cold baseline；后续 hub stop 报告 exit 137，但发生在十个请求通过之后，不能当作推理阶段 OOM 结论。
+
+机器结果：
+
+- `benchmarks/fastllm/results/thinkingcap_heretic_q8_fastllm_mtp0.json`
+- `benchmarks/fastllm/results/thinkingcap_heretic_q8_fastllm_mtp2.json`
+- `benchmarks/fastllm/results/thinkingcap_heretic_q8_mtp0_vram.json`
+- `benchmarks/fastllm/results/thinkingcap_heretic_q8_mtp2_vram.json`
+- `benchmarks/fastllm/results/thinkingcap_heretic_q8_mtp2_vram.csv`
+- `benchmarks/fastllm/results/thinkingcap_heretic_q8_replacement_recommendation.json`
+
+结论：32GB V100 上保留 MTP2 需要额外显存余量或更保守的 token/cache 配置；在达到至少 512 MiB warm free-VRAM 之前不启动 MTP5。工具协议归一化和确定性 parity 仍是任何生产 cutover 的前置门控。
+
 ## 当前生产配置
 
 生产链路为 Thinking Proxy `:8000` → FastLLM `:8002`。当前上线的是 Turbo3 缓存/速度折中 profile；已验证的双 256K 容量档保留为独立命名 profile，不与当前参数混用。
@@ -462,6 +487,12 @@ Turbo3+MTP2 32K baseline、prefill 分层归因、公共 GDN operator 实验、r
 - `benchmarks/fastllm/results/fastllm_turbo3_prefix_tier_16k_acceptance.json`
 - `benchmarks/fastllm/results/fastllm_turbo3_prefix_tier_16k_unaligned_negative.json`
 - `benchmarks/fastllm/results/fastllm_turbo3_prefix_tier_16k_probe_layer_negative.json`
+- `benchmarks/fastllm/results/thinkingcap_heretic_q8_fastllm_mtp0.json`
+- `benchmarks/fastllm/results/thinkingcap_heretic_q8_fastllm_mtp2.json`
+- `benchmarks/fastllm/results/thinkingcap_q8_mtp2_fastllm_v100.json`
+- `benchmarks/fastllm/results/thinkingcap_heretic_q8_mtp0_vram.json`
+- `benchmarks/fastllm/results/thinkingcap_heretic_q8_mtp2_vram.json`
+- `benchmarks/fastllm/results/thinkingcap_heretic_q8_replacement_recommendation.json`
 - `benchmarks/turboquant/results/llama_tq4_256k_agents{1,2,4,5}.json`
 
 ## 构建说明
