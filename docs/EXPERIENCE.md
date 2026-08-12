@@ -593,3 +593,182 @@ fastllm 的 `third_party/` 需要以下子仓库（通过 `git clone --recursive
 - 对于缺乏原生 4-bit 支持的 SM70，fastllm 通过 FP16 半解包方式运行量化模型
 - fastllm 支持 SM70 的 `--cache-ram` 上下文缓存机制（不同于 llama.cpp 的 checkpoint 方案）
 
+## 14. FastLLM 后端模板误用：工具调用空参数/拼错工具名
+
+### 14.1 症状（Cherry Studio 实测）
+
+- 模型调用 `web_search` 但 `arguments` 恒为 `{}`，Cherry Studio 校验失败：
+  `Invalid input for tool web_search: Type validation failed: Value: {}. expected: string`
+- 多轮后模型开始拼错工具名：`web_feetch` → `wweb_fe tc h`，死循环重试
+- 有时直接输出 Qwen 老式文本工具格式 `<tool_call> <web_search> <parameter=query> ... </tool_call>`，客户端无法解析
+
+### 14.2 根因
+
+thinking_proxy.py 的模板默认路径基于 `PROJECT_DIR` 拼接，而 **profile env 把 `PROJECT_DIR` 指向了 `v100-perfs/`**：
+
+```
+FASTLLM_CHAT_TEMPLATE = PROJECT_DIR / "chat_templates" / "qwen3.6_gguf_original.jinja"
+# PROJECT_DIR=/run/media/ezra/.../v100-perfs
+# → 实际加载 v100-perfs/chat_templates/qwen3.6_gguf_original.jinja
+```
+
+`qwen3.6_gguf_original.jinja` 对 tools 的处理是 `{{- tool | tojson }}` —— 把整个工具定义**原样 dump 成 JSON blob** 塞进 system。模型看到的是 `{"function": {"description": "...", "parameters": {...}}}` 巨型 JSON，没有可读的签名（`name(param: type)`）、没有 required 标注、没有输出格式示例，工具调用能力直接退化。
+
+对比 `qwen3.6_merged.jinja`（`1CatVLLM/chat_templates/` 下的改进版）：
+- `render_tool_signature` 输出 `- name(param: type, req_param: type) — description`，required 参数不带 `?`
+- 带完整 XML 输出格式示例 + "Include every required parameter" 指令
+
+### 14.3 修复
+
+两个 profile（`q5-262k-mtp2.env` / `q5-262k-mtp1.env`）显式指定改进版模板：
+
+```
+FASTLLM_CHAT_TEMPLATE=/run/media/ezra/13D010B6FDBC1A06/1CatVLLM/chat_templates/qwen3.6_merged.jinja
+```
+
+### 14.4 验证
+
+- Cherry Studio 标准工具集（fs_read/web_fetch/web_search）原样重放：原版模板 5/5 输出 `{}`，切换后 3/3 输出 `{"query":"MC 迷你世界"}`，finish=tool_calls
+- `test_fastllm_adapter.py` 13 pass、`test_fastllm_feature_bench.py` 10 pass
+
+### 14.5 教训
+
+1. **profile env 里的 `PROJECT_DIR` 会改变 proxy 的默认模板解析路径**——显式设置 `FASTLLM_CHAT_TEMPLATE`，不要依赖默认拼接
+2. 工具调用的"模型能力"问题先查模板渲染的 tools 段（抓 proxy→FastLLM 的实际请求体对比），再怀疑模型
+3. 同症状还可能是：`/v1/models` 缺能力标注（Cherry Studio 不注入 tools）、`route_for_model` 把本地别名路由到外部 NIM（工具格式不匹配）
+
+### 14.6 遗留（未同源修复）
+
+emoji 乱码（`\xf0\x9f\x92` 缺第 4 字节）在 merged 模板下依旧存在——坏字节产生于 FastLLM 输出侧（token 生成），与模板输入无关，需单独排查 GGUF vocab / FastLLM 输出路径。
+
+## 15. 图像请求 CUDA OOM：paged KV 页池全量预留 + 临时缓冲共享竞态
+
+### 15.1 症状
+
+- Cherry Studio 发图像请求 → 流中断（`ERR_INCOMPLETE_CHUNKED_ENCODING`、`AI_TypeValidationError`）
+- 后端日志：`CUDA error when allocating ... gpuFree: 7 MB / 32494 MB`，FastLLM 崩（code=1/6）后 reload
+- 图像请求峰值 ~32.4 GiB（free 0.3 GiB），与分辨率无关（64px 与 1024px 相同）；文本请求 25.2 GiB 安全
+
+### 15.2 根因（两个独立 bug）
+
+**A. PagedCacheManager 全量预留页池（图像 prefill 运行时分配 ~7 GB 撞显存峰值）**
+
+- 多模态/图像 prefill 走 non-fused paged KV 路径（turbo3 下 CUDA direct runner 禁用，走 `ForwardFromHiddenStates` 的 `AllocatePagedCacheManager(i*2)`）
+- `AllocatePagedCacheManager` 按 `maxPages = GetMaxTokens()/pageLen` **全量预留**（262K 上下文合计 ~7 GiB），且 map 按层懒创建
+- 首次图像请求（或累积页不足时）在**显存已满载**时再分配 4.8–7 GiB → CUDA OOM（gpuFree 剩几 MB）
+- 文本 fused prefill 不建页池，所以纯文本 25.2 GiB 安全；MTP0/1/2 差异仅 0.15 GiB，不改变结论
+
+**B. `FastllmBorrowCudaTempBuffer` 扩容释放共享临时缓冲（MTP conv use-after-free）**
+
+- 设备临时缓冲是每设备单例（`FastllmCudaTempDeviceBuffer holder`），MTP 校验/conv 与主 forward 并行借用
+- 某借用者需要更大缓冲时：`DirectFree(holder.data)` + 重新分配 → 仍持有旧指针的借用者（MTP conv kernel 参数）读已释放内存 → `cudaErrorInvalidValue`（"batched multi-token MTP conv"），`Qwen35MtpBatchFastPathUnavailable` → abort
+- 图像+长文本组合（img+long）可复现；纯文本/纯图像不触发
+
+### 15.3 修复（fastllm 源码，`fastllm/build/apiserver` 已重建）
+
+1. **页池懒分配 + 按需增长**（`fastllm.cpp`）：
+   - `AllocatePagedCacheManager`：物理初始池 128 页（~0.8 GiB 总量），`maxPages` 字段保留逻辑预算（调度预留检查用）
+   - 新增 `PagedCacheManager::Grow(newMaxPages)`：分配更大池 → 拷贝旧页 → 退役旧池（`retiredCudaData` 列表，析构统一释放，避免并发 use-after-free）；`dims[0]` 为物理页数，`maxPages` 为预算
+   - `CudaAppendPagedCacheOp`：页不足时 Grow（不再 ErrorInFastLLM）
+   - `GetUnusedPageIndex`：无页时预算内自动 Grow 重试（覆盖 decode/MTP CoW/prefix restore/swap 所有取页方）
+   - 调度检查（`pageNeedsFitWithReservations`/`hasPagedManagerShortage`，qwen3_5.cpp + basellm.cpp）：物理不足但需求在预算内 → Grow；busy/total 页数改用 `dims[0]`（物理）而非 `maxPages`
+   - prefix-cache 快照导出/恢复：兼容懒池（按物理页数校验，恢复前 Grow 到所需页数）
+2. **临时缓冲扩容不释放旧缓冲**（`fastllm-attention.cu` `FastllmBorrowCudaTempBuffer`）：只增不减，消除共享缓冲 use-after-free
+3. 防御：Grow 拷贝前 `FastllmCudaValidatePointerRange`，旧指针无效则清零新池并跳过退役（不 double-free）
+
+### 15.4 配置调整
+
+- `q5-262k-mtp2.env`（及 mtp1）：`FASTLLM_CPU_REQUEST_SWAP=0`（swap 与图像路径冲突，且懒页池已取代其显存优化价值）；`--tokens` 恢复 **262144**（262K 原生上下文，懒页池下与 240K 无额外风险）
+- VRAM 阈值保持 `FASTLLM_VRAM_MIN_FREE_GIB=0.5` / `RESUME=1.0`（长对话页池累积时 proxy 保护性 unload）
+
+### 15.5 验证（Tailscale IP 100.94.73.9:8000）
+
+| 场景 | 修复前 | 修复后 |
+|---|---|---|
+| 1024px 图像 | 峰值 32.4 GiB，随机崩（4-6 chunks） | 峰值 23.2 GiB，198 chunks 完整 |
+| 64px 图像 | 峰值 31.7 GiB（free 1.1） | 峰值 23.2 GiB，198 chunks 完整 |
+| 19800 token 长 prefill | — | 峰值 25.0 GiB，完整流 |
+| 图像+3000字长文本 | 4 chunks 后 abort（MTP conv invalid） | 70 chunks 完整 |
+| 连续图像 | 第二个请求 503/崩 | 稳定，after 24.9 GiB used / 7.5 GiB free |
+| lifecycle | 多次 exited code=1/6 + reload | 单 generation，无 reload |
+
+### 15.6 遗留
+
+- **YARN rope scaling 未接入**（FastLLM kernel 有 `YarnRope`（cudadevice.cpp yarnFactor/yarnAttentionFactor/yarnCorrectionLow/High），但 Qwen3.5 模型路径只解析 `rope_scaling.type=linear|dynamic`，未解析 `yarn`，mrope 应用无 yarn 分支）——超过 262K（原生 256K）上下文需要它
+- emoji 乱码（§14.6）依旧
+- `doesworkstation` nginx IPv6/502 未修（Cherry 用 http://100.94.73.9 正常）
+
+### 15.7 YaRN 接入（代码完成，生产未启用）
+
+- FastLLM 已有 YarnRope kernel（`FastllmYarnInvFreq` + `YarnRopeEncoding`），但 Qwen3.5 模型路径未接线。本次接入：
+  - `Qwen35InterleavedRopeKernel`（3 个 dtype）加 useYarn/yarnFactor/yarnAttentionFactor/yarnCorrectionLow/High 参数（mrope + YaRN）
+  - `FastllmCudaQwen35InterleavedRope`、`CudaQwen35InterleavedRopeOp`、`fastllm.cpp Qwen35InterleavedRope` 透传（默认关闭，向后兼容）
+  - `InitParams`：解析 `rope_scaling.type=yarn`（+factor/attention_factor/beta_fast/beta_slow/original_max_position_embeddings），支持 env `FASTLLM_QWEN35_YARN=1` + `FASTLLM_QWEN35_YARN_FACTOR` 等覆盖；预计算 correction 区间
+  - `ApplyMultimodalRotary`：YARN 时 mrope→yarn interleaved、普通→`YarnRopeEncoding`
+- 验证：factor=2 + tokens 524288 下 19800 tokens 长文本 + 图像全部正常（YaRN enabled 日志、correction=[14,22]、KV 池 3.6GB、图像后 free 7.5GB）
+- **未启用原因**：>262K 的单请求（245K tokens prefill）在 YARN 开（0.2s 快速失败）与关（25s 完整流但请求后清理阶段 `CudaAppendPagedCacheOp failed to launch multi-page copy` abort）都不稳定——超长单请求的既有边界问题（multi-page copy launch invalid），需单独调试；生产保持 262K 无 YARN
+
+### 15.8 超长请求稳定性：MtpKvCache double-free + swap 多模态排除
+
+**症状**：245K 单请求完整流后 abort（`CudaAppendPagedCacheOp failed to launch multi-page copy`）；swap=1 时图像+长文本组合卡 800s+。
+
+**根因链（A：MtpKvCache double-free）**：
+- `Data` 无自定义拷贝构造（裸指针浅拷贝），`MtpKvCache{Data key, value}` 放 `unordered_map`——rehash/erase 时浅拷贝链使同一 cudaData 析构多次（cudaFree 同地址 4 次）
+- 释放的地址被 cudaMalloc 复用给 paged KV 池 → 页池被"再释放"（Grow 时报 `old pool already freed`）→ 后续 multi-page copy 用坏指针（launch invalid）
+- 修复：`MtpKvCache` 禁拷贝（拷贝构造/赋值 delete，移动 default），`mtpCaches` 值改 `std::unique_ptr<MtpKvCache>`，新增 `GetMtpCache()` 辅助（调用者须持 `mtpCacheMutex`）；`emplace` 改 `make_unique`，所有 `it->second.x` 改 `it->second->x`
+- 验证：245K 200 完整不崩；cudaFree 无重复；`old pool already freed` 归零（本 gen）
+
+**根因（B：swap 与多模态卡死）**：
+- `CanSuspendResponseContextToCpu` 未排除多模态请求——图像+长文本的 CPU 交换恢复卡 800s+
+- 修复：多模态（`context->multimodalInput` 非空）不挂起（返回 false + error）
+- 验证：img+long 4.7s 完整（swap=1 保持，zstd 磁盘交换对纯文本长 prefill 生效）
+
+**残留**：仍有少量 `old pool already freed`（Grow 降级 memset 0，影响已退役空闲池，不崩、输出正常）——另一处浅拷贝释放者未定位（低影响，后续可查）。
+
+### 15.9 低频字乱码根因确认（§14.6 续）
+
+- GGUF vocab 全部合法（248320 token 无无效 UTF-8）；与采样无关（temp=0/1.0 输出逐字节相同）、与 MTP 无关（MTP0 同样 14 处坏字节）
+- 根因：Q5_K_M 量化的字节级 token 预测——低频汉字/emoji 的整字 token logits 被量化噪声压低，模型确定性改走字节 fallback token（`<0xE6><0xA7>` 等），字节序列断裂（`\xe6\xa7` 缺第 3 字节、孤立 continuation）
+- 无法在服务层修复（缺字节不可恢复）；换更高精度权重（Q8/F16）超出 32GB 显存。缓解：proxy 层可丢弃无效字节（字消失而非 �），未做（保持透传）
+
+### 15.10 换 abliterated 模型（mradermacher Q6_K）+ MTP 档位对比
+
+**模型切换**（2026-08-11）：
+- 原 `ThinkingCap-Qwen3.6-27B-heretic-Q5_K_M-plus-mtp.gguf` → **`Huihui-ThinkingCap-Qwen3.6-27B-abliterated.i1-Q6_K.gguf`**（mradermacher，Huihui abliterated，**真去拒绝**：核弹步骤等敏感内容直接生成；此前 protoLabsAI 的 abliterated 仓库是假的（discussion 1 确认，已弃用））
+- **MTP 头自带**（`blk.64.*` 15 个 + `nextn.*` 4 个——与 FastLLM 的 GGUF 规则兼容，**无需移植**；`scripts/merge_mtp_head.py` 保留备用（未来若遇无 MTP 的量化可直接合并）
+- mmproj 换 `mmproj-ThinkingCap-Qwen3.6-27B-f16.gguf`（companion 仓库）；前缀缓存 key 换 `qwen3.6-mrad-q6-mtp2`
+- Q6_K 加载后 23.4GB used / 9.1GB free；**首次图像慢 ~260s**（冷视觉加载），后续 8s
+
+**MTP 档位对比**（262K + mrad Q6，200 tokens decode）：
+| MTP 档 | decode tok/s | 备注 |
+|---|---|---|
+| 0（关） | 4.2 | 基线 |
+| 1 | 4.8 | 单 draft 加速小 |
+| **2** | **30.1** | **最优（7 倍），保持生产** |
+| 3 | 10.8 | 3 draft 验证开销/接受率下降 |
+| 4 | 5.2 | 继续下降 |
+
+prefill（80K 字符）0.1-0.2s，MTP 档位影响可忽略（MTP 只加速 decode）。
+
+**长上下文压力**（262K 上限）：
+- 150K 字符（~19.5 万 tokens）prefill+decode 20.9s 不崩（峰值 29.9GB/free 2.9GB）
+- 200K 字符（~26 万 tokens，超 262K）后端 502 拒绝（正确行为，不崩）
+- **512K（--tokens 524288）反复崩溃**（`FastllmCudaCopyFromDeviceToDevice` invalid argument 5495，无明确根因、非 OOM）——已回 262K，**待后续排查**（诊断 backtrace 已加在 5495 处）
+
+**乱码确认**：Q6_K 同样 14 坏字节（与 Q5 相同）——字节 token 断裂是量化模型的固有行为，Q6 不改善；换更高精度（Q8 28GB）超出显存，接受。
+
+### 15.11 multi-page copy 容错 + 恢复
+
+- 预热/多请求场景偶发 `CudaAppendPagedCacheOp failed to launch multi-page copy`（并发 Grow 竞态，诊断 backtrace 未捕获具体调用者；gdb 下单请求正常，proxy 多请求复现）
+- 修复：`CudaAppendPagedCacheOp` 的 multi-page 失败改为**降级逐页复制**（`FastllmCudaPackedKVCacheCopy` 循环），不再 abort
+- 诊断代码（copy backtrace / pool-miss 跟踪 / TurboKV 打印 / Grow 打印）已清理，保留 `[TurboKV]` 入口/launch 诊断（供未来定位）
+- 恢复后：text 200（70 chunks 1.2s）、img 200（132 chunks 7.6s）、READY gen 1；`old pool already freed` 仍有零星（降级 memset 0，不崩）
+- 后续定位到 Turbo3 共用 kernel 的 row-bound 回归：single-page/batch 路径把局部 `rows + 1` 当成全局页池 row 上限，物理页号大于 0 时合法写入被当作 OOB 丢弃；device `printf("%zu")` 又把后续诊断字段打印乱序。修复为只在拿到真实页池 geometry 的 multi-page 路径启用全局上限，legacy single-page/batch 路径传 `-1` 禁用该检查，并用 `%llu` 输出 `size_t`。`turbo3_kv` 回归通过，新 generation 的文本+三次图像请求后无 `ROW OOB`/copy/CUDA 错误。
+- **当前生产（2026-08-12）**：Huihui abliterated i1-Q6_K + 262K + MTP2 + swap/zstd + 前缀缓存；启动后 22.8GB，代理冷启动请求 HTTP 200（335.8s）。KV 修复后三次 1×1 PNG 均 HTTP 200（7.31/4.41/4.40s），三次都正确识别 red，服务保持 READY；强制工具请求仍未产生 `tool_calls`，因此视觉稳定性/语义已通过，工具调用能力仍未通过。
+
+### 15.12 模型级 RAM suspend/resume（托管 host cache）
+
+- `HostCacheBudget` 统一限制模型权重与前缀 KV 的宿主内存占用；模型挂起按 `must-cache → derived → ordinary` 分级，12GiB 权重留 RAM，其余按 GGUF materialization recipe 从源文件重建。
+- 实机 i1-Q6_K：READY 23.7GB VRAM；memory suspend 17.45s，缓存 12,863,627,264 bytes、驱逐 8,513,433,600 bytes，GPU 降至 2.2GB；memory resume 111.89s，cache hit ratio 0.601749，重建 8,513,433,600 bytes，恢复至 23.7GB。
+- 首次实机恢复暴露 partial reload 只还原 CPU payload、未还原原 CUDA placement；修复为记录每个驱逐 tensor 的原 device id，GGUF 重建后显式 H2D，并在任一阶段失败时自动回退完整 disk reload。修复后 `/admin/resume` 返回 `tier=memory`，随后推理 HTTP 200、`/health` 为 `ready=true`。
+- 代理空闲分级：12h 内 memory tier，超过 12h disk tier；后端进程常驻，首个请求自动 resume。生产 profile 已启用 `FASTLLM_HOST_SUSPEND_CACHE=1`、12GiB host 权重预算及 3GiB prefix RAM 预算。

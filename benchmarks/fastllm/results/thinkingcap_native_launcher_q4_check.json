@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "benchmark": "fastllm_native_profile_launcher_smoke",
+  "created_at_utc": "2026-08-09T23:16:19Z",
+  "hardware": {
+    "gpu": "Tesla V100-PCIE-32GB",
+    "memory_total_mib": 32768,
+    "driver": "580.173.02"
+  },
+  "manifest": "benchmarks/fastllm/configs/thinkingcap_native_profiles.json",
+  "profile": "thinkingcap-q4",
+  "endpoint": "http://127.0.0.1:18104",
+  "binary_sha256": "17a099ff50221bf79989284e8efd9635d53335a1e0355e7473fa8f8ce1d3d21f",
+  "readiness": {
+    "manager_identity": "pid + proc_start_time + exe + argv SHA-256",
+    "health_status": "ok",
+    "health_ready": true,
+    "health_model": "qwen3.6-fastllm",
+    "props_model": "qwen3.6-fastllm",
+    "multimodal_projector_loaded": true,
+    "kv_cache_dtype": "turbo3",
+    "activation_dtype": "float16",
+    "token_pool": 65536
+  },
+  "vram_gate": {
+    "minimum_free_mib": 512,
+    "final_recheck_started_at_utc": "2026-08-09T23:27:20Z",
+    "final_recheck_ready_at_utc": "2026-08-09T23:30:45Z",
+    "preflight_free_mib": 32012,
+    "readiness_free_mib": 32012,
+    "preflight_passed": true,
+    "readiness_passed": true,
+    "final_recheck_health_ready": true,
+    "final_recheck_shutdown_completed": true
+  },
+  "request": {
+    "request_id": "arithmetic_126",
+    "status": 200,
+    "content": "126",
+    "content_sha256": "ffdf174b2f18dff1d3fc983546db325fc1bcb7cc4090ea63bbb1fc5b14b91524",
+    "finish_reason": "stop",
+    "done_events": 1,
+    "malformed_events": 0,
+    "usage": {
+      "prompt_tokens": 28,
+      "completion_tokens": 92,
+      "total_tokens": 120
+    },
+    "wall_seconds": 127.74135971999931,
+    "validation_passed": true,
+    "source": "benchmarks/fastllm/requests/thinkingcap_arithmetic_126.json"
+  },
+  "shutdown": {
+    "command": "scripts/fastllm_native_profile.py stop --grace 20",
+    "completed": true,
+    "post_stop_gpu_used_mib": 483
+  },
+  "first_attempt_note": "A prior 300-second attempt timed out while a duplicate full-model SHA job saturated model-disk I/O; no child remained and VRAM returned to the cold baseline."
+}

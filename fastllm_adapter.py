@@ -89,9 +89,8 @@ def prepare_fastllm_body(
     body: dict[str, Any], template_path: str | Path
 ) -> dict[str, Any]:
     prepared = copy.deepcopy(body)
-    if not _body_has_images(body):
-        prepared["prompt"] = render_fastllm_prompt(body, template_path)
-        prepared["raw_prompt"] = True
+    prepared["prompt"] = render_fastllm_prompt(body, template_path)
+    prepared["raw_prompt"] = True
     stops = prepared.get("stop")
     if stops is None:
         merged_stops = []

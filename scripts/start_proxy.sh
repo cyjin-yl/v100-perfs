@@ -30,10 +30,12 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-# Proxy lives in the repo root (parent of scripts/).
-cd "$SCRIPT_DIR/.."
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+# The root thinking_proxy.py is the single canonical fair-routing proxy.
+cd "$PROJECT_ROOT"
+PROXY_LOG_FILE="${PROXY_LOG_FILE:-${PROJECT_DIR:-$PROJECT_ROOT/v100-perfs}/runtime/fastllm-native-profiles/logs/proxy-8000-live.log}"
 
-VENV="${VENV:-../.venv-1cat/bin/python}"
+VENV="${VENV:-$PROJECT_ROOT/.venv-1cat/bin/python}"
 
 # Optional conda/venv lib path. Only prepend the default if that dir exists; in
 # FastLLM mode you may instead run inside the fastllm/conda env via VENV.
@@ -77,4 +79,10 @@ else
   echo "[start_proxy] llama mode -> llama-server on port ${BACKEND_PORT}"
 fi
 
-exec "$VENV" "$SCRIPT_DIR/../thinking_proxy.py"
+if [[ -n "${PROXY_LOG_FILE:-}" ]]; then
+  mkdir -p "$(dirname "$PROXY_LOG_FILE")"
+  echo "[start_proxy] logging stdout/stderr -> $PROXY_LOG_FILE"
+  "$VENV" "$PROJECT_ROOT/thinking_proxy.py" 2>&1 | /usr/bin/tee -a "$PROXY_LOG_FILE"
+  exit "${PIPESTATUS[0]}"
+fi
+exec "$VENV" "$PROJECT_ROOT/thinking_proxy.py"

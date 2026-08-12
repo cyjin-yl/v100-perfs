@@ -1,0 +1,106 @@
+{
+  "schema_version": 1,
+  "benchmark": "fastllm_q4_long_context_vision_gate",
+  "created_at_utc": "2026-08-10T00:00:00Z",
+  "status": "failed_image_oom",
+  "hardware": {
+    "gpu": "Tesla V100-PCIE-32GB",
+    "compute_capability": "7.0",
+    "memory_total_mib": 32768
+  },
+  "manifest": "benchmarks/fastllm/configs/thinkingcap_native_profiles.json",
+  "comparison_profile": {
+    "model_path": "/run/media/ezra/13D010B6FDBC1A06/1CatVLLM/models/ThinkingCap-Qwen3.6-27B-GGUF/ThinkingCap-Qwen3.6-27B-Q4_K_M.gguf",
+    "model_variant": "standard-q4_k_m",
+    "mmproj_path": "/run/media/ezra/13D010B6FDBC1A06/1CatVLLM/models/ThinkingCap-Qwen3.6-27B-GGUF/mmproj-ThinkingCap-Qwen3.6-27B-f16.gguf",
+    "kv_cache_dtype": "turbo3",
+    "kv_layout": "K=q8_0,V=turbo3",
+    "tokens": 327680,
+    "batch": 5,
+    "default_max_tokens": 16384,
+    "mtp": 3,
+    "interleaved_long_prefill": true,
+    "port": 8002,
+    "proxy_ownership": "external_only"
+  },
+  "startup": {
+    "initial_attempt": "bind_error_after_socket_ready",
+    "initial_cause": "old_backend socket release race; FastLLM apiserver has no SO_REUSEADDR on its listener",
+    "retry": "bind_ready",
+    "health_ready": true,
+    "log": "runtime/fastllm-native-profiles/logs/q4-320k-live.log"
+  },
+  "capacity_gate": {
+    "text_warmup": "completed before image request",
+    "image_request": "triggered CUDA allocation failure",
+    "request_bytes": 356515840,
+    "request_kb": 348160,
+    "dtype": "q8_0_kv",
+    "dims": [2560, 128, 4, 256],
+    "cuda_error": 2,
+    "error": "cudaErrorMemoryAllocation",
+    "backend_exit_code": 1,
+    "accepted": false,
+    "log_lines": [187, 188, 190, 192]
+  },
+  "vision_diagnosis": {
+    "local_openai_probe": "RemoteDisconnected; backend log confirms image-path CUDA OOM",
+    "proxy_openai_probe": "401 because probe intentionally omitted AUTH_TOKEN",
+    "proxy_anthropic_probe": "401 because probe intentionally omitted AUTH_TOKEN",
+    "observed_cherry_failure": "OpenAI image request reached fallback after local backend failure; NIM returned 404 and OpenRouter returned no image-capable endpoint",
+    "observed_proxy_log": "[route] OR failed: OpenRouter returned 404: No endpoints found that support image input",
+    "implication": "OpenAI and Anthropic share the same local projector and allocator; protocol conversion is not the primary 320K failure"
+  },
+  "fallback": {
+    "target": "standard-q4-mtp2-262k",
+    "restore_required": false,
+    "reason": "320K MTP3 is not production-eligible after image OOM",
+    "restored_health": "8002 and proxy 8000 ready",
+    "local_image_probe": "HTTP 200 in 10.192 seconds; QR code content recognized"
+  },
+  "hf_download": {
+    "repo": "egibson/ThinkingCap-Qwen3.6-27B-heretic-GGUF",
+    "q4_model": "failed_after_second_resume",
+    "q4_model_received_bytes": 10301897834,
+    "q4_model_expected_bytes": 16547399328,
+    "q4_model_error": "RemoteProtocolError: peer closed connection without sending complete message body",
+    "q5_model": "retry_in_progress_after_remote_disconnect",
+    "q5_model_received_bytes": 5363112405,
+    "q5_model_expected_bytes": 19231098528,
+    "q5_model_error": "RemoteProtocolError: peer closed connection without sending complete message body",
+    "projector": "completed_after_second_resume",
+    "projector_size_bytes": 927607456,
+    "projector_sha256": "a1465e3b62c2930a4e99f3eb4ce7b5254f3c34db4c2870a3278e5c0d26c9272e",
+    "first_projector_error": "RemoteProtocolError after 593750390 of 927607456 bytes",
+    "download_policy": "single-file resume with HTTP/HTTPS/ALL_PROXY and lowercase variants cleared"
+  },
+  "proxy_vision_gate": {
+    "tested_at_utc": "2026-08-10T09:19:50Z",
+    "fallback_profile": "standard-q4-mtp2-262k",
+    "model_aliases": ["qwen3.6-27b-heretic", "qwen3.6-27b-awq"],
+    "image": "fastllm/docs/wechat_group0.png",
+    "openai_non_stream": "post-fix HTTP 200; normal text description returned",
+    "anthropic_non_stream": "post-fix HTTP 200; normal Anthropic text block returned",
+    "openai_stream": "HTTP 200; SSE completed with data: [DONE]",
+    "anthropic_stream": "post-fix HTTP 200; 104 non-empty SSE lines ending in message_stop",
+    "raw_prompt_fix": "adapter pre-renders multimodal Qwen prompt; apiserver accepts raw_prompt with image inputs",
+    "result": "passed"
+  },
+  "q4_mtp2_400k_gate": {
+    "tested_at_utc": "2026-08-10T09:58:03Z",
+    "tokens": 409600,
+    "mtp": 2,
+    "kv_layout": "K=q8_0,V=turbo3",
+    "startup_health": "ready",
+    "short_text": "HTTP 200",
+    "image_request": "backend fatal CUDA OOM; proxy HTTP 502",
+    "request_bytes": 163840000,
+    "request_kb": 160000,
+    "dtype": "turbo3",
+    "dims": [3200, 128, 4, 256],
+    "backend_exit_code": 1,
+    "production_eligible": false,
+    "fallback_restored": "Q4 MTP2 262144; backend and proxy healthy",
+    "conclusion": "400K MTP2 is not stable for multimodal production"
+  }
+}

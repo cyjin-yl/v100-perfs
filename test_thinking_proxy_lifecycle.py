@@ -3,12 +3,15 @@ import os
 import tempfile
 import unittest
 from unittest import mock
+import sys
+from pathlib import Path
 
-
+from unittest import mock
 _TEST_PROJECT = tempfile.TemporaryDirectory()
 os.environ.setdefault("PROJECT_DIR", _TEST_PROJECT.name)
 os.environ.setdefault("FASTLLM_BACKEND_URL", "http://127.0.0.1:8002")
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import thinking_proxy
 
 
@@ -206,12 +209,13 @@ class BackendLifecycleStateTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(calls["start"], 2)
         await second.release()
 
-    async def test_pressure_waits_for_last_lease_and_hysteresis_blocks_restart(self):
+    async def test_pressure_waits_for_last_lease_and_unload_allows_restart(self):
         manager, calls = self.make_manager(
             minimum_free_bytes=20,
             resume_free_bytes=35,
         )
         lease = await manager.acquire()
+        await manager.observe_memory(free_bytes=10, total_bytes=100)
         await manager.observe_memory(free_bytes=10, total_bytes=100)
         self.assertEqual(manager.state, "DRAINING")
         self.assertEqual(calls["stop"], 0)
@@ -219,12 +223,11 @@ class BackendLifecycleStateTests(unittest.IsolatedAsyncioTestCase):
             await manager.acquire()
 
         await lease.release()
+        self.assertEqual(manager.state, "DRAINING")
+        self.assertEqual(calls["stop"], 0)
+        await manager.stop("memory_pressure")
         self.assertEqual(manager.state, "COLD")
         self.assertEqual(calls["stop"], 1)
-        with self.assertRaises(thinking_proxy.BackendMemoryPressure):
-            await manager.acquire()
-
-        await manager.observe_memory(free_bytes=35, total_bytes=100)
         restarted = await manager.acquire()
         self.assertEqual(calls["start"], 2)
         await restarted.release()
@@ -255,16 +258,18 @@ class BackendLifecycleStateTests(unittest.IsolatedAsyncioTestCase):
         )
         lease = await manager.acquire()
         await manager.observe_memory(free_bytes=19, total_bytes=100)
+        await manager.observe_memory(free_bytes=19, total_bytes=100)
         self.assertEqual(manager.state, "DRAINING")
-        await lease.release()
-        self.assertEqual(calls["stop"], 1)
-
-        await manager.observe_memory(free_bytes=30, total_bytes=100)
+        await manager.observe_memory(free_bytes=40, total_bytes=100)
+        self.assertEqual(manager.state, "DRAINING")
         with self.assertRaises(thinking_proxy.BackendMemoryPressure):
             await manager.acquire()
         await manager.observe_memory(free_bytes=40, total_bytes=100)
-        restarted = await manager.acquire()
-        await restarted.release()
+        self.assertEqual(manager.state, "READY")
+        second = await manager.acquire()
+        await second.release()
+        await lease.release()
+        self.assertEqual(calls["stop"], 0)
 
     async def test_timed_out_activation_waiter_does_not_create_a_lease(self):
         entered = asyncio.Event()

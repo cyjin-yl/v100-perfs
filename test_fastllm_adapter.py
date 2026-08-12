@@ -48,7 +48,7 @@ class FastLLMAdapterTests(unittest.TestCase):
         self.assertEqual(actual["messages"], body["messages"])
         self.assertEqual(actual["max_tokens"], 64)
 
-    def test_prepare_body_keeps_multimodal_messages_for_backend_template(self):
+    def test_prepare_body_renders_multimodal_prompt_for_backend_template(self):
         body = {
             "model": "qwen3.6-fastllm",
             "messages": [{
@@ -61,12 +61,14 @@ class FastLLMAdapterTests(unittest.TestCase):
                     },
                 ],
             }],
+            "chat_template_kwargs": {"enable_thinking": False},
         }
 
         actual = fastllm_adapter.prepare_fastllm_body(body, TEMPLATE)
 
-        self.assertNotIn("raw_prompt", actual)
-        self.assertNotIn("prompt", actual)
+        self.assertTrue(actual["raw_prompt"])
+        self.assertIn("<|vision_start|><|image_pad|><|vision_end|>", actual["prompt"])
+        self.assertTrue(actual["prompt"].endswith("<think>\n\n</think>\n\n"))
         self.assertEqual(actual["messages"], body["messages"])
         self.assertEqual(actual["stop"], ["<|im_end|>", "<|endoftext|>"])
 

@@ -43,6 +43,7 @@ import inspect
 import ipaddress
 import json
 import os
+import re
 import signal
 import sqlite3
 import sys
@@ -62,6 +63,9 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import ClientDisconnect
 from starlette.responses import JSONResponse as _StarletteJSONResponse, Response
 
+_FASTLLM_SUPPORT_DIR = Path(__file__).resolve().parent / "v100-perfs"
+if str(_FASTLLM_SUPPORT_DIR) not in sys.path:
+    sys.path.insert(0, str(_FASTLLM_SUPPORT_DIR))
 from fastllm_adapter import adapt_fastllm_response, prepare_fastllm_body
 
 # ─── Config ─────────────────────────────────────────────────────
@@ -81,7 +85,27 @@ BENCHMARK_MODE = os.environ.get("BENCHMARK_MODE", "0") == "1"
 NIM_API_KEY = os.environ.get("NIM_API_KEY", "")
 NIM_BASE_URL = os.environ.get("NIM_BASE_URL", "https://integrate.api.nvidia.com/v1")
 NIM_MODEL_MULTIMODAL = os.environ.get("NIM_MODEL_MULTIMODAL", "nvidia/minimax-m3")
-NIM_MODEL_TEXT = os.environ.get("NIM_MODEL_TEXT", "z-ai/glm-5.2")
+# Explicit NIM_MODELS wins; else an explicit NIM_MODEL_TEXT is honored for
+# backward compatibility; else the currently available NVIDIA NIM catalog.
+NIM_MODEL_TEXT = os.environ.get("NIM_MODEL_TEXT", "")
+NIM_MODELS = os.environ.get("NIM_MODELS", "")
+if NIM_MODELS:
+    _nim_ids = [s.strip() for s in NIM_MODELS.split(",") if s.strip()]
+elif NIM_MODEL_TEXT:
+    _nim_ids = [NIM_MODEL_TEXT]
+else:
+    _nim_ids = [
+        "meta/muse-glimmer-30b",
+        "poolside/laguna-xs-2.1",
+        "stepfun-ai/step-3.7-flash",
+        "nvidia/minimax-m3",
+    ]
+NIM_MODEL_LIST = [
+    {"id": m, "multimodal": (m == NIM_MODEL_MULTIMODAL)}
+    for m in _nim_ids
+]
+if not NIM_MODEL_LIST:
+    NIM_MODEL_LIST = [{"id": NIM_MODEL_MULTIMODAL, "multimodal": True}]
 
 OR_API_KEY = os.environ.get("OR_API_KEY", "")
 OR_BASE_URL = os.environ.get("OR_BASE_URL", "https://openrouter.ai/api/v1")
@@ -121,6 +145,20 @@ FASTLLM_PREFIX_CACHE_CHECKPOINT_TIMEOUT = max(
     1.0,
     float(os.environ.get(
         "FASTLLM_PREFIX_CACHE_CHECKPOINT_TIMEOUT", "300")),
+)
+# 空闲/显存压力卸载方式：1（默认）→ POST /admin/suspend 让后端常驻释放 GPU；
+# 0 → 保持旧行为 kill 进程。suspend 的 HTTP 超时上限。
+FASTLLM_IDLE_SUSPEND = os.environ.get(
+    "FASTLLM_IDLE_SUSPEND", "1").strip().lower() in {
+        "1", "true", "yes", "on",
+    }
+FASTLLM_SUSPEND_TIMEOUT = max(
+    1.0,
+    float(os.environ.get("FASTLLM_SUSPEND_TIMEOUT", "300")),
+)
+FASTLLM_RESUME_TIMEOUT = max(
+    1.0,
+    float(os.environ.get("FASTLLM_RESUME_TIMEOUT", "900")),
 )
 FASTLLM_LIFECYCLE_INTERVAL = max(
     1.0, float(os.environ.get("FASTLLM_LIFECYCLE_INTERVAL", "5")))
@@ -379,6 +417,8 @@ class BackendLifecycleManager:
         probe_ready,
         reset_local,
         checkpoint_backend=None,
+        suspend_backend=None,
+        resume_backend=None,
         start_timeout=900.0,
         readiness_interval=0.25,
         idle_timeout=0.0,
@@ -404,6 +444,8 @@ class BackendLifecycleManager:
         self.stop_backend = stop_backend
         self.probe_ready = probe_ready
         self.checkpoint_backend = checkpoint_backend
+        self.suspend_backend = suspend_backend
+        self.resume_backend = resume_backend
         self.reset_local = reset_local
         self.start_timeout = float(start_timeout)
         self.readiness_interval = max(0.01, float(readiness_interval))
@@ -427,6 +469,10 @@ class BackendLifecycleManager:
         self.last_checkpoint_bytes = 0
         self.last_checkpoint_duration_ms = 0.0
         self._pressure = False
+        self._pressure_since = None
+        self._high_samples = 0
+        self._resume_samples = 0
+        self._resume_pending = False
         self._accepting = True
         self._drained = asyncio.Event()
         self._drained.set()
@@ -439,32 +485,47 @@ class BackendLifecycleManager:
         return self._pressure
 
     async def acquire(self, timeout=None):
-        async with self._lock:
-            if not self._accepting:
+        deadline = (None if timeout is None
+                    else time.monotonic() + max(0.0, float(timeout)))
+        while True:
+            async with self._lock:
+                if not self._accepting:
+                    raise BackendLifecycleError(
+                        "FastLLM backend is draining for shutdown")
+                if self._pressure:
+                    raise BackendMemoryPressure(
+                        "FastLLM activation is blocked by the VRAM free-space watermark")
+                if self.state in ("DRAINING", "STOPPING"):
+                    continue
+                if self.state == "READY":
+                    self.active += 1
+                    self._drained.clear()
+                    return BackendLease(self)
+                task = self._activation_task
+                if task is None or task.done():
+                    # 记录来自挂起态的激活意图：_activate 用快照决定走
+                    # resume 还是冷启动（state 随即被覆盖为 STARTING）。
+                    self._resume_pending = (
+                        self.state == "SUSPENDED"
+                        and self.child is not None
+                        and self.resume_backend is not None
+                    )
+                    self.state = "STARTING"
+                    self.last_error = None
+                    task = asyncio.create_task(self._activate())
+                    self._activation_task = task
+                break
+            if deadline is not None and time.monotonic() >= deadline:
                 raise BackendLifecycleError(
-                    "FastLLM backend is draining for shutdown")
-            if self._pressure:
-                raise BackendMemoryPressure(
-                    "FastLLM activation is blocked by the VRAM free-space watermark")
-            if self.state in ("DRAINING", "STOPPING"):
-                raise BackendLifecycleError(
-                    "FastLLM backend is unloading")
-            if self.state == "READY":
-                self.active += 1
-                self._drained.clear()
-                return BackendLease(self)
-            task = self._activation_task
-            if task is None or task.done():
-                self.state = "STARTING"
-                self.last_error = None
-                task = asyncio.create_task(self._activate())
-                self._activation_task = task
+                    "FastLLM backend is unloading (timed out waiting)")
+            await asyncio.sleep(0.25)
 
         waiter = asyncio.shield(task)
-        if timeout is None:
+        if deadline is None:
             await waiter
         else:
-            await asyncio.wait_for(waiter, timeout=max(0.0, float(timeout)))
+            remaining = max(0.0, deadline - time.monotonic())
+            await asyncio.wait_for(waiter, timeout=remaining)
 
         async with self._lock:
             if not self._accepting:
@@ -498,21 +559,45 @@ class BackendLifecycleManager:
 
     async def _activate(self):
         child = None
+        resumed = False
         next_generation = self.generation + 1
         try:
             async with asyncio.timeout(self.start_timeout):
                 if self.owned:
-                    child = await _await_callback(
-                        self.start_backend(next_generation))
+                    if self._resume_pending:
+                        # 常驻后端：从挂起状态恢复，避免重新 spawn。
+                        child = self.child
+                        try:
+                            await _await_callback(
+                                self.resume_backend(child))
+                            resumed = True
+                        except BaseException:
+                            # resume 失败 → 回退冷启动（kill + 重新 spawn）。
+                            resumed = False
+                            try:
+                                await _await_callback(
+                                    self.stop_backend(child))
+                            except BaseException:
+                                pass
+                            async with self._lock:
+                                if self.child is child:
+                                    self.child = None
+                            child = await _await_callback(
+                                self.start_backend(next_generation))
+                    else:
+                        child = await _await_callback(
+                            self.start_backend(next_generation))
                     while not await _await_callback(
                         self.probe_ready(child)
                     ):
                         await asyncio.sleep(self.readiness_interval)
                     await _await_callback(self.reset_local())
             async with self._lock:
+                self._resume_pending = False
                 self.child = child
                 if self.owned:
-                    self.generation = next_generation
+                    if not resumed:
+                        self.generation = next_generation
                 self.state = "READY"
                 self.last_error = None
         except BaseException as exc:
@@ -524,6 +609,7 @@ class BackendLifecycleManager:
             message = (
                 f"FastLLM backend activation failed: {type(exc).__name__}: {exc}")
             async with self._lock:
+                self._resume_pending = False
                 self.child = None
                 self.state = "FAILED"
                 self.last_error = message
@@ -532,7 +618,6 @@ class BackendLifecycleManager:
             raise BackendLifecycleError(message) from exc
 
     async def _release(self):
-        stop_for_pressure = False
         async with self._lock:
             if self.active <= 0:
                 raise BackendLifecycleError("backend lease accounting underflow")
@@ -540,10 +625,9 @@ class BackendLifecycleManager:
             if self.active == 0:
                 self.last_idle_at = time.monotonic()
                 self._drained.set()
-                stop_for_pressure = (
-                    self.state == "DRAINING" and self._pressure)
-        if stop_for_pressure:
-            await self.stop("memory_pressure")
+        # No immediate stop on pressure here: a transient VRAM peak (e.g. a
+        # vision-encode burst) clears within seconds once the request ends.
+        # Sustained pressure is handled by the watchdog's grace period.
 
     async def check_idle(self, now=None):
         if not self.owned or self.idle_timeout <= 0:
@@ -555,14 +639,26 @@ class BackendLifecycleManager:
                 and self.active == 0
                 and timestamp - self.last_idle_at >= self.idle_timeout
             )
+            idle_seconds = (
+                timestamp - self.last_idle_at if should_stop else 0.0
+            )
         if not should_stop:
             return False
-        return await self.stop("idle")
+        # 分级卸载：短空闲 → 权重驻留内存（memory，快速恢复）；
+        # 超长空闲（>12h）→ disk（删除 RAM 权重快照，resume 时从源
+        # GGUF 重新加载）。
+        tier = "disk" if idle_seconds >= 12 * 3600 else "memory"
+        return await self.stop("idle", tier=tier)
 
     async def observe_memory(self, *, free_bytes, total_bytes):
         if not self.owned or (
             self.minimum_free_bytes <= 0 and self.high_used_ratio <= 0
         ):
+            return False
+        if self.state not in {"READY", "DRAINING"}:
+            # Loading peaks legitimately exhaust VRAM (model + KV pool
+            # prefill); evaluating pressure mid-activation would reject the
+            # very request that is bringing the backend up.
             return False
         free_bytes = int(free_bytes)
         total_bytes = int(total_bytes)
@@ -582,23 +678,42 @@ class BackendLifecycleManager:
                  or used_ratio <= self.resume_used_ratio)
         )
 
-        stop_now = False
         changed = False
         async with self._lock:
             if crossed_high:
-                changed = not self._pressure
-                self._pressure = True
-                if self.state == "READY":
-                    self.state = "DRAINING"
-                    stop_now = self.active == 0
-            elif self._pressure and crossed_resume:
-                self._pressure = False
-                changed = True
-                if self.state == "DRAINING" and self.active > 0:
-                    self.state = "READY"
-        if stop_now:
-            await self.stop("memory_pressure")
+                # Require consecutive samples before declaring pressure:
+                # transient peaks (multimodal encode, prefill spikes) must
+                # not kill a healthy backend.
+                self._high_samples += 1
+                if self._high_samples >= 2:
+                    changed = not self._pressure
+                    if not self._pressure:
+                        self._pressure = True
+                        self._pressure_since = time.monotonic()
+                    if self.state == "READY":
+                        self.state = "DRAINING"
+            else:
+                self._high_samples = 0
+            if crossed_resume:
+                self._resume_samples += 1
+                if self._resume_samples >= 2 and self._pressure:
+                    self._pressure = False
+                    self._pressure_since = None
+                    changed = True
+                    if self.state == "DRAINING":
+                        self.state = "READY"
+            else:
+                self._resume_samples = 0
         return changed
+
+    def pressure_stale(self, grace_seconds: float) -> bool:
+        """True when pressure has persisted past the grace period and no
+        request is in flight (safe to unload)."""
+        if not self._pressure or self._pressure_since is None:
+            return False
+        if self.active > 0:
+            return False
+        return time.monotonic() - self._pressure_since >= grace_seconds
 
     async def drain_and_stop(self, reason, timeout):
         if not self.owned:
@@ -614,9 +729,10 @@ class BackendLifecycleManager:
                 self._drained.wait(), timeout=max(0.0, float(timeout)))
         except asyncio.TimeoutError:
             timed_out = True
-        return await self.stop(reason, force=timed_out)
+        # 代理退出是真正的关闭：必须 kill，不能把常驻后端留在内存里。
+        return await self.stop(reason, force=timed_out, suspend=False)
 
-    async def stop(self, reason, force=False):
+    async def stop(self, reason, force=False, suspend=True, tier="memory"):
         if not self.owned:
             return False
         async with self._stop_lock:
@@ -645,12 +761,14 @@ class BackendLifecycleManager:
                 async with self._lock:
                     self.child = None
                     self._activation_task = None
+                    self._resume_pending = False
                     self.state = "COLD"
                     self.last_idle_at = time.monotonic()
                 return True
             should_checkpoint = (
                 child is not None
                 and self.active == 0
+                and self.state != "SUSPENDED"
                 and self.checkpoint_backend is not None
             )
             if should_checkpoint:
@@ -685,6 +803,38 @@ class BackendLifecycleManager:
                             time.monotonic() - checkpoint_started
                         ) * 1000.0
                     print(f"[lifecycle] {message}", flush=True)
+            if (
+                suspend
+                and self.suspend_backend is not None
+                and child is not None
+                and self.active == 0
+            ):
+                try:
+                    await _await_callback(
+                        self.suspend_backend(child, tier=tier))
+                except Exception as exc:
+                    message = (
+                        "FastLLM suspend failed: "
+                        f"{type(exc).__name__}: {exc}"
+                    )
+                    print(f"[lifecycle] {message}", flush=True)
+                    async with self._lock:
+                        self.last_error = message
+                else:
+                    async with self._lock:
+                        if self.child is child:
+                            self.state = "SUSPENDED"
+                            self.last_stop_reason = str(reason)
+                            # GPU 已释放；陈旧的压力标记会死锁后续激活。
+                            self._pressure = False
+                            self._pressure_since = None
+                    print(
+                        f"[lifecycle] suspended owned FastLLM "
+                        f"pid={child.pid} on {reason}",
+                        flush=True,
+                    )
+                    return True
+                # suspend 失败 → 回退到 kill 流程
             try:
                 await _await_callback(self.stop_backend(child))
             finally:
@@ -693,12 +843,17 @@ class BackendLifecycleManager:
                         self.child = None
                     self.state = "COLD"
                     self.last_idle_at = time.monotonic()
+                    # The GPU is free again; a stale pressure flag would
+                    # deadlock every subsequent activation.
+                    self._pressure = False
+                    self._pressure_since = None
             return True
 
     def snapshot(self):
         return {
             "owned": self.owned,
             "state": self.state,
+            "suspended": self.state == "SUSPENDED",
             "generation": self.generation,
             "active": self.active,
             "accepting": self._accepting,
@@ -719,16 +874,11 @@ class BackendLifecycleManager:
 
 # ─── Model routing config ────────────────────────────────────────
 
-MODEL_HERETIC = "qwen3.6-27b-heretic"
+HERETIC_MODEL_SUFFIX = "heretic"
 
-def route_for_model(model: str) -> dict:
-    if MODEL_HERETIC in model:
-        return {"local_only": True, "priority": 0}
-    if FASTLLM_MODE and _is_fastllm_alias(model):
-        # FastLLM is the local backend; keep it local-only so heretic/Fable
-        # requests never silently spill to cloud fallbacks.
-        return {"local_only": True, "priority": 0}
-    return {"local_only": False, "priority": 1}
+
+def _is_heretic_model(model: str) -> bool:
+    return bool(model) and model.endswith(HERETIC_MODEL_SUFFIX)
 
 
 def _is_fastllm_alias(model: str) -> bool:
@@ -800,6 +950,47 @@ def _rewrite_stream_model(event: bytes, public_model: str) -> bytes:
             + separator)
 
 
+def _normalize_tool_schema(body: dict) -> dict:
+    """Cherry Studio's builtin_web_search ships the search terms in the tool
+    description ("Prepared queries: ...") behind an optional-only schema, so
+    compliant models emit {} and the client's search gets no parameters.
+    Promote the prepared query to a required string parameter so the model
+    generates real arguments (the output stays fully model-authored)."""
+    for tool in body.get("tools") or []:
+        if not isinstance(tool, dict):
+            continue
+        fn = tool.get("function")
+        if not isinstance(fn, dict):
+            continue
+        desc = fn.get("description", "") or ""
+        if "Prepared queries" not in desc:
+            continue
+        m = re.search(r'Prepared queries?: "([^"]+)"', desc)
+        if not m or not m.group(1).strip():
+            continue
+        params = fn.get("parameters")
+        if not isinstance(params, dict):
+            params = {"type": "object"}
+            fn["parameters"] = params
+        props = params.get("properties")
+        if not isinstance(props, dict):
+            props = {}
+            params["properties"] = props
+        if "query" not in props:
+            props["query"] = {
+                "type": "string",
+                "description": "The search query. Use the prepared query "
+                                "from the tool description when it fits.",
+            }
+        required = params.get("required")
+        if not isinstance(required, list):
+            required = []
+            params["required"] = required
+        if "query" in props and "query" not in required:
+            required.append("query")
+    return body
+
+
 
 
 def _restore_public_model(oai: dict, requested_model: str) -> dict:
@@ -849,7 +1040,7 @@ async def _nim_chat(body: dict, tracker: bool = True) -> dict:
         prefix_tracker.record(body.get("messages", []), "nim")
     pkey = _nim_penalty_key(body)
     has_img = _has_images(body.get("messages", []))
-    model = NIM_MODEL_MULTIMODAL if has_img else NIM_MODEL_TEXT
+    model = _pick_nim_model(has_img)
     async with httpx.AsyncClient(timeout=120) as c:
         try:
             r = await c.post(
@@ -874,7 +1065,7 @@ async def _nim_stream(body: dict):
     prefix_tracker.record(body.get("messages", []), "nim")
     pkey = _nim_penalty_key(body)
     has_img = _has_images(body.get("messages", []))
-    model = NIM_MODEL_MULTIMODAL if has_img else NIM_MODEL_TEXT
+    model = _pick_nim_model(has_img)
     async with httpx.AsyncClient(timeout=600) as c:
         async with c.stream(
             "POST", f"{NIM_BASE_URL}/chat/completions",
@@ -1035,7 +1226,10 @@ class BackendScheduler:
         self.active = 0
         self._queue: asyncio.PriorityQueue = asyncio.PriorityQueue()
         self._workers: list[asyncio.Task] = []
-        self._stream_sem = asyncio.Semaphore(1)
+        # FastLLM runs batch=1: exactly one in-flight request at a time
+        # across BOTH the stream path and the worker queue (rotation, not
+        # fan-out), so concurrent client requests never stack VRAM.
+        self._slot = asyncio.Semaphore(1)
 
     async def start_workers(self):
         for _ in range(self.max_concurrent):
@@ -1050,8 +1244,12 @@ class BackendScheduler:
             _, item = await self._queue.get()
             lease = None
             sent = False
+            slot_held = False
             self.active += 1
             try:
+                await asyncio.wait_for(
+                    self._slot.acquire(), timeout=QUEUE_TIMEOUT)
+                slot_held = True
                 if item.cancelled:
                     continue
                 lease = await backend_lifecycle.acquire(timeout=QUEUE_TIMEOUT)
@@ -1085,6 +1283,8 @@ class BackendScheduler:
                     item.error = exc
                     item.event.set()
             finally:
+                if slot_held:
+                    self._slot.release()
                 if lease is not None:
                     await lease.release()
                 self.active -= 1
@@ -1130,10 +1330,10 @@ class BackendScheduler:
         return item.response
 
     async def acquire_stream(self, timeout: float | None = None):
-        await asyncio.wait_for(self._stream_sem.acquire(), timeout=timeout)
+        await asyncio.wait_for(self._slot.acquire(), timeout=timeout)
 
     def release_stream(self):
-        self._stream_sem.release()
+        self._slot.release()
 
 
 scheduler = BackendScheduler()
@@ -1264,9 +1464,20 @@ class BackendPenalty:
 backend_penalty = BackendPenalty()
 
 
+def _pick_nim_model(has_img: bool) -> str:
+    """Pick the NIM model: multimodal always wins for images; text requests
+    spread across the available text models by lowest penalty (fair routing)."""
+    if has_img:
+        return NIM_MODEL_MULTIMODAL
+    candidates = [m["id"] for m in NIM_MODEL_LIST if not m.get("multimodal")]
+    if not candidates:
+        candidates = [m["id"] for m in NIM_MODEL_LIST]
+    return min(candidates, key=lambda mid: backend_penalty.score(f"nim:{mid}"))
+
+
 def _nim_penalty_key(body: dict) -> str:
     has_img = _has_images(body.get("messages", []))
-    model = NIM_MODEL_MULTIMODAL if has_img else NIM_MODEL_TEXT
+    model = _pick_nim_model(has_img)
     return f"nim:{model}"
 
 
@@ -1303,12 +1514,64 @@ def _is_h2(model: str) -> bool:
     return "haiku" in model.lower()
 
 
-async def _fallback_openai_stream(body: dict):
-    providers = [_nim_stream]
+async def _local_fallback_stream(body: dict):
+    """Last-resort stream from the local backend, tried after every external
+    provider failed. Waits out an unloading backend instead of failing."""
+    try:
+        await scheduler.acquire_stream(timeout=QUEUE_TIMEOUT)
+    except asyncio.TimeoutError:
+        raise
+    stream_url = f"{BACKEND_URL}/v1/chat/completions"
+    try:
+        stream_body = (prepare_fastllm_body(body, FASTLLM_CHAT_TEMPLATE)
+                       if FASTLLM_MODE else body)
+        opened_stream = await _open_backend_stream(stream_url, stream_body)
+    except (httpx.TransportError, BackendLifecycleError):
+        scheduler.release_stream()
+        raise
+    try:
+        async for chunk in _proxy_stream(
+                stream_url, stream_body, opened_stream=opened_stream):
+            yield chunk
+    finally:
+        scheduler.release_stream()
+
+def _external_backend_order(preferred_backend: str = "") -> list[str]:
+    backends = ["nim"]
     if OR_API_KEY:
-        providers.append(_or_stream)
+        backends.append("or")
     if ZEN_API_KEY:
-        providers.append(_zen_stream)
+        backends.append("zen")
+    if preferred_backend in backends:
+        backends.remove(preferred_backend)
+        backends.insert(0, preferred_backend)
+    return backends
+
+
+async def _external_chat(backend: str, body: dict) -> dict:
+    if backend == "nim":
+        return await _nim_chat(body)
+    if backend == "or":
+        return await _or_chat(body)
+    if backend == "zen":
+        return await _zen_chat(body)
+    raise ValueError(f"unsupported external backend: {backend}")
+
+
+async def _fallback_openai_stream(
+    body: dict,
+    preferred_backend: str = "",
+):
+    providers = [
+        {
+            "nim": _nim_stream,
+            "or": _or_stream,
+            "zen": _zen_stream,
+        }[backend]
+        for backend in _external_backend_order(preferred_backend)
+    ]
+    if not BENCHMARK_MODE:
+        providers.append(_local_fallback_stream)
 
     for provider in providers:
         yielded = False
@@ -1333,7 +1596,9 @@ async def _rescue_stream(gen):
     try:
         async for chunk in gen:
             yield chunk
-    except Exception:
+    except Exception as exc:
+        print(f"[backend] stream failed url={BACKEND_URL} "
+              f"error={type(exc).__name__}: {exc}", flush=True)
         yield b"data: " + json.dumps(
             {"choices": [{"index": 0, "delta": {}, "finish_reason": "error"}]}
         ).encode() + b"\n\n"
@@ -1349,9 +1614,18 @@ def _backend_reloading_error():
         }
     }
 
-
 def _backend_reloading_response():
     return JSONResponse(_backend_reloading_error(), status_code=503)
+
+
+def _log_backend_failure(stage: str, exc: BaseException):
+    print(f"[backend] stage={stage} url={BACKEND_URL} "
+          f"error={type(exc).__name__}: {exc}", flush=True)
+
+
+def _log_backend_status(stage: str, status: int):
+    if status >= 500:
+        print(f"[backend] stage={stage} url={BACKEND_URL} status={status}", flush=True)
 
 
 def _backend_reloading_sse():
@@ -1777,6 +2051,69 @@ async def _checkpoint_owned_fastllm(child):
     return result
 
 
+async def _suspend_owned_fastllm(child, tier="memory"):
+    """POST /admin/suspend：后端释放全部 GPU 内存但保持进程常驻。"""
+    process = child.process
+    if process.returncode is not None:
+        raise BackendLifecycleError(
+            f"FastLLM backend exited with code {process.returncode} "
+            "before suspend")
+    if not child._control_token:
+        raise BackendLifecycleError(
+            "owned FastLLM control token is unavailable")
+    headers = {
+        "Authorization": f"Bearer {child._control_token}"
+    }
+    async with httpx.AsyncClient(
+            timeout=FASTLLM_SUSPEND_TIMEOUT) as client:
+        response = await client.post(
+            f"{BACKEND_URL}/admin/suspend",
+            headers=headers,
+            json={"tier": tier},
+        )
+    if response.status_code != 200:
+        detail = response.text[:512].replace("\n", " ")
+        raise BackendLifecycleError(
+            "FastLLM suspend returned "
+            f"HTTP {response.status_code}: {detail}")
+    result = response.json()
+    if not isinstance(result, dict) or result.get("status") != "ok":
+        raise BackendLifecycleError(
+            "FastLLM suspend returned an invalid response")
+    return result
+
+
+async def _resume_owned_fastllm(child):
+    """POST /admin/resume：把权重+KV 状态恢复回 GPU，进程保持同一 pid。"""
+    process = child.process
+    if process.returncode is not None:
+        raise BackendLifecycleError(
+            f"FastLLM backend exited with code {process.returncode} "
+            "before resume")
+    if not child._control_token:
+        raise BackendLifecycleError(
+            "owned FastLLM control token is unavailable")
+    headers = {
+        "Authorization": f"Bearer {child._control_token}"
+    }
+    async with httpx.AsyncClient(
+            timeout=FASTLLM_RESUME_TIMEOUT) as client:
+        response = await client.post(
+            f"{BACKEND_URL}/admin/resume",
+            headers=headers,
+        )
+    if response.status_code != 200:
+        detail = response.text[:512].replace("\n", " ")
+        raise BackendLifecycleError(
+            "FastLLM resume returned "
+            f"HTTP {response.status_code}: {detail}")
+    result = response.json()
+    if not isinstance(result, dict) or result.get("status") != "ok":
+        raise BackendLifecycleError(
+            "FastLLM resume returned an invalid response")
+    return result
+
+
 async def _stop_owned_fastllm(child):
     global BACKEND_READY
     BACKEND_READY = False
@@ -1831,6 +2168,16 @@ backend_lifecycle = BackendLifecycleManager(
         if FASTLLM_PREFIX_CACHE_PERSIST
         else None
     ),
+    suspend_backend=(
+        _suspend_owned_fastllm
+        if FASTLLM_OWNED and FASTLLM_IDLE_SUSPEND
+        else None
+    ),
+    resume_backend=(
+        _resume_owned_fastllm
+        if FASTLLM_OWNED and FASTLLM_IDLE_SUSPEND
+        else None
+    ),
     start_timeout=(
         FASTLLM_START_TIMEOUT if FASTLLM_OWNED else HEALTH_TIMEOUT),
     idle_timeout=FASTLLM_IDLE_TIMEOUT,
@@ -1870,27 +2217,42 @@ async def _read_vram_sample():
 
 async def _lifecycle_watchdog():
     while True:
-        await asyncio.sleep(FASTLLM_LIFECYCLE_INTERVAL)
-        child = backend_lifecycle.child
-        if child is not None and child.returncode is not None:
-            if await backend_lifecycle.observe_child_exit(child):
-                print(
-                    f"[lifecycle] owned FastLLM exited, "
-                    f"code={child.returncode}; next request will reload",
-                    flush=True,
-                )
-        await backend_lifecycle.check_idle()
-        sample = await _read_vram_sample()
-        if sample is not None:
-            changed = await backend_lifecycle.observe_memory(
-                free_bytes=sample[0], total_bytes=sample[1])
-            if changed:
-                print(
-                    f"[lifecycle] VRAM pressure="
-                    f"{backend_lifecycle.pressure}, "
-                    f"free={sample[0] / 1024 ** 3:.2f} GiB",
-                    flush=True,
-                )
+        try:
+            await asyncio.sleep(FASTLLM_LIFECYCLE_INTERVAL)
+            child = backend_lifecycle.child
+            if child is not None and child.returncode is not None:
+                if await backend_lifecycle.observe_child_exit(child):
+                    print(
+                        f"[lifecycle] owned FastLLM exited, "
+                        f"code={child.returncode}; next request will reload",
+                        flush=True,
+                    )
+            await backend_lifecycle.check_idle()
+            sample = await _read_vram_sample()
+            if sample is not None:
+                changed = await backend_lifecycle.observe_memory(
+                    free_bytes=sample[0], total_bytes=sample[1])
+                if changed:
+                    print(
+                        f"[lifecycle] VRAM pressure="
+                        f"{backend_lifecycle.pressure}, "
+                        f"free={sample[0] / 1024 ** 3:.2f} GiB",
+                        flush=True,
+                    )
+                if backend_lifecycle.pressure_stale(
+                        grace_seconds=60.0):
+                    print(
+                        "[lifecycle] VRAM pressure sustained >60s, unloading",
+                        flush=True,
+                    )
+                    await backend_lifecycle.stop("memory_pressure")
+        except asyncio.CancelledError:
+            raise
+        except Exception as exc:
+            print(
+                f"[lifecycle] watchdog error: {type(exc).__name__}: {exc}",
+                flush=True,
+            )
 
 
 # ─── Auth middleware ─────────────────────────────────────────────
@@ -1932,13 +2294,12 @@ class AuthMiddleware(BaseHTTPMiddleware):
         )
 
 
-# FastLLM's JPEG decoder corrupts vision embeddings; only PNG is native-safe.
-_NATIVE_IMAGE_FORMATS = {"png"}
-
-
+# FastLLM's vision path is safest when every inline image is normalized to
+# an RGB PNG.  Do this even for PNG inputs: palette/alpha/EXIF variants can
+# otherwise take different decoder paths or arrive with an unexpected layout.
 def _convert_images(messages):
     try:
-        from PIL import Image
+        from PIL import Image, ImageOps
     except ImportError:
         return
 
@@ -1949,22 +2310,22 @@ def _convert_images(messages):
         for part in content:
             if not isinstance(part, dict) or part.get("type") != "image_url":
                 continue
-            url = (part.get("image_url") or {}).get("url", "")
+            image_url = part.get("image_url") or {}
+            url = image_url.get("url", "")
             if not url.startswith("data:"):
                 continue
             header, _, b64 = url.partition(",")
             fmt = ""
             if "/" in header:
-                fmt = header.split("/")[1].split(";")[0].lower()
-            if fmt in _NATIVE_IMAGE_FORMATS:
-                continue
+                fmt = header.split("/", 1)[1].split(";", 1)[0].lower()
             try:
                 raw = base64.b64decode(b64)
-                img = Image.open(io.BytesIO(raw))
-                buf = io.BytesIO()
-                img.convert("RGB").save(buf, format="PNG")
+                with Image.open(io.BytesIO(raw)) as source:
+                    img = ImageOps.exif_transpose(source).convert("RGB")
+                    buf = io.BytesIO()
+                    img.save(buf, format="PNG")
                 new_b64 = base64.b64encode(buf.getvalue()).decode()
-                part["image_url"]["url"] = f"data:image/png;base64,{new_b64}"
+                image_url["url"] = f"data:image/png;base64,{new_b64}"
             except Exception as e:
                 print(f"[proxy] image convert failed ({fmt}): {e}", flush=True)
 
@@ -1986,6 +2347,22 @@ MODEL_LIST = {
             "created": int(time.time()),
             "owned_by": "local",
             "context_length": 262144,
+            "max_tokens": 16384,
+            "reasoning": True,
+            "capabilities": {
+                "vision": True,
+                "function_calling": True,
+                "streaming": True,
+            },
+            "supported_features": {
+                "vision": True,
+                "functionCall": True,
+                "streaming": True,
+                "reasoning": True,
+            },
+            "modalities": ["text", "image"],
+            "input_modalities": ["text", "image"],
+            "output_modalities": ["text"],
         },
         {
             "id": "qwen3.6-27b-heretic",
@@ -1993,6 +2370,22 @@ MODEL_LIST = {
             "created": int(time.time()),
             "owned_by": "local",
             "context_length": 262144,
+            "max_tokens": 16384,
+            "reasoning": True,
+            "capabilities": {
+                "vision": True,
+                "function_calling": True,
+                "streaming": True,
+            },
+            "supported_features": {
+                "vision": True,
+                "functionCall": True,
+                "streaming": True,
+                "reasoning": True,
+            },
+            "modalities": ["text", "image"],
+            "input_modalities": ["text", "image"],
+            "output_modalities": ["text"],
         },
     ],
 }
@@ -2034,6 +2427,8 @@ async def openai_chat(request: Request):
     kwargs = body.setdefault("chat_template_kwargs", {})
     kwargs["enable_thinking"] = enable
 
+    _normalize_tool_schema(body)
+
     if enable:
         _EFFORT_BUDGETS = {"low": 2048, "medium": 4096, "high": 8192, "xhigh": 16384}
         budget = thinking_budget
@@ -2049,18 +2444,30 @@ async def openai_chat(request: Request):
 
     _convert_images(body.get("messages", []))
     requested_model = body.get("model", "")
-    # Route public aliases to the FastLLM backend slug on outbound payloads.
+    # Classify the caller's public model before rewriting aliases. Only a
+    # public ID ending in "heretic" bypasses the fair router.
+    is_heretic = _is_heretic_model(requested_model)
     if requested_model:
         body["model"] = _to_backend_model(requested_model)
-
-    route = route_for_model(body.get("model", ""))
-    is_heretic = route["local_only"]
-    priority = route["priority"]
+    # FastLLM is the only backend with the loaded local vision projector. A
+    # FastLLM /slots probe is not available on this apiserver, so image calls
+    # must remain local even when they use the fair-routed AWQ alias.
+    is_heretic = is_heretic or (
+        FASTLLM_MODE and _has_images(body.get("messages", []))
+    )
+    priority = 0 if is_heretic else 1
 
     if body.get("stream"):
         if not is_heretic and FALLBACK_ENABLED and not BENCHMARK_MODE and _over_context(body):
             return StreamingResponse(
                 _rescue_stream(_nim_stream(body)), media_type="text/event-stream")
+        if not is_heretic and FALLBACK_ENABLED and not BENCHMARK_MODE:
+            backend = await _pick_backend(body)
+            if backend != "local":
+                return StreamingResponse(
+                    _fallback_openai_stream(body, backend),
+                    media_type="text/event-stream",
+                )
         timeout = QUEUE_TIMEOUT * 2 if is_heretic else QUEUE_TIMEOUT
         try:
             await scheduler.acquire_stream(timeout=timeout)
@@ -2077,10 +2484,11 @@ async def openai_chat(request: Request):
             stream_body = (prepare_fastllm_body(body, FASTLLM_CHAT_TEMPLATE)
                            if FASTLLM_MODE else body)
             opened_stream = await _open_backend_stream(stream_url, stream_body)
-        except (httpx.TransportError, BackendLifecycleError):
+        except (httpx.TransportError, BackendLifecycleError) as exc:
             scheduler.release_stream()
             backend_penalty.record_failure("local")
             service_history.record("local", False)
+            _log_backend_failure("openai_stream", exc)
             return _backend_reloading_response()
         except BaseException:
             scheduler.release_stream()
@@ -2107,13 +2515,15 @@ async def openai_chat(request: Request):
         prefix_tracker.reserve(body.get("messages", []))
         try:
             resp = await scheduler.submit(body, priority, timeout=QUEUE_TIMEOUT * 2)
+            _log_backend_status("openai_chat", resp.status_code)
             return _rewrite_local_response(
                 Response(content=resp.content, status_code=resp.status_code,
                          media_type=resp.headers.get("content-type", "application/json")),
                 requested_model)
         except asyncio.TimeoutError:
             return JSONResponse({"error": "local backend busy, retry later"}, status_code=503)
-        except (httpx.TransportError, BackendLifecycleError):
+        except (httpx.TransportError, BackendLifecycleError) as exc:
+            _log_backend_failure("openai_chat", exc)
             return _backend_reloading_response()
 
     last_err = ""
@@ -2133,43 +2543,58 @@ async def openai_chat(request: Request):
         except asyncio.TimeoutError:
             last_err = "local_timeout"
             print(f"[route] local timeout ({to}s)", flush=True)
-        except (httpx.TransportError, BackendLifecycleError):
+        except (httpx.TransportError, BackendLifecycleError) as exc:
             last_err = "local_down"
+            _log_backend_failure("openai_chat_fallback", exc)
             print("[route] local down", flush=True)
         if is_heretic:
             return JSONResponse({"error": f"local backend {last_err}"}, status_code=503)
 
     if not is_heretic:
-        try:
-            print(f"[route] routing to NIM", flush=True)
-            return JSONResponse(await _nim_chat(body))
-        except (RuntimeError, httpx.TimeoutException, httpx.RequestError) as e:
-            last_err = "nim_down"
-            print(f"[route] NIM failed: {e}", flush=True)
+        for external_backend in _external_backend_order(backend):
+            try:
+                print(
+                    f"[route] routing to {external_backend}",
+                    flush=True,
+                )
+                return JSONResponse(
+                    await _external_chat(external_backend, body)
+                )
+            except (
+                RuntimeError,
+                httpx.TimeoutException,
+                httpx.RequestError,
+            ) as exc:
+                last_err = f"{external_backend}_down"
+                print(
+                    f"[route] {external_backend} failed: {exc}",
+                    flush=True,
+                )
 
-    if not is_heretic and OR_API_KEY:
+    # External providers rejected or errored (sensitive-content refusal,
+    # delisted model, outage): fall back to the local Heretic backend so the
+    # caller gets a response instead of a hard failure.
+    if not is_heretic and not BENCHMARK_MODE:
+        prefix_tracker.reserve(body.get("messages", []))
         try:
-            print(f"[route] routing to OpenRouter", flush=True)
-            return JSONResponse(await _or_chat(body))
-        except (RuntimeError, httpx.TimeoutException, httpx.RequestError) as e:
-            last_err = "or_down"
-            print(f"[route] OR failed: {e}", flush=True)
-
-    if not is_heretic and ZEN_API_KEY:
-        try:
-            print(f"[route] routing to Zen", flush=True)
-            return JSONResponse(await _zen_chat(body))
-        except (RuntimeError, httpx.TimeoutException, httpx.RequestError) as e:
-            last_err = "zen_down"
-            print(f"[route] Zen failed: {e}", flush=True)
+            print("[route] external backends failed, falling back to local", flush=True)
+            resp = await scheduler.submit(body, priority, timeout=QUEUE_TIMEOUT * 2)
+            _log_backend_status("openai_chat_local_fallback", resp.status_code)
+            if resp.status_code == 200:
+                return _rewrite_local_response(
+                    Response(content=resp.content, status_code=200,
+                             media_type=resp.headers.get("content-type", "application/json")),
+                    requested_model)
+            last_err = f"local_fallback_{resp.status_code}"
+        except asyncio.TimeoutError:
+            last_err = "local_fallback_timeout"
+        except (httpx.TransportError, BackendLifecycleError) as exc:
+            last_err = "local_fallback_down"
+            _log_backend_failure("openai_chat_local_fallback", exc)
 
     return JSONResponse({"error": f"all backends exhausted ({last_err})"}, status_code=429,
                         headers={"Retry-After": "30"})
 
-    if is_heretic:
-        return JSONResponse({"error": f"local backend {last_err}"}, status_code=503)
-    return JSONResponse({"error": f"all backends exhausted ({last_err})"}, status_code=429,
-                        headers={"Retry-After": "30"})
 
 
 # ─── Anthropic endpoint ─────────────────────────────────────────
@@ -2196,15 +2621,18 @@ async def anthropic_messages(request: Request):
 
     stream = body.get("stream", False)
     openai_body = _anthropic_to_openai(body)
+    _normalize_tool_schema(openai_body)
     _convert_images(openai_body.get("messages", []))
     requested_model = openai_body.get("model", "")
-    # Route public aliases to the FastLLM backend slug on outbound payloads.
+    # Preserve public-ID routing semantics before the backend slug rewrite.
+    is_heretic = _is_heretic_model(requested_model)
     if requested_model:
         openai_body["model"] = _to_backend_model(requested_model)
-
-    route = route_for_model(openai_body.get("model", ""))
-    is_heretic = route["local_only"]
-    priority = route["priority"]
+    # Keep Anthropic/mobile image requests on the local FastLLM projector too.
+    is_heretic = is_heretic or (
+        FASTLLM_MODE and _has_images(openai_body.get("messages", []))
+    )
+    priority = 0 if is_heretic else 1
     if stream:
         if not is_heretic and FALLBACK_ENABLED and not BENCHMARK_MODE and _over_context(openai_body):
             try:
@@ -2220,13 +2648,8 @@ async def anthropic_messages(request: Request):
                     nim_data = None
             if nim_data is not None:
                 async def _ctx_overflow_stream():
-                    yield _sse("message_start", {"type": "message_start", "message": anthro})
-                    for i, block in enumerate(anthro.get("content", [])):
-                        yield _sse("content_block_start", {"type": "content_block_start", "index": i, "content_block": block})
-                        yield _sse("content_block_stop", {"type": "content_block_stop", "index": i})
-                    usage = anthro.get("usage", {})
-                    yield _sse("message_delta", {"type": "message_delta", "delta": {"stop_reason": anthro.get("stop_reason", "end_turn"), "stop_sequence": None}, "usage": {"output_tokens": usage.get("output_tokens", 0)}})
-                    yield _sse("message_stop", {"type": "message_stop"})
+                    async for chunk in _completed_anthropic_stream(anthro, request):
+                        yield chunk
                 return StreamingResponse(_ctx_overflow_stream(), media_type="text/event-stream")
             return JSONResponse({"error": "context exceeds limit, fallback failed"}, status_code=429)
         return StreamingResponse(
@@ -2251,13 +2674,15 @@ async def anthropic_messages(request: Request):
         prefix_tracker.reserve(openai_body.get("messages", []))
         try:
             resp = await scheduler.submit(openai_body, priority, timeout=QUEUE_TIMEOUT * 2)
+            _log_backend_status("anthropic_chat", resp.status_code)
             if resp.status_code == 200:
                 return JSONResponse(_openai_to_anthropic(_restore_public_model(resp.json(), requested_model)))
             return Response(content=resp.content, status_code=resp.status_code,
                           media_type="application/json")
         except asyncio.TimeoutError:
             return JSONResponse({"error": "local backend busy, retry later"}, status_code=503)
-        except (httpx.TransportError, BackendLifecycleError):
+        except (httpx.TransportError, BackendLifecycleError) as exc:
+            _log_backend_failure("anthropic_chat", exc)
             return _backend_reloading_response()
 
     last_err = ""
@@ -2274,38 +2699,50 @@ async def anthropic_messages(request: Request):
         except asyncio.TimeoutError:
             last_err = "local_timeout"
             print(f"[route] local timeout ({to}s)", flush=True)
-        except (httpx.TransportError, BackendLifecycleError):
+        except (httpx.TransportError, BackendLifecycleError) as exc:
             last_err = "local_down"
+            _log_backend_failure("anthropic_chat_fallback", exc)
             print("[route] local down", flush=True)
         if is_heretic:
             return JSONResponse({"error": f"local backend {last_err}"}, status_code=503)
 
     if not is_heretic:
-        try:
-            print(f"[route] routing to NIM", flush=True)
-            nim_data = await _nim_chat(openai_body)
-            return JSONResponse(_openai_to_anthropic(nim_data))
-        except (RuntimeError, httpx.TimeoutException, httpx.RequestError) as e:
-            last_err = "nim_down"
-            print(f"[route] NIM failed: {e}", flush=True)
+        for external_backend in _external_backend_order(backend):
+            try:
+                print(
+                    f"[route] routing to {external_backend}",
+                    flush=True,
+                )
+                external_data = await _external_chat(
+                    external_backend, openai_body
+                )
+                return JSONResponse(_openai_to_anthropic(external_data))
+            except (
+                RuntimeError,
+                httpx.TimeoutException,
+                httpx.RequestError,
+            ) as exc:
+                last_err = f"{external_backend}_down"
+                print(
+                    f"[route] {external_backend} failed: {exc}",
+                    flush=True,
+                )
 
-    if not is_heretic and OR_API_KEY:
+    # External providers rejected or errored: fall back to the local Heretic
+    # backend instead of a hard failure (sensitive-content refusal etc.).
+    if not is_heretic and not BENCHMARK_MODE:
+        prefix_tracker.reserve(openai_body.get("messages", []))
         try:
-            print(f"[route] routing to OpenRouter", flush=True)
-            or_data = await _or_chat(openai_body)
-            return JSONResponse(_openai_to_anthropic(or_data))
-        except (RuntimeError, httpx.TimeoutException, httpx.RequestError) as e:
-            last_err = "or_down"
-            print(f"[route] OR failed: {e}", flush=True)
-
-    if not is_heretic and ZEN_API_KEY:
-        try:
-            print(f"[route] routing to Zen", flush=True)
-            zen_data = await _zen_chat(openai_body)
-            return JSONResponse(_openai_to_anthropic(zen_data))
-        except (RuntimeError, httpx.TimeoutException, httpx.RequestError) as e:
-            last_err = "zen_down"
-            print(f"[route] Zen failed: {e}", flush=True)
+            print("[route] external backends failed, falling back to local", flush=True)
+            resp = await scheduler.submit(openai_body, priority, timeout=QUEUE_TIMEOUT * 2)
+            _log_backend_status("anthropic_chat_local_fallback", resp.status_code)
+            if resp.status_code == 200:
+                local_data = json.loads(resp.content)
+                return JSONResponse(_openai_to_anthropic(local_data))
+            last_err = f"local_fallback_{resp.status_code}"
+        except (asyncio.TimeoutError, httpx.TransportError, BackendLifecycleError) as exc:
+            last_err = "local_fallback_down"
+            _log_backend_failure("anthropic_chat_local_fallback", exc)
 
     return JSONResponse({"error": f"all backends exhausted ({last_err})"}, status_code=429,
                         headers={"Retry-After": "30"})
@@ -2333,7 +2770,8 @@ async def anthropic_count_tokens(request: Request):
             resp = await client.post(
                 f"{BACKEND_URL}/v1/chat/completions", json=count_body)
             data = resp.json()
-    except httpx.TransportError:
+    except httpx.TransportError as exc:
+        _log_backend_failure("count_tokens", exc)
         return _backend_reloading_response()
     finally:
         await lease.release()
@@ -2649,13 +3087,161 @@ async def _local_stream(
         yield b"data: [DONE]\n\n"
 
 
-async def _anthropic_stream_limited(openai_body: dict, request: Request, public_model: str = ""):
-    route = route_for_model(openai_body.get("model", ""))
-    timeout = QUEUE_TIMEOUT * 2 if route["local_only"] else QUEUE_TIMEOUT
+async def _completed_anthropic_stream(
+    anthro: dict,
+    request: Request | None = None,
+):
+    message = {
+        key: value
+        for key, value in anthro.items()
+        if key not in {"content", "stop_reason", "stop_sequence", "usage"}
+    }
+    usage = anthro.get("usage", {})
+    message.update({
+        "content": [],
+        "stop_reason": None,
+        "stop_sequence": None,
+        "usage": {
+            "input_tokens": usage.get("input_tokens", 0),
+            "output_tokens": 0,
+        },
+    })
+    yield _sse("message_start", {
+        "type": "message_start",
+        "message": message,
+    })
+
+    for index, block in enumerate(anthro.get("content", [])):
+        block_type = block.get("type")
+        if block_type == "thinking":
+            start_block = {
+                "type": "thinking",
+                "thinking": "",
+                "signature": "",
+            }
+        elif block_type == "text":
+            start_block = {"type": "text", "text": ""}
+        elif block_type == "tool_use":
+            start_block = {
+                "type": "tool_use",
+                "id": block.get("id", f"toolu_{uuid.uuid4().hex[:24]}"),
+                "name": block.get("name", ""),
+                "input": {},
+            }
+        else:
+            raise RuntimeError(
+                f"unsupported Anthropic content block: {block_type!r}"
+            )
+
+        yield _sse("content_block_start", {
+            "type": "content_block_start",
+            "index": index,
+            "content_block": start_block,
+        })
+        if block_type == "thinking":
+            if block.get("thinking"):
+                yield _sse("content_block_delta", {
+                    "type": "content_block_delta",
+                    "index": index,
+                    "delta": {
+                        "type": "thinking_delta",
+                        "thinking": block["thinking"],
+                    },
+                })
+            if block.get("signature"):
+                yield _sse("content_block_delta", {
+                    "type": "content_block_delta",
+                    "index": index,
+                    "delta": {
+                        "type": "signature_delta",
+                        "signature": block["signature"],
+                    },
+                })
+        elif block_type == "text" and block.get("text"):
+            yield _sse("content_block_delta", {
+                "type": "content_block_delta",
+                "index": index,
+                "delta": {"type": "text_delta", "text": block["text"]},
+            })
+        elif block_type == "tool_use":
+            partial_json = json.dumps(
+                block.get("input", {}),
+                ensure_ascii=False,
+                separators=(",", ":"),
+            )
+            yield _sse("content_block_delta", {
+                "type": "content_block_delta",
+                "index": index,
+                "delta": {
+                    "type": "input_json_delta",
+                    "partial_json": partial_json,
+                },
+            })
+        yield _sse("content_block_stop", {
+            "type": "content_block_stop",
+            "index": index,
+        })
+        if request is not None and await request.is_disconnected():
+            return
+
+    yield _sse("message_delta", {
+        "type": "message_delta",
+        "delta": {
+            "stop_reason": anthro.get("stop_reason", "end_turn"),
+            "stop_sequence": anthro.get("stop_sequence"),
+        },
+        "usage": {"output_tokens": usage.get("output_tokens", 0)},
+    })
+    yield _sse("message_stop", {"type": "message_stop"})
+
+
+async def _anthropic_external_stream(
+    openai_body: dict,
+    request: Request,
+    preferred_backend: str = "",
+):
+    for external_backend in _external_backend_order(preferred_backend):
+        try:
+            external_data = await _external_chat(
+                external_backend, openai_body
+            )
+        except (
+            RuntimeError,
+            httpx.TimeoutException,
+            httpx.RequestError,
+        ):
+            continue
+
+        anthro = _openai_to_anthropic(external_data)
+        async for chunk in _completed_anthropic_stream(anthro, request):
+            yield chunk
+        return
+
+    yield _sse("error", {"error": {"message": "all backends failed"}})
+
+
+async def _anthropic_stream_limited(
+    openai_body: dict,
+    request: Request,
+    public_model: str = "",
+):
+    requested_model = public_model or openai_body.get("model", "")
+    is_heretic = _is_heretic_model(requested_model) or (
+        FASTLLM_MODE and _has_images(openai_body.get("messages", []))
+    )
+    if not is_heretic and FALLBACK_ENABLED and not BENCHMARK_MODE:
+        backend = await _pick_backend(openai_body)
+        if backend != "local":
+            async for chunk in _anthropic_external_stream(
+                openai_body, request, backend
+            ):
+                yield chunk
+            return
+    timeout = QUEUE_TIMEOUT * 2 if is_heretic else QUEUE_TIMEOUT
     try:
         await scheduler.acquire_stream(timeout=timeout)
     except asyncio.TimeoutError:
-        if route["local_only"]:
+        if is_heretic:
             yield _sse("error", {"error": {"message": "queue timeout"}})
             return
         if FALLBACK_ENABLED and not BENCHMARK_MODE:
@@ -2677,31 +3263,8 @@ async def _anthropic_stream_limited(openai_body: dict, request: Request, public_
                 yield _sse("error", {"error": {"message": "fallback failed"}})
                 return
             anthro = _openai_to_anthropic(nim_data)
-            yield _sse("message_start", {
-                "type": "message_start", "message": anthro,
-            })
-            for block in anthro.get("content", []):
-                yield _sse("content_block_start", {
-                    "type": "content_block_start",
-                    "index": anthro["content"].index(block),
-                    "content_block": block,
-                })
-                yield _sse("content_block_stop", {
-                    "type": "content_block_stop",
-                    "index": anthro["content"].index(block),
-                })
-                if await request.is_disconnected():
-                    return
-            usage = anthro.get("usage", {})
-            yield _sse("message_delta", {
-                "type": "message_delta",
-                "delta": {"stop_reason": anthro.get("stop_reason", "end_turn"),
-                          "stop_sequence": None},
-                "usage": {
-                    "output_tokens": usage.get("output_tokens", 0),
-                },
-            })
-            yield _sse("message_stop", {"type": "message_stop"})
+            async for chunk in _completed_anthropic_stream(anthro, request):
+                yield chunk
             return
         yield _sse("error", {"error": {"message": "queue timeout"}})
         return
@@ -2731,7 +3294,7 @@ async def _anthropic_stream_limited(openai_body: dict, request: Request, public_
         if yielded_local_event:
             yield _sse("error", _backend_reloading_error())
             return
-        if not route["local_only"] and FALLBACK_ENABLED and not BENCHMARK_MODE:
+        if not is_heretic and FALLBACK_ENABLED and not BENCHMARK_MODE:
             nim_data = None
             try:
                 nim_data = await _nim_chat(openai_body)
@@ -2750,31 +3313,8 @@ async def _anthropic_stream_limited(openai_body: dict, request: Request, public_
                 yield _sse("error", {"error": {"message": "all backends failed"}})
                 return
             anthro = _openai_to_anthropic(nim_data)
-            yield _sse("message_start", {
-                "type": "message_start", "message": anthro,
-            })
-            for block in anthro.get("content", []):
-                yield _sse("content_block_start", {
-                    "type": "content_block_start",
-                    "index": anthro["content"].index(block),
-                    "content_block": block,
-                })
-                yield _sse("content_block_stop", {
-                    "type": "content_block_stop",
-                    "index": anthro["content"].index(block),
-                })
-                if await request.is_disconnected():
-                    return
-            usage = anthro.get("usage", {})
-            yield _sse("message_delta", {
-                "type": "message_delta",
-                "delta": {"stop_reason": anthro.get("stop_reason", "end_turn"),
-                          "stop_sequence": None},
-                "usage": {
-                    "output_tokens": usage.get("output_tokens", 0),
-                },
-            })
-            yield _sse("message_stop", {"type": "message_stop"})
+            async for chunk in _completed_anthropic_stream(anthro, request):
+                yield chunk
             return
         yield _sse("error", _backend_reloading_error())
 
@@ -3010,7 +3550,8 @@ async def passthrough(path: str, request: Request):
                 status_code=resp.status_code,
                 media_type=resp.headers.get("content-type"),
             )
-    except httpx.TransportError:
+    except httpx.TransportError as exc:
+        _log_backend_failure("passthrough", exc)
         return _backend_reloading_response()
     finally:
         await lease.release()

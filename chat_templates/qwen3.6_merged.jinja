@@ -186,9 +186,7 @@
     {%- set content = content | trim -%}
 
     {%- if is_system -%}
-        {%- if not loop.first -%}
-            {{- raise_exception('System/developer message must be at the beginning.') -}}
-        {%- endif -%}
+        {{- '<|im_start|>' ~ message.role ~ '\n' ~ content ~ '<|im_end|>\n' -}}
     {%- elif message.role == 'user' -%}
         {{- '<|im_start|>user\n' ~ content ~ '<|im_end|>\n' -}}
 

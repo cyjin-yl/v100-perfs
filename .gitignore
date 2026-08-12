@@ -11,3 +11,7 @@ exllamav3/
 1Cat-vLLM/
 1Cat-vLLM-1.2.0/
 server/
+
+runtime/
+*.log
+service_history.db*

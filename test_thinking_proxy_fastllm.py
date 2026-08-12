@@ -5,8 +5,10 @@ import json
 import os
 import tempfile
 import unittest
-from unittest import mock
+import sys
+from pathlib import Path
 
+from unittest import mock
 from fastapi.responses import Response
 
 
@@ -18,6 +20,7 @@ os.environ["FASTLLM_PUBLIC_ALIASES"] = (
     "qwen3.6-27b-awq,qwen3.6-27b-heretic"
 )
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import thinking_proxy
 
 
@@ -83,6 +86,44 @@ class ModelRewriteTests(unittest.TestCase):
 
 
 
+class ModelRoutingTests(unittest.TestCase):
+    def test_old_public_model_ids_remain_advertised(self):
+        model_ids = {item["id"] for item in thinking_proxy.MODEL_LIST["data"]}
+        self.assertTrue({
+            "qwen3.6-27b-awq",
+            "qwen3.6-27b-heretic",
+        }.issubset(model_ids))
+
+    def test_awq_public_id_uses_fair_router_then_backend_slug(self):
+        self.assertFalse(
+            thinking_proxy._is_heretic_model("qwen3.6-27b-awq")
+        )
+        self.assertEqual(
+            thinking_proxy._to_backend_model("qwen3.6-27b-awq"),
+            "qwen3.6-fastllm",
+        )
+
+    def test_only_ids_ending_in_heretic_force_local_routing(self):
+        self.assertTrue(
+            thinking_proxy._is_heretic_model("qwen3.6-27b-heretic")
+        )
+        self.assertTrue(
+            thinking_proxy._is_heretic_model("vendor/qwen3.6-27b-heretic")
+        )
+        self.assertFalse(
+            thinking_proxy._is_heretic_model("qwen3.6-27b-heretic-preview")
+        )
+        self.assertEqual(
+            thinking_proxy._to_backend_model("qwen3.6-27b-heretic"),
+            "qwen3.6-fastllm",
+        )
+
+    def test_internal_fastllm_slug_is_not_a_heretic_public_id(self):
+        self.assertFalse(
+            thinking_proxy._is_heretic_model("qwen3.6-fastllm")
+        )
+
+
 class AnthropicToolConversionTests(unittest.TestCase):
     def test_builtin_web_search_gets_query_schema(self):
         body = {
@@ -115,6 +156,43 @@ class AnthropicToolConversionTests(unittest.TestCase):
                 },
             },
         }])
+
+    def test_prepared_query_does_not_require_optional_context(self):
+        body = {
+            "tools": [{
+                "type": "function",
+                "function": {
+                    "name": "web_search",
+                    "description": 'Prepared queries: "FastLLM offload"',
+                    "parameters": {
+                        "type": "object",
+                        "properties": {
+                            "query": {"type": "string"},
+                            "additionalContext": {"type": "string"},
+                        },
+                    },
+                },
+            }],
+        }
+
+        normalized = thinking_proxy._normalize_tool_schema(body)
+
+        self.assertEqual(
+            normalized["tools"][0]["function"]["parameters"]["required"],
+            ["query"],
+        )
+    def test_disabled_thinking_is_forwarded_to_fastllm(self):
+        body = {
+            "model": "qwen3.6-27b-heretic",
+            "thinking": {"type": "disabled"},
+            "messages": [{"role": "user", "content": "Describe this image."}],
+            "max_tokens": 128,
+        }
+
+        converted = thinking_proxy._anthropic_to_openai(body)
+
+        self.assertFalse(converted["chat_template_kwargs"]["enable_thinking"])
+        self.assertNotIn("reasoning", converted)
 
 
 class ImageConversionTests(unittest.TestCase):
@@ -314,6 +392,69 @@ class AnthropicStreamTests(unittest.IsolatedAsyncioTestCase):
         self.assertIn('"input_tokens": 7, "output_tokens": 3', output)
         self.assertTrue(output.endswith("event: message_stop\n" +
                                         'data: {"type": "message_stop"}\n\n'))
+    async def test_completed_fallback_uses_incremental_anthropic_sse_shape(self):
+        cloud_response = {
+            "id": "cloud-response",
+            "model": "cloud-model",
+            "choices": [{
+                "message": {
+                    "role": "assistant",
+                    "reasoning_content": "plan",
+                    "content": "answer",
+                },
+                "finish_reason": "stop",
+            }],
+            "usage": {"prompt_tokens": 7, "completion_tokens": 3},
+        }
+        request = mock.Mock()
+        request.is_disconnected = mock.AsyncMock(return_value=False)
+
+        with (
+            mock.patch.object(
+                thinking_proxy, "_external_backend_order", return_value=["or"]
+            ),
+            mock.patch.object(
+                thinking_proxy,
+                "_external_chat",
+                new=mock.AsyncMock(return_value=cloud_response),
+            ),
+        ):
+            output = "".join([
+                chunk async for chunk in thinking_proxy._anthropic_external_stream(
+                    {"model": "qwen3.6-fastllm"}, request, "or"
+                )
+            ])
+
+        events = []
+        for frame in output.strip().split("\n\n"):
+            data_line = next(
+                line for line in frame.splitlines() if line.startswith("data: ")
+            )
+            events.append(json.loads(data_line[6:]))
+
+        message_start = events[0]
+        self.assertEqual(message_start["type"], "message_start")
+        self.assertEqual(message_start["message"]["content"], [])
+        self.assertIsNone(message_start["message"]["stop_reason"])
+        starts = [
+            event["content_block"]
+            for event in events
+            if event["type"] == "content_block_start"
+        ]
+        self.assertEqual(
+            starts,
+            [
+                {"type": "thinking", "thinking": "", "signature": ""},
+                {"type": "text", "text": ""},
+            ],
+        )
+        deltas = [
+            event["delta"]
+            for event in events
+            if event["type"] == "content_block_delta"
+        ]
+        self.assertIn({"type": "thinking_delta", "thinking": "plan"}, deltas)
+        self.assertIn({"type": "text_delta", "text": "answer"}, deltas)
 
     async def test_tool_call_deltas_produce_anthropic_tool_use_block(self):
         lines = [
@@ -404,6 +545,52 @@ class BackendReloadingTests(unittest.IsolatedAsyncioTestCase):
         payload = json.loads(response.body)
         testcase.assertEqual(payload["error"]["type"], "service_unavailable")
         testcase.assertEqual(payload["error"]["code"], "backend_reloading")
+    async def test_anthropic_awq_uses_fair_route_while_local_reloads(self):
+        request = self.JsonRequest({
+            "model": "qwen3.6-27b-awq",
+            "messages": [{"role": "user", "content": "test"}],
+            "max_tokens": 8,
+            "stream": False,
+        }, path="/v1/messages")
+        cloud_response = {
+            "id": "cloud-response",
+            "model": "cloud-model",
+            "choices": [{
+                "message": {"role": "assistant", "content": "cloud"},
+                "finish_reason": "stop",
+            }],
+            "usage": {"prompt_tokens": 1, "completion_tokens": 1},
+        }
+
+        with (
+            mock.patch.object(
+                thinking_proxy, "_pick_backend",
+                new=mock.AsyncMock(return_value="or"),
+            ) as pick_backend,
+            mock.patch.object(
+                thinking_proxy, "_nim_chat",
+                new=mock.AsyncMock(),
+            ) as nim_chat,
+            mock.patch.object(
+                thinking_proxy, "_or_chat",
+                new=mock.AsyncMock(return_value=cloud_response),
+            ) as or_chat,
+            mock.patch.object(thinking_proxy, "OR_API_KEY", "enabled"),
+            mock.patch.object(
+                thinking_proxy.scheduler, "submit",
+                new=mock.AsyncMock(),
+            ) as local_submit,
+        ):
+            response = await thinking_proxy.anthropic_messages(request)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            json.loads(response.body)["content"][0]["text"], "cloud"
+        )
+        pick_backend.assert_awaited_once()
+        nim_chat.assert_not_awaited()
+        or_chat.assert_awaited_once()
+        local_submit.assert_not_awaited()
 
     async def test_openai_initial_stream_protocol_error_is_http_503(self):
         request = self.JsonRequest({
@@ -573,6 +760,10 @@ class StreamFallbackBoundaryTests(unittest.IsolatedAsyncioTestCase):
         body = {"model": "qwen3.6-fastllm", "messages": [], "stream": True}
         with (
             mock.patch.object(thinking_proxy, "_anthropic_stream", partial_local),
+            mock.patch.object(
+                thinking_proxy, "_pick_backend",
+                new=mock.AsyncMock(return_value="local"),
+            ),
             mock.patch.object(thinking_proxy, "_nim_chat", cloud),
             mock.patch.object(thinking_proxy.scheduler, "acquire_stream"),
             mock.patch.object(thinking_proxy.scheduler, "release_stream"),
@@ -587,5 +778,61 @@ class StreamFallbackBoundaryTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(cloud_calls, 0)
         self.assertEqual(output.count("event: message_start"), 1)
         self.assertIn('"code": "backend_reloading"', output)
+    async def test_anthropic_awq_stream_skips_loading_local_backend(self):
+        request = BackendReloadingTests.JsonRequest({})
+        body = {
+            "model": "qwen3.6-fastllm",
+            "messages": [{"role": "user", "content": "test"}],
+            "stream": True,
+        }
+        cloud_response = {
+            "id": "cloud-stream",
+            "model": "cloud-model",
+            "choices": [{
+                "message": {"role": "assistant", "content": "cloud"},
+                "finish_reason": "stop",
+            }],
+            "usage": {"prompt_tokens": 1, "completion_tokens": 1},
+        }
+
+        with (
+            mock.patch.object(
+                thinking_proxy, "_pick_backend",
+                new=mock.AsyncMock(return_value="or"),
+            ) as pick_backend,
+            mock.patch.object(
+                thinking_proxy, "_nim_chat",
+                new=mock.AsyncMock(),
+            ) as nim_chat,
+            mock.patch.object(
+                thinking_proxy, "_or_chat",
+                new=mock.AsyncMock(return_value=cloud_response),
+            ) as or_chat,
+            mock.patch.object(
+                thinking_proxy.scheduler, "acquire_stream",
+                new=mock.AsyncMock(),
+            ) as acquire_local,
+            mock.patch.object(
+                thinking_proxy.backend_lifecycle, "acquire",
+                new=mock.AsyncMock(side_effect=thinking_proxy.BackendLifecycleError(
+                    "local backend is reloading"
+                )),
+            ),
+            mock.patch.object(thinking_proxy, "OR_API_KEY", "enabled"),
+            mock.patch.object(thinking_proxy, "FALLBACK_ENABLED", True),
+            mock.patch.object(thinking_proxy, "BENCHMARK_MODE", False),
+        ):
+            output = "".join([
+                chunk async for chunk in thinking_proxy._anthropic_stream_limited(
+                    body, request, "qwen3.6-27b-awq"
+                )
+            ])
+
+        self.assertIn('"text": "cloud"', output)
+        pick_backend.assert_awaited_once()
+        nim_chat.assert_not_awaited()
+        or_chat.assert_awaited_once()
+        acquire_local.assert_not_awaited()
+
 if __name__ == "__main__":
     unittest.main()

@@ -1,0 +1,315 @@
+{
+  "schema_version": 1,
+  "benchmark": "fastllm_six_model_matrix",
+  "created_at_utc": "2026-08-09T22:50:55Z",
+  "hardware": {
+    "gpu": "Tesla V100-PCIE-32GB",
+    "compute_capability": "7.0",
+    "memory_total_mib": 32768,
+    "driver": "580.173.02"
+  },
+  "runtime": {
+    "backend": "FastLLM native apiserver",
+    "binary": "/run/media/ezra/13D010B6FDBC1A06/1CatVLLM/fastllm/build/apiserver",
+    "binary_sha256": "17a099ff50221bf79989284e8efd9635d53335a1e0355e7473fa8f8ce1d3d21f",
+    "activation_dtype": "float16",
+    "kv_cache_dtype": "turbo3",
+    "max_batch": 5,
+    "token_pool": 65536,
+    "default_max_tokens": 16384,
+    "temperature": 0.0,
+    "mmproj": {
+      "path": "/run/media/ezra/13D010B6FDBC1A06/1CatVLLM/models/ThinkingCap-Qwen3.6-27B-GGUF/mmproj-ThinkingCap-Qwen3.6-27B-f16.gguf",
+      "size_bytes": 931145888,
+      "sha256": "81a714ac5e8e15687371fc95a180953a29b732962f6616f791063ff127559412"
+    }
+  },
+  "fixture_set": {
+    "request_ids": [
+      "arithmetic_126",
+      "exact_instruction",
+      "balance_scale_reasoning",
+      "required_tool_call",
+      "vision_red_pixel"
+    ],
+    "transport_gate": "HTTP 200, one DONE, zero malformed SSE, complete usage, finish_reason=stop",
+    "semantic_gate": "four content/vision fixtures plus a strict native tool-call protocol check",
+    "runs": 2,
+    "concurrency": 1
+  },
+  "launcher_verification": {
+    "manifest": "benchmarks/fastllm/configs/thinkingcap_native_profiles.json",
+    "profile": "thinkingcap-q4",
+    "port": 18104,
+    "startup_timeout_seconds_used": 600,
+    "startup_result": "pass after duplicate model-disk SHA job was cancelled",
+    "readiness": {
+      "health_ready": true,
+      "health_model": "qwen3.6-fastllm",
+      "props_model": "qwen3.6-fastllm",
+      "multimodal_projector_loaded": true,
+      "identity_guard": "pid + proc_start_time + exe + argv SHA-256"
+    },
+    "vram_gate": {
+      "minimum_free_mib": 512,
+      "preflight_free_mib": 32012,
+      "readiness_free_mib": 32012,
+      "preflight_passed": true,
+      "readiness_passed": true,
+      "final_recheck_started_at_utc": "2026-08-09T23:27:20Z",
+      "final_recheck_ready_at_utc": "2026-08-09T23:30:45Z",
+      "final_recheck_shutdown_completed": true
+    },
+    "e2e_request": "benchmarks/fastllm/results/thinkingcap_native_launcher_q4_check.json",
+    "e2e_validation_passed": true,
+    "e2e_content": "126",
+    "e2e_status": 200,
+    "e2e_wall_seconds": 127.74135971999931,
+    "shutdown": "manager stop --grace 20 completed; GPU returned to 483 MiB used"
+  },
+  "models": [
+    {
+      "name": "thinkingcap-q4",
+      "family": "ThinkingCap",
+      "quantization": "Q4_K_M",
+      "artifact_variant": "standard",
+      "profile": "thinkingcap-q4",
+      "status": "available",
+      "model_path": "/run/media/ezra/13D010B6FDBC1A06/1CatVLLM/models/ThinkingCap-Qwen3.6-27B-GGUF/ThinkingCap-Qwen3.6-27B-Q4_K_M.gguf",
+      "model_size_bytes": 16810713056,
+      "model_sha256": "b0651e28555bde7d2459ce99f091319b1a547143463e8d49f2aa7f572675fe67",
+      "evidence": {
+        "full_result": "benchmarks/fastllm/results/thinkingcap_q4_fastllm_mtp0.json",
+        "current_smoke": "benchmarks/fastllm/results/thinkingcap_q4_current_smoke.json",
+        "full_validation_passed": true,
+        "current_smoke_validation_passed": true,
+        "current_smoke_requests": 5,
+        "current_smoke_binary_sha256": "17a099ff50221bf79989284e8efd9635d53335a1e0355e7473fa8f8ce1d3d21f"
+      },
+      "quality": {
+        "arithmetic_126": "pass",
+        "exact_instruction": "pass",
+        "balance_scale_reasoning": "pass",
+        "vision_red_pixel": "pass",
+        "required_tool_call": "payload pass, protocol fail: JSON was assistant content, not an OpenAI tool_calls delta",
+        "transport": "10/10 full fixture requests and 5/5 current smoke requests passed"
+      },
+      "performance": {
+        "text_decode_tokens_per_second_range": [39.95, 45.15],
+        "vision_decode_tokens_per_second_range": [23.52, 24.04],
+        "current_smoke_wall_medians_seconds": {
+          "arithmetic_126": 29.254599376999977,
+          "exact_instruction": 7.776373523000075,
+          "balance_scale_reasoning": 26.06922619299985,
+          "required_tool_call": 2.7606575939989852,
+          "vision_red_pixel": 5.723252337000304
+        },
+        "comparison": "text decode was 40.8-66.7% faster than observed Fable text range; vision decode was 16.7-18.5% slower"
+      },
+      "vram": {
+        "status": "not_measured",
+        "reason": "NVML 580.159 kernel / 580.173 userspace mismatch during the full run"
+      },
+      "decision": "conditional_default_candidate; keep Fable as rollback until tool protocol normalization passes"
+    },
+    {
+      "name": "thinkingcap-q6",
+      "family": "ThinkingCap",
+      "quantization": "Q6_K",
+      "artifact_variant": "standard",
+      "profile": "thinkingcap-q6",
+      "status": "available",
+      "model_path": "/run/media/ezra/13D010B6FDBC1A06/1CatVLLM/models/ThinkingCap-Qwen3.6-27B-GGUF/ThinkingCap-Qwen3.6-27B-Q6_K.gguf",
+      "model_size_bytes": 22430998496,
+      "model_sha256": "37d93cb02a08e42a2b8e917d79efc340709b90546cac1fa655121ccadf4aa791",
+      "evidence": {
+        "full_result": "benchmarks/fastllm/results/thinkingcap_q6_fastllm_mtp0.json",
+        "current_smoke": "benchmarks/fastllm/results/thinkingcap_q6_current_smoke.json",
+        "full_validation_passed": true,
+        "current_smoke_validation_passed": true,
+        "current_smoke_requests": 5,
+        "current_smoke_binary_sha256": "17a099ff50221bf79989284e8efd9635d53335a1e0355e7473fa8f8ce1d3d21f"
+      },
+      "quality": {
+        "arithmetic_126": "pass",
+        "exact_instruction": "pass",
+        "balance_scale_reasoning": "pass",
+        "vision_red_pixel": "pass",
+        "required_tool_call": "fail: emitted argument key location while schema requires city",
+        "transport": "10/10 full fixture requests and 5/5 current smoke requests passed"
+      },
+      "performance": {
+        "text_decode_tokens_per_second_range": [15.84, 16.24],
+        "current_smoke_wall_medians_seconds": {
+          "arithmetic_126": 44.794585716001166,
+          "exact_instruction": 9.723648836999928,
+          "balance_scale_reasoning": 41.37910737399943,
+          "required_tool_call": 25.048201438999968,
+          "vision_red_pixel": 7.38194666399977
+        },
+        "comparison": "40.0-44.2% slower than observed Fable text range and 5.62 GB larger than Q4 without fixture-quality gain"
+      },
+      "vram": {
+        "status": "not_measured",
+        "reason": "NVML 580.159 kernel / 580.173 userspace mismatch during the full run"
+      },
+      "decision": "do_not_deploy"
+    },
+    {
+      "name": "thinkingcap-q8",
+      "family": "ThinkingCap",
+      "quantization": "Q8_0",
+      "artifact_variant": "standard",
+      "profile": "thinkingcap-q8",
+      "status": "unavailable",
+      "model_path": "/run/media/ezra/13D010B6FDBC1A06/1CatVLLM/models/ThinkingCap-Qwen3.6-27B-GGUF/ThinkingCap-Qwen3.6-27B-Q8_0.gguf",
+      "model_size_bytes": null,
+      "model_sha256": null,
+      "evidence": {
+        "validation": "not run",
+        "reason": "standard Q8_0 artifact is absent from the local model directory"
+      },
+      "quality": null,
+      "performance": null,
+      "vram": null,
+      "decision": "blocked_missing_artifact"
+    },
+    {
+      "name": "heretic-q4",
+      "family": "ThinkingCap Heretic",
+      "quantization": "Q4_K_M",
+      "artifact_variant": "standard",
+      "profile": "heretic-q4",
+      "status": "unavailable",
+      "model_path": "/run/media/ezra/13D010B6FDBC1A06/1CatVLLM/models/ThinkingCap-Qwen3.6-27B-heretic-GGUF/ThinkingCap-Qwen3.6-27B-heretic-Q4_K_M.gguf",
+      "model_size_bytes": null,
+      "model_sha256": null,
+      "evidence": {
+        "validation": "not run",
+        "reason": "no Heretic Q4 GGUF is present locally"
+      },
+      "quality": null,
+      "performance": null,
+      "vram": null,
+      "decision": "blocked_missing_artifact"
+    },
+    {
+      "name": "heretic-q6",
+      "family": "ThinkingCap Heretic",
+      "quantization": "Q6_K",
+      "artifact_variant": "standard",
+      "profile": "heretic-q6",
+      "status": "unavailable",
+      "model_path": "/run/media/ezra/13D010B6FDBC1A06/1CatVLLM/models/ThinkingCap-Qwen3.6-27B-heretic-GGUF/ThinkingCap-Qwen3.6-27B-heretic-Q6_K.gguf",
+      "model_size_bytes": null,
+      "model_sha256": null,
+      "evidence": {
+        "validation": "not run",
+        "reason": "no Heretic Q6 GGUF is present locally"
+      },
+      "quality": null,
+      "performance": null,
+      "vram": null,
+      "decision": "blocked_missing_artifact"
+    },
+    {
+      "name": "heretic-q8",
+      "family": "ThinkingCap Heretic",
+      "quantization": "Q8_0",
+      "artifact_variant": "Q8_0-plus-mtp composite, MTP0 default",
+      "profile": "heretic-q8",
+      "status": "available",
+      "model_path": "/run/media/ezra/13D010B6FDBC1A06/1CatVLLM/models/ThinkingCap-Qwen3.6-27B-heretic-GGUF/ThinkingCap-Qwen3.6-27B-heretic-Q8_0-plus-mtp.gguf",
+      "model_size_bytes": 28859077472,
+      "model_sha256": "d600236ae4111041d9831387a429d92f68513640337bea3d337937188a986a63",
+      "evidence": {
+        "mtp0_result": "benchmarks/fastllm/results/thinkingcap_heretic_q8_fastllm_mtp0.json",
+        "mtp2_result": "benchmarks/fastllm/results/thinkingcap_heretic_q8_fastllm_mtp2.json",
+        "mtp0_vram": "benchmarks/fastllm/results/thinkingcap_heretic_q8_mtp0_vram.json",
+        "mtp2_vram": "benchmarks/fastllm/results/thinkingcap_heretic_q8_mtp2_vram.json",
+        "plain_control_negative": "benchmarks/fastllm/results/thinkingcap_heretic_raw_base_q8_negative.json",
+        "plain_control_model_size_bytes": 28595762848,
+        "plain_control_model_sha256": "1d64124597da62d4ec42af440f8c99a7ea8e9248b2e9bb4e9114843c91af17a8",
+        "mtp0_validation_passed": true,
+        "mtp2_validation_passed": true,
+        "plain_control_validation_passed": false,
+        "plain_control_failure": "vision_red_pixel returned HTTP 502 after the base process exited code 1"
+      },
+      "quality": {
+        "arithmetic_126": "pass",
+        "exact_instruction": "pass",
+        "balance_scale_reasoning": "pass",
+        "vision_red_pixel": "pass",
+        "required_tool_call": "payload pass, protocol fail: no OpenAI tool_calls delta",
+        "transport": "10/10 HTTP 200 in both MTP0 and MTP2 arms"
+      },
+      "performance": {
+        "mtp0_wall_medians_seconds": {
+          "arithmetic_126": 15.492726442000276,
+          "exact_instruction": 7.042080085000026,
+          "balance_scale_reasoning": 36.00694542950032,
+          "required_tool_call": 23.737145914499706,
+          "vision_red_pixel": 3.4751709914999083
+        },
+        "mtp2_wall_medians_seconds": {
+          "arithmetic_126": 5.132677213000079,
+          "exact_instruction": 4.462528080000306,
+          "balance_scale_reasoning": 21.77889348949975,
+          "required_tool_call": 11.61201862400003,
+          "vision_red_pixel": 24.047830594000516
+        },
+        "interpretation": "MTP2 was faster on four text/tool fixtures but slower and variable on vision; this is a feature-smoke observation, not a sustained decode benchmark"
+      },
+      "vram": {
+        "mtp0_peak_used_mib": 31525,
+        "mtp0_minimum_free_mib": 970,
+        "mtp0_safety_gate_passed": true,
+        "mtp2_peak_used_mib": 32393,
+        "mtp2_minimum_free_mib": 374,
+        "mtp2_safety_gate_required_free_mib": 512,
+        "mtp2_safety_gate_passed": false,
+        "mtp5": "skipped after MTP2 safety-gate failure"
+      },
+      "decision": "MTP0 experimental-only; MTP2 not production-approved; plain un-grafted Q8 remains a negative multimodal control"
+    }
+  ],
+  "baseline": {
+    "name": "existing-fable",
+    "status": "rollback_only",
+    "source": "benchmarks/fastllm/results/thinkingcap_replacement_recommendation.json",
+    "text_decode_tokens_per_second_range": [27.09, 28.38],
+    "vision_decode_tokens_per_second": 28.85,
+    "quality": {
+      "arithmetic_126": "failed with empty content/length",
+      "exact_instruction": "pass",
+      "balance_scale_reasoning": "failed with empty content/length",
+      "required_tool_call": "protocol pass in the captured fixture",
+      "vision_red_pixel": "pass"
+    },
+    "decision": "retain as rollback until Q4 tool protocol normalization is verified"
+  },
+  "deployment_policy": {
+    "production_cutover": "not_approved",
+    "default_candidate": "thinkingcap-q4",
+    "default_candidate_mode": "guarded_conditional",
+    "fallback_profile": "existing-fable",
+    "fallback_is_in_six_nominal_profiles": false,
+    "experimental_profile": "heretic-q8",
+    "proxy_ownership": "external_only; FASTLLM_OWNED=0",
+    "switch_sequence": "stop-old -> start-target -> readiness (/health and /props) -> rollback-old on failure",
+    "tool_protocol_gate": "required before replacing Fable"
+  },
+  "negative_results": [
+    "ThinkingCap Q6 is slower than Q4 and has no fixture-quality gain; its tool argument violates the strict schema.",
+    "Q4 passes semantic content fixtures but is not transparent for OpenAI tool_calls because the payload remains assistant content.",
+    "Heretic plain un-grafted Q8 control completed 9/10 requests then crashed on vision with HTTP 502; do not infer composite invalidity.",
+    "Heretic composite MTP2 passed HTTP/semantic validation but left only 374 MiB free, below the 512 MiB safety gate; MTP5 was skipped.",
+    "Standard ThinkingCap Q8, Heretic Q4, and Heretic Q6 artifacts are absent locally, so no smoke result exists for those nominal profiles.",
+    "Q4/Q6 VRAM peak was not sampled in the full run because of an NVML kernel/userspace mismatch."
+  ],
+  "limitations": [
+    "The five-request smoke is a correctness/transport gate, not a sustained throughput benchmark.",
+    "No deterministic seed was enforced; byte-level reasoning parity is not claimed.",
+    "The manifest uses machine-local absolute paths by design and must be regenerated for another host."
+  ]
+}
