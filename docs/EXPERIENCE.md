@@ -772,3 +772,12 @@ prefill（80K 字符）0.1-0.2s，MTP 档位影响可忽略（MTP 只加速 deco
 - 实机 i1-Q6_K：READY 23.7GB VRAM；memory suspend 17.45s，缓存 12,863,627,264 bytes、驱逐 8,513,433,600 bytes，GPU 降至 2.2GB；memory resume 111.89s，cache hit ratio 0.601749，重建 8,513,433,600 bytes，恢复至 23.7GB。
 - 首次实机恢复暴露 partial reload 只还原 CPU payload、未还原原 CUDA placement；修复为记录每个驱逐 tensor 的原 device id，GGUF 重建后显式 H2D，并在任一阶段失败时自动回退完整 disk reload。修复后 `/admin/resume` 返回 `tier=memory`，随后推理 HTTP 200、`/health` 为 `ready=true`。
 - 代理空闲分级：12h 内 memory tier，超过 12h disk tier；后端进程常驻，首个请求自动 resume。生产 profile 已启用 `FASTLLM_HOST_SUSPEND_CACHE=1`、12GiB host 权重预算及 3GiB prefix RAM 预算。
+
+### 15.13 直接后台部署 + 恢复链实机复验（2026-08-12 晚）
+
+- 生产改为**直接后台进程**（`setsid` + 日志重定向，禁 hub/tmux）：`thinking_proxy.py` owned 冷启动，首个请求触发 spawn generation 1（pid 1071105），冷启动请求 HTTP 200（321.9s，前缀缓存从磁盘恢复 generation 5，652MB）。
+- 共享 host 预算实机上限：profile `FASTLLM_HOST_SUSPEND_CACHE_MAX_BYTES=17179869184`（16GiB，按用户要求从 12GiB 上调），prefix RAM 预算 3GiB。
+- `/admin/suspend`（memory tier）31.2s：cached 17,117,118,464 bytes（≈15.9GiB，16GiB 硬上限内）、source evicted 4,259,942,400 bytes、hit ratio 0.8007；GPU 22356→860 MiB，进程同 pid 常驻（VmRSS 21.7GB，MemAvailable 25.2GB）。
+- `/admin/resume` 89.3s（冷启动的 1/3.6）：hit ratio 0.8007，rebuilt 4,259,942,400 bytes，GPU 恢复 22292 MiB，同 pid；随后推理 HTTP 200（1.13s）、前缀持久化 `loaded_generation=5` 保持。
+- 带图稳定性（cat.png，5 连发）：全部 200，4.30-6.87s，GPU 恒定 23788 MiB 无泄漏；1024-token 请求 finish=stop，文本正确（"浅紫色背景可爱卡通黑猫图标…"）。日志零错误模式（packed copy FAILED / old pool / multi-page failed / CUDA error / abort 全为 0）。
+- 回归：`testHostCacheBudget`、`testHostOffloadLifecycle`、`testHostOffloadControl`、`regressionOps`（persistent_prefix_cache + turbo3_kv）全部 PASS。fastllm HEAD `6219778b`、v100-perfs HEAD `2be2adf`，两仓干净。
