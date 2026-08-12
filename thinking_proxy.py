@@ -2321,11 +2321,17 @@ def _convert_images(messages):
             try:
                 raw = base64.b64decode(b64)
                 with Image.open(io.BytesIO(raw)) as source:
-                    img = ImageOps.exif_transpose(source).convert("RGB")
-                    buf = io.BytesIO()
-                    img.save(buf, format="PNG")
-                new_b64 = base64.b64encode(buf.getvalue()).decode()
-                image_url["url"] = f"data:image/png;base64,{new_b64}"
+                    orientation = source.getexif().get(0x0112, 1)
+                    if orientation not in (1, None) or source.mode != "RGB":
+                        # EXIF rotation applied or non-RGB: re-encode as PNG.
+                        img = ImageOps.exif_transpose(source).convert("RGB")
+                        buf = io.BytesIO()
+                        img.save(buf, format="PNG")
+                        new_b64 = base64.b64encode(buf.getvalue()).decode()
+                        image_url["url"] = f"data:image/png;base64,{new_b64}"
+                    # Otherwise keep the original bytes (JPEG/PNG as-is);
+                    # the backend decodes by magic, so re-encoding only
+                    # inflates the request body (JPEG 4K -> PNG ~2.7x).
             except Exception as e:
                 print(f"[proxy] image convert failed ({fmt}): {e}", flush=True)
 
