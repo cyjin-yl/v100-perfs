@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "benchmark": "fastllm_iq6_prefill_decode_throughput",
+  "created_at_utc": "2026-08-12T15:12:06Z",
+  "hardware": {
+    "gpu": "Tesla V100-PCIE-32GB",
+    "memory_total_mib": 32768
+  },
+  "runtime": {
+    "backend": "FastLLM native apiserver",
+    "model": "Huihui-ThinkingCap-Qwen3.6-27B-abliterated i1-Q6_K + MTP mmproj",
+    "binary": "/run/media/ezra/13D010B6FDBC1A06/1CatVLLM/fastllm/build/apiserver",
+    "binary_git": "a7db89d7",
+    "activation_dtype": "float16",
+    "kv_cache_dtype": "turbo3",
+    "token_pool": 262144,
+    "mtp": 2,
+    "chunked_prefill_size": 512
+  },
+  "decode": {
+    "max_tokens": 512,
+    "completion_tokens": 512,
+    "wall_seconds": 19.92,
+    "tokens_per_second": 25.96
+  },
+  "prefill": {
+    "prompt_tokens": 32018,
+    "prompt_tokens_evaluated": 32018,
+    "wall_seconds": 50.66,
+    "tokens_per_second": 635.83,
+    "cache_hit_tokens": 0
+  },
+  "notes": "decode measured with short prompt (8 prompt tokens), MTP2 512-token run; prefill measured with 32018-token raw prompt, max_tokens=8, no prefix cache hits. Production binary a7db89d7 (64MiB request buffer fix included)."
+}
