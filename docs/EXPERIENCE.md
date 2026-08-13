@@ -798,3 +798,12 @@ prefill（80K 字符）0.1-0.2s，MTP 档位影响可忽略（MTP 只加速 deco
   - 并行：peak_active=1、mean 0.12-0.86、peak_pending=0——agentic 流量天然串行，瓶颈是每轮 thinking decode（26 tok/s）；batch=1 下无并行空间，多用户并发未测。
   - 前缀缓存：每任务 GPU hit pages +19K~+83K（多轮长 system prompt 重入累积命中）；磁盘命中 0（未达 disk tier 门槛 min-hits 2 + 64K tokens）。
   - 任务结果：file_roundtrip / fib_run / multi_file 通过；count_py（建 5 文件+统计+写结果）3 次全超时——暴露工具名漂移（"writ"、"function_calls"）、参数缺失、格式漂移（`<function=write@/path>`）。JSON 形式解析已修，工具名模糊匹配/参数强制未做（记为边界）。
+
+
+### 15.16 agentic 负载评估（1-2 主 agent + 5-10 子 agent）+ turbo4 移植
+
+- **turbo4 移植**（fastllm `TURBO4_KV`，4bit PolarQuant，上游 TURBO4_0 表）：K=q8_0 + V=turbo4 上线验证 READY 280s。KV recall A/B：100K 两者 10/10 持平；**200K turbo4 被 VRAM 水位拦截（503）**（V +32% 显存顶到保护线）→ 生产保持 turbo3，turbo4 作为可选档。
+- **agentic load benchmark**（10 agent × 4 轮共享前缀，全 python）：40/40 成功、tool_call_rate=1.0、args 全合法；mean_active=1.94（GPU decode 饱和）。
+- **batch 扫描**：b2s2w2 total 85.5s/p50 12.65/p95 60.9；b4s4w4 total 108.7s/p50 20.75/p95 53.6——**batch=2 是最优**：decode 是串行计算瓶颈，batch 4 只重新分配延迟不增吞吐。结论：GPU decode（MTP2 26 tok/s）是唯一硬约束，MTP3/4 更慢无解。
+- **优化落地**：`FASTLLM_PREFIX_CACHE_DISK_MIN_TOKENS=4096`（agentic 系统提示跨重启磁盘持久化）；生产配置 batch=2 + slot=2 + workers=2。
+- 交叉会话前缀缓存验证：同前缀 100K 上下文 10 查询，首个 302.5s（全量 prefill），其余 2.4-2.5s（全命中）。
