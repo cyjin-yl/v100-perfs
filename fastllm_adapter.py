@@ -18,13 +18,17 @@ from typing import Any
 from jinja2 import Environment, FileSystemLoader, StrictUndefined
 
 
-_TOOL_CALL_RE = re.compile(
-    r"<tool_call>\s*<fu[n]?ction=([^>\n]+)>\s*(.*?)\s*</fu[n]?ction>\s*</tool_call>",
-    re.DOTALL,
+
+_TOOL_CALL_BLOCK_RE = re.compile(
+    r"<tool_call>(.*?)</tool_call>", re.DOTALL
+)
+_FUNCTION_TAG_RE = re.compile(
+    r"<(?:fu[n]?ction=([^>\n]+)|([A-Za-z0-9_.\-]+))>"
 )
 _PARAMETER_RE = re.compile(
     r"<parameter=([^>\n]+)>\s*(.*?)\s*</parameter>", re.DOTALL
 )
+
 _QWEN_STOP_MARKERS = ("<|im_end|>", "<|endoftext|>")
 
 
@@ -115,11 +119,17 @@ def _parse_parameter_value(raw: str) -> Any:
 
 def parse_fastllm_tool_calls(content: str) -> list[dict[str, Any]]:
     calls: list[dict[str, Any]] = []
-    for match in _TOOL_CALL_RE.finditer(content):
-        name = match.group(1).strip()
+    for block_match in _TOOL_CALL_BLOCK_RE.finditer(content):
+        inner = block_match.group(1)
+        tag = _FUNCTION_TAG_RE.search(inner)
+        if tag is None:
+            continue
+        name = (tag.group(1) or tag.group(2) or "").strip()
+        if not name or name == "parameter":
+            continue
         arguments = {
             parameter.group(1).strip(): _parse_parameter_value(parameter.group(2))
-            for parameter in _PARAMETER_RE.finditer(match.group(2))
+            for parameter in _PARAMETER_RE.finditer(inner)
         }
         calls.append({
             "id": f"call_{uuid.uuid4().hex[:24]}",

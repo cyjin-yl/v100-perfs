@@ -138,20 +138,11 @@
     {{- '<|im_start|>system\n' -}}
     {{- '# Tools\n\nYou have access to the following functions:\n\n<tools>' -}}
     {%- for tool in tools -%}
-        {{- render_tool_signature(tool) -}}
+        {{- '\n' -}}
+        {{- tool | tojson -}}
     {%- endfor -%}
-    {{- '\n</tools>\n\n' -}}
-    {{- 'IMPORTANT: Always close any thinking with </think> BEFORE emitting <tool_call>. ' -}}
-    {{- 'Reasoning inside a <tool_call> or its parameters is forbidden. ' -}}
-    {{- 'When calling a tool, output one or more XML blocks in EXACTLY this format and nothing after the final </tool_call>:\n\n' -}}
-    {{- '<tool_call>\n<function=example_function_name>\n<parameter=example_parameter_1>\nvalue_1\n</parameter>\n<parameter=example_parameter_2>\nThis is the value for the second parameter\nthat can span\nmultiple lines\n</parameter>\n</function>\n</tool_call>\n\n' -}}
-    {{- 'Rules:\n' -}}
-    {{- '- Prefer a matching tool over answering from memory when applicable.\n' -}}
-    {{- '- If a prior tool response contains an id and the user is modifying that object, reuse the id with the matching update_* tool.\n' -}}
-    {{- '- Put any reasoning or natural language BEFORE the first <tool_call>, never after the last </tool_call>.\n' -}}
-    {{- '- Include every required parameter; preserve user strings verbatim for ids, names, titles, subjects, emails, and queries.\n' -}}
-    {{- '- For object/array parameter values, write valid JSON inside the parameter body.\n' -}}
-    {{- '- If no tool is needed, answer normally.' -}}
+    {{- '\n</tools>' -}}
+    {{- '\n\nIf you choose to call a function ONLY reply in the following format with NO suffix:\n\n<tool_call>\n<function=example_function_name>\n<parameter=example_parameter_1>\nvalue_1\n</parameter>\n<parameter=example_parameter_2>\nThis is the value for the second parameter\nthat can span\nmultiple lines\n</parameter>\n</function>\n</tool_call>\n\n<IMPORTANT>\nReminder:\n- Function calls MUST follow the specified format: an inner <function=...></function> block must be nested within <tool_call></tool_call> XML tags\n- Required parameters MUST be specified\n- You may provide optional reasoning for your function call in natural language BEFORE the function call, but NOT after\n- If there is no function call available, answer the question like normal with your current knowledge and do not tell the user about function calls\n</IMPORTANT>' -}}
     {%- if has_system and system_content -%}
         {{- '\n\n' ~ system_content -}}
     {%- endif -%}
