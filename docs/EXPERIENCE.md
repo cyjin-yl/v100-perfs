@@ -781,3 +781,11 @@ prefill（80K 字符）0.1-0.2s，MTP 档位影响可忽略（MTP 只加速 deco
 - `/admin/resume` 89.3s（冷启动的 1/3.6）：hit ratio 0.8007，rebuilt 4,259,942,400 bytes，GPU 恢复 22292 MiB，同 pid；随后推理 HTTP 200（1.13s）、前缀持久化 `loaded_generation=5` 保持。
 - 带图稳定性（cat.png，5 连发）：全部 200，4.30-6.87s，GPU 恒定 23788 MiB 无泄漏；1024-token 请求 finish=stop，文本正确（"浅紫色背景可爱卡通黑猫图标…"）。日志零错误模式（packed copy FAILED / old pool / multi-page failed / CUDA error / abort 全为 0）。
 - 回归：`testHostCacheBudget`、`testHostOffloadLifecycle`、`testHostOffloadControl`、`regressionOps`（persistent_prefix_cache + turbo3_kv）全部 PASS。fastllm HEAD `6219778b`、v100-perfs HEAD `2be2adf`，两仓干净。
+
+### 15.14 换普通 ThinkingCap（弃 abliterated）+ 大图 8MiB 缓冲修复（2026-08-13）
+
+- **模型替换**：abliterated i1-Q6_K 工具调用频繁失败 → 生产切到 `ThinkingCap-Qwen3.6-27B-MTP-GGUF/ThinkingCap-Qwen3.6-27B-Q6_K-MTP.gguf`（原版非 heretic，tensor 名含 `nextn.eh_proj/enorm/hnorm/shared_head_norm` + blk.64 = MTP 头，保留 MTP2）。新 profile `q6-plain-262k-mtp2.env`（前缀缓存 key 改为 `qwen3.6-plain-q6-mtp2`，旧模型 KV 不复用）。运行于 tmux `fastllm-prod` 会话双 pane（pane0 proxy + pane1 `tail -F` 后端日志）。
+- **验证**：冷启动 READY 280s；文本 200；**工具调用 `finish=tool_calls`（get_weather {"city":"北京"}）→ tool 结果 → 最终回答 "北京现在的天气是晴，气温 24 摄氏度。"（finish=stop）多轮 agent 闭环通过**；cat.png 图像 200、描述正确（finish=stop）。
+- **大图 8MiB 请求缓冲 bug**：后端 `char buff[8MiB]` 导致 4K 图（尤其 JPEG 经 proxy 重编码 PNG 膨胀 2.7× 后 base64 9.1MB）请求体读不满 → 15s socket 超时断连 → proxy ReadError → 503。修复：缓冲 8→64MiB（`a7db89d7`）；proxy `_convert_images` 仅在 EXIF 转置/非 RGB 时重编码，否则保留原字节（`42c839a`）。验证：4K JPEG 直连+proxy 全链路 200。
+- **吞吐登记**（`benchmarks/fastllm/results/fastllm_iq6_prefill_decode_throughput_20260812.json`，abliterated 版本测得，架构相同可参考）：prefill 635.8 tok/s（32K tokens）、decode 26.0 tok/s（MTP2）。
+- stable tag `stable-20260812`：fastllm `a7db89d7`、v100-perfs `42c839a`。
