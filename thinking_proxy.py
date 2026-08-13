@@ -890,6 +890,13 @@ def _is_fastllm_alias(model: str) -> bool:
     return any(alias in model for alias in FASTLLM_PUBLIC_ALIASES)
 
 
+def _is_local_alias(model: str) -> bool:
+    """True when the caller explicitly selected the local FastLLM backend
+    (heretic suffix, public alias, or backend slug). These requests bypass
+    the fair router: rerouting an explicitly-local model to external
+    providers serves a different model and breaks multi-round tool calls."""
+    return bool(model) and (_is_heretic_model(model) or _is_fastllm_alias(model))
+
 def _to_backend_model(public_model: str) -> str:
     """Rewrite a public alias to the configured FastLLM backend slug in
     outbound payloads. Leaves other model names (incl. cloud models) intact."""
@@ -2450,9 +2457,11 @@ async def openai_chat(request: Request):
 
     _convert_images(body.get("messages", []))
     requested_model = body.get("model", "")
-    # Classify the caller's public model before rewriting aliases. Only a
-    # public ID ending in "heretic" bypasses the fair router.
-    is_heretic = _is_heretic_model(requested_model)
+    # Classify the caller's public model before rewriting aliases. Any local
+    # alias (heretic suffix, public alias, or slug) bypasses the fair router;
+    # rerouting an explicitly-local model to external providers breaks tool
+    # calls and serves a different model than the caller asked for.
+    is_heretic = _is_local_alias(requested_model)
     if requested_model:
         body["model"] = _to_backend_model(requested_model)
     # FastLLM is the only backend with the loaded local vision projector. A
@@ -2631,7 +2640,8 @@ async def anthropic_messages(request: Request):
     _convert_images(openai_body.get("messages", []))
     requested_model = openai_body.get("model", "")
     # Preserve public-ID routing semantics before the backend slug rewrite.
-    is_heretic = _is_heretic_model(requested_model)
+    # Local aliases bypass the fair router (see _is_local_alias).
+    is_heretic = _is_local_alias(requested_model)
     if requested_model:
         openai_body["model"] = _to_backend_model(requested_model)
     # Keep Anthropic/mobile image requests on the local FastLLM projector too.
@@ -3232,7 +3242,7 @@ async def _anthropic_stream_limited(
     public_model: str = "",
 ):
     requested_model = public_model or openai_body.get("model", "")
-    is_heretic = _is_heretic_model(requested_model) or (
+    is_heretic = _is_local_alias(requested_model) or (
         FASTLLM_MODE and _has_images(openai_body.get("messages", []))
     )
     if not is_heretic and FALLBACK_ENABLED and not BENCHMARK_MODE:
