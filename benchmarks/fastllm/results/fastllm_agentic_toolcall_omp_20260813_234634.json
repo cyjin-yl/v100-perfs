@@ -1,0 +1,133 @@
+{
+  "schema_version": 1,
+  "benchmark": "fastllm_agentic_toolcall",
+  "created_at_utc": "2026-08-13T15:46:34Z",
+  "model": "vllm/qwen3.6-27b-awq",
+  "runner": "omp",
+  "sandbox": "/tmp/agentbench",
+  "results": [
+    {
+      "task": "file_roundtrip",
+      "runner": "omp",
+      "status": "ok",
+      "verified": true,
+      "detail": "roundtrip.txt=42",
+      "wall_s": 336.6,
+      "parallelism": {
+        "peak_active": 1,
+        "mean_active": 0.25,
+        "peak_pending": 0,
+        "samples": 67
+      },
+      "prefix_cache_delta": {
+        "prefix_cache_gpu_hit_pages": 14624.0,
+        "prefix_cache_disk_hits": 0.0,
+        "prefix_cache_disk_read_bytes": 0.0,
+        "prefix_cache_persistence_restore_hits": 0.0,
+        "prefix_cache_recompute_tokens_per_second": -95.85
+      },
+      "agent": {
+        "tools_by_name": {},
+        "tool_errors": 0,
+        "task_subagents": 0,
+        "rounds": 0,
+        "session_found": true
+      },
+      "output_tail": "        │\n╰──────────────────────────────────────────────────────────────────────────────╯\n\n  Read roundtrip.txt\n\n 文件已创建并读回，内容为：42。\n\n ※ recap: Created roundtrip.txt with content 42 and verified it by reading it\n back. Task is complete.\n\n╭──     Qwen3.6-27B-AWQ (local vLLM)   …file_roundtrip   8.1%/240K 󰁨 ──╮\n╰─                                                                            ─╯\n"
+    },
+    {
+      "task": "fib_run",
+      "runner": "omp",
+      "status": "ok",
+      "verified": true,
+      "detail": "fib(20)=6765",
+      "wall_s": 392.5,
+      "parallelism": {
+        "peak_active": 1,
+        "mean_active": 0.37,
+        "peak_pending": 0,
+        "samples": 78
+      },
+      "prefix_cache_delta": {
+        "prefix_cache_gpu_hit_pages": 48096.0,
+        "prefix_cache_disk_hits": 0.0,
+        "prefix_cache_disk_read_bytes": 0.0,
+        "prefix_cache_persistence_restore_hits": 0.0,
+        "prefix_cache_recompute_tokens_per_second": -95.356
+      },
+      "agent": {
+        "tools_by_name": {},
+        "tool_errors": 0,
+        "task_subagents": 0,
+        "rounds": 0,
+        "session_found": true
+      },
+      "output_tail": "tool_call>\n <parameter name=\"i\">\n Create Fibonacci script\n </parameter>\n </function>\n </tool_call>\n\n ※ recap: <tool_call> <write file=\"fib.py\"> def fib(n): a, b = 0, 1 for _ in\n range(n): a, b = b, a + b return a print(fib(20)) </write>\n\n╭──     Qwen3.6-27B-AWQ (local vLLM)   …tbench/fib_run   8.4%/240K 󰁨 ──╮\n╰─                                                                            ─╯\n"
+    },
+    {
+      "task": "multi_file",
+      "runner": "omp",
+      "status": "ok",
+      "verified": true,
+      "detail": "a/b ok",
+      "wall_s": 361.7,
+      "parallelism": {
+        "peak_active": 1,
+        "mean_active": 0.32,
+        "peak_pending": 0,
+        "samples": 72
+      },
+      "prefix_cache_delta": {
+        "prefix_cache_gpu_hit_pages": 19648.0,
+        "prefix_cache_disk_hits": 0.0,
+        "prefix_cache_disk_read_bytes": 0.0,
+        "prefix_cache_persistence_restore_hits": 0.0,
+        "prefix_cache_recompute_tokens_per_second": 69.754
+      },
+      "agent": {
+        "tools_by_name": {},
+        "tool_errors": 0,
+        "task_subagents": 0,
+        "rounds": 0,
+        "session_found": true
+      },
+      "output_tail": "───────────╯\n\n 两个文件已创建，cat a.txt b.txt 的输出为：\n\n ```\nhello\nworld\n ```\n\n （实际输出为 hello 和 world 拼接在同一行，因为文件内容末尾没有换行符。）\n\n ※ recap: Created a.txt (hello) and b.txt (world), displayed both with cat.\n Task is complete — no further action needed.\n\n╭──     Qwen3.6-27B-AWQ (local vLLM)   …nch/multi_file   8.3%/240K 󰁨 ──╮\n╰─                                                                            ─╯\n"
+    },
+    {
+      "task": "count_py",
+      "runner": "omp",
+      "status": "failed",
+      "verified": false,
+      "detail": "count.txt=None",
+      "wall_s": 1200.4,
+      "parallelism": {
+        "peak_active": 1,
+        "mean_active": 0.12,
+        "peak_pending": 0,
+        "samples": 239
+      },
+      "prefix_cache_delta": {
+        "prefix_cache_gpu_hit_pages": 48448.0,
+        "prefix_cache_disk_hits": 0.0,
+        "prefix_cache_disk_read_bytes": 0.0,
+        "prefix_cache_persistence_restore_hits": 0.0,
+        "prefix_cache_recompute_tokens_per_second": -53.318
+      },
+      "agent": {
+        "tools_by_name": {},
+        "tool_errors": 0,
+        "task_subagents": 0,
+        "rounds": 0,
+        "session_found": true
+      },
+      "output_tail": "───────────────────────────────────────╯\n\n <tool_call>\n <function=write@/tmp/agentbench/count_py/count_probe/c.py\n\n ※ recap: Created `count_probe/` with `a.py` and `b.py`. Still need `c.py`, 2\n `.txt` files, then count and write result.\n\n╭──     Qwen3.6-27B-AWQ (local vLLM)   …bench/count_py   8.4%/240K 󰁨 ──╮\n╰─                                                                            ─╯\n"
+    }
+  ],
+  "summary": {
+    "total": 4,
+    "verified_ok": 3,
+    "gpu_hit_pages_added": 130816.0,
+    "tool_errors": 0,
+    "task_subagents": 0
+  }
+}

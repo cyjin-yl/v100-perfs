@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "benchmark": "fastllm_agentic_toolcall_omp",
+  "created_at_utc": "2026-08-13T14:52:46Z",
+  "model": "vllm/qwen3.6-27b-awq",
+  "sandbox": "/tmp/agentbench",
+  "results": [
+    {
+      "task": "file_roundtrip",
+      "status": "timeout",
+      "wall_s": 600.0
+    }
+  ],
+  "summary": {
+    "total": 1,
+    "verified_ok": 0,
+    "tool_call_events": 0
+  }
+}
