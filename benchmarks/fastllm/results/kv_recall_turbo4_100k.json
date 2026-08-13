@@ -1,0 +1,106 @@
+{
+  "schema_version": 1,
+  "benchmark": "fastllm_kv_recall_ab",
+  "label": "turbo4",
+  "created_at_utc": "2026-08-13T18:34:31Z",
+  "endpoint": "http://127.0.0.1:8000",
+  "model": "qwen3.6-27b-heretic",
+  "facts_total": 20,
+  "queries": 10,
+  "span_tokens_approx": 99912,
+  "hits": 10,
+  "recall_rate": 1.0,
+  "wall_total_s": 301.8,
+  "results": [
+    {
+      "key": "k42_010",
+      "expected": "VALUE709570",
+      "got": "VALUE709570",
+      "match": true,
+      "wall_s": 279.4,
+      "prompt_tokens": 108573,
+      "evaluated": null
+    },
+    {
+      "key": "k42_004",
+      "expected": "VALUE288389",
+      "got": "VALUE288389",
+      "match": true,
+      "wall_s": 2.5,
+      "prompt_tokens": 108573,
+      "evaluated": null
+    },
+    {
+      "key": "k42_012",
+      "expected": "VALUE935518",
+      "got": "VALUE935518",
+      "match": true,
+      "wall_s": 2.5,
+      "prompt_tokens": 108573,
+      "evaluated": null
+    },
+    {
+      "key": "k42_001",
+      "expected": "VALUE116739",
+      "got": "VALUE116739",
+      "match": true,
+      "wall_s": 2.5,
+      "prompt_tokens": 108573,
+      "evaluated": null
+    },
+    {
+      "key": "k42_002",
+      "expected": "VALUE026225",
+      "got": "VALUE026225",
+      "match": true,
+      "wall_s": 2.5,
+      "prompt_tokens": 108573,
+      "evaluated": null
+    },
+    {
+      "key": "k42_013",
+      "expected": "VALUE571858",
+      "got": "VALUE571858",
+      "match": true,
+      "wall_s": 2.5,
+      "prompt_tokens": 108573,
+      "evaluated": null
+    },
+    {
+      "key": "k42_008",
+      "expected": "VALUE772246",
+      "got": "VALUE772246",
+      "match": true,
+      "wall_s": 2.5,
+      "prompt_tokens": 108573,
+      "evaluated": null
+    },
+    {
+      "key": "k42_016",
+      "expected": "VALUE442417",
+      "got": "VALUE442417",
+      "match": true,
+      "wall_s": 2.5,
+      "prompt_tokens": 108573,
+      "evaluated": null
+    },
+    {
+      "key": "k42_005",
+      "expected": "VALUE256787",
+      "got": "VALUE256787",
+      "match": true,
+      "wall_s": 2.5,
+      "prompt_tokens": 108573,
+      "evaluated": null
+    },
+    {
+      "key": "k42_009",
+      "expected": "VALUE107473",
+      "got": "VALUE107473",
+      "match": true,
+      "wall_s": 2.4,
+      "prompt_tokens": 108573,
+      "evaluated": null
+    }
+  ]
+}
