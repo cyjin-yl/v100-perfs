@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "benchmark": "fastllm_subagent_fanout_batch2",
+  "created_at_utc": "2026-08-13T17:05:00Z",
+  "runtime": {
+    "backend_batch": 2,
+    "proxy_slot": 2,
+    "kv_cache_dtype": "turbo3",
+    "model": "ThinkingCap-Qwen3.6-27B-Q6_K-MTP (plain)",
+    "decode_tokens_per_second": 26.0
+  },
+  "baseline_single": {
+    "max_tokens": 256,
+    "wall_s": 9.0
+  },
+  "fanout_2": {
+    "total_wall_s": 11.6,
+    "per_request_wall_s": [11.4, 11.4],
+    "speedup_vs_serial": 1.55
+  },
+  "fanout_3": {
+    "total_wall_s": 15.6,
+    "per_request_wall_s": [8.8, 8.7, 15.6],
+    "notes": "two requests overlap (slot=2), third queues for a free slot; wall times show the slot gate working as designed"
+  },
+  "summary": {
+    "conclusion": "subagent fan-out benefits from batch=2 + proxy slot=2: 2-way fan-out runs at 1.55x throughput of serial. Batch=2 is the conservative sweet spot; raising further would stress the MTP2 lane scheduler and KV pool."
+  }
+}

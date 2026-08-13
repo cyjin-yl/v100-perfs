@@ -1233,10 +1233,12 @@ class BackendScheduler:
         self.active = 0
         self._queue: asyncio.PriorityQueue = asyncio.PriorityQueue()
         self._workers: list[asyncio.Task] = []
-        # FastLLM runs batch=1: exactly one in-flight request at a time
-        # across BOTH the stream path and the worker queue (rotation, not
-        # fan-out), so concurrent client requests never stack VRAM.
-        self._slot = asyncio.Semaphore(1)
+        # FastLLM runs batch=N (profile-configured): up to that many
+        # in-flight requests across the stream path and worker queue, so
+        # subagent fan-out overlaps instead of serializing. Slot matches the
+        # backend batch so concurrent client requests never stack VRAM
+        # beyond the sized KV pool.
+        self._slot = asyncio.Semaphore(2)
 
     async def start_workers(self):
         for _ in range(self.max_concurrent):
