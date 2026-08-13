@@ -789,3 +789,12 @@ prefill（80K 字符）0.1-0.2s，MTP 档位影响可忽略（MTP 只加速 deco
 - **大图 8MiB 请求缓冲 bug**：后端 `char buff[8MiB]` 导致 4K 图（尤其 JPEG 经 proxy 重编码 PNG 膨胀 2.7× 后 base64 9.1MB）请求体读不满 → 15s socket 超时断连 → proxy ReadError → 503。修复：缓冲 8→64MiB（`a7db89d7`）；proxy `_convert_images` 仅在 EXIF 转置/非 RGB 时重编码，否则保留原字节（`42c839a`）。验证：4K JPEG 直连+proxy 全链路 200。
 - **吞吐登记**（`benchmarks/fastllm/results/fastllm_iq6_prefill_decode_throughput_20260812.json`，abliterated 版本测得，架构相同可参考）：prefill 635.8 tok/s（32K tokens）、decode 26.0 tok/s（MTP2）。
 - stable tag `stable-20260812`：fastllm `a7db89d7`、v100-perfs `42c839a`。
+
+### 15.15 omp/opencode 实机工具调用 + agentic benchmark（2026-08-13 晚）
+
+- **根因链**：omp 走 OpenAI 兼容 API 时 tool call 作为文本返回 = 三层问题：(1) merged chat template 的 `<tools>` 段渲染"紧凑签名"而非官方完整 JSON，模型指令跟随退化；(2) 后端/proxy 解析器只认 `<function=`/`<parameter=` 前缀；(3) 模型回落原生格式（裸 `<bash>`、`<prompt>` 参数标签、Qwen JSON `{"name":...}` 形式）。
+- **修复**：模板对齐官方（`tool | tojson` + 官方指令，v100-perfs `4df3231`）；proxy `parse_fastllm_tool_calls` 接受裸名/裸参数/JSON 形式（`65e7935`）；后端 `ParseBlock` 同样三级兼容（fastllm `27370f3e`）。验证：omp 目录任务、opencode Sisyphus（空参→SchemaError→重试→mkdir→Write→Read→最终回答）全通。
+- **agentic benchmark**（`benchmarks/fastllm/agentic_toolcall_bench.py`，tmux+omp/opencode 跑 4 个可验证副作用任务，记录并行率/前缀缓存差值/工具行为）：
+  - 并行：peak_active=1、mean 0.12-0.86、peak_pending=0——agentic 流量天然串行，瓶颈是每轮 thinking decode（26 tok/s）；batch=1 下无并行空间，多用户并发未测。
+  - 前缀缓存：每任务 GPU hit pages +19K~+83K（多轮长 system prompt 重入累积命中）；磁盘命中 0（未达 disk tier 门槛 min-hits 2 + 64K tokens）。
+  - 任务结果：file_roundtrip / fib_run / multi_file 通过；count_py（建 5 文件+统计+写结果）3 次全超时——暴露工具名漂移（"writ"、"function_calls"）、参数缺失、格式漂移（`<function=write@/path>`）。JSON 形式解析已修，工具名模糊匹配/参数强制未做（记为边界）。
