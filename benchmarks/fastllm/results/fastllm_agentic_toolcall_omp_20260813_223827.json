@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "benchmark": "fastllm_agentic_toolcall_omp",
+  "created_at_utc": "2026-08-13T14:38:27Z",
+  "model": "vllm/qwen3.6-27b-awq",
+  "sandbox": "/tmp/agentbench",
+  "results": [
+    {
+      "task": "file_roundtrip",
+      "status": "failed",
+      "verified": false,
+      "detail": "roundtrip.txt=None",
+      "wall_s": 1.6,
+      "exit_code": 129,
+      "tool_call_events": 0,
+      "tool_result_events": 0,
+      "output_tail": "\u001b[?2026l\u001b[?7h\u001b[?1l\u001b>\u001b[?2004l\u001b[?2031l\u001b[?2048l\u001b[?5522l\u001b[<u\u001b[>4;0m\u001b[?1006l\u001b[?1003l\u001b[?1000l\u001b[?25h"
+    },
+    {
+      "task": "fib_run",
+      "status": "failed",
+      "verified": false,
+      "detail": "fib.py missing",
+      "wall_s": 1.7,
+      "exit_code": 129,
+      "tool_call_events": 0,
+      "tool_result_events": 0,
+      "output_tail": "\u001b[?2026l\u001b[?7h\u001b[?1l\u001b>\u001b[?2004l\u001b[?2031l\u001b[?2048l\u001b[?5522l\u001b[<u\u001b[>4;0m\u001b[?1006l\u001b[?1003l\u001b[?1000l\u001b[?25h"
+    },
+    {
+      "task": "multi_file",
+      "status": "failed",
+      "verified": false,
+      "detail": "a=None b=None",
+      "wall_s": 1.6,
+      "exit_code": 129,
+      "tool_call_events": 0,
+      "tool_result_events": 0,
+      "output_tail": "\u001b[?2026l\u001b[?7h\u001b[?1l\u001b>\u001b[?2004l\u001b[?2031l\u001b[?2048l\u001b[?5522l\u001b[<u\u001b[>4;0m\u001b[?1006l\u001b[?1003l\u001b[?1000l\u001b[?25h"
+    },
+    {
+      "task": "count_py",
+      "status": "failed",
+      "verified": false,
+      "detail": "count_probe dir missing",
+      "wall_s": 1.5,
+      "exit_code": 129,
+      "tool_call_events": 0,
+      "tool_result_events": 0,
+      "output_tail": "\u001b[?2026l\u001b[?7h\u001b[?1l\u001b>\u001b[?2004l\u001b[?2031l\u001b[?2048l\u001b[?5522l\u001b[<u\u001b[>4;0m\u001b[?1006l\u001b[?1003l\u001b[?1000l\u001b[?25h"
+    }
+  ],
+  "summary": {
+    "total": 4,
+    "verified_ok": 0,
+    "tool_call_events": 0
+  }
+}
