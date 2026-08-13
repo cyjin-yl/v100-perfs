@@ -123,6 +123,35 @@ def parse_fastllm_tool_calls(content: str) -> list[dict[str, Any]]:
         inner = block_match.group(1)
         tag = _FUNCTION_TAG_RE.search(inner)
         if tag is None:
+            # Qwen native JSON form: {"name": ..., "arguments": {...}}
+            # (single object or an array of objects)
+            parsed_json = None
+            try:
+                parsed_json = json.loads(inner.strip())
+            except json.JSONDecodeError:
+                parsed_json = None
+            if isinstance(parsed_json, dict):
+                parsed_json = [parsed_json]
+            if isinstance(parsed_json, list):
+                for item in parsed_json:
+                    if not isinstance(item, dict) or not item.get("name"):
+                        continue
+                    raw_args = item.get("arguments")
+                    if isinstance(raw_args, str):
+                        try:
+                            raw_args = json.loads(raw_args)
+                        except json.JSONDecodeError:
+                            pass
+                    calls.append({
+                        "id": f"call_{uuid.uuid4().hex[:24]}",
+                        "type": "function",
+                        "function": {
+                            "name": str(item["name"]),
+                            "arguments": json.dumps(
+                                raw_args if isinstance(raw_args, dict) else {},
+                                ensure_ascii=False),
+                        },
+                    })
             continue
         name = (tag.group(1) or tag.group(2) or "").strip()
         if not name or name == "parameter":

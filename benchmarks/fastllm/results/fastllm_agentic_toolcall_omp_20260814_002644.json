@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "benchmark": "fastllm_agentic_toolcall",
+  "created_at_utc": "2026-08-13T16:26:44Z",
+  "model": "vllm/qwen3.6-27b-awq",
+  "runner": "omp",
+  "sandbox": "/tmp/agentbench3",
+  "results": [
+    {
+      "task": "count_py",
+      "runner": "omp",
+      "status": "timeout",
+      "verified": false,
+      "detail": "count.txt=None",
+      "wall_s": 904.4,
+      "parallelism": {
+        "peak_active": 1,
+        "mean_active": 0.16,
+        "peak_pending": 0,
+        "samples": 180
+      },
+      "prefix_cache_delta": {
+        "prefix_cache_gpu_hit_pages": 45632.0,
+        "prefix_cache_disk_hits": 0.0,
+        "prefix_cache_disk_read_bytes": 0.0,
+        "prefix_cache_persistence_restore_hits": 0.0,
+        "prefix_cache_recompute_tokens_per_second": 435.536
+      },
+      "agent": {
+        "write_calls": 2,
+        "read_calls": 0,
+        "bash_calls": 0,
+        "edit_calls": 0,
+        "task_subagent_spawns": 0,
+        "error_marks": 1,
+        "recap_lines": 0,
+        "tool_call_blocks": 1
+      },
+      "output_tail": "─────────────╯\n\n\n  writ\n  └─ c=\"text two\", path=\"count_probe/2.txt\"\n Tool writ not found\n ⟨Ctrl+O: Expand⟩\n\n\n <tool_call>\n <function=write>{\"path\": \"count_probe/2.txt\", \"content\": \"text two\", \"i\":\n \"create second .txt file\"}</function>\n\n╭──     Qwen3.6-27B-AWQ (local vLLM)   …ench3/count_py   8.5%/240K 󰁨 ──╮\n╰─                                                                            ─╯\n"
+    }
+  ],
+  "summary": {
+    "total": 1,
+    "verified_ok": 0,
+    "gpu_hit_pages_added": 45632.0,
+    "error_marks": 1
+  }
+}
