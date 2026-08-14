@@ -807,3 +807,9 @@ prefill（80K 字符）0.1-0.2s，MTP 档位影响可忽略（MTP 只加速 deco
 - **batch 扫描**：b2s2w2 total 85.5s/p50 12.65/p95 60.9；b4s4w4 total 108.7s/p50 20.75/p95 53.6——**batch=2 是最优**：decode 是串行计算瓶颈，batch 4 只重新分配延迟不增吞吐。结论：GPU decode（MTP2 26 tok/s）是唯一硬约束，MTP3/4 更慢无解。
 - **优化落地**：`FASTLLM_PREFIX_CACHE_DISK_MIN_TOKENS=4096`（agentic 系统提示跨重启磁盘持久化）；生产配置 batch=2 + slot=2 + workers=2。
 - 交叉会话前缀缓存验证：同前缀 100K 上下文 10 查询，首个 302.5s（全量 prefill），其余 2.4-2.5s（全命中）。
+
+
+### 15.17 VRAM 水位保护线实测（0.5 GiB vs 0.1 GiB）
+
+- 用 turbo4 + 200K 上下文复测水位:0.5 GiB 时干净拦截(503,后端存活);降到 0.1 GiB 后请求放行,运行中显存最低 138 MiB,后端在池增长尖峰处 **CUDA OOM 崩溃** → 全部 502 + 5 分钟重载。
+- **结论:0.5 GiB 不是保守,是正确值**——后端瞬时分配尖峰需要 ~0.5 GiB 余量,138 MiB 不够。

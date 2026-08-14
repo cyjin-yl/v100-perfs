@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "benchmark": "fastllm_kv_recall_ab",
+  "label": "turbo4-lowwm-200k",
+  "created_at_utc": "2026-08-14T01:04:06Z",
+  "endpoint": "http://127.0.0.1:8000",
+  "model": "qwen3.6-27b-heretic",
+  "facts_total": 30,
+  "queries": 10,
+  "span_tokens_approx": 199572,
+  "hits": 0,
+  "recall_rate": 0.0,
+  "wall_total_s": 1830.9,
+  "results": [
+    {
+      "key": "k42_010",
+      "expected": "VALUE709570",
+      "error": "HTTPError: HTTP Error 502: Bad Gateway"
+    },
+    {
+      "key": "k42_004",
+      "expected": "VALUE288389",
+      "error": "HTTPError: HTTP Error 502: Bad Gateway"
+    },
+    {
+      "key": "k42_012",
+      "expected": "VALUE935518",
+      "error": "HTTPError: HTTP Error 502: Bad Gateway"
+    },
+    {
+      "key": "k42_020",
+      "expected": "VALUE229258",
+      "error": "HTTPError: HTTP Error 502: Bad Gateway"
+    },
+    {
+      "key": "k42_001",
+      "expected": "VALUE116739",
+      "error": "HTTPError: HTTP Error 502: Bad Gateway"
+    },
+    {
+      "key": "k42_002",
+      "expected": "VALUE026225",
+      "error": "HTTPError: HTTP Error 502: Bad Gateway"
+    },
+    {
+      "key": "k42_017",
+      "expected": "VALUE033326",
+      "error": "HTTPError: HTTP Error 502: Bad Gateway"
+    },
+    {
+      "key": "k42_003",
+      "expected": "VALUE777572",
+      "error": "HTTPError: HTTP Error 502: Bad Gateway"
+    },
+    {
+      "key": "k42_011",
+      "expected": "VALUE776646",
+      "error": "HTTPError: HTTP Error 502: Bad Gateway"
+    },
+    {
+      "key": "k42_018",
+      "expected": "VALUE031244",
+      "error": "HTTPError: HTTP Error 502: Bad Gateway"
+    }
+  ]
+}
