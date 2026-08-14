@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "benchmark": "hermes_wechat_toolcall_fidelity",
+  "created_at_utc": "2026-08-14T02:56:48Z",
+  "session_id": "20260704_201000_4181eaeb",
+  "turns": 6,
+  "providers": {
+    "fastllm-proxy": {
+      "errors": 0,
+      "tool_calls": 12,
+      "name_valid": 12,
+      "name_repaired": 12,
+      "args_valid": 12,
+      "required_ok": 2
+    },
+    "nvidia-glm52": {
+      "errors": 2,
+      "tool_calls": 4,
+      "name_valid": 4,
+      "name_repaired": 4,
+      "args_valid": 4,
+      "required_ok": 4
+    },
+    "nvidia-minimax3": {
+      "errors": 3,
+      "tool_calls": 1,
+      "name_valid": 1,
+      "name_repaired": 1,
+      "args_valid": 1,
+      "required_ok": 1
+    }
+  }
+}

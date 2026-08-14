@@ -813,3 +813,15 @@ prefill（80K 字符）0.1-0.2s，MTP 档位影响可忽略（MTP 只加速 deco
 
 - 用 turbo4 + 200K 上下文复测水位:0.5 GiB 时干净拦截(503,后端存活);降到 0.1 GiB 后请求放行,运行中显存最低 138 MiB,后端在池增长尖峰处 **CUDA OOM 崩溃** → 全部 502 + 5 分钟重载。
 - **结论:0.5 GiB 不是保守,是正确值**——后端瞬时分配尖峰需要 ~0.5 GiB 余量,138 MiB 不够。
+
+
+### 15.18 Hermes 微信会话错误工具调用诊断 + 修复 + benchmark
+
+- **现象**：Hermes 微信 DM 会话（20260704_201000_4181eaeb，78K tokens）出现 "funct"/"writ"/空 args 等完全错误的工具调用。
+- **诊断**：会话主要跑在 NVIDIA fallback（glm-5.2 ×29、minimax-m3 ×137）——8/13-14 我们 proxy 频繁重启导致 Hermes 落 fallback；长上下文多轮下 fallback 模型产出截断工具名。单轮复现两个 NVIDIA 模型均正常 → 是长上下文退化，非解析器 bug。
+- **修复**（hermes 侧）：`agent/agent_runtime_helpers.py` repair_tool_call 增加唯一前缀匹配（"writ"→"write_file"、"exec"→"execute_code"；"funct" 无匹配→正确拒绝+重试）。已备份 + systemctl 重启 hermes-gateway 生效。
+- **benchmark**（`benchmarks/fastllm/hermes_toolcall_bench.py`）：重放微信会话真实用户消息 × 3 provider 打分：
+  - fastllm-proxy：0 错误，12/12 名称合法、12/12 args JSON 合法、必填字段 2/12（模型偶发漏必填，靠 Hermes 校验+重试兜底）
+  - nvidia-glm52：2×429，4/4 全合法
+  - nvidia-minimax3：3×429，1/1 合法
+  - 结论：主链路（我们的 proxy）名称/格式 100% 可靠；fallback 有速率限制与长上下文退化。修复后 Hermes 对截断名自愈。
