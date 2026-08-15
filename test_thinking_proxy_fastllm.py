@@ -19,6 +19,7 @@ os.environ["FASTLLM_MODEL_SLUG"] = "qwen3.6-fastllm"
 os.environ["FASTLLM_PUBLIC_ALIASES"] = (
     "qwen3.6-27b-awq,qwen3.6-27b-heretic"
 )
+os.environ["FASTLLM_AUTO_ROUTE_ALIASES"] = "auto"
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import thinking_proxy
@@ -94,12 +95,58 @@ class ModelRoutingTests(unittest.TestCase):
             "qwen3.6-27b-heretic",
         }.issubset(model_ids))
 
-    def test_awq_public_id_uses_fair_router_then_backend_slug(self):
-        self.assertFalse(
-            thinking_proxy._is_heretic_model("qwen3.6-27b-awq")
-        )
+    def test_model_list_is_built_from_configured_public_aliases(self):
+        model_list = thinking_proxy._build_local_model_list({
+            "qwen3.8-27b",
+            "qwen3.8-27b-heretic",
+        })
+
         self.assertEqual(
-            thinking_proxy._to_backend_model("qwen3.6-27b-awq"),
+            [item["id"] for item in model_list["data"]],
+            ["qwen3.8-27b", "qwen3.8-27b-heretic"],
+        )
+        for item in model_list["data"]:
+            self.assertEqual(item["context_length"], 262144)
+            self.assertTrue(item["capabilities"]["vision"])
+            self.assertTrue(item["supported_features"]["reasoning"])
+
+    def test_auto_route_alias_is_advertised_and_not_local_only(self):
+        advertised = {
+            item["id"]: item for item in thinking_proxy.MODEL_LIST["data"]
+        }
+
+        self.assertIn("auto", advertised)
+        self.assertEqual(advertised["auto"]["owned_by"], "router")
+        self.assertTrue(thinking_proxy._is_auto_route_alias("auto"))
+        self.assertFalse(thinking_proxy._is_local_alias("auto"))
+        self.assertEqual(
+            thinking_proxy._to_backend_model("auto"),
+            "qwen3.6-fastllm",
+        )
+
+    def test_auto_route_images_can_use_fair_router(self):
+        image_message = [{
+            "role": "user",
+            "content": [{
+                "type": "image_url",
+                "image_url": {"url": "data:image/png;base64,AA=="},
+            }],
+        }]
+
+        self.assertFalse(
+            thinking_proxy._must_route_local("auto", image_message)
+        )
+        self.assertTrue(
+            thinking_proxy._must_route_local(
+                "qwen3.6-27b-heretic",
+                image_message,
+            )
+        )
+
+    def test_auto_public_id_uses_fair_router_then_backend_slug(self):
+        self.assertFalse(thinking_proxy._is_local_alias("auto"))
+        self.assertEqual(
+            thinking_proxy._to_backend_model("auto"),
             "qwen3.6-fastllm",
         )
 
@@ -122,6 +169,81 @@ class ModelRoutingTests(unittest.TestCase):
         self.assertFalse(
             thinking_proxy._is_heretic_model("qwen3.6-fastllm")
         )
+
+
+class FairRouterTests(unittest.IsolatedAsyncioTestCase):
+    async def test_ready_owned_fastllm_is_preferred_while_slots_are_free(self):
+        class EmptySlotsClient:
+            async def __aenter__(self):
+                return self
+
+            async def __aexit__(self, *_args):
+                return False
+
+            async def get(self, _url):
+                return type("Response", (), {"status_code": 404})()
+
+        body = {
+            "model": "qwen3.6-fastllm",
+            "messages": [{"role": "user", "content": "test"}],
+        }
+        with (
+            mock.patch.object(thinking_proxy, "FASTLLM_MODE", True),
+            mock.patch.object(thinking_proxy, "FASTLLM_OWNED", True),
+            mock.patch.object(thinking_proxy, "BACKEND_READY", False),
+            mock.patch.object(thinking_proxy, "NIM_API_KEY", "enabled"),
+            mock.patch.object(thinking_proxy, "OR_API_KEY", ""),
+            mock.patch.object(thinking_proxy, "ZEN_API_KEY", ""),
+            mock.patch.object(
+                thinking_proxy.backend_lifecycle,
+                "snapshot",
+                return_value={"state": "READY"},
+            ),
+            mock.patch.object(
+                thinking_proxy.prefix_tracker,
+                "all_hits",
+                return_value={},
+            ),
+            mock.patch.object(
+                thinking_proxy.prefix_tracker,
+                "slot_free",
+                return_value=True,
+            ),
+            mock.patch.object(
+                thinking_proxy.prefix_tracker,
+                "eviction_cost",
+                return_value=0,
+            ),
+            mock.patch.object(
+                thinking_proxy.scheduler,
+                "pending",
+                return_value=0,
+            ),
+            mock.patch.object(thinking_proxy.scheduler, "active", 0),
+            mock.patch.object(
+                thinking_proxy.backend_penalty,
+                "score",
+                return_value=0,
+            ),
+            mock.patch.object(
+                thinking_proxy.service_history,
+                "bias",
+                return_value=0,
+            ),
+            mock.patch.object(
+                thinking_proxy,
+                "_over_context",
+                return_value=False,
+            ),
+            mock.patch.object(
+                thinking_proxy.httpx,
+                "AsyncClient",
+                side_effect=lambda **_kwargs: EmptySlotsClient(),
+            ),
+        ):
+            backend = await thinking_proxy._pick_backend(body)
+
+        self.assertEqual(backend, "local")
 
 
 class AnthropicToolConversionTests(unittest.TestCase):
@@ -194,9 +316,50 @@ class AnthropicToolConversionTests(unittest.TestCase):
         self.assertFalse(converted["chat_template_kwargs"]["enable_thinking"])
         self.assertNotIn("reasoning", converted)
 
+class ReasoningControlTests(unittest.TestCase):
+    def test_named_effort_is_forwarded_to_qwen_chat_template(self):
+        body = {"reasoning_effort": "low"}
+
+        thinking_proxy._normalize_openai_reasoning_controls(body)
+
+        self.assertEqual(
+            body["chat_template_kwargs"],
+            {"enable_thinking": True, "reasoning_effort": "low"},
+        )
+        self.assertEqual(body["reasoning"]["budget"], 2048)
+
+    def test_effort_aliases_match_qwen38_levels(self):
+        for requested, expected in (
+            ("minimal", "low"),
+            ("high", "high"),
+            ("max", "xhigh"),
+            ("xhigh", "xhigh"),
+        ):
+            with self.subTest(requested=requested):
+                body = {"reasoning_effort": requested}
+                thinking_proxy._normalize_openai_reasoning_controls(body)
+                self.assertEqual(
+                    body["chat_template_kwargs"]["reasoning_effort"],
+                    expected,
+                )
+
+    def test_disabled_thinking_does_not_forward_an_effort(self):
+        body = {
+            "reasoning_effort": "none",
+            "chat_template_kwargs": {"reasoning_effort": "xhigh"},
+        }
+
+        thinking_proxy._normalize_openai_reasoning_controls(body)
+
+        self.assertEqual(
+            body["chat_template_kwargs"], {"enable_thinking": False}
+        )
+        self.assertNotIn("reasoning", body)
+
+
 
 class ImageConversionTests(unittest.TestCase):
-    def test_jpeg_data_url_is_reencoded_as_png(self):
+    def test_rgb_jpeg_data_url_preserves_original_bytes(self):
         from PIL import Image
 
         source = io.BytesIO()
@@ -214,12 +377,13 @@ class ImageConversionTests(unittest.TestCase):
             }],
         }]
 
+        original = messages[0]["content"][0]["image_url"]["url"]
         thinking_proxy._convert_images(messages)
 
         converted = messages[0]["content"][0]["image_url"]["url"]
-        self.assertTrue(converted.startswith("data:image/png;base64,"))
+        self.assertEqual(converted, original)
         payload = base64.b64decode(converted.partition(",")[2])
-        self.assertTrue(payload.startswith(b"\x89PNG\r\n\x1a\n"))
+        self.assertTrue(payload.startswith(b"\xff\xd8\xff"))
 
 
 class LocalOnlyStreamTests(unittest.IsolatedAsyncioTestCase):
@@ -392,7 +556,7 @@ class AnthropicStreamTests(unittest.IsolatedAsyncioTestCase):
         self.assertIn('"input_tokens": 7, "output_tokens": 3', output)
         self.assertTrue(output.endswith("event: message_stop\n" +
                                         'data: {"type": "message_stop"}\n\n'))
-    async def test_completed_fallback_uses_incremental_anthropic_sse_shape(self):
+    async def test_completed_response_uses_incremental_anthropic_sse_shape(self):
         cloud_response = {
             "id": "cloud-response",
             "model": "cloud-model",
@@ -409,21 +573,15 @@ class AnthropicStreamTests(unittest.IsolatedAsyncioTestCase):
         request = mock.Mock()
         request.is_disconnected = mock.AsyncMock(return_value=False)
 
-        with (
-            mock.patch.object(
-                thinking_proxy, "_external_backend_order", return_value=["or"]
-            ),
-            mock.patch.object(
-                thinking_proxy,
-                "_external_chat",
-                new=mock.AsyncMock(return_value=cloud_response),
-            ),
-        ):
-            output = "".join([
-                chunk async for chunk in thinking_proxy._anthropic_external_stream(
-                    {"model": "qwen3.6-fastllm"}, request, "or"
-                )
-            ])
+        anthropic_response = thinking_proxy._openai_to_anthropic(
+            cloud_response
+        )
+        output = "".join([
+            chunk async for chunk in thinking_proxy._completed_anthropic_stream(
+                anthropic_response,
+                request,
+            )
+        ])
 
         events = []
         for frame in output.strip().split("\n\n"):
@@ -545,9 +703,9 @@ class BackendReloadingTests(unittest.IsolatedAsyncioTestCase):
         payload = json.loads(response.body)
         testcase.assertEqual(payload["error"]["type"], "service_unavailable")
         testcase.assertEqual(payload["error"]["code"], "backend_reloading")
-    async def test_anthropic_awq_uses_fair_route_while_local_reloads(self):
+    async def test_anthropic_auto_uses_fair_route_while_local_reloads(self):
         request = self.JsonRequest({
-            "model": "qwen3.6-27b-awq",
+            "model": "auto",
             "messages": [{"role": "user", "content": "test"}],
             "max_tokens": 8,
             "stream": False,
@@ -587,8 +745,62 @@ class BackendReloadingTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(
             json.loads(response.body)["content"][0]["text"], "cloud"
         )
+        self.assertEqual(json.loads(response.body)["model"], "auto")
         pick_backend.assert_awaited_once()
         nim_chat.assert_not_awaited()
+        or_chat.assert_awaited_once()
+        local_submit.assert_not_awaited()
+
+    async def test_openai_auto_image_uses_fair_route(self):
+        request = self.JsonRequest({
+            "model": "auto",
+            "messages": [{
+                "role": "user",
+                "content": [{
+                    "type": "image_url",
+                    "image_url": {"url": "https://example.com/image.png"},
+                }],
+            }],
+            "max_tokens": 8,
+            "stream": False,
+        })
+        cloud_response = {
+            "id": "cloud-response",
+            "model": "cloud-model",
+            "choices": [{
+                "message": {"role": "assistant", "content": "cloud"},
+                "finish_reason": "stop",
+            }],
+            "usage": {"prompt_tokens": 1, "completion_tokens": 1},
+        }
+
+        with (
+            mock.patch.object(
+                thinking_proxy,
+                "_pick_backend",
+                new=mock.AsyncMock(return_value="or"),
+            ) as pick_backend,
+            mock.patch.object(
+                thinking_proxy,
+                "_or_chat",
+                new=mock.AsyncMock(return_value=cloud_response),
+            ) as or_chat,
+            mock.patch.object(thinking_proxy, "OR_API_KEY", "enabled"),
+            mock.patch.object(
+                thinking_proxy.scheduler,
+                "submit",
+                new=mock.AsyncMock(),
+            ) as local_submit,
+        ):
+            response = await thinking_proxy.openai_chat(request)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            json.loads(response.body)["choices"][0]["message"]["content"],
+            "cloud",
+        )
+        self.assertEqual(json.loads(response.body)["model"], "auto")
+        pick_backend.assert_awaited_once()
         or_chat.assert_awaited_once()
         local_submit.assert_not_awaited()
 
@@ -774,64 +986,72 @@ class StreamFallbackBoundaryTests(unittest.IsolatedAsyncioTestCase):
         ):
             output = "".join([
                 chunk async for chunk in thinking_proxy._anthropic_stream_limited(
-                    body, request, "qwen3.6-27b-awq")])
+                    body, request, "auto")])
         self.assertEqual(cloud_calls, 0)
         self.assertEqual(output.count("event: message_start"), 1)
         self.assertIn('"code": "backend_reloading"', output)
-    async def test_anthropic_awq_stream_skips_loading_local_backend(self):
+    async def test_anthropic_auto_stream_uses_external_token_stream(self):
         request = BackendReloadingTests.JsonRequest({})
         body = {
             "model": "qwen3.6-fastllm",
             "messages": [{"role": "user", "content": "test"}],
             "stream": True,
         }
-        cloud_response = {
-            "id": "cloud-stream",
-            "model": "cloud-model",
-            "choices": [{
-                "message": {"role": "assistant", "content": "cloud"},
-                "finish_reason": "stop",
-            }],
-            "usage": {"prompt_tokens": 1, "completion_tokens": 1},
-        }
+        stream_calls = 0
+
+        async def openrouter_stream(_body):
+            nonlocal stream_calls
+            stream_calls += 1
+            yield (
+                b'data: {"model":"cloud-model","choices":[{"delta":'
+                b'{"role":"assistant","content":"cl"},"finish_reason":null}]}\n\n'
+            )
+            yield (
+                b'data: {"model":"cloud-model","choices":[{"delta":'
+                b'{"content":"oud"},"finish_reason":"stop"}],'
+                b'"usage":{"prompt_tokens":1,"completion_tokens":2}}\n\n'
+            )
+            yield b"data: [DONE]\n\n"
 
         with (
             mock.patch.object(
-                thinking_proxy, "_pick_backend",
+                thinking_proxy,
+                "_pick_backend",
                 new=mock.AsyncMock(return_value="or"),
             ) as pick_backend,
             mock.patch.object(
-                thinking_proxy, "_nim_chat",
-                new=mock.AsyncMock(),
-            ) as nim_chat,
+                thinking_proxy,
+                "_or_stream",
+                new=openrouter_stream,
+            ),
             mock.patch.object(
-                thinking_proxy, "_or_chat",
-                new=mock.AsyncMock(return_value=cloud_response),
+                thinking_proxy,
+                "_or_chat",
+                new=mock.AsyncMock(
+                    side_effect=AssertionError("buffered chat path used")
+                ),
             ) as or_chat,
             mock.patch.object(
-                thinking_proxy.scheduler, "acquire_stream",
+                thinking_proxy.scheduler,
+                "acquire_stream",
                 new=mock.AsyncMock(),
             ) as acquire_local,
-            mock.patch.object(
-                thinking_proxy.backend_lifecycle, "acquire",
-                new=mock.AsyncMock(side_effect=thinking_proxy.BackendLifecycleError(
-                    "local backend is reloading"
-                )),
-            ),
             mock.patch.object(thinking_proxy, "OR_API_KEY", "enabled"),
             mock.patch.object(thinking_proxy, "FALLBACK_ENABLED", True),
             mock.patch.object(thinking_proxy, "BENCHMARK_MODE", False),
         ):
             output = "".join([
                 chunk async for chunk in thinking_proxy._anthropic_stream_limited(
-                    body, request, "qwen3.6-27b-awq"
+                    body, request, "auto"
                 )
             ])
 
-        self.assertIn('"text": "cloud"', output)
+        self.assertEqual(stream_calls, 1)
+        self.assertIn('"text": "cl"', output)
+        self.assertIn('"text": "oud"', output)
+        self.assertIn("event: message_stop", output)
         pick_backend.assert_awaited_once()
-        nim_chat.assert_not_awaited()
-        or_chat.assert_awaited_once()
+        or_chat.assert_not_awaited()
         acquire_local.assert_not_awaited()
 
 if __name__ == "__main__":

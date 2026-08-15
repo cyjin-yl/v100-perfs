@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "benchmark": "fastllm_kv_recall_ab",
+  "label": "udq4-turbo4-200k",
+  "created_at_utc": "2026-08-14T12:51:32Z",
+  "endpoint": "http://100.94.73.9:8000",
+  "model": "qwen3.6-fastllm",
+  "facts_total": 24,
+  "queries": 4,
+  "span_tokens_approx": 183744,
+  "hits": 3,
+  "recall_rate": 0.75,
+  "wall_total_s": 894.3,
+  "results": [
+    {
+      "key": "k42_010",
+      "expected": "VALUE709570",
+      "error": "HTTPError: HTTP Error 503: Service Unavailable"
+    },
+    {
+      "key": "k42_004",
+      "expected": "VALUE288389",
+      "got": "VALUE288389",
+      "match": true,
+      "wall_s": 219.5,
+      "prompt_tokens": 199445,
+      "evaluated": null
+    },
+    {
+      "key": "k42_012",
+      "expected": "VALUE935518",
+      "got": "VALUE935518",
+      "match": true,
+      "wall_s": 9.6,
+      "prompt_tokens": 199445,
+      "evaluated": null
+    },
+    {
+      "key": "k42_020",
+      "expected": "VALUE229258",
+      "got": "VALUE229258",
+      "match": true,
+      "wall_s": 5.0,
+      "prompt_tokens": 199445,
+      "evaluated": null
+    }
+  ],
+  "gpu_peak_mib_observed": 31057,
+  "gpu_min_mib_observed": 29113,
+  "runner_wall_s": 894.4
+}

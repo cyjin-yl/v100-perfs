@@ -825,3 +825,27 @@ prefill（80K 字符）0.1-0.2s，MTP 档位影响可忽略（MTP 只加速 deco
   - nvidia-glm52：2×429，4/4 全合法
   - nvidia-minimax3：3×429，1/1 合法
   - 结论：主链路（我们的 proxy）名称/格式 100% 可靠；fallback 有速率限制与长上下文退化。修复后 Hermes 对截断名自愈。
+
+
+### 15.19 Qwen3.8-27B UD-Q4_K_XL + 集成 MTP 上线（2026-08-15）
+
+- **模型与模板**：生产切到 `Qwen3.8-27B-UD-Q4_K_XL.gguf` + `mmproj-F16.gguf`，GGUF 为 `qwen35` 65/64+1 MTP 布局，最大上下文 262144。`chat_templates/qwen3.8_merged.jinja` 直接采用 GGUF 内嵌的 9993-byte 官方模板（SHA-256 前缀 `12827f24b742ea4e`），没有再叠加 Qwen3.6 模板约定。
+- **FastLLM 兼容性根因**：UD-Q4_K_XL 的 65 层 dense MLP 全部是混合量化对（`ffn_gate=IQ4_XS`、`ffn_up=Q5_K`）。加载器会正确保留 split `gate_proj` / `up_proj`，但优化后的 `ForwardSingleGPU`、CUDA graph、MTP 和通用 fallback 只识别合并 `gateup_proj`，随后误判为 MoE 并报 `neither dense MLP nor router gate weight`。修复为在所有执行与 TP 准备路径支持 `silu(gate(x)) * up(x)` 的 split dense MLP，不反量化、不复制权重；全量构建及 `FASTLLM_REGRESSION_ONLY=qwen35_gguf` 通过。
+- **集成 MTP 实测**：日志确认 `layers=1, drafts_per_step=2, acceptance=exact`；256-token 请求 8.59s，端到端 29.81 tok/s，位置接受率观测约 `[83.59–92.71%, 71.09–82.81%]`。READY 空载 GPU 约 19009 MiB，256-token 测试后 20523 MiB，V100 仍余 11972 MiB。
+- **canary 覆盖**：文本返回 `Q38 READY`；工具调用为 `finish_reason=tool_calls`、`get_weather {\"city\":\"北京\"}`；1×1 红图回答 `Red`；66060-token passkey recall 精确返回 `V100-Q38-739251`（136.43s）。
+- **reasoning effort**：OpenAI `reasoning_effort=none|low|medium|high|xhigh` 全链路 HTTP 200。官方模板中 low 注入简短思考指令，medium 使用基线，high 映射到官方 xhigh 指令；确定性算术测试的隐藏推理长度分别为 0/87/80/164/164 字符。该控制是模板提示，不是硬 token 配额；`none` 能关闭 `reasoning_content`，但不能保证最终答案一定简短。
+- **生产与回滚**：生产 profile 为 `qwen38-udq4-262k-mtp2-turbo4.env`，tmux `fastllm-prod`，公网别名 `qwen3.8-27b` / `qwen3.8-27b-heretic`，`/health` 为 READY generation 1，两个别名短请求均为 HTTP 200。Qwen3.6 Q6 回滚 profile `q6-ablit-262k-mtp2.env` 保留不变；切回时仍使用同一个 `launch_proxy_tmux.sh`。
+
+### 15.20 Qwen3.8 生产路由、持久前缀缓存与最终性能
+
+- **统一公网模型 ID**：新增 `auto`，由本机 FastLLM、NVIDIA NIM、OpenRouter、OpenCode Zen 按就绪状态、并发、前缀命中、近期失败和历史成功率评分；固定 `qwen3.8-27b` 与 `qwen3.8-27b-heretic` 仍强制走本机，便于保底和诊断。Hermes、OMP、OpenCode 均改用 `auto`，服务端响应恢复调用方请求的公开 ID，不泄露内部 provider slug。
+- **真实流式转发**：OpenAI SSE 按上游 chunk 原样增量转发并保留 `[DONE]`；Anthropic `/v1/messages` 将增量 OpenAI SSE 转成唯一的 `message_start`/`message_stop` 序列，文本、thinking 和 tool-use block 均逐块输出。生产实测两个协议均 HTTP 200、零 JSON 解析错误并完整终止。
+- **持久缓存崩溃根因**：懒页池的逻辑容量为 2048 pages、初始物理容量仅 128 pages，但旧持久化代码用逻辑容量计算单页字节数，并在恢复时把 `0..2047` 全部暴露为物理空闲页。重启后的首次前缀命中因此拿到 page 2043 等越界页，触发 `cudaErrorIllegalAddress`。修复后所有页字节、空闲页和物化边界都以 `dims[0]` 物理页数计算；序列化版本升到 2，旧缓存自动 fail-open。`persistent_prefix_cache` 回归覆盖 130 logical / 128 physical 的懒池跨进程恢复。
+- **最终生产实测**：12776-token 唯一前缀、1-token 输出端到端 17.21s，约 **742.4 prompt tok/s**；256-token 连续解码 TTFT 0.054s、增量区间 5.243s，约 **48.6 tok/s**。本机固定别名返回 `PERSIST-FIX-OK` 后 `/health` 保持 READY；后端常驻显存 18826 MiB。
+
+### 15.21 OMP 多轮工具历史导致 proxy HTTP 500（2026-08-15）
+
+- **现象与边界**：普通聊天请求正常，但 OMP/Hermes 带历史工具调用的请求持续返回 HTTP 500；请求尚未进入 FastLLM 推理阶段。
+- **根因**：OpenAI 工具调用历史允许 assistant 消息的 `content` 为 `null` 或省略。Qwen3.8 官方模板在 Jinja `StrictUndefined` 下直接读取 `message.content`，触发 `UndefinedError: 'dict object' has no attribute 'content'`。同一请求显式设置 `"content": ""` 后可返回 HTTP 200。
+- **修复**：`fastllm_adapter` 仅对含 `tool_calls` 且缺少文本内容的 assistant 消息补空字符串，并同时规范化模板渲染副本和发往后端的消息；普通消息及后端所需的字符串形式 `function.arguments` 保持不变。
+- **验证**：回归测试先复现缺失 `content` 的失败，再验证完整 adapter 套件 16/16 通过。生产重启后原始复现请求返回 HTTP 200，Hermes 客户端随后连续 3 次真实 `/v1/chat/completions` 请求均为 HTTP 200，`/health` 保持 READY 且 `last_error=null`。

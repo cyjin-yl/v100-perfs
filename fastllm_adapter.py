@@ -37,8 +37,21 @@ def _raise_exception(message: str) -> None:
     raise ValueError(message)
 
 
+def _fill_missing_tool_call_content(
+    messages: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    for message in messages:
+        if (
+            message.get("role") == "assistant"
+            and message.get("tool_calls")
+            and message.get("content") is None
+        ):
+            message["content"] = ""
+    return messages
+
+
 def _normalize_messages(messages: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    normalized = copy.deepcopy(messages)
+    normalized = _fill_missing_tool_call_content(copy.deepcopy(messages))
     for message in normalized:
         message.setdefault("tool_calls", [])
         for tool_call in message.get("tool_calls", []):
@@ -63,14 +76,17 @@ def render_fastllm_prompt(body: dict[str, Any], template_path: str | Path) -> st
     environment.globals["raise_exception"] = _raise_exception
     template = environment.get_template(path.name)
     kwargs = body.get("chat_template_kwargs") or {}
-    return template.render(
-        messages=_normalize_messages(body.get("messages") or []),
-        tools=copy.deepcopy(body.get("tools") or []),
-        add_generation_prompt=True,
-        enable_thinking=kwargs.get("enable_thinking", True),
-        preserve_thinking=kwargs.get("preserve_thinking", False),
-        add_vision_id=kwargs.get("add_vision_id", False),
-    )
+    template_kwargs = {
+        "messages": _normalize_messages(body.get("messages") or []),
+        "tools": copy.deepcopy(body.get("tools") or []),
+        "add_generation_prompt": True,
+        "enable_thinking": kwargs.get("enable_thinking", True),
+        "preserve_thinking": kwargs.get("preserve_thinking", False),
+        "add_vision_id": kwargs.get("add_vision_id", False),
+    }
+    if "reasoning_effort" in kwargs:
+        template_kwargs["reasoning_effort"] = kwargs["reasoning_effort"]
+    return template.render(**template_kwargs)
 
 
 
@@ -93,6 +109,7 @@ def prepare_fastllm_body(
     body: dict[str, Any], template_path: str | Path
 ) -> dict[str, Any]:
     prepared = copy.deepcopy(body)
+    _fill_missing_tool_call_content(prepared.get("messages") or [])
     prepared["prompt"] = render_fastllm_prompt(body, template_path)
     prepared["raw_prompt"] = True
     stops = prepared.get("stop")

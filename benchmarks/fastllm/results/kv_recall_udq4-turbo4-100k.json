@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "benchmark": "fastllm_kv_recall_ab",
+  "label": "udq4-turbo4-100k",
+  "created_at_utc": "2026-08-14T12:35:54Z",
+  "endpoint": "http://100.94.73.9:8000",
+  "model": "qwen3.6-fastllm",
+  "facts_total": 20,
+  "queries": 4,
+  "span_tokens_approx": 99912,
+  "hits": 4,
+  "recall_rate": 1.0,
+  "wall_total_s": 298.3,
+  "results": [
+    {
+      "key": "k42_010",
+      "expected": "VALUE709570",
+      "got": "VALUE709570",
+      "match": true,
+      "wall_s": 289.9,
+      "prompt_tokens": 108573,
+      "evaluated": null
+    },
+    {
+      "key": "k42_004",
+      "expected": "VALUE288389",
+      "got": "VALUE288389",
+      "match": true,
+      "wall_s": 2.4,
+      "prompt_tokens": 108573,
+      "evaluated": null
+    },
+    {
+      "key": "k42_012",
+      "expected": "VALUE935518",
+      "got": "VALUE935518",
+      "match": true,
+      "wall_s": 3.2,
+      "prompt_tokens": 108573,
+      "evaluated": null
+    },
+    {
+      "key": "k42_001",
+      "expected": "VALUE116739",
+      "got": "VALUE116739",
+      "match": true,
+      "wall_s": 2.7,
+      "prompt_tokens": 108573,
+      "evaluated": null
+    }
+  ],
+  "gpu_peak_mib_observed": 29699,
+  "gpu_min_mib_observed": 20721,
+  "runner_wall_s": 299.4
+}

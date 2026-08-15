@@ -9,6 +9,7 @@ import fastllm_adapter
 
 
 TEMPLATE = Path(__file__).parent / "chat_templates" / "qwen3.6_gguf_original.jinja"
+QWEN38_TEMPLATE = Path(__file__).parents[1] / "chat_templates" / "qwen3.8_merged.jinja"
 
 
 class FastLLMAdapterTests(unittest.TestCase):
@@ -94,6 +95,80 @@ class FastLLMAdapterTests(unittest.TestCase):
         self.assertEqual(
             actual["stop"], ["CUSTOM", "<|endoftext|>", "<|im_end|>"]
         )
+    def test_qwen38_reasoning_effort_reaches_the_chat_template(self):
+        base = {
+            "model": "qwen3.8-fastllm",
+            "messages": [{"role": "user", "content": "Solve carefully."}],
+            "chat_template_kwargs": {"enable_thinking": True},
+        }
+
+        low = fastllm_adapter.prepare_fastllm_body(
+            {
+                **base,
+                "chat_template_kwargs": {
+                    "enable_thinking": True,
+                    "reasoning_effort": "low",
+                },
+            },
+            QWEN38_TEMPLATE,
+        )
+        medium = fastllm_adapter.prepare_fastllm_body(
+            {
+                **base,
+                "chat_template_kwargs": {
+                    "enable_thinking": True,
+                    "reasoning_effort": "medium",
+                },
+            },
+            QWEN38_TEMPLATE,
+        )
+        xhigh = fastllm_adapter.prepare_fastllm_body(
+            {
+                **base,
+                "chat_template_kwargs": {
+                    "enable_thinking": True,
+                    "reasoning_effort": "xhigh",
+                },
+            },
+            QWEN38_TEMPLATE,
+        )
+
+        self.assertIn("Reasoning effort is set to low.", low["prompt"])
+        self.assertNotIn("Reasoning effort is set to", medium["prompt"])
+        self.assertIn("Reasoning effort is set to xhigh.", xhigh["prompt"])
+
+    def test_qwen38_preserve_thinking_is_forwarded(self):
+        base = {
+            "model": "qwen3.8-fastllm",
+            "messages": [
+                {"role": "user", "content": "First."},
+                {
+                    "role": "assistant",
+                    "reasoning_content": "PRIVATE-CHAIN",
+                    "content": "Answer.",
+                },
+                {"role": "user", "content": "Follow up."},
+            ],
+            "chat_template_kwargs": {"enable_thinking": True},
+        }
+
+        stripped = fastllm_adapter.prepare_fastllm_body(
+            base, QWEN38_TEMPLATE
+        )
+        preserved = fastllm_adapter.prepare_fastllm_body(
+            {
+                **base,
+                "chat_template_kwargs": {
+                    "enable_thinking": True,
+                    "preserve_thinking": True,
+                },
+            },
+            QWEN38_TEMPLATE,
+        )
+
+        self.assertNotIn("PRIVATE-CHAIN", stripped["prompt"])
+        self.assertIn("PRIVATE-CHAIN", preserved["prompt"])
+
 
     def test_prepare_body_renders_plain_assistant_history_without_tool_calls(self):
         body = {
@@ -175,6 +250,40 @@ class FastLLMAdapterTests(unittest.TestCase):
         self.assertIn("<function=get_weather>", actual["prompt"])
         self.assertIn("<parameter=city>\nParis\n</parameter>", actual["prompt"])
         self.assertIn("<tool_response>\n18 C\n</tool_response>", actual["prompt"])
+
+    def test_prepare_body_accepts_tool_call_history_without_content(self):
+        body = {
+            "model": "qwen3.8-fastllm",
+            "messages": [
+                {"role": "user", "content": "Weather?"},
+                {
+                    "role": "assistant",
+                    "tool_calls": [{
+                        "id": "call_1",
+                        "type": "function",
+                        "function": {
+                            "name": "get_weather",
+                            "arguments": json.dumps({"city": "Paris"}),
+                        },
+                    }],
+                },
+                {"role": "tool", "tool_call_id": "call_1", "content": "18 C"},
+            ],
+            "max_tokens": 32,
+        }
+
+        try:
+            actual = fastllm_adapter.prepare_fastllm_body(
+                body, QWEN38_TEMPLATE
+            )
+        except Exception as exc:
+            self.fail(
+                f"assistant tool-call history without content must render: {exc}"
+            )
+
+        self.assertIn("<function=get_weather>", actual["prompt"])
+        self.assertIn("<tool_response>\n18 C\n</tool_response>", actual["prompt"])
+        self.assertEqual(actual["messages"][1].get("content"), "")
 
     def test_adapt_response_promotes_multiple_xml_tool_calls(self):
         response = {
