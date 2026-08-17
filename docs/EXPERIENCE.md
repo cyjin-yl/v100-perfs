@@ -849,3 +849,154 @@ prefill（80K 字符）0.1-0.2s，MTP 档位影响可忽略（MTP 只加速 deco
 - **根因**：OpenAI 工具调用历史允许 assistant 消息的 `content` 为 `null` 或省略。Qwen3.8 官方模板在 Jinja `StrictUndefined` 下直接读取 `message.content`，触发 `UndefinedError: 'dict object' has no attribute 'content'`。同一请求显式设置 `"content": ""` 后可返回 HTTP 200。
 - **修复**：`fastllm_adapter` 仅对含 `tool_calls` 且缺少文本内容的 assistant 消息补空字符串，并同时规范化模板渲染副本和发往后端的消息；普通消息及后端所需的字符串形式 `function.arguments` 保持不变。
 - **验证**：回归测试先复现缺失 `content` 的失败，再验证完整 adapter 套件 16/16 通过。生产重启后原始复现请求返回 HTTP 200，Hermes 客户端随后连续 3 次真实 `/v1/chat/completions` 请求均为 HTTP 200，`/health` 保持 READY 且 `last_error=null`。
+
+### 15.22 多图会话绕过单图像素上限导致 CUDA OOM（2026-08-16）
+
+- **崩溃签名**：后端在第 381 个请求处理期间尝试把 CUDA 临时缓冲从 170 MiB 扩到 1265.2 MiB；随后 `FastllmCudaPermute` 分配失败，设备仅余 51 MiB，再申请 200 MiB 的 `[1,10240,10243]` FP16 张量时触发 fatal `cudaErrorMemoryAllocation`，进程以 code 1 退出并进入自动重载。
+- **根因**：Qwen3.5/3.8 图像预处理只限制每张图最多 `28×28×1280 = 1,003,520` pixels，没有限制一个多轮请求内所有历史图片的总量。图片数量增长时，vision patch 和 merger 中间张量线性累加；约 17 张达到单图上限的图片足以产生 1.3 GiB 的单个 permute scratch，并把 V100 推到 OOM。
+- **修复**：保留原有单图缩放，再将一次请求的总目标像素限制为单图上限的 4 倍（4,014,080 pixels）。超限时统一按面积比例缩小所有图片并保持图片数量与宽高比；极端长宽比无法落入预算时在进入 GPU 前返回明确错误，不再让 CUDA 分配失败杀死后端。
+- **验证**：新增 5 图 aggregate-cap 回归，先确认旧实现以 20,480 pixels 超过 16,384 测试预算，再验证缩放到 5,120 并通过 `qwen35_gguf` 套件。生产用 17×1024² PNG 重放：日志确认从 16,729,088 缩到 3,916,800 pixels，请求 HTTP 200（416.64s），后端保持 READY generation 1、无新 CUDA OOM；请求后 GPU 使用 22,311 MiB、剩余 10,184 MiB。
+- **复发根因 1——多模态绕过 chunked prefill**：聚合像素限制生效后，生产 5 图请求仍形成 51,997 个文本+视觉 token。调度器先匹配 `ForwardMultimodal`，再判断 `chunked_prefill_size`，因此直接分配 `[1,10240,51997]` 的 1,015 MiB dense activation；相同请求在 generation 1/2/3 均复现 OOM。修复后先合并视觉 embedding 与三轴 mRoPE，再把 CPU hidden states 按 512 token 切片送入语言模型，KV/线性注意力状态跨片累计；完整 embedding、图像和视频 feature 在切片前立即释放。
+- **复发根因 2——页池跨 512 页时倍增并永久保留旧池**：chunked prefill 首次跑到第 516 页时，每层 K/V pool 从 512 一次翻倍至 1,024 页；`Grow` 为回避异步 use-after-free 将每个 512 页旧池留到析构，导致增长中显存再次打满并以 `PagedCacheManager::Grow: failed to allocate larger page pool` 退出。现在 `Grow` 在罕见容量迁移前同步整个 CUDA device，完成 D2D 拷贝后立即 direct-free 旧池；兜底扩容从几何倍增改为每次最多增加 128 页。
+- **最终复测**：CUDA 回归先确认旧实现仍保留 superseded pool，且 256 页会直接翻倍到 512；修复后旧指针失效且目标为 384，`paged_cache_grow` 通过。生产连续两次重放 99,985-token、5×1024² PNG 请求，均 HTTP 200（286.37s / 258.48s），峰值分别 30,807 / 30,933 MiB、最少剩余 1,688 / 1,562 MiB；随后短请求 0.83s 返回 HTTP 200。日志均显示 `chunk=512`、`chunks=196`，无新 CUDA error，`/health` 保持 READY generation 1、`last_error=null`。
+- **复发根因 3——算子层仍把 1,024 页翻倍到 2,048 页**：上述修复只覆盖兜底取页路径，`CudaAppendPagedCacheOp::Reshape` 仍按 `maxPages*2` 扩容。146K-token 请求在池已接近满载时需要约 1,141 页，却为单个 K pool 申请完整 272 MiB 的 2,048 页新池；旧池在迁移期间仍占用，最终以 `cudaErrorMemoryAllocation` / code -6 退出。现在所有调度器、append、decode、MTP CoW 和兜底取页共用 `GetPagedCacheGrowthTarget`：补足实际缺口并最多额外预留 128 页，不再几何倍增。
+- **CUDA graph 与 CPU 页池边界**：`Grow` 释放旧 CUDA 地址前通过全局存储锁与 graph launch 串行，并递增 storage version；Qwen3.5/3.8 graph 在 replay 前发现版本变化会销毁旧 graph、eager warmup 后重捕获，避免 graph 内核重放已释放的 pool pointer。CPU pool 同步实现 realloc/copy，增长后不再只改 `dims/freePages` 而越界访问旧缓冲。
+- **最终 146K 生产复测**：自动重放的 146,019-token 多模态请求完成，日志为 `chunk=512` / `chunks=286`，后端保持 READY generation 1、`last_error=null`；GPU 峰值 30,497 MiB、最少剩余 1,998 MiB。池尺寸按 `128→256→384→…→1,152` 增长（实际需求池为 1,141 页），未再出现旧路径的 2,048 页池或任何 CUDA error。随后相同 146K 请求再次 HTTP 200（104.97s，峰值 30,163 MiB、剩余 2,332 MiB），短请求 0.91s 返回 HTTP 200；`paged_cache_grow` 与 `qwen35_gguf` 聚焦回归均通过。
+### 15.23 前缀缓存 HIT 后续 prefill 全序列一把梭导致 OOM 自杀（2026-08-17）
+
+- **现象**:proto-ui/z3rm 的 100K+ 带图长会话周期性"挂掉";后端进程每 16-19 分钟消失一次,watchdog 拉起;期间请求表现为 0.00s 假完成(1 token)或连接断开。
+- **定位链**:先误判为 hang(`running=2` 零吞吐,实为 metrics 只统计完成的 prefill,进行中不可见);在 OOM fatal 路径加 `backtrace_symbols_fd`(apiserver 链接 `ENABLE_EXPORTS=ON` 即 `-rdynamic`)后 85 秒抓到铁证栈:`Qwen35MTPLoop → ForwardMultimodal → Forward → ForwardV2 → CudaRepeatOp::Run → MallocSpace`,分配 `[1, 61004, 16, 3, 128]`(=GDN kRepeat,16 k-heads×3 扩至 48 v-heads;61004=61516-512 HIT)。
+- **根因**:`ForwardMultimodal` 开头 `pastKeyValues 非空 → early return 全序列 Forward`。首次带图 prefill 有 vision chunked(512)保护;**前缀缓存 HIT 后的续 prefill(pastKeyValues 已被恢复引用填充)绕过一切分片**,GDN Repeat/ragged pack 按全剩余序列申请显存。显存够就活(134K 剩 120K 撞 3.9GB 活),不够就 `std::_Exit`(138K 撞 free 1.7GB 死)。
+- **修复**:续 prefill 分支按 `GetChunkedPrefillSize()` 分块循环(中间块传 nullptr logits),与首次 vision chunked 同机制;`NeedAttentionMask` 恒 false,分块无 mask 错位风险。同时加 `[req N] prefilling: x/y tok` 5s 节流进度打印。
+- **验证**:修复前 16-19 分钟必崩;修复后 28+ 分钟零崩溃,135K prefill 完成(363s),生产 HIT 频繁(14%~95%)正常。提交 `ccde84af`。
+
+### 15.24 视频管线上线:三个连环 bug(2026-08-17)
+
+- **管线**:apiserver `video_url` → `video_loader`(data URL base64 → mkstemp 临时文件 → ffprobe 量尺寸 → ffmpeg 抽帧 rawvideo rgb24,`FASTLLM_VIDEO_FPS=2`/`MAX_FRAMES=32`/`MAX_EDGE=768`)→ `PrepareMultimodalVideoInputs`(尺寸 32 对齐+像素上下限、video_grid_thw、占位符展开、video_frames 张量)→ vision encoder → mrope。
+- **bug 1——ffprobe 莫名失败**:错误只有 "exited abnormally"(stderr 被丢进 /dev/null)。stderr 并入捕获管道后真相大白:`symbol lookup error: /lib64/libpangoft2-1.0.so.0: undefined symbol: FcConfigSetDefaultSubstitute`——apiserver 继承的 `LD_LIBRARY_PATH=~/.conda/envs/tsenv/lib` 让系统 ffprobe 加载 conda 的不兼容库。修复:fork 子进程 exec 前 `unsetenv("LD_LIBRARY_PATH")`(只影响子进程)。
+- **bug 2——占位符展开格式与引擎不一致**:Prepare 把一个 `<|video_pad|>` 展开成**一大段** T×(H/32)×(W/32) 个 pad;引擎 mrope 侧却把 video_grid_thw 按 T **逐帧重复**(`repeatedVideoGridThwList`),校验每段 == 单帧 token 数——一大段永远对不上,`AssertInFastLLM` 抛异常无人 catch → terminate 杀进程。修复:Prepare 展开为 T 段,段间插 `<|vision_end|><|vision_start|>` 打断 mmTypes 连续扫描;时间维靠段间 currentPos 推进(max(H,W)/2 每段)表达,与引擎设计一致。
+- **验证**:`data:video/mp4` base64(2s testsrc2 彩条)→ 200,模型正确描述画面;prompt 167 tok(4 帧 320×240→gridT=2 段)。提交 `e4056b36`。
+- **遗留**:引擎 AssertInFastLLM 异常在请求路径无 catch(任何 assert=terminate 全进程),后续应包一层请求级 catch 降级为 500。
+
+### 15.25 Jinja 引擎增强: default 过滤器 + 元组/列表字面量 + in-array (2026-08-17)
+
+- **症状**: Cyber 模型自带 chat_template.jinja 渲染失败退回 MakeInput(图像/视频占位符与
+  reasoning 文案全丢): `Jinja Error: unsupport function default`, 修复后变为 `expression error
+  near token [] type=33 stack=1`(Filter token 缺操作数)。
+- **根因 1——带参过滤器**: `x|default('y')` 词法上 ID 后随 `(` 被转成 FUNC token, 但前面的
+  Filter(`|`)token 残留, Shunting-yard 产出的 RPN 里 Filter 求值时栈上只有 1 个元素。
+  修复: tokenizer 在 ID→FUNC 转换时吸收前一个 Filter token(带参过滤器语义 = 函数调用,
+  被过滤值天然是栈上第一参数)。
+- **根因 2——元组字面量**: 模板 48 行 `x not in ('a','b','c')` 的逗号走 Namespace(kwargs)
+  分支断言失败。引擎原本连 `[1,2,3]` 列表字面量都不支持(RMB 求值只有下标语义)。
+  修复: 开括号入 ops 时标记角色(call=函数参数表 / sub=下标 / grp@n=分组 / list@n=列表,
+  n=进入时 suffixExp 深度); 逗号按"是否 name="分走 kwargs 或元素分隔; 闭合括号按角色
+  生成 BuildArray(n) 指令; 求值段弹 n 元素组 JinjaArray; `in` 增加 array 线性成员测试。
+- **in 左操作数**: 原代码对 In 跳过 local 解析(变量名当 dict key), 违反 Jinja 语义且使
+  `var in (tuple)` 永假; 已统一解析(字面量 key `'image' in item` 不受影响)。
+- **default 实现坑**: FUNC 求值传入的 args 容器 type=JinjaNone(元素在 arrayValue),
+  不能按 JinjaArray 判断; `x|default` 无参形式退化为恒等。
+- **验证**: 离线测试程序(/tmp/jt2.cpp 直接编 template.cpp)6 用例全绿 + 生产模板
+  带 tools 完整渲染; 线上 warmup 后 prefill 258/298 tok(渲染后长度)且无 fallback 行。
+- **诊断**: 5 处 expression error 带 token type/stack 深度; `JINJA_DEBUG=1` dump suffixExp。
+- **提交**: fastllm bf9c94ad。
+
+### 15.26 生产切换 unsloth UD-Q4_K_XL + 长上下文"假崩溃"真因: proxy ReadTimeout (2026-08-17)
+
+- **切换**: 生产从 cyber AWQ(W4A16) 切到 unsloth UD-Q4_K_XL(GGUF 17.9GB + mmproj-F16
+  927MB 分离加载 `--mmproj`)。动机: Q5_K_M/Q6_K 的乱码(14 坏字节,低频字字节 token 断裂)
+  在 Q4_K_XL 上完全消失(生僻字拼音全对, bad_bytes=0); 加载 150-280s(vs cyber 冷启 745s);
+  decode 22 tok/s(cyber MTP2 为 30 tok/s, 慢 27% 换来无乱码)。
+- **vision**: unsloth GGUF 是纯语言模型, 必须挂 mmproj-F16.gguf, 否则 400
+  "no usable vision projector"。图像理解实测正常(大色块构图描述精确; 32px 细条纹是
+  patch-merge 池化极限, 非故障)。
+- **SKIP_WARMUP**: ComfyUI 常驻 8.8GB 时, 权重(19GB)+mmproj+warmup forward 激活撞 32.8GB
+  天花板 OOM(cudaErrorMemoryAllocation 45MB at AutoWarmup→ForwardGPU);
+  FASTLLM_SKIP_WARMUP=1 后由首个真实请求自然预热(首请求 ~14s 完成权重上传)。
+- **262K 占满"崩溃"真相**: proxy 下 196.9K-token prefill 返回 503 backend_reloading,
+  但后端日志显示 prefilling 95% 仍在正常推进——**是 proxy→后端 httpx 读超时**
+  (QUEUE_TIMEOUT 600 + 60 = 660s < 实际 prefill ~790s)。干净环境直连(无 proxy)
+  同请求 200/787s 完美完成。修复: 生产 env QUEUE_TIMEOUT=1800(覆盖 prefill+decode 余量)。
+  VRAM pressure watchdog 不背锅: active>0 时 pressure_stale 不 unload, 设计正确。
+- **压力测试全过**: 图像 5 连发(1024px×3+双图)峰值 21.2GB; 196.9K token 占满 prefill
+  峰值 24.4GB(+ComfyUI 8.8 = 33.2GB? 实测 24.4 含全部, free ~8.3GB)——余量健康。
+- **遗留**: GGUF skip-warmup 下权重延迟到首请求上传, "model loaded" 时 nvidia-smi 仅
+  1.2GB 属正常, 勿误判为加载失败。
+
+### 15.27 工具调用空参数根因与修复: 约束生成 + 解析容错 (2026-08-18)
+
+- **症状**(proto-ui/omp): read/bash 工具调用间歇性 `arguments: {}` 空参数
+  (Validation failed 连发), 或格式漂移成裸文本(`<path>`/`<fuction=` 拼写错误/
+  `<prefix>` 编造参数名)。
+- **排查**(omp CLI tmux 复现 + 会话 jsonl 取证):
+  1. **温度不是根因**: models.yml extraBody temperature: 0 改为 1 后缓解(~50% 仍空),
+     但 temp=0 下 Q4_K_XL 干脆不调工具(官方对齐"我没有文件访问权限")。
+  2. **KV 量化不是根因**: turbo4 vs fp8_e4m3(8-bit 全量 K/V)对照, 空参数/漂移同样出现。
+  3. **权重档位不是根因**: Q4_K_XL(3.8) 与 Q5_K_M(3.6 heretic) 同样漂移
+     (Q5 甚至编造参数名 <prefix>/<max_depth>)。
+  4. **真根因**: FastLLM 工具名约束(<function= 后只允许合法工具名)之外的参数块
+     **完全自由生成**; 量化模型在 `<parameter=` / 闭合标签等长尾 token 序列上
+     概率分布塌缩 -> 跳过参数块 / 拼错标签。模板无锅: Qwen3.8 官方模板就是
+     `<function=name><parameter=key>` 格式, merged.jinja 与之一致。
+- **修复**(commit ae7151b8):
+  1. apiserver 从 tools schema 提取参数名 -> `tool_call_parameter_name_constraint`
+     (`<parameter=` 后只放行 schema 参数名 token);
+  2. 新增 required 参数块强制: `</function>` 前已闭合 parameter 块数 < required 数时,
+     约束只允许 `<parameter=` 前缀链(allowedIds 空时采样层自动不 mask, 无卡死风险);
+  3. OpenAIOutputParser.Flush 对未闭合 `<tool_call>` 块尝试 ParseBlock
+     (漏 `</tool_call>` 的完整调用不再丢成裸文本); 缺 `</parameter>` 时值延伸容错。
+- **验证**: omp CLI temp=1 同任务实测: 修复前 3 连空 + 漂移; 修复后 6+ 调用
+  0 空 0 漂移, 探索行为连贯(read path 准确引用 ls 输出里的真实文件)。
+- **附带**: models.yml vllm provider temperature 0 -> 1(本地 omp);
+  Qwen3.8-27B-Q5_K_M.gguf 已下载备用(models/Qwen3.8-27B-Q5KM/, 19.8GB)。
+
+### 15.28 真根因订正: qwen3_5 投机解码路径从未接线工具约束 (2026-08-18)
+
+- **订正 15.27 结论**: ae7151b8 的约束实现本身正确, 但**对 Qwen3.5 模型从未生效**。
+  Qwen3.5 走 qwen3_5.cpp 独立 decode 循环(投机/非投机统一), 该循环:
+  1. 装配 generationConfigs 时不调 `PrepareToolCallConstraint`
+  2. 接受 token 时不调 `UpdateToolCallConstraintState`
+  -> `toolCallConstraintGeneratedText` 恒空 -> 约束分支全部静默 return
+  -> `allowedIds` 恒空 -> `Qwen35MtpSupportsGenerationConfig` 的 mask 检查失效
+  -> 约束+禁用 MTP 的保护链整体不存在, 量化漂移裸奔。
+- **为何之前误判"修复生效"**: T5 验证只跑了 ~6 次调用, 对 ~12% 的间歇空参数率
+  是小样本幸存者偏差; 且测试走 mini-proxy 直连(非生产链), 变量不唯一。
+- **确诊路径**: dump proxy 抓 proto-ui 真实流量 -> 简化 system prompt 8/8 好,
+  完整 35K omp prompt 非流式 8/8 好, **流式 1/8 空** -> 流式专属只是表象,
+  实质是约束全无效的随机漂移, 样本量上去就现形。
+- **修复**(commit cd2c0488): qwen3_5.cpp 装配点调 Prepare + 接受循环逐 token
+  Update + selectedNeedLastTokens 补 allowedIds 分支。生产链路流式 16/16 参数完整。
+- **附带发现**: `Qwen35MtpSupportsGenerationConfig` 在 repeat_penalty≠1 时也禁用
+  MTP; 生产 proxy 注入 repeat_penalty=1.05 -> **生产所有请求 MTP 实际禁用**
+  (30 tok/s 的 MTP2 基准是直连无 penalty 测的)。若要让生产吃到 MTP 加速,
+  需要把约束 mask 引入 MTP 接受路径, 或评估 penalty 是否可放宽。
+
+### 15.29 MTP 投机路径接线工具约束 + repeat_penalty 放开 (2026-08-18, commit d9d0aec5)
+
+- **背景**: 15.28 留下两条——(a) 约束激活边界处的投机漂移(draft 提议跨越
+  `<parameter=`→`>` 等边界时 verify 沿用旧空 mask, 漂移 token 被接受,
+  proto-ui 实机复现: 多余 `<parameter=` + 转义 `</function>`); (b) 生产
+  repeat_penalty=1.05 导致 MTP 全禁(decode 30→4.8 tok/s)。
+- **(a) 约束感知截断**: 新公开方法 `basellm::EvaluateToolCallConstraintText`
+  (从 PrepareToolCallConstraint 提取的纯文本版, 不依赖 ResponseContext)。
+  单请求 `countAcceptedDrafts` 与 batch 接受 while 循环对**每个候选 token**
+  做假设性预检: 临时文本推进约束状态机, 若约束即将激活且候选不在
+  allowedIds → 拒绝并截断投机块; 下一步 Prepare 产生正确 mask, 走非投机。
+  KV cache 只提交到截断点, 无回滚问题。
+- **(b) repeat_penalty 下启用 MTP**:
+  - gate `Qwen35MtpSupportsGenerationConfig` 不再拒绝 repeat_penalty
+    (mask 非空仍禁——工具调用窗口短, 走非投机更简单可靠)。
+  - verify 前向传真实 `LastTokensManager`(单请求 context->tokens,
+    batch 逐 request contexts[b]->tokens; 此前恒传空 manager)。
+  - `FastllmCudaTopKTopPSamplingWithTypicalAcceptance` 增加可选
+    penaltyIds/penaltyFactors/penaltyTokens 参数, 前置
+    `FastllmRepeatPenaltyFactorsKernel` 就地作用于 logits——typical
+    acceptance 的 posterior 基于惩罚后分布, 与 CPU LLMSampling 同语义
+    (last_n>0 时 pow(penalty, count))。
+  - 采样调用侧把 per-request penalty 集展开成 per-row 数组(投机 verify
+    的行 = request × seqLen)。
+- **近似与取舍**: verify 各行共用请求级历史, 不把块内 draft token 计入
+  penalty(逐位置精确历史成本高; llama.cpp 等同款近似)。mask 场景
+  (allowedIds 非空)仍禁 MTP, 窗口仅工具调用内 ~30 token。
+- **验证**: 见 inbox-fastllm.md 三条验收信号(生产链路流式 16 次工具调用 /
+  penalty 下无 MTP-not-enabled 日志 / decode ~30 tok/s)。
