@@ -28,15 +28,19 @@ stop_session() {
   "$TMUX_BIN" kill-session -t "$SESSION" 2>/dev/null || true
   # An owned FastLLM child that ignores SIGTERM (e.g. still loading) can
   # outlive a hard session kill and keep the GPU busy; sweep it up so the
-  # next start does not OOM on a stale instance.
-  local gguf
-  gguf=$(sed -n 's/^FASTLLM_BACKEND_COMMAND=.*--path \([^ ]*\.gguf\).*/\1/p' "$ENV_FILE" 2>/dev/null || true)
-  if [[ -n "$gguf" ]]; then
+  # next start does not OOM on a stale instance. Matches both .gguf files
+  # and safetensors directories (anything after --path).
+  local model_path
+  model_path=$(sed -n "s/^FASTLLM_BACKEND_COMMAND=.*--path \([^ ']*\).*/\1/p" "$ENV_FILE" 2>/dev/null | head -1)
+  if [[ -n "$model_path" ]]; then
     local leftovers
-    leftovers=$(pgrep -f "apiserver.*$(basename "$gguf")" || true)
+    leftovers=$(pgrep -f "apiserver --path $model_path" || true)
     if [[ -n "$leftovers" ]]; then
       printf '[launcher] killing orphan FastLLM: %s\n' "$leftovers" >&2
-      kill -9 $leftovers 2>/dev/null || true
+      kill $leftovers 2>/dev/null || true
+      sleep 3
+      leftovers=$(pgrep -f "apiserver --path $model_path" || true)
+      [[ -n "$leftovers" ]] && kill -9 $leftovers 2>/dev/null || true
     fi
   fi
 }
@@ -63,4 +67,16 @@ PROXY_SHELL="set -o pipefail; set -a; . /run/media/ezra/13D010B6FDBC1A06/1CatVLL
   /bin/bash -lc "$PROXY_SHELL"
 "$TMUX_BIN" set-option -t "$SESSION" history-limit 100000
 "$TMUX_BIN" set-option -t "$SESSION" remain-on-exit on
+
+# Backend pane: the owned FastLLM child writes to FASTLLM_BACKEND_LOG, which
+# is otherwise invisible in tmux. Follow it in a second pane below the proxy.
+BACKEND_LOG_PATH="${FASTLLM_BACKEND_LOG:-}"
+if [[ -n "$BACKEND_LOG_PATH" ]]; then
+  mkdir -p "$(dirname "$BACKEND_LOG_PATH")"
+  : >> "$BACKEND_LOG_PATH"
+  "$TMUX_BIN" split-window -t "$SESSION:$WINDOW" -v -d \
+    -c /run/media/ezra/13D010B6FDBC1A06/1CatVLLM/v100-perfs \
+    /usr/bin/tail -n 40 -F "$BACKEND_LOG_PATH"
+fi
+
 "$TMUX_BIN" attach-session -t "$SESSION:$WINDOW"

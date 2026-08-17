@@ -62,6 +62,18 @@ def _normalize_messages(messages: list[dict[str, Any]]) -> list[dict[str, Any]]:
                     function["arguments"] = json.loads(arguments)
                 except json.JSONDecodeError:
                     pass
+        content = message.get("content")
+        if isinstance(content, list):
+            # 模板只认 {"type": "video", "video": ...};把 OpenAI/vLLM 标准
+            # video_url 块转成该形态(仅影响模板渲染副本,后端仍收原始
+            # messages 抽取 URL)。
+            for block in content:
+                if isinstance(block, dict) and block.get("type") == "video_url":
+                    video_url = block.get("video_url") or {}
+                    url = video_url.get("url", "")
+                    block.clear()
+                    block["type"] = "video"
+                    block["video"] = url
     return normalized
 
 
@@ -84,8 +96,22 @@ def render_fastllm_prompt(body: dict[str, Any], template_path: str | Path) -> st
         "preserve_thinking": kwargs.get("preserve_thinking", False),
         "add_vision_id": kwargs.get("add_vision_id", False),
     }
+    # reasoning_effort 别名归一(用户约定):
+    # high/max/ultra → xhigh,medium/low 原样,off/'' → 关闭思考;
+    # 未列出的值兜底 medium。
     if "reasoning_effort" in kwargs:
-        template_kwargs["reasoning_effort"] = kwargs["reasoning_effort"]
+        effort = str(kwargs.get("reasoning_effort") or "").lower()
+        aliases = {
+            "xhigh": "xhigh", "high": "xhigh", "max": "xhigh",
+            "ultra": "xhigh",
+            "medium": "medium", "low": "low",
+            "off": "off", "": "off",
+        }
+        resolved = aliases.get(effort, "medium")
+        if resolved == "off":
+            template_kwargs["enable_thinking"] = False
+        else:
+            template_kwargs["reasoning_effort"] = resolved
     return template.render(**template_kwargs)
 
 
@@ -123,6 +149,18 @@ def prepare_fastllm_body(
         if marker not in merged_stops:
             merged_stops.append(marker)
     prepared["stop"] = merged_stops
+    # 采样默认:OpenAI 协议没有 top_k 字段,后端 GenerationConfig 默认
+    # top_k=1 → 纯贪婪解码,temperature 被采样 kernel 短路(top_k<=1 →
+    # argmax)。贪婪 + 超长上下文 + turbo3 有损 KV 是 proto-ui 重复循环
+    # 的主引擎。注入 Qwen3 系推荐采样档;客户端显式传参则尊重。
+    # temperature=0 仍会短路成 argmax(kernel 行为),需要严格贪婪的调用
+    # 传 temperature=0 即可,不受此默认值影响。
+    prepared.setdefault("top_k", 20)
+    prepared.setdefault("top_p", 0.8)
+    prepared.setdefault("temperature", 0.6)
+    if "frequency_penalty" not in prepared and "repeat_penalty" not in prepared:
+        # apiserver 把 frequency_penalty 直传 repeat_penalty(1.0=不惩罚)
+        prepared["frequency_penalty"] = 1.05
     return prepared
 
 
