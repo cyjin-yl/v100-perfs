@@ -1,0 +1,94 @@
+--- thinking_proxy.orig.py	2026-08-18 05:00:41
++++ thinking_proxy.py	2026-08-18 04:55:48
+@@ -216,6 +216,14 @@
+ if FASTLLM_MODE and QUEUE_TIMEOUT < 600:
+     QUEUE_TIMEOUT = 600
+ 
++# httpx 的 read timeout 是"两个 chunk 之间的上限", 不是整条流的上限。长 prefill
++# 期间后端一个字节都不发: 196.9K token 实测 ~790s, 262K 更久, 所以原先硬编码的
++# 600s 会在流式下断流 -> local_failed -> 甚至 fallback 云端(非流式走 QUEUE_TIMEOUT
++# 才没暴露这个洞)。omp 永远流式, 因此默认跟随 QUEUE_TIMEOUT。
++STREAM_READ_TIMEOUT = float(os.environ.get(
++    "STREAM_READ_TIMEOUT", str(QUEUE_TIMEOUT)))
++STREAM_CONNECT_TIMEOUT = float(os.environ.get("STREAM_CONNECT_TIMEOUT", "15"))
++STREAM_WRITE_TIMEOUT = float(os.environ.get("STREAM_WRITE_TIMEOUT", "120"))
+ 
+ if FASTLLM_MODE:
+     BACKEND_URL = FASTLLM_BACKEND_URL
+@@ -1742,10 +1750,18 @@
+     return b"data: " + json.dumps(payload).encode() + b"\n\n"
+ 
+ 
+-async def _open_backend_stream(url: str, body: dict, timeout: float = 600):
++async def _open_backend_stream(url: str, body: dict, timeout: float = 0.0):
++    # timeout<=0 → 用 STREAM_READ_TIMEOUT(默认 = QUEUE_TIMEOUT)。connect/write 单独
++    # 收紧, 只有 read 需要覆盖整段 prefill 的静默期。
++    read_timeout = float(timeout) if timeout and timeout > 0 else STREAM_READ_TIMEOUT
+     lease = await backend_lifecycle.acquire(
+-        timeout=min(float(timeout), float(QUEUE_TIMEOUT)))
+-    client = httpx.AsyncClient(timeout=timeout)
++        timeout=min(read_timeout, float(QUEUE_TIMEOUT)))
++    client = httpx.AsyncClient(timeout=httpx.Timeout(
++        read_timeout,
++        connect=STREAM_CONNECT_TIMEOUT,
++        write=STREAM_WRITE_TIMEOUT,
++        pool=read_timeout,
++    ))
+     try:
+         request = client.build_request("POST", url, json=body)
+         response = await client.send(request, stream=True)
+@@ -3039,21 +3055,49 @@
+     enable = thinking_param.get("type") != "disabled"
+ 
+     output_config = body.get("output_config") or {}
+-    if output_config.get("effort") and output_config["effort"] != "none":
+-        enable = True
++    requested_effort = output_config.get("effort")
++    if requested_effort:
++        enable = str(requested_effort).lower() != "none"
+ 
+     result = {
+         "model": body.get("model", "qwen3.6-27b-awq"),
+         "messages": messages,
+         "max_tokens": body.get("max_tokens", 16384),
+-        "temperature": body.get("temperature", 1.0),
+-        "top_p": body.get("top_p", 1.0),
+         "stream": body.get("stream", False),
+         "chat_template_kwargs": {"enable_thinking": enable},
+     }
++    # 采样参数只在客户端显式给出时才透传:否则交给 prepare_fastllm_body 注入
++    # Qwen3 推荐档(temp 0.6 / top_p 0.8 / top_k 20)。原先硬写 1.0/1.0 会让
++    # Anthropic 侧的尾部概率质量显著高于 OpenAI 侧,量化模型更容易漂移/循环。
++    for key in ("temperature", "top_p"):
++        if body.get(key) is not None:
++            result[key] = body[key]
+ 
+     if enable:
+-        if body.get("thinking", {}).get("type") == "max":
++        # Anthropic 协议没有 reasoning_effort 字段,effort 只能从
++        # output_config.effort / thinking.type / thinking.budget_tokens 推。
++        # 不推的话模板恒取默认 xhigh —— Anthropic 侧 thinking effort 等于不可控。
++        effort = None
++        if requested_effort:
++            effort = {
++                "low": "low", "medium": "medium",
++                "high": "xhigh", "max": "xhigh", "xhigh": "xhigh",
++            }.get(str(requested_effort).lower())
++        if effort is None and thinking_param.get("type") == "max":
++            effort = "xhigh"
++        if effort is None:
++            budget_hint = thinking_param.get("budget_tokens")
++            if isinstance(budget_hint, int) and budget_hint > 0:
++                if budget_hint <= 2048:
++                    effort = "low"
++                elif budget_hint <= 4096:
++                    effort = "medium"
++                else:
++                    effort = "xhigh"
++        if effort:
++            result["chat_template_kwargs"]["reasoning_effort"] = effort
++
++        if thinking_param.get("type") == "max":
+             result.pop("reasoning", None)
+         else:
+             budget = thinking_param.get("budget_tokens") or 4096

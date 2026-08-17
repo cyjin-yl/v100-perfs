@@ -1000,3 +1000,146 @@ prefill（80K 字符）0.1-0.2s，MTP 档位影响可忽略（MTP 只加速 deco
   (allowedIds 非空)仍禁 MTP, 窗口仅工具调用内 ~30 token。
 - **验证**: 见 inbox-fastllm.md 三条验收信号(生产链路流式 16 次工具调用 /
   penalty 下无 MTP-not-enabled 日志 / decode ~30 tok/s)。
+
+### 15.30 生产链路端到端排查: 三个独立根因 + 一个静默路由陷阱 (2026-08-18)
+
+排查者: macOS 端 Claude(与 fastllm pane 的 K3 分工协作)。口径: **一切以 omp 实战为准**,
+不以单项指标为准 —— 15.28 已经证明小样本探针会产生幸存者偏差。
+
+#### 0. 静默云端 fallback: 让此前所有"链路测量"都可能无效
+
+- **现象**: 20 格协议矩阵全部 `no_tool_call`, `prompt_tokens` 只有 77,
+  模型在 reasoning 里写"工具是什么? 大概能用 bash 吧"。
+- **根因**: `thinking_proxy.py` 只有当 model 名匹配 `FASTLLM_PUBLIC_ALIASES`(子串)时才
+  `_must_route_local`; 否则走 `_pick_backend` → OpenRouter / NIM / Zen **云端**, 且不报错。
+  当时后端被挂成 `q5-262k-mtp2.env`(ThinkingCap-Qwen3.6-27B-heretic-Q5_K_M),
+  别名只有 `qwen3.6-*`, 而我们打的是 `qwen3.8-27b`。
+  proxy 日志实锤: `[route] routing to or` → OpenRouter 403 → `[route] routing to nim`。
+- **修复**: (a) 所有实验/生产 profile 设 `FALLBACK_ENABLED=0`, 路由错配显性失败;
+  (b) `scripts/chain_acceptance.py` 开头强制 preflight —— 目标模型不在 `/v1/models`
+  就 `SystemExit`; (c) 换 profile 后先 `curl /v1/models` 确认别名。
+- **教训**: "模型忽然变傻/不调工具"先查 `/v1/models` 与后端 `--path`, 再怀疑模型。
+
+#### 1. 根因 A: 流式路径的 read timeout 硬编码 600s
+
+- `_open_backend_stream(url, body, timeout=600)` 用 `httpx.AsyncClient(timeout=600)`。
+  httpx 的 read timeout 是**两个 chunk 之间的上限**, 不是整条流的上限。长 prefill 期间
+  后端一个字节都不发: 196.9K token 实测 ~790s ⇒ **必然断流** → `local_failed=True`
+  → 甚至 fallback 云端。非流式走 `QUEUE_TIMEOUT`(生产 1800)所以从未暴露。
+  **omp 永远流式**, 所以这是"长上下文一上 omp 就寄"的一个独立根因。
+- **修复**: 改 `httpx.Timeout(read=STREAM_READ_TIMEOUT, connect=15, write=120)`,
+  `STREAM_READ_TIMEOUT` 默认跟随 `QUEUE_TIMEOUT`。
+
+#### 2. 根因 B: required 参数约束是"按块数"计数, 不是"按参数名"
+
+- `include/fastllm.h:183` 是 `std::map<std::string,int> tool_call_required_parameter_counts`
+  —— 只存**个数**。判定是"已闭合 parameter 块数 ≥ required 数就放行 `</function>`"。
+  于是 `grep` 的 required=["pattern"](count=1)时, 模型输出一个 `<parameter=case>` 块
+  就满足 ≥1 → 允许闭合 → **必填参数缺失**。
+- **实证(omp 真实负载, 旧二进制基线)**: 14 次工具结果 / **3 次** validation 失败,
+  全是 grep 漏 `pattern`, 参数分别是 `{case:true}`、`{path:...,skip:0}`、
+  `{original:{case:"False",path:...}}`。模型自己在 thinking 里写
+  "I keep forgetting to include the pattern."
+- **协议矩阵佐证**: 40 格里 3 例失败**全部落在 medium effort 档**(3/8 = 37.5%),
+  其余 32 格 0 失败, 均为 `missing_required_arg:path`。
+- **修复**(K3): 改成缺失名集合判定 —— `CollectClosedToolCallParameterNames` +
+  `MissingRequiredToolCallParameters`, 参数名位置 required-first(交集为空回退全量,
+  allowedIds 空时采样层不 mask, 无卡死)。投机路径经 `EvaluateToolCallConstraintText`
+  自动继承。
+- **意义**: ae7151b8 的"required 参数块强制"从来没真正生效; cd2c0488/d9d0aec5 把它接进
+  投机路径, 接的是一个本身就漏的约束。这就是"指标上修好了但一上 omp 还是寄"的另一半。
+
+#### 3. 根因 C: 长上下文下工具调用**结构破损**(需要完整语法约束, 不是继续打补丁)
+
+- **现场**(TB14P 上 omp 打生产 endpoint, 上下文 ~31K/240K):
+  ```
+  <tool_call>
+  <function=read><parameter=path>i</parameter><parameter=
+  </function>
+  </tool_call>
+  ```
+  值是垃圾(`i`)、第二个参数名没写完就换行、参数块没闭合就 `</function>`。
+- **为什么打补丁治不住**: 现有约束是"在几个点位打点"(函数名、`<parameter=` 名字、
+  required 计数)。模型只要在**任何没被打点的位置**跑偏(值结束/标签闭合/块边界)就破损;
+  上下文越长、量化越狠越容易命中。
+- **方案**: 把 `<tool_call>…</tool_call>` 整段做成受约束的小语法状态机
+  (S0 `<function=` → S1 函数名 → S2 参数块之间(必填齐了才允许 `</function>`)
+  → S3 参数名(required-first) → S4 值(屏蔽会开始 `</function>`/`</tool_call>` 闭合序列
+  的 token, 只有 `</parameter>` 能离开) → S5 只允许 `</tool_call>`),
+  从构造上让破损不可能出现; 整套可 env 关掉便于 A/B。
+- **配套诊断**: `FASTLLM_TOOLCALL_TRACE=1` 打状态机转移 + allowedIds 规模 +
+  破损时 dump token ids; `/props` 暴露 `toolcall_blocks_total` /
+  `toolcall_malformed_total` / `toolcall_repaired_total` /
+  `toolcall_constraint_masked_tokens`; **解析器走"修复"分支也要计数打日志**
+  —— 静默修复等于我们看不见问题。
+
+#### 4. 已排除的嫌疑: chat template 与 tokenizer
+
+- 我们在用的 `chat_template.jinja` 与 `Qwen/Qwen3.8-27B` 官方**逐字一致**
+  (md5 `519239a4908bb1f805bbce5fa8c8a242`), `tokenizer_config.json` 同样一致
+  (md5 `e843642217637a5738bc9b86021a3eef`), cyber AWQ 仓库的那份也是同一个 md5。
+  ⇒ 模板/tokenizer_config 这条线可以关掉了。
+- **但**官方 `generation_config.json` 是 `temperature 1.0 / top_k 20 / top_p 0.95`,
+  而 `fastllm_adapter.prepare_fastllm_body` 注入的是 `0.6 / 0.8 / 20` —— 偏离官方,
+  已列入采样档对比实验。
+
+#### 5. Anthropic 侧 thinking effort 此前完全不可控
+
+- `/v1/messages` 的转换器只写 `chat_template_kwargs.enable_thinking`, **从不写
+  `reasoning_effort`** ⇒ 模板恒取默认 `xhigh`; 且硬写 `temperature=1.0/top_p=1.0`
+  覆盖了 Qwen 推荐采样。
+- **修复**: 从 `output_config.effort` / `thinking.type=="max"` / `thinking.budget_tokens`
+  推导 effort(≤2048→low, ≤4096→medium, 否则 xhigh); `effort=="none"` 真正关思考;
+  采样参数只在客户端显式给出时才透传。
+- **顺带确认**: thinking **本来就是逐块流式**下发的 —— OpenAI 路径 124 个
+  `delta.reasoning_content` 小块(每块 1–3 字), Anthropic 路径 132 个 `thinking_delta`。
+  客户端看不到流式 thinking 是客户端侧的展示/兼容配置问题, 不是 API 不支持。
+
+#### 6. MTP 在 repeat_penalty 下恢复(K3 的 d9d0aec5 实测有效)
+
+- 修复前后端日志: `[Qwen3.5 MTP] not enabled: ... repeat_penalty=1.0500 ...`
+  —— `fastllm_adapter` 默认注入 `frequency_penalty=1.05`(apiserver 直传 repeat_penalty),
+  而 gate 在 penalty≠1 时直接禁用投机 ⇒ **生产所有请求 MTP 全禁**。
+- 修复后同一生产链路: `[Qwen3.5 MTP] enabled: layers=1, drafts_per_step=2,
+  acceptance=typical(0.09/0.30)`, `pos_accept_rate=[100.00%, 92.19%]`,
+  decode **23–31 tok/s**(修复前 17–22)。
+- `fastllm_adapter` 的默认值已改为读 `FASTLLM_DEFAULT_FREQUENCY_PENALTY`(默认仍 1.05),
+  便于 A/B 证明"MTP 在 penalty 下真生效"而不是靠绕开 penalty。
+
+#### 7. 前缀缓存: 三级机制都在, 但默认值让 agent 负载**永远够不着门槛**
+
+- 实测 agent 轮次: `prefix-cache HIT(mem-trie): 4096/24641 tok (17%)`,
+  `L2disk=0.0MB`, `hits=0`, `kv_pool` 被两路长请求打满到 99% 后上一轮前缀即被逐出。
+- 查到的默认值: `FASTLLM_PREFIX_CACHE_CPU_TIER` 默认 **false**(RAM 层根本没启用);
+  `FASTLLM_PREFIX_CACHE_MIN_TOKENS` 与 `DISK_MIN_TOKENS` 默认 **65536**
+  —— agent 每轮前缀才 20~30K, **永远达不到准入门槛**;
+  生产 profile 又只给 `DISK_MAX_BYTES=2GiB`(磁盘实际余 2.2TB)。
+  另有 `RECOMPUTE_TPS`(默认 800)、`CPU_READ_MBPS`(10000)、`ZSTD`(默认开, level 1)
+  等代价模型输入。
+- ⇒ 磁盘 offload 的本意(200K 上下文重 prefill 要 ~200s+, 而 ZSTD 压缩后从盘上读回
+  即使 300MB/s 也远快于重算)在当前配置下**完全没被触发**。
+- 已生成 `cachetuned` 扫描档: `CPU_TIER=1` / `CPU_MAX_BYTES=16GiB` /
+  `MIN_TOKENS=DISK_MIN_TOKENS=4096` / `MIN_HITS=1` / `DISK_MAX_BYTES=200GiB` /
+  `ZSTD_LEVEL=3` / `SNAPSHOT_INTERVAL_PAGES=8`, 进矩阵对比。
+
+#### 8. 工具链: 为什么原来的启动器不能用于自动化
+
+- `scripts/launch_proxy_tmux.sh` 结尾是 `tmux attach-session`, 且挂了
+  `trap cleanup EXIT`(cleanup 会 `stop_session`)。**无 TTY 时 attach 失败 → 触发 cleanup
+  → 把刚创建的 session 杀掉**, 非交互环境下必然自毁。
+- 新增 `scripts/sweep_launch.sh`: 不 attach、不挂 EXIT trap, 起完轮询 `/health` 到 ready
+  才返回; 并且每轮清空后端日志、扫掉任何存活的 `apiserver --path`(换模型时上一轮残留
+  会一直占 20GB+ 显存)。
+
+#### 9. 新增工具(都在 v100-perfs)
+
+- `scripts/chain_acceptance.py`: 生产链路验收探针。suites =
+  `matrix`(双协议 × 流式/非流式 × 五档 effort 的工具调用保真度 + thinking 开关)、
+  `toolloop`(多轮工具历史往返)、`concurrency`(K 路并发)、`longctx`(大上下文 + 重放命中)、
+  `garble`(低频字/多字节保真)、`bench`(prefill/decode/**e2e** 三个速度, 优先取后端日志里
+  引擎自己打的 `[req N] done:` 拆分)。自带失败样本原始 SSE 转储与解码循环检测。
+- `scripts/sweep_profiles.py`: 表驱动生成 16 份扫描 profile
+  (模型 × KV量化 turbo4/turbo3/fp8_e4m3 × MTP 2/0 × SM70 算子 × 缓存策略)。
+  注意 `--kv_cache_dtype turbo3/turbo4` **还必须配 `FASTLLM_QWEN35_TURBO3_KV/TURBO4_KV=1`**,
+  否则后端启动即抛异常。
+- `scripts/sweep_one.sh`: 单档执行器(冷启计时 → 套件 → 显存峰值采样 → 汇总一行 JSON)。

@@ -10,12 +10,21 @@ from __future__ import annotations
 
 import copy
 import json
+import os
 import re
 import uuid
 from pathlib import Path
 from typing import Any
 
 from jinja2 import Environment, FileSystemLoader, StrictUndefined
+
+# repeat_penalty 与 MTP 互斥过: Qwen35MtpSupportsGenerationConfig 在
+# repeat_penalty != 1 时直接禁用投机解码, 后端日志会打印
+# "[Qwen3.5 MTP] not enabled: ... repeat_penalty=1.0500 ...". 所以这个默认值
+# 直接决定生产是否吃得到 MTP2 加速, 必须能在不改代码的情况下 A/B。
+# 1.0 = 不惩罚(纯靠 top_k/top_p/temperature 抑制循环)。
+_DEFAULT_FREQUENCY_PENALTY = float(
+    os.environ.get("FASTLLM_DEFAULT_FREQUENCY_PENALTY", "1.05"))
 
 
 
@@ -160,7 +169,7 @@ def prepare_fastllm_body(
     prepared.setdefault("temperature", 0.6)
     if "frequency_penalty" not in prepared and "repeat_penalty" not in prepared:
         # apiserver 把 frequency_penalty 直传 repeat_penalty(1.0=不惩罚)
-        prepared["frequency_penalty"] = 1.05
+        prepared["frequency_penalty"] = _DEFAULT_FREQUENCY_PENALTY
     return prepared
 
 
