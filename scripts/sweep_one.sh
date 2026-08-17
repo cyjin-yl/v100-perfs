@@ -120,7 +120,7 @@ if os.path.exists(vramlog):
 mat_f, mat_n = fails(load("matrix"), "matrix")
 gar_f, gar_n = fails(load("garble"), "garble")
 tl_f, tl_n = fails(load("toolloop"), "toolloop")
-cc_f, cc_n = fails(load("concurrency"), "concurrency")
+cc_f, cc_n = fails(load("conc"), "concurrency")   # 文件是 <tag>.conc.json
 bench = load("bench")
 bench_rows = (bench or {}).get("suites", {}).get("bench", {}).get("rows", [])
 

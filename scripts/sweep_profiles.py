@@ -145,6 +145,9 @@ def render(entry) -> tuple[str, str]:
         "FASTLLM_HOST_SUSPEND_CACHE_MAX_BYTES": str(16 * 1024**3),
         "FASTLLM_HOST_SUSPEND_MIN_FREE_BYTES": str(4 * 1024**3),
         "FASTLLM_SKIP_WARMUP": "1",
+        # 前缀缓存可观测性(fastllm 256c0af3, 纯测量不改行为): 每请求命中 tok/命中层/
+        # 未命中原因 + 周期性各层占用与拒绝原因。没有它就只能猜"整轮前缀为什么没命中"。
+        "FASTLLM_PREFIX_CACHE_STATS": "1",
         "CUDA_VISIBLE_DEVICES": "0",
     }
     # KV dtype 的 CLI 参数不够: turbo3/turbo4 还要各自的 env 开关, 否则后端启动即

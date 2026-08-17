@@ -286,6 +286,14 @@ async def run_openai(client: httpx.AsyncClient, body: dict) -> Turn:
                 except json.JSONDecodeError:
                     turn.fail(f"bad_sse_json:{payload[:80]!r}")
                     continue
+                # 后端重载/繁忙时 proxy 会在流中间插一个 error 事件然后 [DONE]。
+                # 不识别它的话, 空响应会被上层误判成"模型没输出/字丢了"——
+                # 2026-08-18 的 garble suite 就是这么误报的。
+                if event.get("error"):
+                    err = event["error"]
+                    msg = err.get("message") if isinstance(err, dict) else str(err)
+                    turn.fail(f"backend_error:{event.get('status', '')}:{str(msg)[:120]}")
+                    continue
                 if event.get("usage"):
                     turn.usage = event["usage"]
                 choice = (event.get("choices") or [{}])[0]
@@ -784,6 +792,25 @@ async def preflight(client: httpx.AsyncClient) -> dict:
     ready = (info.get("health") or {})
     if isinstance(ready, dict) and ready.get("ready") is False:
         raise SystemExit("[preflight] 后端 not ready, 先等加载完成。")
+
+    # /health 的 ready 只说明子进程起来了。SKIP_WARMUP 下权重要等第一个真实请求才上传,
+    # 这期间请求会拿到 503 backend_reloading —— 直接开跑会把"后端还没热"记成模型缺陷。
+    for attempt in range(12):
+        probe = await run_openai(client, {
+            "model": MODEL, "stream": False, "max_tokens": 8,
+            "messages": [{"role": "user", "content": "ok"}],
+            "enable_thinking": False})
+        if probe.ok or not any(e.startswith(("http_", "backend_error", "transport"))
+                               for e in probe.errors):
+            info["warmup_attempts"] = attempt + 1
+            print(f"[preflight] warmup 通过(第 {attempt + 1} 次, "
+                  f"{probe.latency:.1f}s)", flush=True)
+            break
+        print(f"[preflight] warmup 第 {attempt + 1} 次未通过: {probe.errors}, 15s 后重试",
+              flush=True)
+        await asyncio.sleep(15)
+    else:
+        raise SystemExit("[preflight] warmup 连续 12 次失败, 后端没有真正可用。")
     print(f"[preflight] models={ids} "
           f"backend={(ready or {}).get('backend') if isinstance(ready, dict) else '?'} "
           f"state={((ready or {}).get('lifecycle') or {}).get('state') if isinstance(ready, dict) else '?'}",
