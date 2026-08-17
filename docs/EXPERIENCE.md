@@ -1143,3 +1143,77 @@ prefill（80K 字符）0.1-0.2s，MTP 档位影响可忽略（MTP 只加速 deco
   注意 `--kv_cache_dtype turbo3/turbo4` **还必须配 `FASTLLM_QWEN35_TURBO3_KV/TURBO4_KV=1`**,
   否则后端启动即抛异常。
 - `scripts/sweep_one.sh`: 单档执行器(冷启计时 → 套件 → 显存峰值采样 → 汇总一行 JSON)。
+
+### 15.31 工具调用约束的四层剥洋葱 + 语法状态机首版回归 (2026-08-18 上午)
+
+这一节记录"工具调用为什么一直修不干净"的完整剥离过程。每一层都是**独立**缺陷,
+修掉上一层才会露出下一层 —— 这也解释了为什么此前每次都"指标上修好了, 一上 omp 还是寄"。
+
+| 层 | 现象 | 根因 | 状态 |
+|---|---|---|---|
+| L1 | 参数块整个不出现 / 标签拼错 | 约束只管工具名, 参数块自由生成 | ae7151b8 加参数名约束 |
+| L2 | 修了却没生效 | Qwen3.5 走 `qwen3_5.cpp` 独立 decode 循环, 从未接线约束 | cd2c0488 / d9d0aec5 |
+| L3 | **必填参数缺失**(`grep{case:true}`) | `tool_call_required_parameter_counts` 是 `map<string,int>`, **只记个数不记名字**; 发一个可选参数块就满足"块数≥required 数" | a13833cc 改为缺失名集合 + required-first |
+| L4 | **空值**(`{"path":""}`) | 名字有了, 但 `<parameter=path>` 之后可以立刻闭合 —— 没有"值非空"约束 | 待修(已提设计) |
+| L5 | 长上下文**结构破损**(`<parameter=path>i</parameter><parameter=` 然后 `</function>`) | 打点式约束覆盖不到值结束/标签闭合/块边界 | 语法状态机 409412d6(**首版有回归, 见下**) |
+
+#### L3 的实证(旧二进制基线)
+omp 真实负载 14 次工具结果 / **3 次** validation 失败, 全是 grep 漏 `pattern`:
+`{case:true}`、`{path:...,skip:0}`、`{original:{case:"False",path:...}}`;
+模型自己在 thinking 里写 "I keep forgetting to include the pattern."
+
+#### L4 的实证(a13833cc 之后)
+n5 档 40 格矩阵 5 例失败, **全部落在 medium effort**:
+```
+tool_calls: [{"name":"list_dir","arguments":"{\"path\":\"\"}"}]
+```
+名字在、值是空串。为什么集中在 medium: 官方模板里 `reasoning_effort=medium` 对应的
+`reasoning_instructions` 是**空字符串**(模板只给 xhigh 与 low 写了指令文本),
+medium 的系统提示直接从 `# Tools` 开始, 思考更短更"赶"。
+⇒ 修法(源头): 语法状态机的 S4 在产出至少 1 个非空白 token 之前, 屏蔽 `</parameter>` 的起始 token。
+
+#### 语法状态机首版(409412d6)的回归 —— 必须记录
+n4 档(该二进制第一次上生产链路)实测:
+```
+openai/block/off : decode_loop_in_text:'\n</parameter><parameter=pattern>\n\n      '  text=6278c lat=219.3s
+openai/block/high: decode_loop_in_text:'paath>\n/etc\n</parameter><parameter=maax_'   text=3084c lat=157.9s
+引擎侧: [ToolCall] MALFORMED unterminated block (6278B) / (3084B)
+```
+三个要命细节:
+1. 放行了**不在本次 schema 里**的参数名(`pattern`; 当次工具只有 `list_dir(path*, max_depth)` /
+   `read_file(path*)`);
+2. 出现 `paath` / `maax_` 这类**被破坏的名字** —— 像 mask 后重采样把 token 拼错;
+3. **永远关不掉** `</function>`, 在 `</parameter><parameter=` 之间循环到 max_tokens,
+   一次请求烧 219s。
+⇒ 怀疑 S3 的 allowedIds 与"已闭合参数名集合"解析在**多参数块之后**错位。
+建议的不变量测试: 造一个已写完 `<parameter=path>/etc</parameter>` 的前缀, 断言 allowedIds
+必须同时包含 `</function>` 与 `max_depth` 的起始 token, 且**不含**任何非 schema 名字的起始 token。
+⇒ 处置: 扫描矩阵全部 profile 加 `FASTLLM_TOOLCALL_GRAMMAR=0` 退回打点式, 保证性能数据不被污染;
+修好后单独做 `GRAMMAR=1/0` 的 A/B(口径: `--suite matrix --repeat 4` 160 格 0 破损 0 循环 +
+`--efforts medium --repeat 8` 0 空参数)。
+
+#### 测量纪律(这一轮踩到的)
+- **探针必须识别 SSE 里的 `{"error":...}` 事件**: 后端在懒加载权重/显存水位窗口会返回
+  503 `backend_reloading` 然后 `[DONE]`。不识别就会把空响应记成"模型把字丢了"——
+  n1/n2/n4/n5 的 garble 全是这么误报的, 数据作废。
+- **suite 顺序有讲究**: 冷启后头一两分钟后端还在铺权重(`SKIP_WARMUP=1`), 又有外部流量
+  抢显存。把耗时最长的 matrix 放最前面当"热机", 再跑对空响应敏感的 garble。
+- **preflight warmup 要用有长度的请求**: 8 token 的探针会"通过"但后端下一刻仍会 503。
+- **换 profile 后核对二进制 mtime 与后端启动时间**: n1 档 06:25 起, 而修复版二进制 06:33
+  才编出来 —— 那一档的工具调用数据属于修复前, 不能混进结论。
+- **外部流量会污染 bench**: 日志里出现 `req#70 total=154949` 这种 15 万 token 的请求
+  (真实使用), 会把 KV pool 打满、改变前缀缓存命中。受影响档位需复测。
+
+#### 前缀缓存: 主因是 no-record, 不是逐出也不是门槛
+`FASTLLM_PREFIX_CACHE_STATS=1`(256c0af3)在 n5 档给出:
+```
+periodic: reqs=64 hitReqs=8 hitTok=65024/151455 (mem=65024 cpu=0 disk=0)
+  miss{no-record=55 evicted=0 below-thresh=0 gen=0 restore-fail=0 other=1}
+  record{ok=0 rej-min=0 rej-cap=0 rej-space=0 rej-other=0}
+  resident{mem=149MB cpu=0MB disk=0MB}
+```
+- `record{ok=0}` 且所有 rej 计数为 0 ⇒ 记录路径**根本没走到计数点**,
+  这推翻了"MIN_TOKENS=65536 门槛挡住了"的先验猜测(调低门槛并未让记录发生)。
+- 二三级从未落数据(即使 `CPU_TIER=1`), 一级只常驻 149MB(装不下一个 32K 前缀)。
+- 有记录时命中极好: `req#66 total=9768 hit=9216 (94%)`。
+⇒ 下一步是给 `TryRecordPagedCache` 的每个 early return 打原因计数, 定位卡在哪一条。

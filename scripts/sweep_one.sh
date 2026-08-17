@@ -57,16 +57,27 @@ run_suite() {
   say "-- suite $name rc=$?"
 }
 
-run_suite garble  --suite garble --repeat 3 \
-  --json "$OUTDIR/$TAG.garble.json" --dump-dir "$OUTDIR/$TAG.dumps"
+# matrix 放最前面: 冷启后头几十秒后端还在懒加载权重(SKIP_WARMUP=1), 又有外部流量
+# 抢显存, 这段时间的请求会拿 503 backend_reloading。让耗时最长的 matrix 先把后端跑热,
+# 再做对"空响应"敏感的 garble。
 run_suite matrix  --suite matrix --repeat 2 \
   --json "$OUTDIR/$TAG.matrix.json" --dump-dir "$OUTDIR/$TAG.dumps"
+run_suite garble  --suite garble --repeat 3 \
+  --json "$OUTDIR/$TAG.garble.json" --dump-dir "$OUTDIR/$TAG.dumps"
 run_suite toolloop --suite toolloop --rounds 4 \
   --json "$OUTDIR/$TAG.toolloop.json"
 run_suite bench   --suite bench --bench-sizes 200,8000,32000,131072 \
   --log-path "$BACKEND_LOG" --json "$OUTDIR/$TAG.bench.json"
 run_suite conc    --suite concurrency --concurrency 6 --rounds 2 \
   --json "$OUTDIR/$TAG.conc.json"
+
+# 降智/拒答对照只在候选档位跑(每次约 5 分钟), 由 driver 用 INTEL=1 指定
+if [[ "${INTEL:-0}" == "1" ]]; then
+  say "-- intel probe(能力题 + 网络安全防御题)"
+  timeout 1800 $PY scripts/intel_probe.py --tag "$TAG" \
+    --json "$OUTDIR/$TAG.intel.json" >>"$RUNLOG" 2>&1
+  say "-- intel probe rc=$?"
+fi
 
 if [[ "${FULL:-0}" == "1" ]]; then
   run_suite longctx --suite longctx --ctx-tokens 250000 \
@@ -76,6 +87,10 @@ if [[ "${FULL:-0}" == "1" ]]; then
 fi
 
 kill $VRAMPID 2>/dev/null
+
+# 引擎侧的工具调用计数器(fastllm 409412d6): 结构破损/静默修复都在这里现形,
+# 探针只能看到"最终解析结果", 看不到引擎修过几次。
+curl -s -m 10 http://127.0.0.1:8002/props > "$OUTDIR/$TAG.props.json" 2>/dev/null || true
 
 # --- 汇总 ---
 $PY - "$TAG" "$OUTDIR" "$BACKEND_LOG" "$VRAMLOG" "$cold" "$PROFILE" <<'PY' \
@@ -124,6 +139,11 @@ cc_f, cc_n = fails(load("conc"), "concurrency")   # 文件是 <tag>.conc.json
 bench = load("bench")
 bench_rows = (bench or {}).get("suites", {}).get("bench", {}).get("rows", [])
 
+props = load("props") or {}
+toolcall = {k: v for k, v in props.items() if k.startswith("toolcall_")}
+cache_props = {k: v for k, v in props.items()
+               if "prefix_cache" in k and isinstance(v, (int, float))}
+
 print(json.dumps({
     "tag": tag, "profile": os.path.basename(profile), "status": "ok",
     "cold_start_s": int(cold), "vram_peak_mib": peak,
@@ -134,6 +154,8 @@ print(json.dumps({
     "garble_fail": gar_f, "garble_total": gar_n,
     "toolloop_fail": tl_f, "toolloop_total": tl_n,
     "conc_fail": cc_f, "conc_total": cc_n,
+    "toolcall_counters": toolcall,
+    "prefix_cache_props": cache_props,
     "bench": bench_rows,
 }, ensure_ascii=False, indent=2))
 PY

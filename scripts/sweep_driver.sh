@@ -37,7 +37,12 @@ for id in "${ORDER[@]}"; do
     continue
   fi
   say ">> 开始 $id ($tag)"
-  bash "$PERF/scripts/sweep_one.sh" "$prof" >>"$LOG" 2>&1
+  # 候选档位额外跑降智/拒答对照(Cyber 与普通版的部署决策靠它)
+  case "$id" in
+    n1|n7|c1|c3) intel=1 ;;
+    *) intel=0 ;;
+  esac
+  INTEL=$intel bash "$PERF/scripts/sweep_one.sh" "$prof" >>"$LOG" 2>&1
   say "<< 完成 $id rc=$?"
 done
 say "=== sweep driver 结束 ==="

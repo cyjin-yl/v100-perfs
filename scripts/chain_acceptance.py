@@ -189,6 +189,30 @@ class Turn:
                 f"lat={self.latency:.1f}s")
 
 
+_TRANSIENT_PREFIXES = ("backend_error", "http_503", "http_502", "transport",
+                       "stream_broken")
+
+
+async def resilient(make_turn, tries: int = 3, delay: float = 20.0) -> "Turn":
+    """瞬时后端不可用时重试。
+
+    后端在显存水位压力/懒加载权重期间会短暂返回 503 backend_reloading;
+    这台机器上还有外部流量(haru 自己的 omp 会打 15 万 token 的请求)会把 KV pool
+    打满。不重试的话, 这类环境噪声会被记成"模型把字丢了/不调工具"。
+    """
+    turn = await make_turn()
+    for i in range(tries - 1):
+        transient = [e for e in turn.errors
+                     if e.startswith(_TRANSIENT_PREFIXES)]
+        if not transient:
+            return turn
+        print(f"    [retry] 瞬时后端不可用: {transient[0][:70]}; "
+              f"{delay:.0f}s 后第 {i + 2} 次", flush=True)
+        await asyncio.sleep(delay)
+        turn = await make_turn()
+    return turn
+
+
 LOOP_RE = re.compile(r"(.{24,}?)\1{4,}", re.S)
 
 
@@ -435,10 +459,10 @@ async def suite_matrix(client: httpx.AsyncClient, args) -> list[dict]:
                 for attempt in range(args.repeat):
                     if api == "openai":
                         body = openai_body(messages, effort, stream)
-                        turn = await run_openai(client, body)
+                        turn = await resilient(lambda: run_openai(client, body))
                     else:
                         body = anthropic_body(messages, effort, stream)
-                        turn = await run_anthropic(client, body)
+                        turn = await resilient(lambda: run_anthropic(client, body))
                     check_tool_call(turn, "list_dir", ["path"])
                     check_thinking(turn, effort)
                     check_loop(turn)
@@ -662,8 +686,9 @@ async def suite_garble(client: httpx.AsyncClient, args) -> list[dict]:
     rows = []
     for attempt in range(max(args.repeat, 3)):
         messages = [{"role": "user", "content": GARBLE_PROMPT}]
-        turn = await run_openai(
-            client, openai_body(messages, "off", True, max_tokens=512))
+        gbody = openai_body(messages, "off", True, max_tokens=512)
+        gbody.pop("tools", None)     # 复写题不该带工具, 否则模型可能改去调工具
+        turn = await resilient(lambda: run_openai(client, gbody))
         blob = turn.text + turn.reasoning
         bad_bytes = blob.count("�")
         missing = [tok for tok in GARBLE_EXPECT if tok not in blob]
@@ -796,9 +821,12 @@ async def preflight(client: httpx.AsyncClient) -> dict:
     # /health 的 ready 只说明子进程起来了。SKIP_WARMUP 下权重要等第一个真实请求才上传,
     # 这期间请求会拿到 503 backend_reloading —— 直接开跑会把"后端还没热"记成模型缺陷。
     for attempt in range(12):
+        # 用有一定长度的 prompt + 输出, 逼后端真正把权重铺开; 8 token 的探针会
+        # "通过"但后端下一刻仍会对正常请求返回 503。
         probe = await run_openai(client, {
-            "model": MODEL, "stream": False, "max_tokens": 8,
-            "messages": [{"role": "user", "content": "ok"}],
+            "model": MODEL, "stream": False, "max_tokens": 64,
+            "messages": [{"role": "user", "content":
+                          "用一句话说明什么是 KV cache。" * 8}],
             "enable_thinking": False})
         if probe.ok or not any(e.startswith(("http_", "backend_error", "transport"))
                                for e in probe.errors):

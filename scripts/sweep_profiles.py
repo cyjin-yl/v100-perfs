@@ -148,6 +148,13 @@ def render(entry) -> tuple[str, str]:
         # 前缀缓存可观测性(fastllm 256c0af3, 纯测量不改行为): 每请求命中 tok/命中层/
         # 未命中原因 + 周期性各层占用与拒绝原因。没有它就只能猜"整轮前缀为什么没命中"。
         "FASTLLM_PREFIX_CACHE_STATS": "1",
+        # 工具调用语法状态机(fastllm 409412d6)在 n4 档实测出严重回归:
+        # 模型陷入 `</parameter><parameter=pattern>` 循环, 还吐出 `paath`/`maax_`
+        # 这种被破坏的参数名(本次工具根本没有 pattern 参数), 引擎自己打了
+        # `[ToolCall] MALFORMED unterminated block (6278B)`。
+        # 扫描矩阵先关掉它, 保证性能与量化档位的数据不被这个 bug 污染;
+        # 修好后单独做 GRAMMAR=1/0 的 A/B。
+        "FASTLLM_TOOLCALL_GRAMMAR": "0",
         "CUDA_VISIBLE_DEVICES": "0",
     }
     # KV dtype 的 CLI 参数不够: turbo3/turbo4 还要各自的 env 开关, 否则后端启动即
