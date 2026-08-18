@@ -1,0 +1,285 @@
+{
+  "base": "http://127.0.0.1:80",
+  "model": "qwen3.8-27b",
+  "started": "2026-08-18T12:56:48",
+  "suites": {
+    "matrix": {
+      "wall": 54.9,
+      "rows": [
+        {
+          "case": "openai/block/off",
+          "attempt": 0,
+          "ok": true,
+          "errors": [],
+          "ttft": null,
+          "latency": 2.8134828599868342,
+          "reasoning_chars": 0,
+          "tools": [
+            "list_dir"
+          ]
+        },
+        {
+          "case": "openai/block/low",
+          "attempt": 0,
+          "ok": true,
+          "errors": [],
+          "ttft": null,
+          "latency": 2.593925146968104,
+          "reasoning_chars": 31,
+          "tools": [
+            "list_dir"
+          ]
+        },
+        {
+          "case": "openai/block/medium",
+          "attempt": 0,
+          "ok": true,
+          "errors": [],
+          "ttft": null,
+          "latency": 2.6126417629420757,
+          "reasoning_chars": 93,
+          "tools": [
+            "list_dir"
+          ]
+        },
+        {
+          "case": "openai/block/high",
+          "attempt": 0,
+          "ok": true,
+          "errors": [],
+          "ttft": null,
+          "latency": 3.0837072420399636,
+          "reasoning_chars": 72,
+          "tools": [
+            "list_dir"
+          ]
+        },
+        {
+          "case": "openai/block/xhigh",
+          "attempt": 0,
+          "ok": true,
+          "errors": [],
+          "ttft": null,
+          "latency": 3.1239910820731893,
+          "reasoning_chars": 77,
+          "tools": [
+            "list_dir"
+          ]
+        },
+        {
+          "case": "openai/stream/off",
+          "attempt": 0,
+          "ok": true,
+          "errors": [],
+          "ttft": 2.02,
+          "latency": 2.135932876029983,
+          "reasoning_chars": 0,
+          "tools": [
+            "list_dir"
+          ]
+        },
+        {
+          "case": "openai/stream/low",
+          "attempt": 0,
+          "ok": true,
+          "errors": [],
+          "ttft": 0.64,
+          "latency": 2.496130151906982,
+          "reasoning_chars": 75,
+          "tools": [
+            "list_dir"
+          ]
+        },
+        {
+          "case": "openai/stream/medium",
+          "attempt": 0,
+          "ok": true,
+          "errors": [],
+          "ttft": 0.64,
+          "latency": 3.2672522149514407,
+          "reasoning_chars": 112,
+          "tools": [
+            "list_dir"
+          ]
+        },
+        {
+          "case": "openai/stream/high",
+          "attempt": 0,
+          "ok": true,
+          "errors": [],
+          "ttft": 0.74,
+          "latency": 2.6196765740169212,
+          "reasoning_chars": 72,
+          "tools": [
+            "list_dir"
+          ]
+        },
+        {
+          "case": "openai/stream/xhigh",
+          "attempt": 0,
+          "ok": true,
+          "errors": [],
+          "ttft": 0.73,
+          "latency": 3.3071575859794393,
+          "reasoning_chars": 69,
+          "tools": [
+            "list_dir"
+          ]
+        },
+        {
+          "case": "anthropic/block/off",
+          "attempt": 0,
+          "ok": true,
+          "errors": [],
+          "ttft": null,
+          "latency": 2.1268891490763053,
+          "reasoning_chars": 0,
+          "tools": [
+            "list_dir"
+          ]
+        },
+        {
+          "case": "anthropic/block/low",
+          "attempt": 0,
+          "ok": true,
+          "errors": [],
+          "ttft": null,
+          "latency": 2.5731447769794613,
+          "reasoning_chars": 31,
+          "tools": [
+            "list_dir"
+          ]
+        },
+        {
+          "case": "anthropic/block/medium",
+          "attempt": 0,
+          "ok": true,
+          "errors": [],
+          "ttft": null,
+          "latency": 3.3156942659989,
+          "reasoning_chars": 89,
+          "tools": [
+            "list_dir"
+          ]
+        },
+        {
+          "case": "anthropic/block/high",
+          "attempt": 0,
+          "ok": true,
+          "errors": [],
+          "ttft": null,
+          "latency": 2.6654176770243794,
+          "reasoning_chars": 77,
+          "tools": [
+            "list_dir"
+          ]
+        },
+        {
+          "case": "anthropic/block/xhigh",
+          "attempt": 0,
+          "ok": true,
+          "errors": [],
+          "ttft": null,
+          "latency": 2.6146282659610733,
+          "reasoning_chars": 72,
+          "tools": [
+            "list_dir"
+          ]
+        },
+        {
+          "case": "anthropic/stream/off",
+          "attempt": 0,
+          "ok": true,
+          "errors": [],
+          "ttft": 1.99,
+          "latency": 2.035273068002425,
+          "reasoning_chars": 0,
+          "tools": [
+            "list_dir"
+          ]
+        },
+        {
+          "case": "anthropic/stream/low",
+          "attempt": 0,
+          "ok": true,
+          "errors": [],
+          "ttft": 0.63,
+          "latency": 2.6285269419895485,
+          "reasoning_chars": 31,
+          "tools": [
+            "list_dir"
+          ]
+        },
+        {
+          "case": "anthropic/stream/medium",
+          "attempt": 0,
+          "ok": true,
+          "errors": [],
+          "ttft": 0.64,
+          "latency": 3.784695640904829,
+          "reasoning_chars": 89,
+          "tools": [
+            "list_dir"
+          ]
+        },
+        {
+          "case": "anthropic/stream/high",
+          "attempt": 0,
+          "ok": true,
+          "errors": [],
+          "ttft": 0.65,
+          "latency": 2.553782621049322,
+          "reasoning_chars": 72,
+          "tools": [
+            "list_dir"
+          ]
+        },
+        {
+          "case": "anthropic/stream/xhigh",
+          "attempt": 0,
+          "ok": true,
+          "errors": [],
+          "ttft": 0.65,
+          "latency": 2.5359521640930325,
+          "reasoning_chars": 72,
+          "tools": [
+            "list_dir"
+          ]
+        }
+      ]
+    }
+  },
+  "preflight": {
+    "advertised_models": [
+      "qwen3.8-27b",
+      "qwen3.8-27b-heretic",
+      "qwen3.8-27b-q4kxl"
+    ],
+    "health": {
+      "status": "ok",
+      "backend": "fastllm",
+      "backend_url": "http://127.0.0.1:8002",
+      "ready": true,
+      "lifecycle": {
+        "owned": true,
+        "state": "READY",
+        "suspended": false,
+        "generation": 1,
+        "active": 0,
+        "accepting": true,
+        "pressure": false,
+        "last_error": null,
+        "last_stop_reason": null,
+        "checkpoint_successes": 0,
+        "checkpoint_failures": 0,
+        "last_checkpoint_error": null,
+        "last_checkpoint_generation": 0,
+        "last_checkpoint_pages": 0,
+        "last_checkpoint_bytes": 0,
+        "last_checkpoint_duration_ms": 0.0
+      }
+    },
+    "warmup_attempts": 1
+  },
+  "hard_failures": 0
+}
