@@ -179,3 +179,87 @@ harness 的名字，因此 omp / OpenCode / Cherry Studio / 任意 OpenAI 或 An
   **1×120K 失败**（最小空闲显存 627 MiB，drain 采样 75 次）。
   即使 `FASTLLM_PAGED_POOL_MAX_MB=7600`，单条 120K 仍把卡逼到接近 OOM。
   真实上限在 60K–120K 之间，需重新标定。
+
+---
+
+# 续：显存压力死锁与 262K 的真实账本（2026-08-19 上午）
+
+## 症状：压力一来，整个服务就不动了
+
+```
+GPU 利用率 0%，显存 32.3/32.5 GB          ← 满了，但什么都没在算
+后端  running=1 pending=6，prefill 0 tok/s，decode 0 tok/s
+proxy streams=8/8  inflight=[]  queued=15  backend=DRAINING(active=7)
+      [stream] VRAM 压力中, 等待重试(第 180 次)
+```
+
+`inflight=[]` 却 `streams=8/8` —— **8 个并发槽位全被"正在等压力消退"的请求攥着**。
+
+## 根因：拿槽位和等压力的顺序反了
+
+```python
+await scheduler.acquire_stream(...)              # ① 先拿槽位
+...
+opened_stream = await _open_backend_stream(...)  # ② 里面才 _acquire_lease_tolerating_pressure()
+                                                 #    在这里睡着等 —— 槽位一直攥着
+```
+
+槽位全被睡着的请求占满 → 没有请求能派发到后端 → 后端跑不完在途请求 →
+显存不释放 → 压力标志永不落下 → 循环闭合。
+
+**修复**：新增 `_wait_out_pressure_before_slot()`，在**拿槽位之前**、
+**不获取任何资源**的前提下把压力等掉；三个流式入口都接上。超时不抛异常，
+后面的 `_acquire_lease_tolerating_pressure` 仍是最终判定点。
+
+## 262K 的真实账本
+
+新加的 `vram=` 明细（`GetVramBreakdown()`，metrics 行里）把黑箱拆开了：
+
+```
+空闲:        vram=24862/32494MB(pool=3197  alloc_busy=16415 alloc_free=2971 other=2277)
+长 prefill:  vram=32412/32494MB(pool=5040  alloc_busy=22940 alloc_free=1954 other=2477)
+```
+
+关键观察：**`alloc_busy` 冲到 23344 后就完全不动**，而 `pool` 一路从 3197 涨到 6176。
+说明这 6.9 GB 是**一次性分配、加载后固定**的开销，不随上下文增长 ——
+与 V100(SM70) 没有 INT8 张量核、量化权重必须反量化成 fp16 才能算这一事实吻合。
+**这块不能关，只能优化。**
+
+排除过的猜测（都不是）：
+- 注意力分数矩阵随 `chunked_prefill_size × context` 增长 —— 512→128 后 `alloc_busy` 没变
+- MTP 的 FP8 draft lm_head —— 日志里那行 `draft lm_head prepared` 从未出现，
+  因为它要求源权重是 FLOAT16/BFLOAT16，而我们是 Q5_K_M，直接 early return
+- 线性注意力前缀快照 —— 有配额（`MAX_PER_REQUEST=4`、`MAX_RECORDS=8`），最多约 200MB
+
+差多少：
+```
+alloc_busy 23344 + other ~2500 + 262K 需要的池 7600 = 33444 MB > 32494 MB
+                                                     ↑ 差约 950 MB
+```
+
+所以换 **turbo3**（比 turbo4 更省的 KV 量化）正好覆盖这个缺口。
+
+## 前缀缓存：诊断被改写
+
+原以为是"记录不生效"，**不是**。`Record()` 确实会往 trie 注册
+（`pageToTrieNode[pid]=child` @ `fastllm.cpp:9488`），`layers-ok=16/次`
+恰好等于全注意力层数（另外 48 层 `mgr-invalid` 是线性注意力层，预期内）。
+
+真正的链条：页是在**请求结束时**由 `ReleasePageIndex` 放进 `triePages` 的，
+而 metrics 一直显示 **`done 0 req`** —— 从来没有请求成功完成过，全被 Grow
+显存不足中止。于是页永不释放 → trie 永远空（`L1trie=0`）→ 查找必然
+`no-record` → 每轮重算全量 prefill → 显存压力更大 → 更易中止。**闭环。**
+
+**前缀缓存是显存问题的下游，不是独立故障。**
+
+另一个独立缺陷：查找 `manager->Query(ctx->currentTokens, pages)`
+**只查 VRAM trie(L1)**，不查 CPU/disk 层。盘上那 1877 MB 只在启动时的持久化
+恢复路径用得到，**不在每请求的查找链上** —— 三级目前不是一条查找链。
+
+## 待办的下放设计（用户明确要求）
+
+1. **不能"缺多少腾多少"** —— 那会导致 grow→清理→grow 的抖动。用**水位滞回**：
+   低水位触发，一次腾到高水位再停，并加冷却期。
+2. 三级之间用合适的算法与阈值做下放轮转（VRAM→RAM(zstd)→disk），命中时上提。
+3. 成本模型用现成的 `RECOMPUTE_TPS` / `CPU_READ_MBPS` / `DISK_READ_MBPS` /
+   `ZSTD_DECOMPRESS_MBPS`：只有"恢复成本 < 重算成本"才值得留在某一级。
