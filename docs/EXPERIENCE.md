@@ -1293,3 +1293,128 @@ prefill 数字偏低, **不能与后面几档直接比**(见下文"被污染的�
   `饕餮 魑魅魍魉 齉齾 靐龘 兲丆 瓛璩 黼黻 龏龗 / αβγ ∑∫∂ ✓✗ 🌸🔧🧪 ①②③ ｱｲｳ` 零坏字节。
 - **外部流量**: haru 自己在 TB14P 上用生产 endpoint 跑 omp(见到 15 万 token 的请求),
   会打满 KV pool 并改变命中率。受影响档位需复测。
+
+### 15.33 前缀缓存 no-record 根因: 混合注意力双门槛 + 262K 逻辑上限超配物理显存 (2026-08-18)
+
+**现象**: agent 场景 req#2 total=133558 hit=0 miss=no-record, L1trie=0 恒空;
+每轮 130K+ 全量重算 ~7min (128K prefill ≈305 tok/s), 双槽占死, 客户端超时重试放大成几十路并发。
+
+**根因链 (Qwen3.5 hybrid 结构性 bug)**:
+1. `TryRecordPagedCache` 主路径对含 linear 层的模型整体 gate 在 `TryRecordPagedPrefixCacheExtra` 返回 true 上;
+   extra false → skip-linear-bounded → 主路径 full-attn 页也不记 → L1 trie 恒空。
+2. extra 的两个 early-return 把 agent 请求全挡死:
+   - **页对齐**: 要求 `currentLen % pageLen == 0`。生成结束记录时 currentLen 含生成 token, 几乎从不 128 对齐 → skip-len。
+   - **MTP 严格同步**: 要求 mtpCaches 存在且 `tokens == currentLen`。prefill 期 MTP cache 未建 (decode 才懒建) → skip-mtp;
+     结束时 MTP tokens = 未对齐总长 ≠ 对齐前缀 → 也挂。
+3. bench 能命中 (0.979) 是因为其记录在非 MTP/对齐场景碰巧通过, 与 agent 路径不同。
+
+**修复 (qwen3_5.cpp + fastllm.cpp, 编译 rc=0)**:
+- 记录侧: currentLen 向下页对齐 (记对齐前缀, 不整条丢弃); MTP cache 缺失/不同步 → mtpValid=false 继续记 linear+full-attn。
+- 查询/恢复侧: 两轮 find (MTP 快照优先, 无 MTP 兜底命中); 恢复时无 MTP → mtpCaches 留空, 首个 draft 步自动重新 seed (该步无投机, 功能正确)。
+- 打点: reqSeq%64→%8; extra-mtp-degraded 并入 mtp= 计数。
+- **验证**: gen3 req#2 total=31451 **hit=512 layer=mem-trie** —— L1 trie 首次命中, 修复生效。
+
+**第二个独立问题 — 262K 逻辑上限 vs 32GB 物理**:
+- turbo3 KV ≈65KB/token → 262K 满装 ~17GB; 权重 21.7GB + 运行时 ~1.5GB → 物理容量仅 ~140K token。
+- 懒页池按需 Grow, 日常 <<100K 从未触顶; agent 单请求 148K prefill 首次顶穿 (kv_pool 98%, free 0.4GB) → gen1 abort(-6), gen2 segv(-11)。
+- **前缀缓存修复正好治本**: 后续轮次共享前缀页, 双槽总占用 ≈ 共享前缀 + 增量 ≈ 140K+ε。
+- 用户决策: 切 **turbo4** (KV 更高压缩 → 280K+ 物理可行), 同二进制 env 切换 (TURBO4_KV=1, --kv_cache_dtype turbo4)。
+
+**口径修正**: 记录 snapshot interval 默认 64 页=8192 tok (首次记录不节流); 结束记录若不对齐 8192 被 skip-interval,
+影响仅末段 <8K 未记, 前段命中仍省 ~99% prefill。
+
+### 15.33 多 agent 服务的容量事故 + prefill 优化调研 (2026-08-18 下午)
+
+#### A. 事故: "几十路并发把后端搞爆" 的真实机制
+
+现象: z3rm / proto-ui 被唤醒后, 出现几十路并发, 疑似不停 retry; 重启无效。
+
+根因链(三环叠加, 第 3 环是这次改出来的):
+1. **真并发只有 2**: 后端 `--batch 2`, proxy 流式槽位也是 2(刻意对齐)。
+2. **单轮可以跑十几分钟**: 常驻 agent 用 `thinking high`(经 adapter 映射成 xhigh),
+   加上 `--default_max_tokens 16384`, 一轮近万 token ≈ 9~10 分钟。两个这样的 agent
+   就能把 2 个槽位长期占死。
+3. **流式改成"排队等"后队列无界**(为修"显存压力直接 503"引入): 后续请求全堆在
+   `acquire_stream`, 客户端各自超时重试, 每次重试再追加一份 ⇒ 表面几十路"并发",
+   实际绝大多数在空等。proxy metrics 形态: `streams=2/2 inflight=[315s~0tok,314s~0tok] queued=N`。
+
+⇒ **重启无效**, 因为重启只清队列, 三环都还在。
+
+**但更底层的原因是前缀缓存完全没记录**:
+```
+[PrefixCache] req#2 total=133558 hit=0 layer=- miss=no-record
+L1trie=0 pg (~0 tok)
+```
+13.3 万 token 的请求命中为零 ⇒ agent 每轮把整个上下文从头重算(128K prefill ≈ 305 tok/s,
+一轮 ~7 分钟)。对比 bench 场景(同前缀立刻重放)命中 0.979 —— 差别在于 agent 的前缀是
+**逐轮增长**的。
+
+根因(在 `qwen3_5.cpp::TryRecordPagedPrefixCacheExtra`): 记录要求
+`currentLen % pageLen == 0`, 而 generation-end 的调用包含生成 token, 长度几乎不可能页对齐;
+整个记录路径又以这个 extra 返回 true 为前提 ⇒ **L1 trie 永远是空的**。
+修法: 记录**页对齐前缀**而不是拒绝未对齐尾巴; MTP 快照缺失时降级而不是丢弃整条记录。
+(部署后观察到首次出现 `hit=512 layer=mem-trie`, 但仍以 `miss=other` 为主, **尚未到位**,
+继续排查中。)
+
+#### B. proxy 侧三个修复(都已上生产)
+
+1. **准入控制/熔断**: `MAX_QUEUE_WAITERS`(默认 **24**) —— 注意阈值故意设得很高,
+   **不做常规限流**: omp 被 429 打多了会直接 "Retry budget exhausted" 停摆(proto-ui 就这么死过),
+   所以正常拥塞靠排队 + 快速周转解决, 熔断只兜底。超限返回 503 + `Retry-After: 10`;
+   在 async generator 里则以 SSE error 事件 + `[DONE]` 收尾(不能 return 响应对象)。
+2. **并发槽位泄漏自愈**: 不能只看流式计数器 —— 非流式 `_worker` 是**直接** `self._slot.acquire()` 的。
+   改成比对信号量真实余量, 并用 `_INFLIGHT` / `active` / `pending()` 三个信号确认"确实没人在用",
+   持续 90s 才回收。同类问题的后端租约(`active` 卡住不降)也加了 `reap_stale_leases()`。
+3. **`_CONTEXT_LIMIT` 在 FastLLM 模式下退回 32768**(它只解析 llama-server 的 `-c`) ⇒
+   >16K 的请求被判超限: `FALLBACK_ENABLED=1` 时**静默转发到云端**, =0 时直接 429。
+   **这就是 proto-ui 那串 429 的来源**。改为优先读 `CONTEXT_LIMIT`, 否则从
+   `FASTLLM_BACKEND_COMMAND` 的 `--tokens` 解析(262144)。
+
+另: `--default_max_tokens` 16384 → **8192**(实测 `finish_reason=length` 为 0, 无截断副作用)。
+**thinking 档位不动, 保持 high** —— 实测非 high 档这个模型明显变蠢。
+
+#### C. prefill 优化调研(subagent, 有 roofline 实测)
+
+**「大矩阵 exact 方案」= 1Cat-vLLM v1.3.0 的 long-prefill exact-dense**
+(`docs/design/sm70_{awq,fp8}_long_prefill_exact_dense.md`,
+实现在 `csrc/sm70_turbomind/ops/awq_sm70_gemm.cu:2292/2327/3521` + `awq.py:40/79/110/589`):
+大 M 时放弃融合量化 GEMM(NCU: occupancy 仅 12.5%、62% 周期无可发射 warp、DRAM 才 9.36%),
+改成一次性把权重展开进有界共享 fp16 `K×N` workspace 再跑普通 cuBLAS。
+
+**结论: 不值得移植** —— fastllm 早就在跑同一套结构(`fastllm-ggml-cuda.cu:783`,
+`MMVQ_MAX_BATCH_SIZE=8` 以上即 dequant→`cublasGemmEx`, 配持久 scratch、TN 布局)。
+vLLM 那边 SM70 能用的部分我们全有; 用不上的(`cp.async`/`m16n8k16`/machete)本来就不支持;
+LOP3 反量化对 Q5_K 的 6-bit-scale + 4/1-bit 拆分结构**无法表达**。
+
+**真正的红利在两个 fastllm 特有的浪费**:
+1. **L2 write-allocate**: roofline 内核证明 Q5_K 展开的瓶颈既不是算术也不是 store 宽度 ——
+   同样字节量, 普通 store **411.8 GB/s** vs streaming store **747.3 GB/s**。
+   改成 streaming store 后整模型每 chunk 展开 **154.9 → 90.7 ms(1.71x, 10/10 形状逐位相同)**。
+2. **`--chunked_prefill_size` 512→2048**(零代码, `GetChunkedPrefillSize()` clamp 上限 8192):
+   量化投影每 token **966.5 → 654.4 µs(1.48x)**。
+合计端到端 prefill 约 **+24% @8K / +19% @32K / +9.5% @128K**。
+
+**128K 的大头不在这里**: 按每 512-token chunk 拆解, 量化投影只占 **29.5%**,
+attention+GDN 占 **70.5%**(8K 时反过来, 投影占 74.9%)。这与 vLLM FP8 文档里收益从 32K 的
++22.4% 衰减到 256K 的 +7.25% 是同一条曲线。下一轮该看
+`sm70_flash_v100_prefill_operator_optimization.md` / `sm70_fa2_d256_prefill_pipeline.md`;
+fastllm 侧有两个**已实现但默认关闭**的开关值得先 A/B:
+`FASTLLM_CUDA_PAGED_CUBLAS_BATCH_GQA=1`、`FASTLLM_CUDA_PAGED_CUBLAS_FUSED_STATE_COMMIT=1`。
+
+**待决策**: `chunked_prefill_size` 512→2048 是收益最大的单项(+21.8% @8K)且零代码,
+但会让 decode 交织粒度变粗(TPOT 抖动↑)、注意力 scratch 8→32 MB, 上线前应 A/B 验 TPOT 退化。
+**2TP 展望**: 展开加速 1.71x 完全保留, chunk 摊薄的杠杆更重要(每 rank N 减半后窄形状
+在 M=512 的 cuBLAS 效率更差); 但要先测 all-reduce —— M=512 时每 chunk 671 MB over PCIe
+≈ 67 ms, 与展开开销同量级, 1TP 上完全不存在这一项。
+
+**一个值得记的教训**: 第一版只做「16 字节向量化 store」实测是 **0.92x(负优化)**,
+因为原内核的 store 本来就已满 64B sector 合并。是 roofline 对照实验才定位到真瓶颈是 L2 写策略。
+
+#### D. 运维: 别再被本机网络带走
+
+本机 Tailscale 曾在长任务中途停掉 ⇒ SSH 全断、**没 nohup 的远端进程被 SIGHUP 带走**
+(一轮验证白跑)。现已固化两条路:
+- `ssh dw` —— Tailscale 直连(MagicDNS), 最快;
+- `ssh dw-jump` —— 经 hermes 公网跳板(`ezra@60.205.210.140`, 取自 tailnet `CurAddr`)
+  ProxyJump 进 tailnet, **Tailscale 停掉也能用**。
+规矩: 远端长任务一律 `nohup`; 直连失败先试跳板, 别急着判定远端挂了。
