@@ -1,5 +1,5 @@
 --- thinking_proxy.orig.py	2026-08-18 05:00:41
-+++ thinking_proxy.py	2026-08-18 04:55:48
++++ /Users/haru/Projects/EzraVastLLM/deployed/thinking_proxy.py	2026-08-18 08:57:38
 @@ -216,6 +216,14 @@
  if FASTLLM_MODE and QUEUE_TIMEOUT < 600:
      QUEUE_TIMEOUT = 600
@@ -15,19 +15,102 @@
  
  if FASTLLM_MODE:
      BACKEND_URL = FASTLLM_BACKEND_URL
-@@ -1742,10 +1750,18 @@
+@@ -1284,6 +1292,13 @@
+         # backend batch so concurrent client requests never stack VRAM
+         # beyond the sized KV pool.
+         self._slot = asyncio.Semaphore(2)
++        # 流式槽位泄漏自愈: StreamingResponse 的生成器如果**从未被迭代**
++        # (客户端在拿到响应头前就断了 / 被 Ctrl+C), `_local_stream` 的 finally
++        # 不会执行, 槽位就永远收不回来。实测出现过 `streams=2/2 inflight=[]`,
++        # 之后所有流式请求排队到 QUEUE_TIMEOUT —— 对 agent 负载是致命的
++        # (omp/OpenCode 被中断几次就能把服务卡死)。
++        self._stream_outstanding = 0
++        self._stream_last_change = time.monotonic()
+ 
+     async def start_workers(self):
+         for _ in range(self.max_concurrent):
+@@ -1393,9 +1408,34 @@
+ 
+     async def acquire_stream(self, timeout: float | None = None):
+         await asyncio.wait_for(self._slot.acquire(), timeout=timeout)
++        self._stream_outstanding += 1
++        self._stream_last_change = time.monotonic()
+ 
+     def release_stream(self):
++        if self._stream_outstanding <= 0:
++            return                      # 重复 release 不该把容量放大
++        self._stream_outstanding -= 1
++        self._stream_last_change = time.monotonic()
+         self._slot.release()
++
++    def reap_leaked_streams(self, idle_seconds: float = 90.0) -> int:
++        """槽位被占但一个在途请求都没有 ⇒ 生成器没跑 finally, 槽位泄漏了。
++
++        只在"持续空转"超过 idle_seconds 后才回收, 避免误伤刚 acquire 还没
++        产出第一个 chunk 的正常请求。
++        """
++        if self._stream_outstanding <= 0 or _INFLIGHT:
++            return 0
++        if time.monotonic() - self._stream_last_change < idle_seconds:
++            return 0
++        leaked = self._stream_outstanding
++        for _ in range(leaked):
++            self._stream_outstanding -= 1
++            self._slot.release()
++        self._stream_last_change = time.monotonic()
++        print(f"[stream] 回收泄漏的流式槽位 x{leaked}"
++              f"(占用但无在途请求超过 {idle_seconds:.0f}s)", flush=True)
++        return leaked
+ 
+ 
+ scheduler = BackendScheduler()
+@@ -1439,6 +1479,7 @@
+         _PROXY_METRICS["ttft_sum"] = 0.0
+         _PROXY_METRICS["decode_tok"] = 0
+         _PROXY_METRICS["decode_s"] = 0.0
++        scheduler.reap_leaked_streams()
+         in_flight = scheduler.max_concurrent - scheduler._slot._value
+         avg_ttft = ttft_sum / stream_reqs if stream_reqs else 0.0
+         tps = decode_tok / decode_s if decode_s > 0 else 0.0
+@@ -1742,10 +1783,43 @@
      return b"data: " + json.dumps(payload).encode() + b"\n\n"
  
  
 -async def _open_backend_stream(url: str, body: dict, timeout: float = 600):
+-    lease = await backend_lifecycle.acquire(
+-        timeout=min(float(timeout), float(QUEUE_TIMEOUT)))
+-    client = httpx.AsyncClient(timeout=timeout)
++async def _acquire_lease_tolerating_pressure(budget: float):
++    """显存水位压力是**瞬时**状态, 不该直接变成客户端可见的 503。
++
++    `backend_lifecycle.acquire()` 在 `_pressure` 为真时抛 BackendMemoryPressure,
++    流式路径原本把它直接翻译成 "FastLLM backend is reloading" 返回给调用方。
++    实测: 有别的长上下文请求在跑时, 同一个请求非流式成功、流式连续 3/3 拿到 503。
++    agentic 客户端(omp/OpenCode)永远走流式, 于是"5-10 并发 subagent 无报错"
++    这条根本达不到。这里改成在预算内等待压力消退, 与队列路径的语义对齐。
++    """
++    deadline = time.monotonic() + max(budget, 1.0)
++    attempt = 0
++    while True:
++        try:
++            return await backend_lifecycle.acquire(
++                timeout=max(1.0, deadline - time.monotonic()))
++        except BackendMemoryPressure:
++            attempt += 1
++            if time.monotonic() >= deadline:
++                raise
++            if attempt == 1 or attempt % 10 == 0:
++                print(f"[stream] VRAM 压力中, 等待重试(第 {attempt} 次), "
++                      f"剩余预算 {deadline - time.monotonic():.0f}s", flush=True)
++            await asyncio.sleep(2.0)
++
++
 +async def _open_backend_stream(url: str, body: dict, timeout: float = 0.0):
 +    # timeout<=0 → 用 STREAM_READ_TIMEOUT(默认 = QUEUE_TIMEOUT)。connect/write 单独
 +    # 收紧, 只有 read 需要覆盖整段 prefill 的静默期。
 +    read_timeout = float(timeout) if timeout and timeout > 0 else STREAM_READ_TIMEOUT
-     lease = await backend_lifecycle.acquire(
--        timeout=min(float(timeout), float(QUEUE_TIMEOUT)))
--    client = httpx.AsyncClient(timeout=timeout)
-+        timeout=min(read_timeout, float(QUEUE_TIMEOUT)))
++    lease = await _acquire_lease_tolerating_pressure(
++        min(read_timeout, float(QUEUE_TIMEOUT)))
 +    client = httpx.AsyncClient(timeout=httpx.Timeout(
 +        read_timeout,
 +        connect=STREAM_CONNECT_TIMEOUT,
@@ -37,7 +120,7 @@
      try:
          request = client.build_request("POST", url, json=body)
          response = await client.send(request, stream=True)
-@@ -3039,21 +3055,49 @@
+@@ -3039,21 +3113,49 @@
      enable = thinking_param.get("type") != "disabled"
  
      output_config = body.get("output_config") or {}
