@@ -66,6 +66,8 @@ run_suite garble  --suite garble --repeat 3 \
   --json "$OUTDIR/$TAG.garble.json" --dump-dir "$OUTDIR/$TAG.dumps"
 run_suite toolloop --suite toolloop --rounds 4 \
   --json "$OUTDIR/$TAG.toolloop.json"
+run_suite images  --suite images --image-counts 2,5,7 --image-size 512 \
+  --json "$OUTDIR/$TAG.images.json" --dump-dir "$OUTDIR/$TAG.dumps"
 run_suite bench   --suite bench --bench-sizes 200,8000,32000,131072 \
   --log-path "$BACKEND_LOG" --json "$OUTDIR/$TAG.bench.json"
 run_suite conc    --suite concurrency --concurrency 6 --rounds 2 \

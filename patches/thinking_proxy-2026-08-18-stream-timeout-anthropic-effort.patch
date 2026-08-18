@@ -1,5 +1,5 @@
 --- thinking_proxy.orig.py	2026-08-18 05:00:41
-+++ /Users/haru/Projects/EzraVastLLM/deployed/thinking_proxy.py	2026-08-18 08:57:38
++++ /Users/haru/Projects/EzraVastLLM/deployed/thinking_proxy.py	2026-08-18 10:38:53
 @@ -216,6 +216,14 @@
  if FASTLLM_MODE and QUEUE_TIMEOUT < 600:
      QUEUE_TIMEOUT = 600
@@ -15,7 +15,69 @@
  
  if FASTLLM_MODE:
      BACKEND_URL = FASTLLM_BACKEND_URL
-@@ -1284,6 +1292,13 @@
+@@ -253,6 +261,24 @@
+ # ─── Context helpers ────────────────────────────────────────────
+ 
+ def _get_context_limit() -> int:
++    # 显式覆盖优先
++    env_limit = os.environ.get("CONTEXT_LIMIT", "").strip()
++    if env_limit.isdigit() and int(env_limit) > 0:
++        return int(env_limit)
++    # FastLLM 模式下 LLAMA_ARGS 是空的, 原来会退回 32768 —— 于是任何
++    # >16K 的请求都被判"超限", 在 FALLBACK_ENABLED=1 时被**静默转发到云端**,
++    # 在 FALLBACK_ENABLED=0 时直接 429。真实上下文是后端 `--tokens`(262144)。
++    cmd = os.environ.get("FASTLLM_BACKEND_COMMAND", "")
++    if cmd:
++        parts = cmd.split()
++        for i, a in enumerate(parts):
++            if a == "--tokens" and i + 1 < len(parts):
++                try:
++                    value = int(parts[i + 1])
++                except ValueError:
++                    continue
++                if value > 0:
++                    return value
+     total = 32768
+     slots = 1
+     args = LLAMA_ARGS
+@@ -658,6 +684,36 @@
+         # No immediate stop on pressure here: a transient VRAM peak (e.g. a
+         # vision-encode burst) clears within seconds once the request ends.
+         # Sustained pressure is handled by the watchdog's grace period.
++
++    async def reap_stale_leases(self, idle_seconds: float = 180.0) -> int:
++        """租约与流式槽位是同一类泄漏: 生成器没被迭代 ⇒ finally 没跑 ⇒ active 不减。
++
++        active 卡住会让空闲判定、压力判定与 drain 逻辑全部失真, 所以在"确认没有
++        任何在途请求且调度队列为空"且持续超过 idle_seconds 后强制归零。
++        """
++        if self.active <= 0 or _INFLIGHT:
++            return 0
++        if scheduler.pending() > 0 or scheduler.active > 0:
++            return 0
++        last = getattr(self, "_lease_idle_since", None)
++        now = time.monotonic()
++        if last is None:
++            self._lease_idle_since = now
++            return 0
++        if now - last < idle_seconds:
++            return 0
++        async with self._lock:
++            leaked = self.active
++            if leaked <= 0:
++                self._lease_idle_since = None
++                return 0
++            self.active = 0
++            self.last_idle_at = now
++            self._drained.set()
++        self._lease_idle_since = None
++        print(f"[lifecycle] 回收泄漏的后端租约 x{leaked}"
++              f"(无在途请求且队列为空超过 {idle_seconds:.0f}s)", flush=True)
++        return leaked
+ 
+     async def check_idle(self, now=None):
+         if not self.owned or self.idle_timeout <= 0:
+@@ -1284,6 +1340,13 @@
          # backend batch so concurrent client requests never stack VRAM
          # beyond the sized KV pool.
          self._slot = asyncio.Semaphore(2)
@@ -29,7 +91,7 @@
  
      async def start_workers(self):
          for _ in range(self.max_concurrent):
-@@ -1393,9 +1408,34 @@
+@@ -1393,9 +1456,34 @@
  
      async def acquire_stream(self, timeout: float | None = None):
          await asyncio.wait_for(self._slot.acquire(), timeout=timeout)
@@ -64,15 +126,19 @@
  
  
  scheduler = BackendScheduler()
-@@ -1439,6 +1479,7 @@
+@@ -1439,6 +1527,11 @@
          _PROXY_METRICS["ttft_sum"] = 0.0
          _PROXY_METRICS["decode_tok"] = 0
          _PROXY_METRICS["decode_s"] = 0.0
 +        scheduler.reap_leaked_streams()
++        try:
++            await backend_lifecycle.reap_stale_leases()
++        except Exception as exc:                      # noqa: BLE001
++            print(f"[lifecycle] 租约回收检查失败: {exc}", flush=True)
          in_flight = scheduler.max_concurrent - scheduler._slot._value
          avg_ttft = ttft_sum / stream_reqs if stream_reqs else 0.0
          tps = decode_tok / decode_s if decode_s > 0 else 0.0
-@@ -1742,10 +1783,43 @@
+@@ -1742,10 +1835,43 @@
      return b"data: " + json.dumps(payload).encode() + b"\n\n"
  
  
@@ -120,7 +186,7 @@
      try:
          request = client.build_request("POST", url, json=body)
          response = await client.send(request, stream=True)
-@@ -3039,21 +3113,49 @@
+@@ -3039,21 +3165,49 @@
      enable = thinking_param.get("type") != "disabled"
  
      output_config = body.get("output_config") or {}

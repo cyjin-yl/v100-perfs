@@ -75,17 +75,20 @@ MATRIX = [
     ("n2", "n-q4kxl", "turbo3", 2, 262144, 2, "base", "off", "KV turbo3 对照"),
     ("n3", "n-q4kxl", "fp8_e4m3", 2, 262144, 2, "base", "off", "KV fp8 对照"),
     ("n4", "n-q4kxl", "turbo4", 0, 262144, 2, "base", "off", "MTP 关(量化 MTP 收益)"),
-    ("n5", "n-q4kxl", "turbo4", 2, 262144, 2, "tuned", "off", "缓存策略调优"),
-    ("n6", "n-q4kxl", "turbo4", 2, 262144, 2, "tuned", "on", "缓存调优 + SM70 算子"),
-    ("n7", "n-q5km", "turbo4", 2, 262144, 2, "tuned", "off", "普通版 Q5(智力更高?)"),
-    ("n8", "n-q6k", "turbo4", 2, 131072, 2, "tuned", "off", "普通版 Q6(显存紧, 降 ctx)"),
-    ("n9", "n-awq", "turbo3", 2, 262144, 2, "tuned", "off", "普通版 AWQ W4A16"),
-    ("c1", "c-q5km", "turbo4", 2, 262144, 2, "tuned", "off", "解限版 Q5(主推候选)"),
-    ("c2", "c-q5km", "turbo3", 2, 262144, 2, "tuned", "off", "解限版 Q5 + turbo3"),
-    ("c3", "c-q4km", "turbo4", 2, 262144, 2, "tuned", "off", "解限版 Q4_K_M(已知该档有隐患)"),
-    ("c4", "c-q6k", "turbo4", 2, 131072, 2, "tuned", "off", "解限版 Q6(显存紧, 降 ctx)"),
-    ("c5", "c-awq", "turbo3", 2, 262144, 2, "tuned", "off", "解限版 AWQ W4A16(27G 权重)"),
-    ("c6", "c-q5km", "turbo4", 2, 262144, 2, "tuned", "on", "解限版 Q5 + SM70 算子"),
+    # cachetuned 实测是**负优化**(n5 前缀命中 0.869 vs n1 默认 0.979, 且
+    # record{ok=0}), 所以只保留 n5 一档做缓存实验; 其余对比档统一用默认缓存,
+    # 保证"模型/KV量化/算子"这些变量各自被隔离。
+    ("n5", "n-q4kxl", "turbo4", 2, 262144, 2, "tuned", "off", "缓存策略调优(对照 n1)"),
+    ("n6", "n-q4kxl", "turbo4", 2, 262144, 2, "base", "on", "SM70 算子(对照 n1)"),
+    ("n7", "n-q5km", "turbo4", 2, 262144, 2, "base", "off", "普通版 Q5(智力更高?)"),
+    ("n8", "n-q6k", "turbo4", 2, 131072, 2, "base", "off", "普通版 Q6(显存紧, 降 ctx)"),
+    ("n9", "n-awq", "turbo3", 2, 262144, 2, "base", "off", "普通版 AWQ W4A16"),
+    ("c1", "c-q5km", "turbo4", 2, 262144, 2, "base", "off", "解限版 Q5(主推候选)"),
+    ("c2", "c-q5km", "turbo3", 2, 262144, 2, "base", "off", "解限版 Q5 + turbo3"),
+    ("c3", "c-q4km", "turbo4", 2, 262144, 2, "base", "off", "解限版 Q4_K_M(已知该档有隐患)"),
+    ("c4", "c-q6k", "turbo4", 2, 131072, 2, "base", "off", "解限版 Q6(显存紧, 降 ctx)"),
+    ("c5", "c-awq", "turbo3", 2, 262144, 2, "base", "off", "解限版 AWQ W4A16(27G 权重)"),
+    ("c6", "c-q5km", "turbo4", 2, 262144, 2, "base", "on", "解限版 Q5 + SM70 算子"),
 ]
 
 

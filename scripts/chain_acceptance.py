@@ -686,7 +686,9 @@ async def suite_garble(client: httpx.AsyncClient, args) -> list[dict]:
     rows = []
     for attempt in range(max(args.repeat, 3)):
         messages = [{"role": "user", "content": GARBLE_PROMPT}]
-        gbody = openai_body(messages, "off", True, max_tokens=512)
+        # 非流式: 乱码判定只关心最终文本, 而流式路径在后端热身/显存水位窗口里
+        # 会插入 503 事件, 把空响应误判成"字丢了"(整晚的 garble 假失败都是这么来的)。
+        gbody = openai_body(messages, "off", False, max_tokens=512)
         gbody.pop("tools", None)     # 复写题不该带工具, 否则模型可能改去调工具
         turn = await resilient(lambda: run_openai(client, gbody))
         blob = turn.text + turn.reasoning
@@ -786,6 +788,61 @@ async def suite_bench(client: httpx.AsyncClient, args) -> list[dict]:
     return rows
 
 
+# ─── suite: images(多图不崩) ─────────────────────────────────────
+
+
+def _png(width: int, height: int, rgb: tuple[int, int, int]) -> bytes:
+    """不依赖 PIL 生成一张纯色 PNG(测多图时只关心解码通路与显存, 不关心内容)。"""
+    import struct
+    import zlib
+
+    raw = b"".join(b"\x00" + bytes(rgb) * width for _ in range(height))
+
+    def chunk(tag: bytes, data: bytes) -> bytes:
+        return (struct.pack(">I", len(data)) + tag + data
+                + struct.pack(">I", zlib.crc32(tag + data) & 0xFFFFFFFF))
+
+    return (b"\x89PNG\r\n\x1a\n"
+            + chunk(b"IHDR", struct.pack(">IIBBBBB", width, height, 8, 2, 0, 0, 0))
+            + chunk(b"IDAT", zlib.compress(raw, 6))
+            + chunk(b"IEND", b""))
+
+
+async def suite_images(client: httpx.AsyncClient, args) -> list[dict]:
+    """omp 的 snapcompact 会一次贴很多张图: 2/5/7 张都不能崩, 且要真的走多模态通路。"""
+    import base64
+
+    rows = []
+    for count in [int(x) for x in args.image_counts.split(",") if x.strip()]:
+        blocks = []
+        for i in range(count):
+            png = _png(args.image_size, args.image_size,
+                       (30 + i * 30 % 200, 60, 200 - i * 20 % 180))
+            url = "data:image/png;base64," + base64.b64encode(png).decode()
+            blocks.append({"type": "image_url", "image_url": {"url": url}})
+        blocks.append({"type": "text", "text":
+                       f"上面一共有几张图? 每张图的主色调是什么? "
+                       f"请直接回答, 不要调用工具。(应为 {count} 张)"})
+        body = openai_body([{"role": "user", "content": blocks}], "off", True,
+                           max_tokens=512)
+        body.pop("tools", None)
+        turn = await resilient(lambda: run_openai(client, body), tries=2, delay=15)
+        check_loop(turn)
+        answered = bool(turn.text.strip())
+        if not answered:
+            turn.fail("empty_answer")
+        rows.append({"images": count, "size": args.image_size, "ok": turn.ok,
+                     "errors": turn.errors, "chars": len(turn.text),
+                     "latency": round(turn.latency, 1),
+                     "head": turn.text[:120]})
+        print(f"  images x{count} ({args.image_size}px): ok={turn.ok} "
+              f"chars={len(turn.text)} lat={turn.latency:.1f}s "
+              f"{turn.errors if turn.errors else ''}", flush=True)
+        if not turn.ok:
+            dump_failure(f"images-{count}", {"images": count}, turn)
+    return rows
+
+
 # ─── 预检: 绝不允许静默走云端 ────────────────────────────────────
 
 
@@ -848,7 +905,8 @@ async def preflight(client: httpx.AsyncClient) -> dict:
 
 SUITES = {"matrix": suite_matrix, "toolloop": suite_toolloop,
           "concurrency": suite_concurrency, "longctx": suite_longctx,
-          "garble": suite_garble, "bench": suite_bench}
+          "garble": suite_garble, "bench": suite_bench,
+          "images": suite_images}
 
 
 async def main() -> int:
@@ -876,6 +934,8 @@ async def main() -> int:
     ap.add_argument("--apis", default="openai,anthropic")
     ap.add_argument("--efforts", default="off,low,medium,high,xhigh")
     ap.add_argument("--streams", default="0,1")
+    ap.add_argument("--image-counts", default="2,5,7")
+    ap.add_argument("--image-size", type=int, default=512)
     args = ap.parse_args()
 
     DUMP_DIR = args.dump_dir
