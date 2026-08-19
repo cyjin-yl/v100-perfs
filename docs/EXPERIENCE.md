@@ -1272,7 +1272,32 @@ prefill 数字偏低, **不能与后面几档直接比**(见下文"被污染的�
 3. **KV 量化**: turbo4 可用; fp8 档的数据这轮无效(见下), 待重测。
 4. **SM70 算子**: c1(关) 与 c6(开)在 prefill/decode 上**没有可测差异**;
    之前"SM70 提升 prefill 26%"的印象来自与被污染的 n1 对比, 不成立。
-   但 c6 的 MTP 接受率显著更高(95.1/86.8% vs 76.3/56.2%), 且全绿, 故生产选择开启。
+   ~~但 c6 的 MTP 接受率显著更高(95.1/86.8% vs 76.3/56.2%), 且全绿, 故生产选择开启。~~
+
+   **【2026-08-20 订正: 上面这条归因不成立】** c1 与 c6 跑的是**同一条 kernel**,
+   接受率差异不可能来自 SM70 开关。源码依据:
+   - `FASTLLM_CUDA_SM70_PAGED_XQA` -> `FastllmCudaTrySm70PagedAttentionDecode`,
+     入口要求分页 K **和** V 都是 `FLOAT16`
+     (`src/devices/cuda/attention/paged/fastllm-paged-attention-native.cu:2030-2031`)
+   - `FASTLLM_CUDA_SM70_FLASH_ATTN` -> `FastllmCudaTrySm70FlashAttentionPrefill`,
+     要求 `FP8_E4M3` 分页 KV 且 `kvLen<=512`、每请求 `qLen 2..10`
+
+   而 c1/c6 两组的 KV 都是 **turbo4**, 两个条件都不满足 —— 开关取 0 还是 1
+   **完全等价**。实证: 两组的后端日志**逐行相同**; 全部 backend 日志里
+   grep `XQA` / `SM70 flash` **零命中**。
+
+   那么 95.1/86.8% vs 76.3/56.2% 的差异来自哪里? **未知** —— 只能归为未受控的
+   轮次差异(负载、缓存状态、请求内容)。这提醒: **接受率是个噪声较大的指标,
+   单轮对比不足以支撑选型结论**。
+
+   另: `FLASH_ATTN=0` 有**独立的正当理由**, 见 `fastllm_benchmark.md:345,353` ——
+   该实验路线端到端输出与 native **不等价**(token 数与 SHA-256 都不同)且更慢
+   (1 agent steady 10.00 -> 4.64 tok/s)。即使将来换到 fp8 KV 也不该直接打开。
+   而且 `EnvEnabled()` 未设时返回 false, 所以写 `FLASH_ATTN=0` 等于没写。
+
+   现已在代码里加了 `FastllmReportSm70AttentionRouteOnce()`: 只要显式设过这两个
+   变量, 启动时打印一次"该开关在当前 KV dtype 下不起作用", 避免以后再有人
+   误以为在调优。(commit 614845d1)
 5. **缓存"调优"是负优化**: `CPU_TIER=1 + MIN_TOKENS=4096 + DISK_MAX=200GiB` 反而把
    前缀命中从 0.979 打到 0.869, 且 `record{ok=0}`。缓存要按 15.31 的思路先修记录路径。
 
