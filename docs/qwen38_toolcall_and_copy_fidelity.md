@@ -355,3 +355,87 @@ Grow 失败: 0
   `Prototype`、`Proposed` 都在编辑距离阈值内被误判。需要加词形过滤后
   再做修复前后对比。
 - 三级缓存的下放轮转（水位滞回 + 冷却期）与把 L2/L3 接进每请求查找链，仍未做。
+
+---
+
+# 续三：262K 达成 + 与 fastllm pane(K3) 的改动合流（2026-08-19 晚）
+
+## 262K 通过，且快了一个数量级
+
+配平方案（turbo3 + 池 6600MB + 保留区 1536MB）：
+
+```
+1×60000 通过   wall=101.7s   最小空闲显存 4943 MiB
+已完成最大 prefill: 260574 token
+CUDA 分配失败: 0    Grow 拒绝(保留区): 0    崩溃重启: 0
+vram=29324/32494MB  仍空 3.1 GB
+```
+
+对比：turbo4 + `chunked_prefill_size 128` 时代同样的 60K 档要 **923.9s** —— **9 倍差距**。
+
+## 显存保留区（新增）
+
+崩溃循环的现场（30 分钟 5 代）：
+
+```
+CUDA error when allocating 96 MB!  gpuFree: 5 MB / 32494 MB
+fatal: cuda malloc failed in Data::MallocSpace
+  dims = [1, 48, 8192, 128]        ← 48 = 线性注意力层数
+```
+
+**KV 池把显存吃到只剩 5MB，激活张量申请 96MB 直接 fatal 杀进程。**
+`FASTLLM_PAGED_POOL_MAX_MB` 只约束池子自身，管不住"池子涨完之后还剩多少给
+激活用" —— 结构性缺口，调参盖不住。
+
+新增 `FASTLLM_VRAM_POOL_RESERVE_MB`（默认 1536）：`Grow` 的判据从
+`free >= newBytes` 改为 `free >= newBytes + reserve`。收益是**把失败点前移**：
+原先是 fatal 杀进程，现在是 Grow 拒绝增长、走
+`aborting in-flight requests; process survives` 的可恢复路径。
+
+## 与 K3 的改动合流
+
+K3（fastllm pane 的 agent）在同一份源码上并行工作，额度耗尽前留下了一些东西：
+
+**险些丢失的**：`git status` 是 `MM src/fastllm.cpp` —— K3 已 `git add` 但
+commit 被 NTFS 慢 IO 拖到超时未落地（1 秒后额度断），我的显存保留区压在上面。
+直接 `git commit` 会冒名提交它的改动；`checkout --` 会两个人的都没。
+已分层提交：`3a0996c5`（K3，CUDA OOM 改抛异常，保留原作者署名）+
+`3f1c3fd2`（我，显存保留区）。
+
+**它纠正了我一个有害改动**：我为验证显存假设把 `--chunked_prefill_size` 改成
+128。K3 实测这会把 77K 的 vision prefill 拆成 603 个 chunk、跑满 **38 分钟**，
+而 chunk=1024 每 token 快 2.3 倍。它已从 profile 删除该参数，改用
+`FASTLLM_QWEN35_PREFILL_CHUNK_CAP`（默认 1024）。
+
+**三条独立印证**：
+- 它实测 `pos_accept_rate=[76.07%, 57.75%]`，与 exact acceptance 预估的
+  77%/60% 几乎完全吻合
+- 此前连环崩的运维级真凶是**同时存在两个 thinking_proxy**，两个后端各要 28GB
+  抢一张 32GB 卡互杀 —— 与 `start_prod.sh` 里加的孤儿清理是同一问题的两面
+- 它证伪了 turbo4 能解决容量（kv_pool 在 96%↔100% 抖动、0 tok/s）
+
+**设计重复待合并**：K3 在 `GetUnusedPageIndex` 里已实现**水位批量回收**
+（低水位 `dims/16` → 高水位 `dims/4`，env `FASTLLM_KV_RECYCLE_LOW_PAGES` /
+`_HIGH_PAGES`）。这正是要求里的滞回算法，**不要再造第二套** ——
+同一个页池上现有两条淘汰路径（它的水位回收 + 我 Grow 里的缓存回收），
+需要确认互不打架。
+
+## 两处清理
+
+- K3 断电前遗留的无条件调试 printf（`fastllm-turboquant-kv.cu`
+  MultiPage 入口），在生产日志里累积了 **128,853 行**，每次还
+  `fflush(stdout)`（热路径系统调用）。改为 `FASTLLM_TURBOKV_TRACE` 开关。
+- 我 `a00c543c` 那次 `git add -A src include example` 范围过宽，把 6 个
+  `.bak-*` 备份（2.9MB / 63,524 行）扫进了版本库。已 `git rm --cached` 并
+  加入 `.gitignore`（`8cbc2e26`）。
+
+## 仍未验证 / 未做
+
+- **前缀缓存四项根因修复零验证数据**：K3 的探针写错模型名
+  （`qwen3.6-fastllm` vs 实际 `qwen3.8-fastllm`）全部 404，一次有效数据都没拿到。
+- 2×150K 长上下文压测从未真跑。
+- fp8_e4m3 + MTP 可行性评估搁置（K3 估 ~32KB/token，262K 物理可行，未验证）。
+- `corruption_rate.py` 的检测器误报偏高（`/Proto-UI`、`Prototype`、`Proposed`
+  都落在编辑距离阈值内），需加词形过滤后再做修复前后对比。
+- `vram=` 明细的 `other` 会算成负数：`g_pagedPoolCudaBytes` 只在
+  `~PagedCacheManager` 递减，其它释放路径漏减，计数单调虚高。
