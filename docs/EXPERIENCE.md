@@ -1418,3 +1418,172 @@ fastllm 侧有两个**已实现但默认关闭**的开关值得先 A/B:
 - `ssh dw-jump` —— 经 hermes 公网跳板(`ezra@60.205.210.140`, 取自 tailnet `CurAddr`)
   ProxyJump 进 tailnet, **Tailscale 停掉也能用**。
 规矩: 远端长任务一律 `nohup`; 直连失败先试跳板, 别急着判定远端挂了。
+
+### 15.34 静默僵死 + 前缀缓存整层失效 + 分词器最后一块 (2026-08-20)
+
+一天里挖出四个互相独立的根因，其中三个的共同特征是**静默**：不报错、不崩溃、
+指标看起来还在跳，但功能已经废了。记录判据和手法，比记录结论更有用。
+
+#### 15.34.1 后端"进程还在但一个请求都不完成" —— `forwardLocker` 漏解锁
+
+**判据**（满足这几条基本就是这一类，不用猜）：
+
+```
+[metrics] running=1 pending=2 (total=21) | prefill 0 tok (0.0 tok/s)
+          | decode 0 tok (0.0 tok/s) | done 0 req | vram=27914/32494MB
+```
+
+- `done 0 req` 是**最强判据**：自启动以来零完成，不是"慢"是"停"
+- prefill 与 decode 同时 0 tok/s 但 `running` 非零
+- GPU 利用率 0%，显存却照占；代理侧 `queued` 单调上涨永不回落
+
+反例：`running=1 pending=1` 且 `decode 442 tok (29.5 tok/s)` 是正常繁忙，别误判。
+
+**三条命令定位到具体锁**（详见 `EzraVastLLM/docs/silent-hang-diagnosis.md`）：
+
+1. `gdb -p PID -batch -ex "thread apply all bt 8"` —— 看有没有线程停在
+   `__lll_lock_wait`，以及**有没有任何线程在跑模型前向**。若其余线程全在
+   `__syscall_cancel_arch` / `pthread_cond_wait` / `accept`，就是死锁不是慢。
+2. glibc 的 `pthread_mutex_t` 前 5 个 int 是 `__lock/__count/__owner/__nusers/__kind`，
+   而 `__lll_lock_wait` 的第一个参数（`$rdi`）就是锁地址：
+   ```
+   -ex "printf \"MUTEX=%p owner=%d kind=%d\n\", $rdi, *(int*)($rdi+8), *(int*)($rdi+16)"
+   ```
+   **`owner` 等于该线程自己的 LWP ⇒ 自死锁，实锤**，不需要再推理。
+   `kind=0` ⇒ 普通非递归锁，同线程二次加锁必然永久阻塞。
+3. 没有调试信息时，用"该函数里只有几个 `std::mutex::lock()` 调用点"收敛：
+   `disassemble <mangled_name> | grep "call.*_ZNSt5mutex4lockEv"`，
+   再用 `info symbol <返回地址>` 拿到 `函数名+偏移` 对上。
+
+   **能死锁的一定是裸 `std::mutex` 的 `.lock()`**——`std::unique_lock::lock()`
+   在已持有时会抛 `resource_deadlock_would_occur` 而不是挂死。这条能一下排除一半候选。
+
+**根因**：
+
+```cpp
+auto &forwardLocker = model->forwardLocker;   // 裸引用, 无 RAII
+forwardLocker.lock();
+    ... 批前向 ...        // 内部 PagedCacheManager::Grow 显存不足时抛异常
+forwardLocker.unlock();   // 异常展开跳过这一行
+```
+
+异常一抛锁永久不释放；外层 catch 打印 "process survives" 后 `while` 继续，
+下一轮再 `lock()` 即自死锁，且线程是**攥着锁**死的，所有客户端线程堵在
+`FetchResponseTokens` 上陪葬。
+
+**间歇性来自状态**：只有异常恰好落在 lock/unlock 窗口内才死。当天日志里
+`Grow` 抛了 6 次，前 5 次都活了下来，第 6 次才僵死。**不要因为"上次没复现"
+就放过**。修法是 `std::unique_lock<std::mutex> x(m, std::defer_lock)` ——
+使用点写法完全不变，但异常展开会析构释放。
+
+同一模式在 `basellm.cpp`(x2) 和 `deepseekv4.cpp` 各有一份，一并修掉。
+
+#### 15.34.2 为什么拖了一小时才发现 —— 健康检查被推理堵死
+
+`maxActivateQueryNumber = min(256, --batch)`，生产 `--batch 1` ⇒ **1**，
+而派发闸门对**所有路由**一视同仁。只要有一个请求在生成，`/health` `/version`
+就一直排队到客户端超时 ⇒ 上游代理**永远分不清"后端在忙"和"后端已僵死"**，
+死锁期间代理始终显示 `backend=READY`。
+
+修法：这些元数据路由走独立 `lightQ` 与独立并发计数。`/admin/*` **不能**放进来
+（会 suspend/resume 模型，必须串行）。
+
+> **教训**：健康检查如果会被业务负载阻塞，它就不是健康检查。
+
+顺带一个坑：这个后端**没有实现 `/v1/models`**（路由表只有 `/health` `/version`
+`/props` `/config.json` `/generate` `/v1/chat/completions` `/admin/*`），
+拿它探活只会得到 HTTP 000，与"僵死"无法区分。**探活请用 `/health`**。
+
+#### 15.34.3 `L1trie=0` / `hits=0` —— 页字节数除错了对象
+
+现象：`kv_pool=53920/65536 pg (82%) L1trie=0 pg (~0 tok) ... hits=0`，
+偶尔跳到 `L1trie=2080` 随即归零。
+
+**不是"缺少下放路径"**（`EvictOneColdPageLocked` 一直有调 `PageOutTrieNode`），
+而是：
+
+```cpp
+pageBytes = GetBytes() / maxPages    // 错: maxPages 是逻辑预算
+pageBytes = GetBytes() / dims[0]     // 对: GetBytes() 覆盖的就是 dims[0]
+```
+
+`dims[0]`（已分配物理页）`<= maxPages`（逻辑预算）恒成立：页池懒分配
+（`initialPages = min(128, maxPages)`），靠 `Grow()` 追赶，而 `Grow` 一旦被
+`FASTLLM_PAGED_POOL_MAX_MB` 挡住就永远追不上。日志实证
+`dims0=514 -> 707 maxPages=2048`。
+
+后果分两支，**生产命中的是更隐蔽的那支**：
+- 不整除 → 判成 `manager-state` 直接拒绝下放；
+- **恰好整除**（生产如此，pageBytes 含 2^7 因子）→ pageBytes 被算小约 4 倍，
+  从错误 offset 抠一段存下去，**"下放成功"但内容是错的**；而上提路径
+  `MaterializeTrieNode` 用的是正确的 `dims[0]`，尺寸永远对不上 →
+  **上提 100% 失败**。
+
+这精确解释了 "`L1trie` 跳一下就归零 + `hits=0` 恒成立"。同一换算错误另有 3 处：
+CPU 请求换出、页号边界检查、**linear-attention 的借用显存指针**（stride 错会
+直接指到别的请求的页上，属于静默数据串扰）。
+
+**顺带修掉触发源**：`GetUnusedPageIndex` 里裸调 `Grow()` 做投机性水位扩容，
+而此时 `pageIndex` 通常**已经拿到手了**；`Grow` 抛异常后穿到 MTPLoop 的 catch，
+把所有在飞请求 `isAbort`。实证 `prefill 63231 tok 87.94s | decode 0 tok` ——
+跑完 88 秒 prefill 一个 token 没吐就被打掉。与 15.34.1 是同一故障的两端，
+两处都修才算根治。
+
+#### 15.34.4 分词器最后一块 —— 从未读 `tokenizer.ggml.pre`
+
+`Tokenizer::Encode` 只按 special token 切开输入，剩下的**整段**交给
+`BytePairEncode`；而 GGUF 里 `tokenizer.ggml.pre = "qwen35"` 从来没被读过。
+没有预分词正则，BPE 会跨词/跨数字/跨标点任意合并，产生 HF 与 llama.cpp
+**绝不会产生**的 token 序列。
+
+与 llama.cpp `llama-tokenize` 端到端对拍（两个独立 oracle：Python `regex` 跑
+原始正则 + llama.cpp 出 token id）：
+
+| 判据 | 关掉预分词 | 启用 |
+|---|---|---|
+| 内建 10 条用例整句 exact match | 7/10 | **10/10** |
+| 45 篇语料批量对拍 | 33/45 | **45/45** |
+| 累计 token 数差 | −3 | **0** |
+
+对不上的 12 篇里 **3 篇长真实文本全中招**（agent system prompt 512 tok、
+长代码 2727 tok、长日志 4244 tok）——**短文本看不出差距，长文本必错**，
+这正是生产表现。
+
+意外收获：启用后**略快**（1465530 → 1511867 tok/s），因为 BPE 优先队列合并
+对段长超线性，先切块反而更省。
+
+`\p{N}` 是**单独成块**的 —— 数字逐位切分，这点最容易漏，对拍长数字会立刻暴露。
+未知/缺失的 `pre` 值保持不切分并打印 Warning，不静默改变老模型行为。
+
+#### 15.34.5 imatrix 校准的方法论坑
+
+- **`--parse-special` 必须加**。语料若用 chat template 标记渲染
+  （`<|im_start|>` / `<tool_call>`），不加这个开关 llama.cpp 会把它们当**字面
+  文本**切成 `<` `|` `im` `_start`…，"让特殊 token 进入校准分布"这个目标直接
+  落空。旁证：加上后同一类语料的 token/byte 从 0.342 降到 0.299（−12.7%）。
+- **ctx 不要想当然拉大**。直觉是"生产跑 262K 所以校准也该长"，但社区实测
+  **512 通常优于 4096**：固定 token 预算下块越小样本越多、上下文越多样，
+  统计量条件数更好。llama.cpp 的老默认就是 512。
+- **必须留出集**。imatrix 在语料 A 上算，就不能拿 A 测 PPL——那是拿训练集当
+  测试集。做法：同一 seed 洗牌会话文件后按索引区间切分，实测两边 512 字节
+  窗口重叠 0.00%（扩充语料后为 0.11%，属跨会话样板文本，噪声量级）。
+- **对照组必须自己造**。官方发布的同档 GGUF 可能用了不同 llama.cpp 版本或
+  tensor-type 覆盖，拿它当基线就分不清差异来自 imatrix 还是版本。对照组要
+  同源、同档、同参数，**唯一差别是有没有 `--imatrix`**。
+- **Q5_K_M 在收益边界上**。社区共识是 imatrix 主要惠及 **Q5_K_M 以下**
+  （Q3/Q4 区间）。目标档越高，预期收益越温和。
+- 新版 `llama-imatrix` 默认存 **GGUF 格式**的 imatrix（即使文件名是 `.dat`），
+  要老格式加 `--output-format dat`。
+
+#### 15.34.6 运维陷阱清单（都是当天实际踩到的）
+
+| 陷阱 | 现象 | 正确做法 |
+|---|---|---|
+| llama.cpp 编了 CUDA 时 **`-ngl 0` 也占显存** | 与生产同跑把空闲显存压到 0.27 GiB，代理的显存压力保护把后端整个卸载 | 纯 CPU 跑要 `CUDA_VISIBLE_DEVICES=`；脚本里加"生产在跑就拒绝启动"的硬守卫 |
+| **下到一半的 GGUF 头部检查全绿** | `Q5_K_M.gguf` 只有 11.87 GB（应 21.27 GB），魔数/版本/张量数都能正常解析出 851 | 按**仓库真实字节数**比对，别看 GGUF 头（见 `verify_downloads.sh`） |
+| 直连 `huggingface.co` 超时 | `hf download` **静默**停住：没有进程、没有报错、文件停在半截 | 下载设 `HF_ENDPOINT=https://hf-mirror.com`；**上传不能走镜像**（只读），需走本机 `127.0.0.1:10808` 代理并 `unset HF_ENDPOINT` |
+| 同一 build 目录**并发 `cmake --build`** | 两个进程写同一批 `fastllm.dir/*.o`，可能产出半截目标文件 → 莫名链接错误 | 编译前 `until ! pgrep -f "cmake --build"; do sleep 20; done` |
+| 代理认证：**带错 token 比不带更糟** | 带 `Bearer x` → 401；不带 → localhost 放行 | token 在 `1CatVLLM/.env` 的 `AUTH_TOKEN` |
+| 前缀缓存磁盘配额 | `shutdown checkpoint failed: disk byte limit exceeded`，每次重启缓存全丢 | 活跃 root 1884 MB / 配额 2048 MB，余量仅 163 MB 装不下 262K 的 checkpoint。已提到 32 GiB（磁盘实际剩 2.0 TB）。注意 `FASTLLM_PREFIX_CACHE_DISK_DIR` 下可能有**换 key 方案遗留的孤儿 root**，它不计入活跃 root 的配额，但会长期占盘且无回收出口 |
+| `tmux respawn-pane` 只杀代理 | 后端变孤儿继续占 27~31 GiB，下次启动申请不到显存，表现成"重启起不来" | 重启脚本必须显式清理孤儿 `apiserver` |
+
