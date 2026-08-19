@@ -263,3 +263,95 @@ alloc_busy 23344 + other ~2500 + 262K 需要的池 7600 = 33444 MB > 32494 MB
 2. 三级之间用合适的算法与阈值做下放轮转（VRAM→RAM(zstd)→disk），命中时上提。
 3. 成本模型用现成的 `RECOMPUTE_TPS` / `CPU_READ_MBPS` / `DISK_READ_MBPS` /
    `ZSTD_DECOMPRESS_MBPS`：只有"恢复成本 < 重算成本"才值得留在某一级。
+
+---
+
+# 续二：并发活锁（最重的一个）与 262K 容量达成（2026-08-19 上午）
+
+## 并发活锁：`FetchResponseTokens` 的忙等
+
+这是今晚挖到的最重的 bug，也是此前"z3rm 和 proto-ui 一起跑就把后端搞爆炸、
+甚至 60 并发"的**真正根因** —— 不是重试风暴，是引擎里的锁行为。
+
+**现场**（后端挂死时用 gdb 抓的，不是推测）：
+
+```
+GPU 0%、显存充足(还空 6GB)、Grow 失败 0 次、metrics 计数全部冻结  ← 不是 OOM
+
+Thread 3 (10.3% CPU):  pthread_mutex_lock ← Qwen35MTPLoop()        等 mtpCacheMutex
+Thread 2 (99.8% CPU):  pthread_mutex_lock ← FetchResponseTokens()  等 dictLocker
+```
+
+**根因** `src/models/basellm.cpp`：
+
+```cpp
+while (true) {
+    if (context->resultTokenQueue.size() > 0) { ... return ret; }
+    else { if (context->isEnding) { ... } }
+    dictLocker.unlock();
+    MySleep(0);          // ← 睡 0 毫秒 = 不睡
+    dictLocker.lock();   // ← 立刻重新抢锁
+}
+```
+
+每个等待中的客户端线程都在**以最快速度反复抢 `dictLocker`**，而生成线程要拿
+同一把锁才能把 token 塞进 `resultTokenQueue`。并发一多，**生成线程被饿死 →
+不产 token → 轮询线程继续空转 → 活锁**。并发越高越致命。
+
+注意：`FetchResponseTokensBatch` **早就用了 `dictCV.wait_for(1s)`**，
+只有单 token 版漏改 —— 而 apiserver 走的正是单 token 那条。
+
+**修复**：改为 `dictCV.wait_for(dictLocker, 2ms)`（生产者路径已有
+`dictCV.notify_all()`，2ms 超时只是兜底，万一某条产出路径漏了 notify 也只
+退化成 2ms 轮询而不是 0ms 自旋）；**唤醒后必须重取 context handle** ——
+等待期间锁被释放，context 可能已被别的线程移除。
+
+**实测效果**：
+
+| 指标 | 修复前 | 修复后 |
+|---|---|---|
+| 最高线程 CPU | 99.8%（自旋） | 61.8%（正常计算） |
+| GPU 利用率 | 0% | 37–100% |
+| 请求完成 | 冻结 | done 7 req/窗口 |
+| prefill | 0 tok/s | 312.8 tok/s |
+| **L1trie** | **长期 0 pg** | **64 → 224 pg** |
+
+**附带解锁了前缀缓存**：活锁一解开，请求能正常完成 → 页正常释放进
+`triePages` → L1 终于开始积累。所以前缀缓存确实是下游，只是上游堵点是活锁
+而不是先前以为的 OOM。
+
+（同时更正：`done N req` 是**窗口计数**不是累计值，先前据此推断"请求从未完成"
+是误读。）
+
+## 262K 容量：换 turbo3 达成
+
+turbo4 下每页约 113 KB，262K 需要 7600 MB 的池，而固定开销
+（`alloc_busy` 约 23 GB + `other` 约 2.5 GB）只剩约 6.6 GB —— **差约 950 MB**。
+
+turbo3 每页约 27 KB，实测：
+
+```
+pool=7596 MB       ← 吃满 262K 的 KV 配额
+vram=26506/32494   ← 还空 6 GB
+Grow 失败: 0
+已完成 prefill: 146057 token / 343s
+```
+
+## 工具名修复：已验证
+
+`toolname_probe.py` 结果：`bash`(全小写) → 返回 `bash` ✅、
+`web_search`(snake_case) → 返回 `web_search` ✅（两次独立确认）、
+`readFile`(camelCase) 因队列深请求超时，结论待补。
+
+**更强的证据**：本次进程 **`mask EXHAUSTED` = 0 次**（修复前同一进程内 6 次、
+历史累计 91 次），且**工具名归一化触发 0 次** —— 掩码不再被打爆，模型直接
+就写出了声明的拼写，根本没走到需要事后归一化那一步。这正是理想形态。
+
+## 已知待修
+
+- `vram=` 明细里的 `other` 会算成负数：`g_pagedPoolCudaBytes` 只在
+  `~PagedCacheManager` 里递减，其它释放路径漏减，计数单调虚高。
+- `corruption_rate.py` 的检测器误报偏高：`/Proto-UI`（带前导斜杠）、
+  `Prototype`、`Proposed` 都在编辑距离阈值内被误判。需要加词形过滤后
+  再做修复前后对比。
+- 三级缓存的下放轮转（水位滞回 + 冷却期）与把 L2/L3 接进每请求查找链，仍未做。
