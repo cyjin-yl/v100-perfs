@@ -1,0 +1,490 @@
+[
+ {
+  "name": "blk.0.attn_gate.weight",
+  "src": "Q8_0",
+  "dst": "IQ4_XS",
+  "rel": 0.0029142876319828972,
+  "rel_unw": 0.006138580976679977,
+  "nelem": 31457280
+ },
+ {
+  "name": "blk.0.attn_qkv.weight",
+  "src": "Q8_0",
+  "dst": "Q5_K",
+  "rel": 0.0007171013140465693,
+  "rel_unw": 0.0013348640434002826,
+  "nelem": 52428800
+ },
+ {
+  "name": "blk.0.ffn_down.weight",
+  "src": "Q8_0",
+  "dst": "IQ4_XS",
+  "rel": 0.0039757566015607435,
+  "rel_unw": 0.006374052322187254,
+  "nelem": 89128960
+ },
+ {
+  "name": "blk.0.ffn_gate.weight",
+  "src": "Q8_0",
+  "dst": "IQ4_XS",
+  "rel": 0.005136319707247792,
+  "rel_unw": 0.0059993281202554705,
+  "nelem": 89128960
+ },
+ {
+  "name": "blk.0.ffn_up.weight",
+  "src": "Q8_0",
+  "dst": "IQ4_XS",
+  "rel": 0.005272481422296443,
+  "rel_unw": 0.005974350832279828,
+  "nelem": 89128960
+ },
+ {
+  "name": "blk.0.ssm_alpha.weight",
+  "src": "Q8_0",
+  "dst": "IQ4_XS",
+  "rel": 0.0035623537866559516,
+  "rel_unw": 0.006045633569977488,
+  "nelem": 245760
+ },
+ {
+  "name": "blk.0.ssm_beta.weight",
+  "src": "Q8_0",
+  "dst": "IQ4_XS",
+  "rel": 0.0035611379478513133,
+  "rel_unw": 0.006113142678008002,
+  "nelem": 245760
+ },
+ {
+  "name": "blk.0.ssm_out.weight",
+  "src": "Q8_0",
+  "dst": "IQ4_XS",
+  "rel": 0.00036933884945935993,
+  "rel_unw": 0.0068715297811161305,
+  "nelem": 31457280
+ },
+ {
+  "name": "blk.2.attn_gate.weight",
+  "src": "Q8_0",
+  "dst": "IQ4_XS",
+  "rel": 0.0017045940457276745,
+  "rel_unw": 0.006161326743999968,
+  "nelem": 31457280
+ },
+ {
+  "name": "blk.2.attn_qkv.weight",
+  "src": "Q8_0",
+  "dst": "Q5_K",
+  "rel": 0.00045784035863771663,
+  "rel_unw": 0.0013514044411033614,
+  "nelem": 52428800
+ },
+ {
+  "name": "blk.2.ffn_down.weight",
+  "src": "Q8_0",
+  "dst": "IQ4_XS",
+  "rel": 0.0026659356442211104,
+  "rel_unw": 0.006192421930490409,
+  "nelem": 89128960
+ },
+ {
+  "name": "blk.2.ffn_gate.weight",
+  "src": "Q8_0",
+  "dst": "IQ4_XS",
+  "rel": 0.005657162906136774,
+  "rel_unw": 0.00578511399049713,
+  "nelem": 89128960
+ },
+ {
+  "name": "blk.2.ffn_up.weight",
+  "src": "Q8_0",
+  "dst": "IQ4_XS",
+  "rel": 0.005787761955325674,
+  "rel_unw": 0.005794811652841645,
+  "nelem": 89128960
+ },
+ {
+  "name": "blk.2.ssm_alpha.weight",
+  "src": "Q8_0",
+  "dst": "IQ4_XS",
+  "rel": 0.011603661216677094,
+  "rel_unw": 0.00683171263550796,
+  "nelem": 245760
+ },
+ {
+  "name": "blk.2.ssm_beta.weight",
+  "src": "Q8_0",
+  "dst": "IQ4_XS",
+  "rel": 0.00032489471767311467,
+  "rel_unw": 0.007053271396470872,
+  "nelem": 245760
+ },
+ {
+  "name": "blk.2.ssm_out.weight",
+  "src": "Q8_0",
+  "dst": "IQ4_XS",
+  "rel": 0.004329682542725032,
+  "rel_unw": 0.0062423398744314955,
+  "nelem": 31457280
+ },
+ {
+  "name": "blk.3.attn_k.weight",
+  "src": "Q8_0",
+  "dst": "IQ4_XS",
+  "rel": 0.003469323250035327,
+  "rel_unw": 0.0064061173257176675,
+  "nelem": 5242880
+ },
+ {
+  "name": "blk.3.attn_output.weight",
+  "src": "Q8_0",
+  "dst": "IQ4_XS",
+  "rel": 0.002195174750382594,
+  "rel_unw": 0.006741264935891188,
+  "nelem": 31457280
+ },
+ {
+  "name": "blk.3.attn_q.weight",
+  "src": "Q8_0",
+  "dst": "IQ4_XS",
+  "rel": 0.0003589042847553149,
+  "rel_unw": 0.0061467425097782215,
+  "nelem": 62914560
+ },
+ {
+  "name": "blk.3.attn_v.weight",
+  "src": "Q8_0",
+  "dst": "Q5_K",
+  "rel": 0.0008749833361475255,
+  "rel_unw": 0.0013560487938806996,
+  "nelem": 5242880
+ },
+ {
+  "name": "blk.3.ffn_down.weight",
+  "src": "Q8_0",
+  "dst": "IQ4_XS",
+  "rel": 0.0044517890051914265,
+  "rel_unw": 0.006056060361765657,
+  "nelem": 89128960
+ },
+ {
+  "name": "blk.3.ffn_gate.weight",
+  "src": "Q8_0",
+  "dst": "IQ4_XS",
+  "rel": 0.005630759462135832,
+  "rel_unw": 0.005802475340767604,
+  "nelem": 89128960
+ },
+ {
+  "name": "blk.3.ffn_up.weight",
+  "src": "Q8_0",
+  "dst": "IQ4_XS",
+  "rel": 0.005748600543610341,
+  "rel_unw": 0.005793650068025937,
+  "nelem": 89128960
+ },
+ {
+  "name": "blk.30.attn_gate.weight",
+  "src": "Q8_0",
+  "dst": "IQ4_XS",
+  "rel": 0.0016289051378828544,
+  "rel_unw": 0.006096286268415925,
+  "nelem": 31457280
+ },
+ {
+  "name": "blk.30.attn_qkv.weight",
+  "src": "Q8_0",
+  "dst": "Q5_K",
+  "rel": 0.0007557208357535048,
+  "rel_unw": 0.0013654847476563385,
+  "nelem": 52428800
+ },
+ {
+  "name": "blk.30.ffn_down.weight",
+  "src": "Q8_0",
+  "dst": "IQ4_XS",
+  "rel": 0.005559191370003474,
+  "rel_unw": 0.005959490548823117,
+  "nelem": 89128960
+ },
+ {
+  "name": "blk.30.ffn_gate.weight",
+  "src": "Q8_0",
+  "dst": "IQ4_XS",
+  "rel": 0.004231918029996171,
+  "rel_unw": 0.005925087698069871,
+  "nelem": 89128960
+ },
+ {
+  "name": "blk.30.ffn_up.weight",
+  "src": "Q8_0",
+  "dst": "IQ4_XS",
+  "rel": 0.005944142141765979,
+  "rel_unw": 0.00595765254111812,
+  "nelem": 89128960
+ },
+ {
+  "name": "blk.30.ssm_alpha.weight",
+  "src": "Q8_0",
+  "dst": "IQ4_XS",
+  "rel": 0.001863307271210325,
+  "rel_unw": 0.006548611945162551,
+  "nelem": 245760
+ },
+ {
+  "name": "blk.30.ssm_beta.weight",
+  "src": "Q8_0",
+  "dst": "IQ4_XS",
+  "rel": 0.0010047018678728608,
+  "rel_unw": 0.007341112688230767,
+  "nelem": 245760
+ },
+ {
+  "name": "blk.30.ssm_out.weight",
+  "src": "Q8_0",
+  "dst": "IQ4_XS",
+  "rel": 0.005667328407750289,
+  "rel_unw": 0.006103317961425419,
+  "nelem": 31457280
+ },
+ {
+  "name": "blk.31.attn_k.weight",
+  "src": "Q8_0",
+  "dst": "IQ4_XS",
+  "rel": 0.0031652210465708155,
+  "rel_unw": 0.006559625527062797,
+  "nelem": 5242880
+ },
+ {
+  "name": "blk.31.attn_output.weight",
+  "src": "Q8_0",
+  "dst": "IQ4_XS",
+  "rel": 0.005551894904900064,
+  "rel_unw": 0.006052832022893446,
+  "nelem": 31457280
+ },
+ {
+  "name": "blk.31.attn_q.weight",
+  "src": "Q8_0",
+  "dst": "IQ4_XS",
+  "rel": 0.0025136679349798386,
+  "rel_unw": 0.006108902774491895,
+  "nelem": 62914560
+ },
+ {
+  "name": "blk.31.attn_v.weight",
+  "src": "Q8_0",
+  "dst": "Q5_K",
+  "rel": 0.0011017072623493872,
+  "rel_unw": 0.0014089066606284737,
+  "nelem": 5242880
+ },
+ {
+  "name": "blk.31.ffn_down.weight",
+  "src": "Q8_0",
+  "dst": "IQ4_XS",
+  "rel": 0.005572303947212252,
+  "rel_unw": 0.005956599341475674,
+  "nelem": 89128960
+ },
+ {
+  "name": "blk.31.ffn_gate.weight",
+  "src": "Q8_0",
+  "dst": "IQ4_XS",
+  "rel": 0.004286630982395031,
+  "rel_unw": 0.005930238750242081,
+  "nelem": 89128960
+ },
+ {
+  "name": "blk.31.ffn_up.weight",
+  "src": "Q8_0",
+  "dst": "IQ4_XS",
+  "rel": 0.005940929703407749,
+  "rel_unw": 0.005948859912795773,
+  "nelem": 89128960
+ },
+ {
+  "name": "blk.32.attn_gate.weight",
+  "src": "Q8_0",
+  "dst": "IQ4_XS",
+  "rel": 0.0015761390158668344,
+  "rel_unw": 0.006055901502602734,
+  "nelem": 31457280
+ },
+ {
+  "name": "blk.32.attn_qkv.weight",
+  "src": "Q8_0",
+  "dst": "Q5_K",
+  "rel": 0.0007654152683987235,
+  "rel_unw": 0.001365398020311817,
+  "nelem": 52428800
+ },
+ {
+  "name": "blk.32.ffn_down.weight",
+  "src": "Q8_0",
+  "dst": "IQ4_XS",
+  "rel": 0.005650056143351144,
+  "rel_unw": 0.00599084382619266,
+  "nelem": 89128960
+ },
+ {
+  "name": "blk.32.ffn_gate.weight",
+  "src": "Q8_0",
+  "dst": "IQ4_XS",
+  "rel": 0.004187809222353569,
+  "rel_unw": 0.005965307534212474,
+  "nelem": 89128960
+ },
+ {
+  "name": "blk.32.ffn_up.weight",
+  "src": "Q8_0",
+  "dst": "IQ4_XS",
+  "rel": 0.005973705954607295,
+  "rel_unw": 0.005966427116556439,
+  "nelem": 89128960
+ },
+ {
+  "name": "blk.32.ssm_alpha.weight",
+  "src": "Q8_0",
+  "dst": "IQ4_XS",
+  "rel": 0.0033141228901048315,
+  "rel_unw": 0.006733660193114122,
+  "nelem": 245760
+ },
+ {
+  "name": "blk.32.ssm_beta.weight",
+  "src": "Q8_0",
+  "dst": "IQ4_XS",
+  "rel": 0.000716765052979942,
+  "rel_unw": 0.008159768966255976,
+  "nelem": 245760
+ },
+ {
+  "name": "blk.32.ssm_out.weight",
+  "src": "Q8_0",
+  "dst": "IQ4_XS",
+  "rel": 0.0055857381400304,
+  "rel_unw": 0.006053314974587777,
+  "nelem": 31457280
+ },
+ {
+  "name": "blk.62.attn_gate.weight",
+  "src": "Q8_0",
+  "dst": "IQ4_XS",
+  "rel": 0.004486874840270021,
+  "rel_unw": 0.006139491628634451,
+  "nelem": 31457280
+ },
+ {
+  "name": "blk.62.attn_qkv.weight",
+  "src": "Q8_0",
+  "dst": "Q5_K",
+  "rel": 0.001026643008534044,
+  "rel_unw": 0.0013613770882800488,
+  "nelem": 52428800
+ },
+ {
+  "name": "blk.62.ffn_down.weight",
+  "src": "Q8_0",
+  "dst": "IQ4_XS",
+  "rel": 0.004023391150466406,
+  "rel_unw": 0.006810558058685374,
+  "nelem": 89128960
+ },
+ {
+  "name": "blk.62.ffn_gate.weight",
+  "src": "Q8_0",
+  "dst": "IQ4_XS",
+  "rel": 0.004982562849740992,
+  "rel_unw": 0.006002397780730783,
+  "nelem": 89128960
+ },
+ {
+  "name": "blk.62.ffn_up.weight",
+  "src": "Q8_0",
+  "dst": "IQ4_XS",
+  "rel": 0.005581946368052042,
+  "rel_unw": 0.005887852234213631,
+  "nelem": 89128960
+ },
+ {
+  "name": "blk.62.ssm_alpha.weight",
+  "src": "Q8_0",
+  "dst": "IQ4_XS",
+  "rel": 0.005421416036904084,
+  "rel_unw": 0.007757019653367516,
+  "nelem": 245760
+ },
+ {
+  "name": "blk.62.ssm_beta.weight",
+  "src": "Q8_0",
+  "dst": "IQ4_XS",
+  "rel": 0.004848357414543208,
+  "rel_unw": 0.007393600402817837,
+  "nelem": 245760
+ },
+ {
+  "name": "blk.62.ssm_out.weight",
+  "src": "Q8_0",
+  "dst": "IQ4_XS",
+  "rel": 0.005011172578141798,
+  "rel_unw": 0.006935467682213248,
+  "nelem": 31457280
+ },
+ {
+  "name": "blk.63.attn_k.weight",
+  "src": "Q8_0",
+  "dst": "IQ4_XS",
+  "rel": 0.004212748525891463,
+  "rel_unw": 0.007959901102451587,
+  "nelem": 5242880
+ },
+ {
+  "name": "blk.63.attn_output.weight",
+  "src": "Q8_0",
+  "dst": "IQ4_XS",
+  "rel": 0.006721811584015781,
+  "rel_unw": 0.006929812365509842,
+  "nelem": 31457280
+ },
+ {
+  "name": "blk.63.attn_q.weight",
+  "src": "Q8_0",
+  "dst": "IQ4_XS",
+  "rel": 0.004703202314747913,
+  "rel_unw": 0.0062269863945800625,
+  "nelem": 62914560
+ },
+ {
+  "name": "blk.63.attn_v.weight",
+  "src": "Q8_0",
+  "dst": "Q5_K",
+  "rel": 0.001192898639454272,
+  "rel_unw": 0.0015484677938485598,
+  "nelem": 5242880
+ },
+ {
+  "name": "blk.63.ffn_down.weight",
+  "src": "Q8_0",
+  "dst": "IQ4_XS",
+  "rel": 0.003759108748850482,
+  "rel_unw": 0.0075507266657196355,
+  "nelem": 89128960
+ },
+ {
+  "name": "blk.63.ffn_gate.weight",
+  "src": "Q8_0",
+  "dst": "IQ4_XS",
+  "rel": 0.0050944334173443455,
+  "rel_unw": 0.006013977101897263,
+  "nelem": 89128960
+ },
+ {
+  "name": "blk.63.ffn_up.weight",
+  "src": "Q8_0",
+  "dst": "IQ4_XS",
+  "rel": 0.005598658539083099,
+  "rel_unw": 0.005896653539366377,
+  "nelem": 89128960
+ }
+]

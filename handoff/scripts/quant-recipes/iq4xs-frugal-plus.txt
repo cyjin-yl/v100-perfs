@@ -1,0 +1,6 @@
+ssm_alpha\.weight=q8_0
+ssm_beta\.weight=q8_0
+attn_k\.weight=q8_0
+attn_v\.weight=q8_0
+attn_output\.weight=q6_K
+ssm_out\.weight=q6_K

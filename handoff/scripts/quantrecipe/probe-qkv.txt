@@ -1,0 +1,15 @@
+张量                            目标                加权相对误差           落地产物      校验
+blk.0.attn_qkv.weight         IQ4_XS        3.4807e-03              -        
+blk.0.attn_qkv.weight         Q5_K          7.1710e-04              -        
+blk.2.attn_qkv.weight         IQ4_XS        2.8775e-03              -        
+blk.2.attn_qkv.weight         Q5_K          4.5784e-04              -        
+blk.14.attn_qkv.weight        IQ4_XS        3.3584e-03              -        
+blk.14.attn_qkv.weight        Q5_K          5.8233e-04              -        
+blk.30.attn_qkv.weight        IQ4_XS        3.9947e-03              -        
+blk.30.attn_qkv.weight        Q5_K          7.5572e-04              -        
+blk.32.attn_qkv.weight        IQ4_XS        3.9428e-03              -        
+blk.32.attn_qkv.weight        Q5_K          7.6542e-04              -        
+blk.46.attn_qkv.weight        IQ4_XS        4.6027e-03              -        
+blk.46.attn_qkv.weight        Q5_K          8.9518e-04              -        
+blk.62.attn_qkv.weight        IQ4_XS        4.9874e-03              -        
+blk.62.attn_qkv.weight        Q5_K          1.0266e-03              -        
