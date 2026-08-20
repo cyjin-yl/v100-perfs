@@ -2280,3 +2280,129 @@ std::vector<int> Qwen3_5Model::ForwardMultimodal(...) {
 
 **探针必须自证它测到了目标**: 没有在链路里观察到 vision 标记, 就判"探针无效",
 而不是"通过"。这条规矩今天已经救过一次(llama-cli 把 prompt 回显当成模型抄写正确)。
+
+---
+
+## 15.41 本机 HTTP 探针被静默绕道代理 (2026-08-20)
+
+### 现象
+
+带图抄写探针挂了 79 分钟不返回, 而**后端日志里明明写着它早就处理完了**:
+
+```
+[req 2] prefill done: 3989 tok in 6.29s (634.6 tok/s)
+```
+
+`ss -tnp` 一看就清楚了 —— 探针进程的连接是:
+
+```
+ESTAB  ->  127.0.0.1:10808
+```
+
+10808 是给 HuggingFace 上传用的那个 HTTP 代理端口, **不是** `:8000`。
+
+### 原因
+
+`~/.zshrc` 里有:
+
+```sh
+export http_proxy="http://127.0.0.1:10808"
+export https_proxy="http://127.0.0.1:10808"
+```
+
+而 tmux 新开的窗口默认用 zsh 登录 shell, 所以继承了它们。
+**Python 的 `urllib` 在没有 `no_proxy` 时不会自动把 localhost 排除在代理之外**
+(很多人以为会)。于是打 `http://127.0.0.1:8000` 的请求先送到 10808, 由代理再
+转回本机 —— 请求确实送达(后端处理了), 但响应卡在代理回程上。
+
+### 为什么这条比"探针挂住"严重得多
+
+**它会污染时延测量, 而且完全没有征兆。**
+
+挂住至少是显性失败。真正危险的是"能返回、只是多了一段代理开销"的情形 ——
+任何本地 HTTP 基准(TTFT、decode tok/s、端到端墙钟)都会被悄悄加上一笔,
+而所有人都会把它当成模型的开销。本仓大量结论建立在这类测量上。
+
+### 判据与修法
+
+判据(一行就能查):
+
+```sh
+ss -tnp | grep "pid=<探针pid>"       # 目的地必须是 :8000, 不是代理端口
+tr '\0' '\n' < /proc/<pid>/environ | grep -i proxy
+```
+
+修法是在**脚本内部**清除, 而不是指望调用者:
+
+```python
+for _v in ("http_proxy", "https_proxy", "HTTP_PROXY", "HTTPS_PROXY",
+           "all_proxy", "ALL_PROXY"):
+    os.environ.pop(_v, None)
+os.environ["no_proxy"] = "127.0.0.1,localhost"
+os.environ["NO_PROXY"] = "127.0.0.1,localhost"
+```
+
+原因同 §15.36 里 `start_prod.sh` 不读 `.env` 那条: **不要把正确性寄托在
+"启动我的那个 shell 恰好有/没有某个环境变量"上**。同一个脚本换个拉起方式
+(tmux / nohup / cron / systemd)行为就变了, 而且变化不报错。
+
+已给 7 个探针脚本加上: copy_fidelity_vision / copy_fidelity_http /
+toolname_probe / goal_acceptance / probe_prefix_multimodal / runtime_metrics /
+verify_prefix_cache。
+
+---
+
+## 15.42 bind 失败后进程不退出: 握着 20GB 权重却不服务 (2026-08-20)
+
+### 现象
+
+生产静默不可用 23 分钟。后端日志:
+
+```
+[Load] model loaded, workers started
+[Server] socket ready!
+bind error!
+```
+
+之后**进程继续运行**: RSS 20GB(权重已读进主机内存)、GPU 只有 724MB
+(从未上卡, 因为没有请求触发懒上传)、proxy 侧永远 `backend=STARTING`,
+客户端拿到 `timed out` 和 `502 Bad Gateway`。
+
+诱因: 重启时上一个 apiserver 还占着 8002, 新进程 bind 失败。
+
+### 两个独立缺陷
+
+**(a) bind 失败必须让进程退出。**
+现在它只打一行 `bind error!` 就往下跑。于是生命周期管理器看到的是"进程还活着,
+应该是在启动中", 而不是"启动失败, 该重试" —— **永远不会重试**。
+正确做法: bind 失败 -> 非零退出码。
+代价对比: 白占 20GB 主机内存 + 一次 16GB 的机械盘加载(约 3 分钟), 期间全部
+请求超时; 而正确退出的话管理器几秒内就能重试。
+
+**(b) proxy 的信号量槽位泄漏。**
+日志里出现 `streams=-3/4` —— 计数变成**负数**, 说明 release 被多调用过。
+后果不只是数字难看: 并发闸门失效(实际放行的比配额多), 且
+`reap_leaked_streams` 的水位判断 (`held = max_concurrent - _slot._value`)
+会算出错误的持有数。
+
+### 为什么没被更早发现
+
+因为**它长得像"正在加载"**。16GB 权重从机械盘读本来就要 3~9 分钟, 所以
+`backend=STARTING` 持续几分钟是完全正常的现象。区分点在于:
+
+```
+正常加载中: weights_load 百分比在涨, RSS 在涨
+bind 卡死  : weights_load 已 100%, RSS 稳定在 20GB, 但 GPU 仍是 724MB
+```
+
+**"GPU 只有几百 MB 而 RSS 已满"是这个故障的指纹** —— fastllm 读完权重先放主机
+内存, 到第一次真实请求才上卡(见 §15.35 第 5a 条), 所以 bind 失败时权重永远
+停在主机侧。
+
+### 规矩
+
+- 服务进程的任何**绑定/监听失败**都必须是致命错误, 不能降级成一行日志。
+- 拉起前先探测端口占用并等待释放。`start_prod.sh` 里本来就有这个等待循环
+  (kill 后最多等 25 秒再强杀), 但**这次的重启不是它发起的** —— 是 proxy 的
+  lifecycle 管理器自己拉起的, 那条路径上没有同样的等待。
+  **同一件事有两条拉起路径时, 保护要加在两条上。**
