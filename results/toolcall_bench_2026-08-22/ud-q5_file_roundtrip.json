@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "benchmark": "fastllm_agentic_toolcall",
+  "created_at_utc": "2026-08-21T22:11:55Z",
+  "model": "catvllm/qwen3.8-27b",
+  "runner": "opencode",
+  "sandbox": "/tmp/agentbench_ud-q5",
+  "results": [
+    {
+      "task": "file_roundtrip",
+      "runner": "opencode",
+      "status": "ok",
+      "verified": true,
+      "detail": "roundtrip.txt=42",
+      "wall_s": 186.7,
+      "parallelism": {
+        "peak_active": 2,
+        "mean_active": 1.57,
+        "peak_pending": 0,
+        "samples": 37
+      },
+      "prefix_cache_delta": {
+        "prefix_cache_gpu_hit_pages": 28832.0,
+        "prefix_cache_disk_hits": 0.0,
+        "prefix_cache_disk_read_bytes": 0.0,
+        "prefix_cache_persistence_restore_hits": 0.0,
+        "prefix_cache_recompute_tokens_per_second": 558.358
+      },
+      "agent": {
+        "write_calls": 3,
+        "read_calls": 0,
+        "bash_calls": 0,
+        "edit_calls": 0,
+        "task_subagent_spawns": 0,
+        "error_marks": 8,
+        "recap_lines": 0,
+        "tool_call_blocks": 0
+      },
+      "output_tail": "rewrite the input so it satisfies the expected schema.\n\nThe write tool parsed \"42\" as a number; retrying with an explicit string value:\n\n$ printf '42' > /tmp/agentbench_ud-q5/file_roundtrip/roundtrip.txt && od -c /tmp\n/agentbench_ud-q5/file_roundtrip/roundtrip.txt\n0000000   4   2\n0000002\n\nThe Write tool keeps coercing the value to a number, so I'm using `printf` via b\nash to write exactly `42`:\n\n\n"
+    }
+  ],
+  "summary": {
+    "total": 1,
+    "verified_ok": 1,
+    "gpu_hit_pages_added": 28832.0,
+    "error_marks": 8
+  }
+}

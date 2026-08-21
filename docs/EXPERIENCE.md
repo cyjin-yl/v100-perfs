@@ -2755,3 +2755,31 @@ S1 的 14 个放行 token 里; (3) MTP 投机行错位 —— top_k=51 关 MTP �
    (9 工具集)的输出, 需用 allow_n/allowed_values 当判别器分离。
 5. 模型"意识到自己不对"是真实信号: thinking 全程清醒点名 bash, 是约束
    把输出改掉了 —— 用户的直觉比四个技术假设都准。
+
+## 15.58 Claude Code 连本地网关: 配置隔离 + 归因头剥除 (2026-08-22)
+
+用 Claude Code 打本网关做 bench 时, 内联 `ANTHROPIC_BASE_URL=http://127.0.0.1:8000`
+**会被 `~/.claude/settings.json` 的 `env` 盖掉**(那里把 base_url 指向外部端点, 且
+优先级更高), 现象是 "Model not exist" 且请求根本没进 8000 的日志。解法: 用临时空
+`CLAUDE_CONFIG_DIR`(`mktemp -d` + `echo '{}' > settings.json`)隔离, 不加载/不改用户
+真实配置, 内联环境变量才生效。
+
+归因头: Claude Code 每请求在 system prompt 最前面塞一行会变的
+`x-anthropic-billing-header: cc_version=...; cch=...`, 落在前缀第 0 位 -> 前缀缓存每轮
+全失效(本地慢 ~90%)。`thinking_proxy.py` 已加 `_strip_claude_code_attribution` 在渲染前
+剥掉(只吃开头, 不碰正文), `/health` 暴露 `cc_attribution_stripped` 计数。验证: 真实
+claude 流量下该计数 0->6。注意用户真实 `~/.claude/settings.json` 已设
+`CLAUDE_CODE_ATTRIBUTION_HEADER=0`, 日常本就关闭; 测试时**不要**设 0 才能看到剥除。
+
+教训: 别在诊断输出里回显 `~/.claude/settings.json` 的 `env` 值——里面有真实密钥;
+只查键名。
+
+## 15.59 launcher 的 profile 必须用绝对路径 (2026-08-22)
+
+`launch_proxy_tmux.sh` 的 `PROXY_SHELL` 在 tmux pane 里运行, pane 的 cwd 被固定为
+`.../1CatVLLM/v100-perfs`; pane 内会再次 `. $ENV_FILE`。若传相对路径(如
+`v100-perfs/runtime/...`), 会解析成 `v100-perfs/v100-perfs/runtime/...`(不存在),
+`. $ENV_FILE` 静默失败 -> `FASTLLM_BACKEND_URL` 为空 -> `FASTLLM_ENABLED=False` ->
+proxy 退回 llama 模式(日志 `starting llama-server on port 8001` + llama-server 二进制
+缺失的 FileNotFoundError), 8002 的 FastLLM 后端永远起不来。调用 launcher 或写切换模型
+的脚本时, profile 一律用绝对路径。

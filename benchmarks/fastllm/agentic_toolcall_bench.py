@@ -183,13 +183,22 @@ def run_task(task_name: str, prompt: str, sandbox: pathlib.Path,
             f"{_shq(prompt)}"
         )
     elif runner == "claude":
-        # Claude Code 走 Anthropic /v1/messages。用 .env 里的 AUTH_TOKEN 指向
-        # 本网关; ANTHROPIC_API_KEY 置空避免它去要云端 key。
-        # --dangerously-skip-permissions 让 headless 跑工具不再逐个要批准。
-        # 这条路径同时真实检验"剥离 Claude Code 归因头"——Claude Code 每请求
-        # 都会发那行会变的 x-anthropic-billing-header, 网关剥掉后前缀才稳定。
+        # Claude Code 走 Anthropic /v1/messages。关键: 用户 ~/.claude/settings.json
+        # 的 env 会把 ANTHROPIC_BASE_URL 指到外部端点, 且优先级高于进程内联环境
+        # 变量 —— 实测内联 ANTHROPIC_BASE_URL 会被盖掉, "Model not exist"。
+        # 所以用独立的空 CLAUDE_CONFIG_DIR 隔离, 不加载用户真实配置, 让内联
+        # 环境变量把 claude 指到本网关; 也不改用户的 ~/.claude。
+        # ANTHROPIC_API_KEY 置空避免它去要云端 key; 用 AUTH_TOKEN 走鉴权。
+        # --dangerously-skip-permissions 让 headless 跑工具不逐个要批准。
+        # 这条路径同时真实检验"剥离 Claude Code 归因头": 不在临时配置里设
+        # CLAUDE_CODE_ATTRIBUTION_HEADER=0, claude 默认会发那行会变的
+        # x-anthropic-billing-header, 网关剥掉后 /health 的
+        # cc_attribution_stripped 计数应增长。
         shell = (
+            f"CFG=$(mktemp -d /tmp/claude_bench_cfg.XXXXXX); "
+            f"echo '{{}}' > \"$CFG/settings.json\"; "
             f"set -a; . {REPO_ROOT.parent}/.env; set +a; "
+            f"CLAUDE_CONFIG_DIR=\"$CFG\" "
             f"ANTHROPIC_BASE_URL=http://127.0.0.1:8000 "
             f"ANTHROPIC_AUTH_TOKEN=\"$AUTH_TOKEN\" "
             f"ANTHROPIC_API_KEY=\"\" "

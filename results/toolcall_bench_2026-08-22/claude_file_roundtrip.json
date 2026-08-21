@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "benchmark": "fastllm_agentic_toolcall",
+  "created_at_utc": "2026-08-21T22:24:03Z",
+  "model": "qwen3.8-27b",
+  "runner": "claude",
+  "sandbox": "/tmp/agentbench_claude",
+  "results": [
+    {
+      "task": "file_roundtrip",
+      "runner": "claude",
+      "status": "ok",
+      "verified": true,
+      "detail": "roundtrip.txt=42",
+      "wall_s": 85.6,
+      "parallelism": {
+        "peak_active": 2,
+        "mean_active": 1.12,
+        "peak_pending": 0,
+        "samples": 17
+      },
+      "prefix_cache_delta": {
+        "prefix_cache_gpu_hit_pages": 22816.0,
+        "prefix_cache_disk_hits": 0.0,
+        "prefix_cache_disk_read_bytes": 0.0,
+        "prefix_cache_persistence_restore_hits": 0.0,
+        "prefix_cache_recompute_tokens_per_second": 176.936
+      },
+      "agent": {
+        "write_calls": 0,
+        "read_calls": 0,
+        "bash_calls": 0,
+        "edit_calls": 0,
+        "task_subagent_spawns": 0,
+        "error_marks": 0,
+        "recap_lines": 0,
+        "tool_call_blocks": 0
+      },
+      "output_tail": "T_TOKENS to its real window; to make it recognized, map it in the\nmodelOverrides setting or update Claude Code; CLAUDE_CODE_DISABLE_UNKNOWN_MODEL_\nWINDOW_ENFORCEMENT=1 restores the previous wait-for-the-API behavior.\n[claude-code:unrecognized_model] {\"model\":\"kimi-for-coding\",\"query_source\":\"gene\nrate_session_title\"}\n[claude-code:unrecognized_model] {\"model\":\"qwen3.8-27b\",\"query_source\":\"sdk\"}\n\n\n\n"
+    }
+  ],
+  "summary": {
+    "total": 1,
+    "verified_ok": 1,
+    "gpu_hit_pages_added": 22816.0,
+    "error_marks": 0
+  }
+}
