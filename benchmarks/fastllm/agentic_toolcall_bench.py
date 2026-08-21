@@ -203,7 +203,11 @@ def run_task(task_name: str, prompt: str, sandbox: pathlib.Path,
             last_verify, _ = TASKS[task_name]["verify"](task_dir)
         except Exception:
             last_verify = False
-        if last_verify and "recap" in transcript.lower():
+        # verify 通过即视为任务完成。不再死等 "recap" 关键字——任务 prompt
+        # 里从没要求过它, 导致每次都空等到 deadline(实测 890s 外部超时还
+        # 比 900s deadline 短, 直接杀掉进程、一行结果都没输出)。
+        # 给 5s 缓冲抓一次尾部转录就收。
+        if last_verify:
             time.sleep(5)
             transcript = _tmux(
                 "capture-pane", "-t", f"{BENCH_SESSION}:{window}", "-p")
