@@ -3381,17 +3381,63 @@ def _image_source_to_url(source: dict) -> str:
     return f"data:{media};base64,{source.get('data', '')}"
 
 
+# Claude Code 每次请求都会往 system prompt 最前面塞一行**每请求都变**的
+# 归因头, 形如:
+#     x-anthropic-billing-header: cc_version=1.0.x; cch=abcd1234;
+# 它落在 prompt 前缀的第 0 个位置, 于是整段前缀每轮都不同 -> 前缀缓存
+# (KV cache) 全量失效, 本地模型每轮重新 prefill, 实测慢 ~90%。
+# 这里在渲染/转发**之前**把这行剥掉, 让真正稳定的系统提示成为缓存前缀。
+# 只剥**开头**、且匹配归因头特征的行, 绝不动正文中间的内容。
+_CC_ATTR_LINE_RE = re.compile(
+    r'^\s*x-anthropic-billing[-\w]*\s*:[^\n]*\n?',
+    re.IGNORECASE)
+# 归因头被剥除的次数(观测用; 非 0 说明有 Claude Code 流量且正在被保护)
+_CC_ATTR_STRIPPED = 0
+
+
+def _strip_claude_code_attribution(text):
+    """剥掉开头的 Claude Code 归因头行, 返回 (净化文本, 剥除行数)。
+
+    支持连续多行归因头; 只吃开头, 正文不受影响。空/非字符串原样返回。
+    """
+    global _CC_ATTR_STRIPPED
+    if not isinstance(text, str) or not text:
+        return text, 0
+    stripped = 0
+    s = text
+    while True:
+        m = _CC_ATTR_LINE_RE.match(s)
+        if not m:
+            break
+        s = s[m.end():]
+        stripped += 1
+    if stripped:
+        # 归因行后常残留空行; 去掉前导换行让稳定前缀从真正内容开始。
+        # 只吃 '\n'(不动空格/制表符, 保留正文可能的缩进)。
+        s = s.lstrip("\n")
+        _CC_ATTR_STRIPPED += stripped
+    return s, stripped
+
+
 def _anthropic_to_openai(body: dict) -> dict:
     messages = []
 
     system = body.get("system")
     if system:
         if isinstance(system, str):
-            messages.append({"role": "system", "content": system})
+            # 纯字符串 system: 归因头可能被前置在内容最前面, 一样要剥。
+            cleaned, _ = _strip_claude_code_attribution(system)
+            if cleaned.strip():
+                messages.append({"role": "system", "content": cleaned})
         elif isinstance(system, list):
-            parts = [b.get("text", "") for b in system
-                     if isinstance(b, dict) and b.get("type") == "text"
-                     and not b.get("text", "").startswith("x-anthropic-billing")]
+            parts = []
+            for b in system:
+                if not (isinstance(b, dict) and b.get("type") == "text"):
+                    continue
+                # 逐块剥: 归因头可能单独成块, 也可能前置在首个文本块里。
+                cleaned, _ = _strip_claude_code_attribution(b.get("text", ""))
+                if cleaned.strip():
+                    parts.append(cleaned)
             if parts:
                 messages.append({"role": "system", "content": " ".join(parts)})
 
@@ -4319,6 +4365,9 @@ async def health(request: Request):
         "backend_url": BACKEND_URL,
         "ready": ready,
         "lifecycle": lifecycle,
+        # Claude Code 归因头剥除计数; 非 0 说明有 Claude Code 流量且前缀
+        # 缓存正被保护(每请求都变的归因行没有进入缓存前缀)。
+        "cc_attribution_stripped": _CC_ATTR_STRIPPED,
     })
 
 

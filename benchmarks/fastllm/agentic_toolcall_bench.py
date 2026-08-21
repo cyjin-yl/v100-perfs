@@ -182,6 +182,21 @@ def run_task(task_name: str, prompt: str, sandbox: pathlib.Path,
             f"--plan-yolo --plan-yolo-into {model} "
             f"{_shq(prompt)}"
         )
+    elif runner == "claude":
+        # Claude Code 走 Anthropic /v1/messages。用 .env 里的 AUTH_TOKEN 指向
+        # 本网关; ANTHROPIC_API_KEY 置空避免它去要云端 key。
+        # --dangerously-skip-permissions 让 headless 跑工具不再逐个要批准。
+        # 这条路径同时真实检验"剥离 Claude Code 归因头"——Claude Code 每请求
+        # 都会发那行会变的 x-anthropic-billing-header, 网关剥掉后前缀才稳定。
+        shell = (
+            f"set -a; . {REPO_ROOT.parent}/.env; set +a; "
+            f"ANTHROPIC_BASE_URL=http://127.0.0.1:8000 "
+            f"ANTHROPIC_AUTH_TOKEN=\"$AUTH_TOKEN\" "
+            f"ANTHROPIC_API_KEY=\"\" "
+            f"ANTHROPIC_MODEL={model} "
+            f"claude -p {_shq(prompt)} --model {model} "
+            f"--dangerously-skip-permissions"
+        )
     else:
         shell = f"opencode run --model {model} -- {_shq(prompt)}"
     _tmux("send-keys", "-t", f"{BENCH_SESSION}:{window}", shell, "Enter")
@@ -254,7 +269,8 @@ def run_task(task_name: str, prompt: str, sandbox: pathlib.Path,
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--sandbox", default="/tmp/agentbench")
-    parser.add_argument("--runner", choices=["omp", "opencode"], default="omp")
+    parser.add_argument("--runner",
+                        choices=["omp", "opencode", "claude"], default="omp")
     parser.add_argument("--model", default=None)
     parser.add_argument("--tasks", default=",".join(TASKS))
     parser.add_argument("--timeout", type=int, default=900)
