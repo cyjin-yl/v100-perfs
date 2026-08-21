@@ -174,9 +174,12 @@ def run_task(task_name: str, prompt: str, sandbox: pathlib.Path,
           "-c", str(task_dir))
 
     if runner == "omp":
+        # omp v17 已无 --auto-approve; 用 --plan-yolo 让模型在计划批准后
+        # 自动开始实现(等效于旧版的自动批准工作流)。
         shell = (
-            f"omp --model {model} --auto-approve --cwd {task_dir} "
+            f"omp --model {model} --cwd {task_dir} "
             f"--tools bash,read,write,edit,glob,grep,task "
+            f"--plan-yolo --plan-yolo-into {model} "
             f"{_shq(prompt)}"
         )
     else:
