@@ -2492,3 +2492,266 @@ text   窗口 47 个 / decode 11404 token / 窗口内 pos_accept_rate 行 21
 - 本条: 新并行路径 -> 漏掉原路径的副作用。
 
 三条都是**"漏掉了不在视线正中的那部分"**。区别只在漏的是守卫、前提, 还是副作用。
+
+## 15.45 动态 grammar 不能用一张 mask 验证整个 MTP 草稿块 (2026-08-21)
+
+旧路径在 `tool_call_allowed_token_ids` / `tool_call_blocked_token_ids` 非空时直接禁用
+MTP。仅删除这道守卫也不正确：verify 的第 0 行使用当前 grammar 状态，第 1 行必须先
+假设接受 draft 0 再重算 mask，后续行同理；函数名、参数名和闭合标签的边界都可能落在
+同一个草稿块内。
+
+当前实现由 `AppendToolCallConstraintRowConfigs` 按 draft 前缀逐行推进状态，
+`Qwen35ApplyCudaTokenConstraints` 在完整 FP32 CUDA logits 上同时应用 allow-list 与
+block-list，再进行 greedy/top-k 采样。全灭行保持原有“退回自由采样”语义。
+
+验证不是只看最终文本：
+
+- CUDA mask 与 PyTorch `torch.where` 在 V100 上对拍 18 组、6,756,168 个 float，
+  逐 bit、argmax、top-k 全部一致；
+- 合成 grammar 检查证明四行依次允许 `list`、`_dir`、`>`、`<parameter=`；
+- 同一生产二进制、同一强制 `get_weather` 请求：plain decode 与 MTP 都是 37 token，
+  工具名和参数 JSON 完全一致；
+- MTP 请求计数增量：`mtp_constrained_verify_steps=9`、
+  `mtp_constrained_verify_rows=26`，`toolcall_mask_emptied=0`。
+
+判据：动态约束下“输出看起来合法”不够；必须同时证明逐行 mask 正确、MTP 没有静默
+回退、以及与同二进制 plain decode 的可观察结果一致。
+
+## 15.46 “backend reloading” 曾经是流错误的错误总称 (2026-08-21)
+
+`_local_stream` 原来吞掉任意 `Exception`，统一回传
+`FastLLM backend is reloading`。因此健康的 READY 后端遇到 404、客户端断开或网络读
+错误时也会显示成 reload。
+
+改为记录异常类型和阶段；只有 lifecycle 非 READY 才返回 `backend_reloading`，
+READY 状态的真实中断返回 `backend_stream_interrupted`。客户端断开不再惩罚本地后端，
+已经输出本地 token 后也不再拼接另一个 provider 的回答。
+
+这次新日志把现场钉成了：
+
+`backend returned 404: The model auto does not exist`
+
+根因是生产 profile 没声明 `FASTLLM_AUTO_ROUTE_ALIASES=auto`，导致公平路由选中 local
+后没有把公开名 `auto` 改写成内部 slug `qwen3.8-fastllm`。默认值和生产 profile
+现都显式包含 `auto`；Python 流探针验证 `200 + [DONE]`，无
+`model_not_found` / `backend_stream_interrupted`。
+
+随后第二个现场是正文和 thinking 都已完整显示，尾部却追加
+`backend_stream_interrupted`。新日志给出
+`yielded=1, UnicodeDecodeError: invalid continuation byte`：byte-level tokenizer
+生成了无法组成 UTF-8 的低频 token 字节，而 proxy 的 strict incremental decoder 把
+单个不可恢复字节升级成了整流失败。
+
+现在仍用 incremental decoder 跨网络 chunk 保留正常多字节字符，但以
+`surrogateescape` 精确标出后端的非法字节，转发前只把这些字节替换为 `U+FFFD`，继续
+发送后续 SSE 与 `[DONE]`；同时记录 replacement 数量。缺失字符本身无法从服务层恢复，
+但不能因此把已经完成的回答标成失败。
+
+## 15.47 SM70 的旧 XQA/Flash 开关与 packed turbo-XQA 不是同一路 (2026-08-21)
+
+`FASTLLM_CUDA_SM70_PAGED_XQA` 只接受 FP16 K/V；
+`FASTLLM_CUDA_SM70_FLASH_ATTN` 只接受 FP8_E4M3 K/V。turbo3 profile 下两者为 no-op，
+但这不代表融合注意力没有生效。
+
+生产实际走独立入口 `FASTLLM_CUDA_SM70_TURBO_XQA=1`：
+K=`q8_0_kv`、V=`turbo3`、qLen 1–4。运行期 `/props` 已观测
+`attn.sm70_turbo_xqa` 432 次、624 token、`max_n=3`；fp64 对拍 92/92 通过。
+
+边界必须写清：当前 packed 融合 kernel **只支持 turbo3 decode/短 query**。
+Turbo4 已有打包和反量化，但没有融合 XQA；packed turbo3/4 的 prefill Flash 也尚未
+实现。启动日志现在分别报告真实 turbo-XQA 与两个旧入口，避免再把 no-op 日志误读成
+“移植未生效”。
+
+## 15.48 Byte-level tokenizer 必须跨 token 组装 UTF-8 后再发 SSE (2026-08-21)
+
+proxy 把非法字节替换成 `U+FFFD` 只能避免整流失败，不能恢复字符。生产强制模型只输出
+`👋` 时，旧后端返回 `����`。直接抓 `:8002` 原始 SSE 得到决定性证据：
+
+- 同一个 emoji 的 `F0 9F 91` 在 event 11，`8B` 在 event 12；
+- 另一处拆成 `F0 9F` / `91` / `8B` 三个 event；
+- 整份后端 SSE 本身无法用 strict UTF-8 解码。
+
+根因在 apiserver：每次 `FetchResponseTokens` 后只用一个 token 调
+`Tokenizer::Decode`，随即把返回的原始 byte fragment 放进 JSON。`byteAsChar`
+tokenizer 的单 token 不保证是完整 Unicode 字符。
+
+`Utf8StreamAssembler` 现在跨 token 保留最多 3 个未完成尾字节，完整 code point 才交给
+stop matcher / output parser / JSON；真正非法、overlong、surrogate 或超出 U+10FFFF 的
+序列才替换。生产同一探针结果为 `👋`、0 replacement、合法 raw SSE、正常 `[DONE]`。
+
+## 15.49 名字规范化不能污染工具 XML 结构；OpenWebUI 必须走 native (2026-08-21)
+
+为兼容 `Bash` ↔ `bash`，`ToolCallCanonicalKey` 会忽略大小写、`_`、`-`、空格和点。
+它曾被错误复用于 `<function=` / `<parameter=` 等结构前缀，于是 `<_` 规范化后等于
+`<`，下划线、空格和点都成为“合法但零进度”的 token。MTP 与 plain decode 用同一
+grammar，所以两者都能稳定复现 `<tool_call><_  _  _ ...`。
+
+现规则：
+
+- S1 工具名、S3 参数名允许 canonical alias，但规范化后必须有进度；
+- XML 标签逐字节匹配；
+- 声明本身正确位置的 `_` 仍可精确生成；
+- 前导/重复 `_`、空格、点拒绝。
+
+生产 MTP2 两工具探针返回标准 `delta.tool_calls`：
+`read_file({\"path\":\"/app/pyproject.toml\"})`，finish=`tool_calls`，
+`mtp_constrained_verify_steps +11`、rows `+32`、mask-empty/malformed/repair 均为 0。
+
+OpenWebUI 原样显示 XML 是另一层：请求后的所有 constraint/MTP 计数增量均为 0，
+证明它没有发送 OpenAI `tools` 数组。其 SQLite 中活动模型 `auto` / `qwen3.8-27b`
+的 params 原为 `{}`；已按 v0.9.6 官方契约改为
+`{\"function_calling\":\"native\"}` 并重启。legacy/default 模式只向 prompt 注入工具
+说明，无法执行 FastLLM 的原生 `tool_calls`。
+
+## 15.50 工具 guidance 必须由活动 Jinja 编译，而不是手抄规则 (2026-08-21)
+
+生产模板用 sentinel tool/两参数做 dry-run，编译出 function/parameter/value/close 的
+实际布局；模型加载时编译失败则 tools 请求拒绝服务。S1/S3 只允许请求 schema 的精确
+名字，别名映射只留最终输出防御层，每个真实调用最多记录一次。
+
+MTP 行构造还会在 proposal 违反当前 allow/block 时剪掉后续不可达行；旧实现继续把
+非法 draft 追加到临时文本，产生 `partial='ash'` 的假 mask-exhausted，虽然该分支永远
+不会 commit。生产 `bash(ls -la)` 探针：原生 tool_calls、MTP constrained steps>0，
+mask-empty/malformed/repair=0，新进程无 exhausted 日志。
+
+提交：`c91580a2`、`f8290701`。
+
+## 15.51 packed Turbo3/Turbo4 prefill 的安全收益区间 (2026-08-21)
+
+新增 SM70 packed prefill：K=q8_0_kv，V=turbo3/turbo4，在线 softmax、延后一次逆 WHT。
+qLen=8/16/32 对独立 fp64 参考全部通过；Turbo4 的未对齐 uint32 nibble load 已改为
+byte-wise load。
+
+实测 qLen=8 相对 BATCH_GQA 约 5.6–7.5x，qLen=32 约 2.34x；逐-query qLen=512
+只有 0.17x。8-query 寄存器 tile 负实验更差：40.03ms vs 1.63ms，已回退。因此默认
+只路由 qLen=5–32，长 prefill 保持 BATCH_GQA。后续 shared-memory/single-launch
+query tile 记录在 VastLLM issue #1。
+
+提交：`dd035cf1`。
+
+## 15.52 参数值的裸 `<` 不能被提前判成闭合标签 (2026-08-21)
+
+OpenWebUI `write_file` 两次稳定把 Python 正则截在 `re.findall(...([^`。直接对生产
+OpenAI API 复现后，非流式响应已经是合法 JSON 且 `finish_reason=tool_calls`，证明
+不是 SSE/OpenWebUI 丢字节：预期下一个正文字符 `<` 被 S4 grammar 当成
+`</parameter>` 前缀，白名单强迫模型提前闭合参数。
+
+修复后 S4 不再对白名单提交闭合前缀；普通 `<`、HTML 和 `r"[^<]"` 均保持自由。
+空值保护改为只屏蔽**实际完成**全空白 `</parameter>` 的 token，不能屏蔽 `<` 或
+`</pa` 前缀。C++ 状态机测试、Python 镜像不变量、非流式和 42-chunk 流式 API
+均通过；重组内容包含完整 `([^<]+)</span>`，落盘后 `py_compile` 通过。
+
+提交：`b716145b`。
+
+## 15.53 长 qLen 要共享 KV，但必须保留 tensor-core 矩阵并行 (2026-08-21)
+
+`2 query × 3 GQA head` 的 scalar shared-memory kernel 虽然把 global KV 读取降到
+每 tile 一次，却在 qLen512/kv8192 跑到 54.70ms（BATCH_GQA 约 3.86ms）。
+Nsight Compute 2024.3.2 实测：DRAM 0.39%、L2 hit 98.84%、L1/TEX 69.60%、
+56 registers/thread、32.83KB shared/block、occupancy 18.58%。瓶颈是 shared
+重读、barrier 和 scalar QK/PV，不是 DRAM 或 spill；该 kernel 已删除。
+
+保留实现是 packed all-head tensor path：每 chunk 只反量化4个 Q8/Turbo3或Turbo4
+KV head，24个 query head 用 batched tensor-core QK/PV，一次 softmax 覆盖全部
+head。它同时共享 KV、保留矩阵并行，并减少逐 KV head 的 GEMM/softmax/store launch。
+
+CUDA-event 20轮实测（新/旧 BATCH_GQA）：
+
+- Turbo3 kv8192：q512 3.29/3.73ms（1.13x），q2048 10.64/11.12ms（1.05x）；
+- Turbo3 kv32768：q512 12.77/14.25ms（1.12x），q2048 42.47/44.31ms（1.04x）；
+- Turbo4 kv8192：q512 3.36/3.75ms（1.12x），q2048 10.62/11.14ms（1.05x）；
+- q64 kv8192：1.08/1.69ms（1.57x）。
+
+独立 CPU/fp64 抽样对拍覆盖 Turbo3/4、qLen512/2048、乱序页、非满尾页和
+kvLen10003 partial multi-chunk，287/287 PASS；XQA 也加入 Turbo4，qLen1/3
+相对 fallback 分别约 10.97x/10.30x。路由名：
+`attn.sm70_turbo_all_head_gqa`。
+
+Volta profiler 固定使用用户级
+`~/.local/opt/nsight-compute/2024.3.2.3`；`~/.local/bin/ncu` 由用户级
+`alternatives --altdir ~/.local/alternatives --admindir ~/.local/var/lib/alternatives`
+切换，系统 2025.4.1 保留共存。
+
+提交：`d3561684`。
+
+## 15.54 finally 里抛的异常会静默杀死 worker，整个调度器变砖 (2026-08-22)
+
+proxy 的 BackendScheduler._worker 在 finally 里做租约释放。当
+reap_stale_leases 把"正在跑的非流式长请求"误判成泄漏并归零 active 后，
+worker 的 finally 再 release 就下溢抛 BackendLifecycleError —— 而 finally
+里抛的异常没有任何 try 接得住，协程当场死亡，且 create_task 的异常无人
+await ⇒ 完全静默。四个 worker 逐个死光后 metrics 显示
+workers=0/4 sched_active=4 queued=4 reqs=0，/health 仍报 READY。
+
+两个致命细节:
+1. 误判的根源是泄漏判据看不见非流式请求 —— _INFLIGHT 只登记流式,
+   pending() 只算队列, 已被 worker 取走正在跑的请求两者都不算。
+2. 同一个 codebase 早用"纪元法"修过流式槽位的同款问题, 租约这条路漏了。
+
+修复: 租约加纪元(reap 归零时递增, 旧租约 release 变 no-op)、_release 不
+再抛异常、reap 判据补 scheduler.active、finally 全程异常安全 +
+respawn_dead_workers 自愈 + DEADLOCK 显式报警。四个不变量回归全过。
+
+提交: thinking_proxy.py (f6007acd)。
+
+## 15.55 逐状态白名单前缀匹配拒绝跨边界 token，约束从护栏变成改写器 (2026-08-22)
+
+工具调用约束的旧实现是"每状态维护一个候选字符串集合, 逐状态独立做前缀
+匹配"。一个 token 若跨过状态边界 —— 同时补完结构前缀并开启下一状态内容
+—— 必然被拒。逐 token 轨迹实测: 模型想调 bash, 自然选的 token 是
+'=b'(id 21402, '=' 补完 functionPrefix + 'b' 开启名字), 被判定
+"\n<function=b" 不是 "\n<function=" 的前缀而拒绝, 只放行光秃秃的 '='。
+模型被迫改走自己概率更低的拼法, 隐状态偏离, S1 就选了 todo。
+
+规模量化(一次工具调用): 90 步约束中 17 步放行集仅 1 个 token(完全没得选)、
+13 步直接否决模型的 argmax。这就是"强制"而非"纠正"。
+
+修复对齐 llama.cpp 的 llama_grammar_accept_str: 一个 token 合法当且仅当
+其全部字符能被语法从当前状态连续消费。逐字符推进, 跨边界天然支持,
+转移规则全部取自 CompileToolCallGrammarLayout 编译出的 layout, 零模型专有
+字面量。起点由"从块开头逐字符重放"构造, 与 LocateToolCallGrammarCursor
+互校验(WALKER MISMATCH trace), 重放卡住自动回退旧路径。
+
+验证: grammar 开/关对照 3 轮零例外(开=关=bash, 此前开=todo);
+mask_overrode_argmax 从 13 降到 0。
+
+提交: c550535b。
+
+## 15.56 全词表 blocked 会触发 CUDA 兜底全放开，约束静默失效 (2026-08-22)
+
+S4 空值守卫的判定是 "tail + tokenText 是否构成完整 </parameter>"。
+当 tail 本身已含完整闭合标签时, 追加任何 token 都仍然匹配 ⇒ 整个词表
+248320 个 id 全被塞进 blocked(实测 503 次)。而 CUDA 掩码对"全禁"的兜底是
+memset(row,1) 全放开 —— 约束在最该生效的一步彻底失效, 且
+toolcall_mask_emptied 恒为 0(那个计数器统计的是 LLMSampling 里的另一条
+兜底, 生产路径根本不走)。**完全静默**。
+
+现场: <parameter=path>\n\n</parameter> 空值参数直接发给客户端, path=""
+导致 EISDIR, 客户端重复 5 次后挂死。
+
+修复: 守卫在 tail 已含完整闭合标签时直接返回; CUDA "全禁->全放开"兜底
+加计数器 toolcall_cuda_mask_all_blocked, 杜绝静默。
+
+教训: "计数器为 0 证明没发生"只对覆盖了全部路径的计数器成立。
+同一语义有多条兜底分支时, 每条都要有自己的计数器。
+
+提交: c550535b。
+
+## 15.57 四个假设先后被自己的数据推翻：先确认代码路径被执行 (2026-08-22)
+
+排查"模型想调 bash 却发出 todo"时, 四个看起来很有说服力的假设全部被
+证伪: (1) 模板 NO suffix 禁止第二调用 —— 放开后照样 1 个, 且官方与
+Unsloth 两版逐字节相同; (2) 掩码屏蔽 bash —— 词表复现显示 bash 就在
+S1 的 14 个放行 token 里; (3) MTP 投机行错位 —— top_k=51 关 MTP 输出
+逐字节相同; (4) 掩码只能筛 top-k —— 掩码在全词表先于 top-k 生效。
+
+方法论教训:
+1. 先确认代码路径真的被执行, 再分析它。两轮诊断加错位置
+   (LLMSampling/LLMSamplingOnly 生产根本不走), 靠"trace 输出 0 条"才发现。
+2. A/B 必须排除混杂。prompt_tok 两边都是 12808 才证明 prompt 真的一致
+   (raw_prompt=true 生效)。
+3. 日志是追加式的, 全文件 grep "加载失败"会命中旧代内容, 必须按生成分界切片。
+4. 并发流量污染 trace: 用户的 OMP 会话(12 工具集)曾被误当成自己探针
+   (9 工具集)的输出, 需用 allow_n/allowed_values 当判别器分离。
+5. 模型"意识到自己不对"是真实信号: thinking 全程清醒点名 bash, 是约束
+   把输出改掉了 —— 用户的直觉比四个技术假设都准。

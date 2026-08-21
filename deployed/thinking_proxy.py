@@ -55,6 +55,7 @@ import sys
 import shlex
 import secrets
 import time
+import traceback
 import uuid
 from collections import OrderedDict
 from urllib.parse import urlparse
@@ -98,6 +99,9 @@ MAX_RESTART_BACKOFF = int(os.environ.get("MAX_RESTART_BACKOFF", "60"))
 QUEUE_TIMEOUT = int(os.environ.get("QUEUE_TIMEOUT", "180"))
 FALLBACK_ENABLED = os.environ.get("FALLBACK_ENABLED", "1") == "1"
 BENCHMARK_MODE = os.environ.get("BENCHMARK_MODE", "0") == "1"
+# 每个 Anthropic /v1/messages 请求打一行 thinking effort 判定来源。
+# 默认开:这条日志是唯一能证明 wire 上到底收到什么档位的证据。
+ANTHROPIC_EFFORT_TRACE = os.environ.get("ANTHROPIC_EFFORT_TRACE", "1") == "1"
 
 NIM_API_KEY = os.environ.get("NIM_API_KEY", "")
 NIM_BASE_URL = os.environ.get("NIM_BASE_URL", "https://integrate.api.nvidia.com/v1")
@@ -144,7 +148,7 @@ FASTLLM_PUBLIC_ALIASES = {
 }
 FASTLLM_AUTO_ROUTE_ALIASES = {
     s.strip() for s in os.environ.get(
-        "FASTLLM_AUTO_ROUTE_ALIASES", ""
+        "FASTLLM_AUTO_ROUTE_ALIASES", "auto"
     ).split(",") if s.strip()
 }
 FASTLLM_ENABLED = bool(FASTLLM_BACKEND_URL)
@@ -476,15 +480,23 @@ async def _await_callback(result):
 
 
 class BackendLease:
-    def __init__(self, manager):
+    def __init__(self, manager, epoch: int = 0):
         self._manager = manager
         self._released = False
+        # 取租约时的回收纪元。reap_stale_leases 会**替**持有者把 active
+        # 归零并递增纪元;此后旧纪元的 release 必须作废,否则会把 active
+        # 减成负数并抛 BackendLifecycleError —— 那个异常发生在 _worker 的
+        # finally 里,没有任何 try 接得住,worker 协程当场死亡。
+        # 实测:4 个 worker 逐个死光后 queued 只涨不消,服务完全静默地废掉。
+        # 流式槽位早就用同样的纪元法修过(见 BackendScheduler._reap_epoch),
+        # 租约这条路当时漏了。
+        self._epoch = epoch
 
     async def release(self):
         if self._released:
             return
         self._released = True
-        await self._manager._release()
+        await self._manager._release(epoch=self._epoch)
 
     async def __aenter__(self):
         return self
@@ -545,6 +557,9 @@ class BackendLifecycleManager:
         self.state = "COLD"
         self.generation = 0
         self.active = 0
+        # 租约回收纪元:reap_stale_leases 归零 active 时递增,使已发出的
+        # 旧租约的 release 变成无害的 no-op(与 scheduler._reap_epoch 同构)
+        self._lease_epoch = 0
         self.last_idle_at = time.monotonic()
         self.last_error = None
         self.last_stop_reason = None
@@ -588,7 +603,7 @@ class BackendLifecycleManager:
                 if self.state == "READY":
                     self.active += 1
                     self._drained.clear()
-                    return BackendLease(self)
+                    return BackendLease(self, self._lease_epoch)
                 task = self._activation_task
                 if task is None or task.done():
                     # 记录来自挂起态的激活意图：_activate 用快照决定走
@@ -627,7 +642,7 @@ class BackendLifecycleManager:
                     self.last_error or f"FastLLM backend is {self.state}")
             self.active += 1
             self._drained.clear()
-            return BackendLease(self)
+            return BackendLease(self, self._lease_epoch)
 
     async def wait_for_activation(self):
         async with self._lock:
@@ -713,10 +728,17 @@ class BackendLifecycleManager:
                 raise
             raise BackendLifecycleError(message) from exc
 
-    async def _release(self):
+    async def _release(self, epoch: int | None = None):
         async with self._lock:
+            if epoch is not None and epoch != self._lease_epoch:
+                # 回收器已经替这个租约归零过了,这次释放作废。
+                return
             if self.active <= 0:
-                raise BackendLifecycleError("backend lease accounting underflow")
+                # 不再抛异常:这里唯一的调用点是 _worker/流式路径的 finally,
+                # 抛出去就是杀死调用者。计数异常记一笔日志即可,服务必须活着。
+                print("[lifecycle] 忽略多余的租约释放(active 已为 0)",
+                      flush=True)
+                return
             self.active -= 1
             if self.active == 0:
                 self.last_idle_at = time.monotonic()
@@ -735,6 +757,15 @@ class BackendLifecycleManager:
             return 0
         if scheduler.pending() > 0:
             return 0
+        # _INFLIGHT 只登记**流式**请求;非流式请求由 _worker 直接 httpx.post,
+        # 全程不进 _INFLIGHT。而 pending() 是队列长度,已被 worker 取走正在
+        # 处理的请求同样为 0。两个判据叠加仍然看不见"正在跑的非流式请求",
+        # 于是一个超过 idle_seconds 的长请求(长 prompt 冷 prefill 轻易过
+        # 180s)会被误判成泄漏租约并强制归零。
+        # scheduler.active 是 worker 真实在办的件数,这里必须一起看。
+        if scheduler.active > 0:
+            self._lease_idle_since = None
+            return 0
         last = getattr(self, "_lease_idle_since", None)
         now = time.monotonic()
         if last is None:
@@ -748,6 +779,7 @@ class BackendLifecycleManager:
                 self._lease_idle_since = None
                 return 0
             self.active = 0
+            self._lease_epoch += 1
             self.last_idle_at = now
             self._drained.set()
         self._lease_idle_since = None
@@ -1407,9 +1439,55 @@ class BackendScheduler:
         self._waiters = 0
 
     async def start_workers(self):
-        for _ in range(self.max_concurrent):
-            w = asyncio.create_task(self._worker())
+        for idx in range(self.max_concurrent):
+            w = asyncio.create_task(self._worker(), name=f"sched-worker-{idx}")
+            # asyncio.create_task 的异常不会被任何人 await —— worker 一旦
+            # 死掉就是静默的,现象是 queued 只涨不消而 streams/active 全 0
+            # (实测:proxy 起来后 reqs 恒为 0,所有请求堆在队列里)。
+            # 这里强制把死因打出来,否则只能靠挂调试器定位。
+            w.add_done_callback(self._on_worker_exit)
             self._workers.append(w)
+        print(f"[scheduler] {len(self._workers)} workers started "
+              f"(slots={self.max_concurrent})", flush=True)
+
+    @staticmethod
+    def _on_worker_exit(task: asyncio.Task) -> None:
+        name = task.get_name()
+        if task.cancelled():
+            print(f"[scheduler] worker {name} CANCELLED", flush=True)
+            return
+        exc = task.exception()
+        if exc is not None:
+            print(f"[scheduler] worker {name} DIED: "
+                  f"{type(exc).__name__}: {exc}", flush=True)
+            traceback.print_exception(type(exc), exc, exc.__traceback__)
+        else:
+            print(f"[scheduler] worker {name} exited cleanly (unexpected)",
+                  flush=True)
+
+    def respawn_dead_workers(self) -> int:
+        """worker 死亡后自愈。
+
+        上面的 finally 已经异常安全,理论上 worker 不该再死;但"调度器静默
+        全灭"的代价是整个服务变砖,所以这里再加一道自愈:发现有 worker 不在
+        了就补齐。宁可重复补,也不能出现 workers=0/4 还在硬扛的局面。
+        """
+        respawned = 0
+        for idx, worker in enumerate(self._workers):
+            if not worker.done():
+                continue
+            new_worker = asyncio.create_task(
+                self._worker(), name=f"sched-worker-{idx}r")
+            new_worker.add_done_callback(self._on_worker_exit)
+            self._workers[idx] = new_worker
+            respawned += 1
+        if respawned:
+            print(f"[scheduler] 补活 {respawned} 个已死的 worker",
+                  flush=True)
+        return respawned
+
+    def alive_workers(self) -> int:
+        return sum(1 for w in self._workers if not w.done())
 
     def pending(self) -> int:
         return self._queue.qsize()
@@ -1461,12 +1539,29 @@ class BackendScheduler:
                     item.error = exc
                     item.event.set()
             finally:
+                # 【上游BUMP勿回退】这整个 finally 必须是异常安全的。
+                # 实测事故:reap_stale_leases 误判长非流式请求为泄漏并把
+                # active 归零后,这里的 lease.release() 抛
+                # BackendLifecycleError("backend lease accounting underflow");
+                # finally 里抛出的异常没有任何 try 接得住,worker 协程当场
+                # 死亡且**完全静默**(create_task 的异常无人 await)。
+                # 4 个 worker 逐个死光 -> queued 只涨不消 -> 服务废掉,
+                # 现象是 workers=0/4 sched_active=4 queued=N reqs=0。
+                # 清理动作全部单独兜住:计数/回收出问题只记日志,绝不杀 worker。
                 # 纪元变了说明 reap_leaked_streams 已经替我们释放过这个槽位,
                 # 再释放一次会把信号量容量放大(实测出现过 streams=-3/4)。
-                if slot_held and slot_epoch == self._reap_epoch:
-                    self._slot.release()
+                try:
+                    if slot_held and slot_epoch == self._reap_epoch:
+                        self._slot.release()
+                except Exception as exc:                      # noqa: BLE001
+                    print(f"[scheduler] 槽位释放失败(已忽略): "
+                          f"{type(exc).__name__}: {exc}", flush=True)
                 if lease is not None:
-                    await lease.release()
+                    try:
+                        await lease.release()
+                    except Exception as exc:                  # noqa: BLE001
+                        print(f"[scheduler] 租约释放失败(已忽略): "
+                              f"{type(exc).__name__}: {exc}", flush=True)
                 self.active -= 1
                 self._queue.task_done()
                 if sent:
@@ -1599,6 +1694,9 @@ async def _metrics_loop():
     """每 30s 打印一行队列/吞吐状态;完全静默期不刷屏。"""
     while True:
         await asyncio.sleep(30)
+        # 自愈放在最前面:下面有"完全空闲就 continue"的分支,放后面会让
+        # 空闲期死掉的 worker 一直补不回来,等来了请求又是死锁。
+        scheduler.respawn_dead_workers()
         reqs = _PROXY_METRICS["reqs"]
         stream_reqs = _PROXY_METRICS["stream_reqs"]
         queued = scheduler._queue.qsize()
@@ -1632,10 +1730,16 @@ async def _metrics_loop():
         tps = decode_tok / decode_s if decode_s > 0 else 0.0
         print(f"[metrics] streams={in_flight}/{scheduler.max_concurrent} "
               f"waiters={scheduler.waiters()} "
+              f"workers={scheduler.alive_workers()}/{len(scheduler._workers)} "
+              f"sched_active={scheduler.active} "
               f"inflight=[{inflight_desc}] "
               f"queued={queued} backend={state}(active={lifecycle_active}) | "
               f"reqs={reqs} avg_ttft={avg_ttft:.2f}s decode={decode_tok} tok "
               f"({tps:.1f} tok/s)", flush=True)
+        # 队列有货但没人取 = 调度器已死,这是静默故障,必须显式报警
+        if queued > 0 and scheduler.alive_workers() == 0:
+            print("[scheduler] DEADLOCK: queue has "
+                  f"{queued} item(s) but 0 live workers", flush=True)
 
 
 # ─── Fair routing decision ───────────────────────────────────────
@@ -1940,6 +2044,33 @@ def _backend_reloading_sse():
     payload = _backend_reloading_error()
     payload["status"] = 503
     return b"data: " + json.dumps(payload).encode() + b"\n\n"
+
+def _backend_stream_interrupted_error():
+    return {
+        "error": {
+            "message": (
+                "FastLLM stream was interrupted before completion; "
+                "retry the request."
+            ),
+            "type": "upstream_transport_error",
+            "param": None,
+            "code": "backend_stream_interrupted",
+        },
+        "status": 502,
+    }
+
+
+def _backend_stream_failure_sse(exc: BaseException):
+    try:
+        lifecycle_state = backend_lifecycle.snapshot().get("state")
+    except Exception:
+        lifecycle_state = None
+    if (isinstance(exc, BackendLifecycleError) or
+            lifecycle_state not in {None, "READY"}):
+        return _backend_reloading_sse()
+    return (b"data: " +
+            json.dumps(_backend_stream_interrupted_error()).encode() +
+            b"\n\n")
 
 
 async def _wait_out_pressure_before_slot(budget: float) -> None:
@@ -2792,6 +2923,32 @@ _EFFORT_BUDGETS = {
     "xhigh": 16384,
 }
 
+# Qwen3.8 官方 chat template 只接受三档: low / medium / xhigh。
+# 模板自身把 'high' 别名到 'xhigh',其余取值直接 raise_exception。
+# 缺省不传 reasoning_effort 时模板取默认 xhigh —— 所以"推不出来"等于
+# 静默升到最高档,必须显式覆盖全部客户端档位。
+_QWEN_TEMPLATE_EFFORT = {
+    "minimal": "low",
+    "low": "low",
+    "medium": "medium",
+    "high": "xhigh",
+    "xhigh": "xhigh",
+    "max": "xhigh",
+}
+# Anthropic 协议没有 reasoning_effort 字段,客户端只发 thinking.budget_tokens。
+# 边界按 OMP Anthropic adapter 的实际预算划分:
+#   minimal=1024, low=4096, medium=8192, high/xhigh>=16384
+# 旧实现用 proxy 自己的 _EFFORT_BUDGETS(2048/4096/8192)当阈值,导致
+#   low(4096)->medium、medium(8192)->xhigh 整体上移一档,high/xhigh 全部坍缩。
+_ANTHROPIC_BUDGET_EFFORT_TIERS = ((4096, "low"), (8192, "medium"))
+
+
+def _budget_to_template_effort(budget: int) -> str:
+    for limit, name in _ANTHROPIC_BUDGET_EFFORT_TIERS:
+        if budget <= limit:
+            return name
+    return "xhigh"
+
 
 def _normalize_openai_reasoning_controls(body: dict) -> None:
     """Translate public reasoning controls into template and backend fields."""
@@ -3330,24 +3487,28 @@ def _anthropic_to_openai(body: dict) -> dict:
         # output_config.effort / thinking.type / thinking.budget_tokens 推。
         # 不推的话模板恒取默认 xhigh —— Anthropic 侧 thinking effort 等于不可控。
         effort = None
+        source = "none"
         if requested_effort:
-            effort = {
-                "low": "low", "medium": "medium",
-                "high": "xhigh", "max": "xhigh", "xhigh": "xhigh",
-            }.get(str(requested_effort).lower())
+            effort = _QWEN_TEMPLATE_EFFORT.get(str(requested_effort).lower())
+            if effort:
+                source = "output_config.effort"
         if effort is None and thinking_param.get("type") == "max":
-            effort = "xhigh"
+            effort, source = "xhigh", "thinking.type=max"
         if effort is None:
             budget_hint = thinking_param.get("budget_tokens")
             if isinstance(budget_hint, int) and budget_hint > 0:
-                if budget_hint <= 2048:
-                    effort = "low"
-                elif budget_hint <= 4096:
-                    effort = "medium"
-                else:
-                    effort = "xhigh"
+                effort = _budget_to_template_effort(budget_hint)
+                source = f"budget_tokens={budget_hint}"
         if effort:
             result["chat_template_kwargs"]["reasoning_effort"] = effort
+        if ANTHROPIC_EFFORT_TRACE:
+            print(
+                f"[proxy] anthropic effort: {effort or 'UNSET(template default xhigh)'} "
+                f"via {source} "
+                f"(output_config.effort={requested_effort!r} "
+                f"thinking.type={thinking_param.get('type')!r} "
+                f"budget_tokens={thinking_param.get('budget_tokens')!r})",
+                flush=True)
 
         if thinking_param.get("type") == "max":
             result.pop("reasoning", None)
@@ -3492,6 +3653,9 @@ async def _local_stream(
         body = prepare_fastllm_body(body, FASTLLM_CHAT_TEMPLATE)
     prefix_tracker.reserve(body.get("messages", []))
     local_failed = False
+    local_error = None
+    client_disconnected = False
+    yielded_local_event = False
     disconnect_watch = None
     pending = b""
     try:
@@ -3515,6 +3679,7 @@ async def _local_stream(
                                  else b"\n\n")
                     event_end = end + len(separator)
                     event, pending = pending[:event_end], pending[event_end:]
+                    yielded_local_event = True
                     yield _rewrite_stream_model(event, public_model)
                     data_lines = [
                         line[5:].lstrip()
@@ -3524,13 +3689,25 @@ async def _local_stream(
                     if b"\n".join(data_lines) == b"[DONE]":
                         return
             else:
+                yielded_local_event = True
                 yield chunk
             if await request.is_disconnected():
+                client_disconnected = True
                 return
         if pending:
+            yielded_local_event = True
             yield _rewrite_stream_model(pending, public_model)
-    except Exception:
-        local_failed = True
+    except Exception as exc:
+        try:
+            client_disconnected = await request.is_disconnected()
+        except Exception:
+            client_disconnected = False
+        if not client_disconnected:
+            local_failed = True
+            local_error = exc
+            _log_backend_failure(
+                f"local_stream yielded={int(yielded_local_event)} "
+                f"pending_bytes={len(pending)}", exc)
     finally:
         if disconnect_watch is not None:
             disconnect_watch.cancel()
@@ -3539,12 +3716,17 @@ async def _local_stream(
         if local_failed:
             backend_penalty.record_failure("local")
             service_history.record("local", False)
-        else:
+        elif not client_disconnected:
             backend_penalty.record_success("local")
             service_history.record("local", True)
 
+    if client_disconnected:
+        return
     if local_failed:
-        if allow_fallback and FALLBACK_ENABLED and not BENCHMARK_MODE:
+        # Never concatenate a second provider's answer after local tokens
+        # have already reached the client.
+        if (not yielded_local_event and allow_fallback and
+                FALLBACK_ENABLED and not BENCHMARK_MODE):
             try:
                 async for chunk in _nim_stream(body):
                     yield chunk
@@ -3570,7 +3752,7 @@ async def _local_stream(
                         return
                     except Exception:
                         pass
-        yield _backend_reloading_sse()
+        yield _backend_stream_failure_sse(local_error)
         yield b"data: [DONE]\n\n"
 
 
@@ -3875,11 +4057,25 @@ async def _proxy_stream(url: str, body: dict, opened_stream=None):
             err_body = await resp.aread()
             raise RuntimeError(
                 f"backend returned {resp.status_code}: {err_body.decode()[:200]}")
-        # UTF-8 增量转发:aiter_bytes 按网络包任意切分,可能把多字节字符
-        # (emoji/低频汉字)从中间切开;逐 chunk decode 的客户端会看到 U+FFFD。
-        # incremental decoder 把不完整的尾部(最多3字节)挂在状态里,完整
-        # 字符前缀立即下发——不整行缓冲,流式实时性不变。后端契约是 UTF-8。
-        dec = codecs.getincrementaldecoder("utf-8")("strict")
+        # 网络分块可能切开 UTF-8，多字节尾部必须由 incremental decoder
+        # 跨 chunk 保留。FastLLM 的 byte-level tokenizer 还可能产生无法组成
+        # UTF-8 的低频 token 字节；这类信息不可恢复，但不能把已经完成的整条
+        # SSE 流升级成 transport failure。surrogateescape 精确标出坏字节，
+        # 转发前仅把这些字节替换成 U+FFFD。
+        dec = codecs.getincrementaldecoder("utf-8")("surrogateescape")
+        invalid_utf8_bytes = 0
+
+        def sanitize_utf8(text: str) -> str:
+            nonlocal invalid_utf8_bytes
+            bad = sum(0xDC80 <= ord(char) <= 0xDCFF for char in text)
+            if bad == 0:
+                return text
+            invalid_utf8_bytes += bad
+            return "".join(
+                "\ufffd" if 0xDC80 <= ord(char) <= 0xDCFF else char
+                for char in text
+            )
+
         t0 = time.monotonic()
         ttft = None
         comp_tokens = 0
@@ -3887,7 +4083,7 @@ async def _proxy_stream(url: str, body: dict, opened_stream=None):
         _INFLIGHT[req_id] = {"t0": t0, "ttft": None, "chunks": 0}
         try:
             async for chunk in resp.aiter_bytes():
-                text = dec.decode(chunk, final=False)
+                text = sanitize_utf8(dec.decode(chunk, final=False))
                 if text:
                     if _CONTENT_TOKEN_RE.search(chunk):
                         _INFLIGHT[req_id]["chunks"] += 1
@@ -3898,11 +4094,17 @@ async def _proxy_stream(url: str, body: dict, opened_stream=None):
                     if m:
                         comp_tokens = int(m.group(1))
                     yield text.encode("utf-8")
-            tail = dec.decode(b"", final=True)
+            tail = sanitize_utf8(dec.decode(b"", final=True))
             if tail:
                 yield tail.encode("utf-8")
         finally:
             _INFLIGHT.pop(req_id, None)
+            if invalid_utf8_bytes:
+                print(
+                    f"[stream] backend invalid UTF-8 bytes replaced: "
+                    f"count={invalid_utf8_bytes} req={req_id}",
+                    flush=True,
+                )
         # 窗口累计:TTFT / decode 吞吐
         total = time.monotonic() - t0
         _PROXY_METRICS["reqs"] += 1
@@ -4162,7 +4364,9 @@ async def passthrough(path: str, request: Request):
 async def _startup():
     global lifecycle_watchdog_task
     asyncio.create_task(manager.start())
-    asyncio.create_task(scheduler.start_workers())
+    # 直接 await:start_workers 只是创建 task 不会阻塞,但用 create_task 包一层
+    # 会让它自身的异常静默丢失,导致"没有任何 worker"却毫无痕迹。
+    await scheduler.start_workers()
     asyncio.create_task(_metrics_loop())
     if FASTLLM_OWNED:
         lifecycle_watchdog_task = asyncio.create_task(

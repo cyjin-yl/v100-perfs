@@ -85,6 +85,136 @@ def _normalize_messages(messages: list[dict[str, Any]]) -> list[dict[str, Any]]:
                     block["video"] = url
     return normalized
 
+_SCHEMA_NAME_RE = re.compile(r"^[A-Za-z0-9_.-]+$")
+
+
+def _schema_name(value: Any) -> str | None:
+    text = str(value or "")
+    return text if _SCHEMA_NAME_RE.fullmatch(text) else None
+
+
+
+
+_EXAMPLE_BLOCK_RE = re.compile(
+    r"<example(?:\s[^>]*)?>(.*?)</example>", re.DOTALL | re.IGNORECASE)
+
+
+def _example_schema_branches(
+    function: dict[str, Any],
+) -> tuple[str, list[tuple[str, tuple[str, ...]]]] | None:
+    name = _schema_name(function.get("name"))
+    parameters = function.get("parameters") or {}
+    properties = parameters.get("properties") or {}
+    description = function.get("description") or ""
+    if not name or not isinstance(properties, dict) or \
+            not isinstance(description, str):
+        return None
+    enum_fields = {
+        key: schema.get("enum")
+        for key, schema in properties.items()
+        if isinstance(schema, dict) and
+        isinstance(schema.get("enum"), list) and
+        all(_schema_name(item) for item in schema["enum"])
+    }
+    if not enum_fields:
+        return None
+    calls: list[tuple[dict[str, str], tuple[str, ...]]] = []
+    call_re = re.compile(
+        rf"\b{re.escape(name)}\s*\((.*)\)\s*$", re.DOTALL)
+    for block in _EXAMPLE_BLOCK_RE.findall(description):
+        match = call_re.search(block.strip())
+        if match is None:
+            continue
+        arguments = match.group(1)
+        names = tuple(dict.fromkeys(
+            item for item in re.findall(
+                r"(?:^|,)\s*([A-Za-z_][A-Za-z0-9_]*)\s*=",
+                arguments)
+            if item in properties))
+        literals: dict[str, str] = {}
+        for key in enum_fields:
+            literal = re.search(
+                rf"(?:^|,)\s*{re.escape(key)}\s*=\s*"
+                r"([\"'])(.*?)\1",
+                arguments, re.DOTALL)
+            if literal is not None and _schema_name(literal.group(2)):
+                literals[key] = literal.group(2)
+        calls.append((literals, names))
+    for key in (["op"] if "op" in enum_fields else []) + [
+            item for item in enum_fields if item != "op"]:
+        branches = [
+            (literals[key], names)
+            for literals, names in calls if key in literals]
+        if branches and len({value for value, _ in branches}) >= 2:
+            return key, branches
+    return None
+
+
+def _enrich_tool_schemas(
+    tools: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    enriched = copy.deepcopy(tools)
+    for tool in enriched:
+        function = tool.get("function") or {}
+        parameters = function.get("parameters") or {}
+        if not isinstance(parameters, dict) or \
+                parameters.get("oneOf") or parameters.get("anyOf"):
+            continue
+        inferred = _example_schema_branches(function)
+        if inferred is None:
+            continue
+        discriminant, examples = inferred
+        properties = parameters.get("properties") or {}
+        enum_values = properties.get(discriminant, {}).get("enum") or []
+        original_required = [
+            item for item in parameters.get("required") or []
+            if item in properties]
+        additional = parameters.get("additionalProperties", False)
+        branches: list[dict[str, Any]] = []
+        seen: set[tuple[str, tuple[str, ...]]] = set()
+        covered: set[str] = set()
+        for value, example_names in examples:
+            required = tuple(dict.fromkeys(
+                [*original_required, *example_names]))
+            shape = (value, tuple(sorted(required)))
+            if shape in seen:
+                continue
+            seen.add(shape)
+            covered.add(value)
+            branch_properties = {
+                name: copy.deepcopy(properties[name])
+                for name in required if name in properties}
+            branch_properties[discriminant] = copy.deepcopy(
+                properties[discriminant])
+            branch_properties[discriminant].pop("enum", None)
+            branch_properties[discriminant]["const"] = value
+            branches.append({
+                "type": "object",
+                "properties": branch_properties,
+                "required": list(required),
+                "additionalProperties": additional,
+            })
+        for value in enum_values:
+            safe_value = _schema_name(value)
+            if not safe_value or safe_value in covered:
+                continue
+            fallback_properties = copy.deepcopy(properties)
+            fallback_properties[discriminant].pop("enum", None)
+            fallback_properties[discriminant]["const"] = safe_value
+            branches.append({
+                "type": "object",
+                "properties": fallback_properties,
+                "required": list(original_required),
+                "additionalProperties": additional,
+            })
+        if branches:
+            function["parameters"] = {"anyOf": branches}
+    return enriched
+
+
+
+
+
 
 def render_fastllm_prompt(body: dict[str, Any], template_path: str | Path) -> str:
     path = Path(template_path)
@@ -97,9 +227,11 @@ def render_fastllm_prompt(body: dict[str, Any], template_path: str | Path) -> st
     environment.globals["raise_exception"] = _raise_exception
     template = environment.get_template(path.name)
     kwargs = body.get("chat_template_kwargs") or {}
+    tools = copy.deepcopy(body.get("tools") or [])
+    messages = _normalize_messages(body.get("messages") or [])
     template_kwargs = {
-        "messages": _normalize_messages(body.get("messages") or []),
-        "tools": copy.deepcopy(body.get("tools") or []),
+        "messages": messages,
+        "tools": tools,
         "add_generation_prompt": True,
         "enable_thinking": kwargs.get("enable_thinking", True),
         "preserve_thinking": kwargs.get("preserve_thinking", False),
@@ -145,6 +277,8 @@ def prepare_fastllm_body(
 ) -> dict[str, Any]:
     prepared = copy.deepcopy(body)
     _fill_missing_tool_call_content(prepared.get("messages") or [])
+    prepared["tools"] = _enrich_tool_schemas(
+        prepared.get("tools") or [])
     prepared["prompt"] = render_fastllm_prompt(body, template_path)
     prepared["raw_prompt"] = True
     stops = prepared.get("stop")
