@@ -47,7 +47,7 @@ Current canonical section targets come from manifest metadata. Research and Arch
 
 Text is escaped or sanitized before display. Binary and non-regular objects render as metadata with Git mode, size, hash, and a safe GitHub blob link. Historical notices come from layout metadata; preserved archive bodies are not rewritten.
 
-Legacy alias behavior and final `llms.txt` URL semantics belong to the separate alias task and are intentionally not implemented here.
+`npm run build` executes the deterministic prebuild sequence content manifest → `llms.txt` → content manifest, runs Astro with the configured base path, then runs the alias postbuild. The postbuild reads the immutable 424-route ledger, writes 423 static redirect documents plus canonical passthroughs, and uses one base-path-safe canonical target for each document's canonical link, meta refresh, `location.replace`, and visible link. It rewrites the sitemap to canonical URLs only.
 
 ## Local commands
 
@@ -66,7 +66,7 @@ npm run dev
 npm run build
 ```
 
-`predev` and `prebuild` run the deterministic manifest / `llms.txt` / manifest sequence required by the Git-index pipeline. A local build verifies generated artifacts and routes; deployed HTTPS status remains a post-deploy check.
+`predev` runs the same deterministic generation sequence before Astro's development server. A local build verifies generated artifacts and routes; deployed HTTPS status remains a post-deploy check.
 
 ## Rendering boundary
 

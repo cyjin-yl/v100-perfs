@@ -43,8 +43,8 @@ src/gateway/          canonical gateway and reasoning-control source
 docs/                 canonical docs, supporting research, and archive
 docs/_data/           immutable deployment observations
 operations/           deployment material, snapshots, and migration ledgers
-evidence/             captured benchmark and result artifacts
-benchmarks/           benchmark runners and workload material
+evidence/results/     captured benchmark and result artifacts
+evidence/benchmarks/  benchmark runners and workload material
 tools/                repository and operational tooling
 tests/                contract and migration verification
 site/                 manifest-driven Astro documentation site
