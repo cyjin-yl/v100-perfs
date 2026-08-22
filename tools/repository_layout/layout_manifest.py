@@ -49,6 +49,14 @@ class LedgerRow:
 
 
 @dataclass(frozen=True)
+class ApprovedRewriteAmendment:
+    old_path: str
+    new_path: str
+    reason: str
+    controller_ruling_reference: str
+
+
+@dataclass(frozen=True)
 class VerificationReport:
     input_manifest_rows: int
     migrated_legacy_rows: int
@@ -57,6 +65,7 @@ class VerificationReport:
     lost_blobs: int
     unexpected_rewrites: int
     mode_changes: int
+    approved_amendments: int = 0
 
     @property
     def ok(self) -> bool:
@@ -68,6 +77,7 @@ class VerificationReport:
             and self.unexpected_rewrites == 0
             and self.mode_changes == 0
         )
+
 
 @dataclass(frozen=True)
 class ApplyReport:
@@ -604,6 +614,91 @@ def load_ledger(path: Path) -> list[LedgerRow]:
     return rows
 
 
+def load_approved_rewrite_amendments(
+    path: Path,
+    ledger: Sequence[LedgerRow],
+) -> list[ApprovedRewriteAmendment]:
+    """Load explicit post-ledger rewrite approvals without mutating the ledger."""
+    try:
+        payload = json.loads(
+            path.read_text(encoding="utf-8"),
+            object_pairs_hook=_reject_duplicate_json_keys,
+        )
+    except (OSError, json.JSONDecodeError) as exc:
+        raise LayoutError(f"cannot load rewrite amendments {path}: {exc}") from exc
+    expected_payload_fields = {
+        "schema_version",
+        "base_commit",
+        "row_count",
+        "rows",
+    }
+    if (
+        not isinstance(payload, dict)
+        or set(payload) != expected_payload_fields
+        or payload.get("schema_version") != 1
+    ):
+        raise LayoutError("rewrite amendments must use schema version 1")
+    base_commit = payload.get("base_commit")
+    if (
+        not isinstance(base_commit, str)
+        or path.name
+        != f"{base_commit}-approved-rewrite-amendments.json"
+    ):
+        raise LayoutError(
+            "rewrite amendment filename does not match its base commit"
+        )
+    raw_rows = payload.get("rows")
+    if (
+        not isinstance(raw_rows, list)
+        or payload.get("row_count") != len(raw_rows)
+    ):
+        raise LayoutError("rewrite amendment row count does not match its rows")
+
+    expected_row_fields = set(ApprovedRewriteAmendment.__annotations__)
+    amendments: list[ApprovedRewriteAmendment] = []
+    for raw_row in raw_rows:
+        if (
+            not isinstance(raw_row, dict)
+            or set(raw_row) != expected_row_fields
+            or any(
+                not isinstance(raw_row[field], str) or not raw_row[field]
+                for field in expected_row_fields
+            )
+        ):
+            raise LayoutError("rewrite amendment row has invalid fields")
+        if any(marker in raw_row["old_path"] for marker in ("*", "?")):
+            raise LayoutError("rewrite amendment paths must be explicit")
+        _validate_relative_path(raw_row["old_path"], "amendment source")
+        _validate_destination(raw_row["new_path"])
+        amendments.append(ApprovedRewriteAmendment(**raw_row))
+
+    old_paths = [amendment.old_path for amendment in amendments]
+    if len(old_paths) != len(set(old_paths)):
+        raise LayoutError("rewrite amendments contain duplicate sources")
+    ledger_by_old_path = {row.old_path: row for row in ledger}
+    for amendment in amendments:
+        baseline_row = ledger_by_old_path.get(amendment.old_path)
+        if baseline_row is None:
+            raise LayoutError(
+                "rewrite amendment source not present in ledger: "
+                f"{amendment.old_path}"
+            )
+        if baseline_row.new_path != amendment.new_path:
+            raise LayoutError(
+                "rewrite amendment destination differs from ledger: "
+                f"{amendment.old_path}"
+            )
+        if baseline_row.disposition in {
+            "approved-rewrite",
+            "proven-generated-regenerate",
+        }:
+            raise LayoutError(
+                "rewrite amendment redundantly approves baseline disposition: "
+                f"{amendment.old_path}"
+            )
+    return amendments
+
+
 def _repository_ledger_path(repo: Path) -> Path:
     matches = sorted(
         (repo / "operations" / "migrations").glob("*-repository-layout.json")
@@ -614,6 +709,21 @@ def _repository_ledger_path(repo: Path) -> Path:
             f"found {len(matches)}"
         )
     return matches[0]
+
+
+def _repository_rewrite_amendments_path(
+    repo: Path,
+    ledger_path: Path,
+) -> Path | None:
+    base_commit = ledger_path.name.removesuffix("-repository-layout.json")
+    path = (
+        repo
+        / "operations"
+        / "migrations"
+        / f"{base_commit}-approved-rewrite-amendments.json"
+    )
+    return path if path.is_file() else None
+
 
 @cache
 def _reference_layout_mapping() -> LayoutMapping:
@@ -914,8 +1024,13 @@ def apply_layout(
     )
 
 
-def verify_moves(repo: Path, ledger: Sequence[LedgerRow]) -> VerificationReport:
-    """Verify destination bytes plus authoritative Git index blobs and modes."""
+def verify_moves(
+    repo: Path,
+    ledger: Sequence[LedgerRow],
+    *,
+    approved_rewrite_amendments: Sequence[ApprovedRewriteAmendment] = (),
+) -> VerificationReport:
+    """Verify destinations, including only explicit post-ledger approvals."""
     repo = repo.resolve()
     index = {entry.path: entry for entry in _baseline_index(repo)}
     collisions = len(ledger) - len({row.new_path for row in ledger})
@@ -923,6 +1038,20 @@ def verify_moves(repo: Path, ledger: Sequence[LedgerRow]) -> VerificationReport:
     lost = 0
     unexpected_rewrites = 0
     mode_changes = 0
+    ledger_by_old_path = {row.old_path: row for row in ledger}
+    amendment_paths: set[str] = set()
+    for amendment in approved_rewrite_amendments:
+        row = ledger_by_old_path.get(amendment.old_path)
+        if row is None or row.new_path != amendment.new_path:
+            raise LayoutError(
+                "rewrite amendment does not match immutable ledger: "
+                f"{amendment.old_path}"
+            )
+        if amendment.old_path in amendment_paths:
+            raise LayoutError(
+                f"duplicate rewrite amendment: {amendment.old_path}"
+            )
+        amendment_paths.add(amendment.old_path)
     for row in ledger:
         metadata = _working_tree_metadata(repo / row.new_path)
         index_entry = index.get(row.new_path)
@@ -938,10 +1067,13 @@ def verify_moves(repo: Path, ledger: Sequence[LedgerRow]) -> VerificationReport:
             or sha256 != row.sha256
             or index_entry.blob_oid != row.blob_oid
         )
-        approved = row.disposition in {
-            "approved-rewrite",
-            "proven-generated-regenerate",
-        }
+        approved = (
+            row.disposition in {
+                "approved-rewrite",
+                "proven-generated-regenerate",
+            }
+            or row.old_path in amendment_paths
+        )
         if changed and not approved:
             unexpected_rewrites += 1
 
@@ -953,6 +1085,7 @@ def verify_moves(repo: Path, ledger: Sequence[LedgerRow]) -> VerificationReport:
         lost_blobs=lost,
         unexpected_rewrites=unexpected_rewrites,
         mode_changes=mode_changes,
+        approved_amendments=len(amendment_paths),
     )
 
 
@@ -1056,8 +1189,23 @@ def main(argv: Sequence[str] | None = None) -> int:
         return 0 if report.ok else 1
     if args.command == "verify-moves":
         try:
-            ledger = load_ledger(_repository_ledger_path(args.repo.resolve()))
-            report = verify_moves(args.repo, ledger)
+            repo = args.repo.resolve()
+            ledger_path = _repository_ledger_path(repo)
+            ledger = load_ledger(ledger_path)
+            amendment_path = _repository_rewrite_amendments_path(
+                repo,
+                ledger_path,
+            )
+            amendments = (
+                load_approved_rewrite_amendments(amendment_path, ledger)
+                if amendment_path is not None
+                else []
+            )
+            report = verify_moves(
+                args.repo,
+                ledger,
+                approved_rewrite_amendments=amendments,
+            )
         except LayoutError as exc:
             raise SystemExit(f"verify-moves: {exc}") from exc
         print(
@@ -1068,6 +1216,10 @@ def main(argv: Sequence[str] | None = None) -> int:
             f"lost_blobs={report.lost_blobs} "
             f"unexpected_rewrites={report.unexpected_rewrites} "
             f"mode_changes={report.mode_changes}"
+        )
+        print(
+            "approved_rewrite_amendments="
+            f"{report.approved_amendments}"
         )
         return 0 if report.ok else 1
     raise AssertionError(f"unhandled command: {args.command}")

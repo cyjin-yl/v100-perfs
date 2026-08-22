@@ -400,6 +400,7 @@
 - https://cyjin-yl.github.io/v100-perfs/repository/operations/handoff/scripts/verify_iq4xs_cpu.sh/
 - https://cyjin-yl.github.io/v100-perfs/repository/operations/handoff/scripts/verify_prefix_cache.py/
 - https://cyjin-yl.github.io/v100-perfs/repository/operations/handoff/start_prod.sh/
+- https://cyjin-yl.github.io/v100-perfs/repository/operations/migrations/67ef398f9da504e020db1349956e2990f2876171-approved-rewrite-amendments.json/
 - https://cyjin-yl.github.io/v100-perfs/repository/operations/migrations/67ef398f9da504e020db1349956e2990f2876171-legacy-routes.json/
 - https://cyjin-yl.github.io/v100-perfs/repository/operations/migrations/67ef398f9da504e020db1349956e2990f2876171-repository-layout.json/
 - https://cyjin-yl.github.io/v100-perfs/repository/operations/network/frp/frpc.toml/

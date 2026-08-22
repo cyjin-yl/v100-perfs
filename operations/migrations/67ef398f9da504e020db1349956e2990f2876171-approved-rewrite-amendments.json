@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "base_commit": "67ef398f9da504e020db1349956e2990f2876171",
+  "row_count": 1,
+  "rows": [
+    {
+      "old_path": "tests/test_fastllm_adapter.py",
+      "new_path": "tests/test_fastllm_adapter.py",
+      "reason": "template fixture follows chat_templates -> config/chat-templates",
+      "controller_ruling_reference": "Main controller ruling: Task 4 final pre-review fix"
+    }
+  ]
+}

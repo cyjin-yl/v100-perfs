@@ -19,11 +19,13 @@ from tools.repository_layout.layout_manifest import (
     LayoutError,
     LayoutMapping,
     build_baseline_ledger,
+    load_approved_rewrite_amendments,
     load_ledger,
     main as layout_main,
     rewrite_repository_reference,
     scan_internal_references,
     verify_final_tree,
+    verify_moves,
 )
 from tools.repository_layout.route_manifest import (
     LegacyRoute,
@@ -37,6 +39,12 @@ PRODUCTION_ROUTE_LEDGER = Path(
     "operations/migrations/"
     "67ef398f9da504e020db1349956e2990f2876171-legacy-routes.json"
 )
+PRODUCTION_REWRITE_AMENDMENTS = Path(
+    "operations/migrations/"
+    "67ef398f9da504e020db1349956e2990f2876171-"
+    "approved-rewrite-amendments.json"
+)
+
 
 
 def git_tracked_paths(repo: Path) -> list[str]:
@@ -381,6 +389,65 @@ class LayoutManifestTests(unittest.TestCase):
         self.assertEqual(report.unexpected_rewrites, 0)
         self.assertEqual(report.mode_changes, 1)
 
+    def test_verifier_accepts_only_explicit_approved_rewrite_amendments(self):
+        self.add_files({"tests/test_fastllm_adapter.py": b"baseline\n"})
+        rows = build_baseline_ledger(
+            self.repo,
+            self.mapping(identity_pins=["tests/**"]),
+        )
+        amendment_path = (
+            self.repo
+            / "operations"
+            / "migrations"
+            / f"{'a' * 40}-approved-rewrite-amendments.json"
+        )
+        amendment_path.parent.mkdir(parents=True, exist_ok=True)
+        payload = {
+            "schema_version": 1,
+            "base_commit": "a" * 40,
+            "row_count": 1,
+            "rows": [{
+                "old_path": "tests/test_fastllm_adapter.py",
+                "new_path": "tests/test_fastllm_adapter.py",
+                "reason": (
+                    "template fixture follows chat_templates -> "
+                    "config/chat-templates"
+                ),
+                "controller_ruling_reference": (
+                    "Main controller ruling: Task 4 final pre-review fix"
+                ),
+            }],
+        }
+        amendment_path.write_text(
+            json.dumps(payload),
+            encoding="utf-8",
+        )
+        amendments = load_approved_rewrite_amendments(
+            amendment_path,
+            rows,
+        )
+        (self.repo / "tests/test_fastllm_adapter.py").write_bytes(
+            b"approved rewrite\n"
+        )
+
+        rejected = verify_moves(self.repo, rows)
+        accepted = verify_moves(
+            self.repo,
+            rows,
+            approved_rewrite_amendments=amendments,
+        )
+
+        self.assertEqual(rejected.unexpected_rewrites, 1)
+        self.assertEqual(rejected.approved_amendments, 0)
+        self.assertEqual(accepted.unexpected_rewrites, 0)
+        self.assertEqual(accepted.approved_amendments, 1)
+
+        payload["rows"][0]["old_path"] = "tests/*.py"
+        amendment_path.write_text(json.dumps(payload), encoding="utf-8")
+        with self.assertRaisesRegex(LayoutError, "not present in ledger"):
+            load_approved_rewrite_amendments(amendment_path, rows)
+
+
     def test_apply_dry_run_is_read_only_and_reports_ledger_counts(self):
         self.add_files({"old/nested/data": b"data", "keep": b"keep"})
         rows = build_baseline_ledger(
@@ -449,6 +516,7 @@ class LayoutManifestTests(unittest.TestCase):
         self.assertEqual(verify_output, (
             "legacy_rows=2 joined=2\n"
             "lost_blobs=0 unexpected_rewrites=0 mode_changes=0\n"
+            "approved_rewrite_amendments=0\n"
         ))
 
         destination.write_bytes(b"changed")
@@ -456,10 +524,38 @@ class LayoutManifestTests(unittest.TestCase):
         self.assertEqual(changed_code, 1)
         self.assertIn("unexpected_rewrites=1", changed_output)
 
+    def test_production_rewrite_amendment_is_exact_and_baseline_stays_immutable(self):
+        ledger_path = next(
+            Path("operations/migrations").glob("*-repository-layout.json")
+        )
+        ledger = load_ledger(ledger_path)
+        amendments = load_approved_rewrite_amendments(
+            PRODUCTION_REWRITE_AMENDMENTS,
+            ledger,
+        )
+
+        self.assertEqual([asdict(amendment) for amendment in amendments], [{
+            "old_path": "tests/test_fastllm_adapter.py",
+            "new_path": "tests/test_fastllm_adapter.py",
+            "reason": (
+                "template fixture follows chat_templates -> "
+                "config/chat-templates"
+            ),
+            "controller_ruling_reference": (
+                "Main controller ruling: Task 4 final pre-review fix"
+            ),
+        }])
+        baseline_row = next(
+            row for row in ledger
+            if row.old_path == "tests/test_fastllm_adapter.py"
+        )
+        self.assertEqual(baseline_row.disposition, "same-byte-identical")
+
     def test_every_tracked_internal_reference_resolves_after_mapping(self):
         ledger_path = next(
             Path("operations/migrations").glob("*-repository-layout.json")
         )
+
         report = scan_internal_references(
             Path.cwd(),
             load_ledger(ledger_path),

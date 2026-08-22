@@ -8,8 +8,18 @@ from unittest import mock
 import fastllm_adapter
 
 
-TEMPLATE = Path(__file__).parents[1] / "chat_templates" / "qwen3.6_gguf_original.jinja"
-QWEN38_TEMPLATE = Path(__file__).parents[1] / "chat_templates" / "qwen3.8_unsloth_ud.jinja"
+TEMPLATE = (
+    Path(__file__).parents[1]
+    / "config"
+    / "chat-templates"
+    / "qwen3.6_gguf_original.jinja"
+)
+QWEN38_TEMPLATE = (
+    Path(__file__).parents[1]
+    / "config"
+    / "chat-templates"
+    / "qwen3.8_unsloth_ud.jinja"
+)
 
 
 class FastLLMAdapterTests(unittest.TestCase):
