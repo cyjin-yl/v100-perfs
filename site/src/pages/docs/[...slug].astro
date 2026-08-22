@@ -1,0 +1,48 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { readFileSync, existsSync } from "node:fs";
+import { join } from "node:path";
+
+export async function getStaticPaths() {
+  const repoDocs = join(process.cwd(), "..", "docs");
+  const pages = [
+    { slug: "getting-started", file: null,
+      title: "快速开始",
+      body: [
+        "# 快速开始",
+        "",
+        "生产启动 (proxy :8000 + owned backend :8002):",
+        "",
+        "```bash",
+        "./handoff/start_prod.sh /abs/path/to/profile.env",
+        "```",
+        "",
+        "管理 WebUI: `http://<host>:8000/admin` — 用 `.env` 的 AUTH_TOKEN 登录。",
+        "",
+        "profile 位于 `runtime/fastllm-native-profiles/*.env`(本机 gitignore),",
+        "可在 WebUI 在线编辑并切换。",
+      ].join("\n") },
+    { slug: "architecture", file: join(repoDocs, "..", "README.md"), title: "部署架构" },
+    { slug: "toolcall", file: join(repoDocs, "toolcall", "constraint-architecture.md"), title: "工具调用约束架构" },
+    { slug: "performance", file: join(repoDocs, "..", "results", "q38-sweep", "MATRIX.md"), title: "性能数据(Qwen3.8 扫描矩阵)" },
+    { slug: "ops", file: join(repoDocs, "ops", "handoff-qwen38.md"), title: "运维手册" },
+    { slug: "experience", file: join(repoDocs, "EXPERIENCE.md"), title: "经验编年史(EXPERIENCE)" },
+    { slug: "optane", file: join(repoDocs, "analysis", "optane-l3-feasibility.md"), title: "傲腾 L3 可行性" },
+    { slug: "prefill-plan", file: join(repoDocs, "analysis", "shortprefill-optimization-plan.md"), title: "短 prefill 优化计划" },
+    { slug: "upstream", file: join(repoDocs, "analysis", "upstream-cherry-pick-assessment.md"), title: "上游 cherry-pick 评估" },
+  ];
+  return pages.map((p) => ({ params: { slug: p.slug }, props: { page: p } }));
+}
+
+const { page } = Astro.props;
+let html = "";
+const src = page.file && existsSync(page.file) ? readFileSync(page.file, "utf8")
+          : (page.body ?? "");
+if (src) {
+  const { marked } = await import("marked");
+  html = marked.parse(src);
+}
+---
+<BaseLayout title={`${page.title} · V100 FastLLM`}>
+  <article set:html={html} />
+</BaseLayout>

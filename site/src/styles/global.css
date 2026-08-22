@@ -1,0 +1,22 @@
+
+:root {
+  --background: 0 0% 7%;
+  --foreground: 210 20% 92%;
+  --card: 220 14% 11%;
+  --border: 217 16% 22%;
+  --muted-foreground: 215 15% 62%;
+  --primary: 212 90% 61%;
+  --accent: 152 60% 55%;
+  --radius: 0.5rem;
+}
+* { box-sizing: border-box; margin: 0; }
+body {
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    "Noto Sans SC", sans-serif;
+  line-height: 1.65;
+}
+code, pre { font-family: ui-monospace, "JetBrains Mono", Menlo, Consolas, monospace; }
+a { color: hsl(var(--primary)); text-decoration: none; }
+a:hover { text-decoration: underline; }

@@ -1,0 +1,60 @@
+# V100-32G FastLLM 推理知识库
+
+> Qwen3.8-27B on Tesla V100-PCIE-32GB (SM70), FastLLM + thinking_proxy.
+> 单卡 PCIe 记录; 双卡 TP2 与傲腾 NVMe L3 为规划中路线。
+
+## Docs
+
+叙述性文档: 架构/分析/运维/工具调用
+
+- [docs/EXPERIENCE.md](docs/EXPERIENCE.md): V100-32GB (SM70) LLM 推理经验总结   本文记录了在 Tesla V100-PCIE-32GB 上运行 Qwen3.6-27B (混合注意力架构) 过程中遇到的所有坑、解决方案和调
+- [docs/analysis/optane-l3-feasibility.md](docs/analysis/optane-l3-feasibility.md): 傲腾 NVMe 作为 L3/prefill-cache 盘：可行性测算（2026-08-22）  硬件背景：ASUS TUF GAMING B660M-PLUS WIFI D4（BIOS 3212）+
+- [docs/analysis/prefill-exact-port-investigation.md](docs/analysis/prefill-exact-port-investigation.md): 「大矩阵 exact 方案」调研与移植报告  调研对象：1Cat-vLLM v1.3.0 的 long-prefill exact-dense 路径
+- [docs/analysis/shortprefill-optimization-plan.md](docs/analysis/shortprefill-optimization-plan.md): Qwen3.8-27B 短 prefill（qLen 512–2048）优化计划  日期：2026-08-22 · 生产档：q38-PROD-cyber-iq4xs-imatrix-mtp2-sm70
+- [docs/analysis/silent-hang-diagnosis.md](docs/analysis/silent-hang-diagnosis.md): 后端「静默僵死」的诊断手册  2026-08-20 的一次生产事故：后端进程活着、显存照占，但一个请求都不再完成，
+- [docs/analysis/upstream-cherry-pick-assessment.md](docs/analysis/upstream-cherry-pick-assessment.md): 上游 cherry-pick 评估（2026-08-22，merge-base af23441b）  状态：HEAD=831476ab（本地领先 43 / 上游新提交 133... 实测 upstre
+- [docs/benchmarks/fastllm-qwen36-legacy.md](docs/benchmarks/fastllm-qwen36-legacy.md): FastLLM 在 V100 上运行 Qwen3.6 Fable Fusion 的性能报告  更新日期： 2026-08-01
+- [docs/benchmarks/vllm-performance.md](docs/benchmarks/vllm-performance.md): 1CatVLLM 性能分析报告   硬件: 1× Tesla V100-PCIE-32GB (SM70, 32GB VRAM)
+- [docs/legacy/qwen35-q4km-sm70-design.md](docs/legacy/qwen35-q4km-sm70-design.md): Qwen3.6 Q4_K_M on V100 (SM70) optimization design  Date: 2026-08-09
+- [docs/ops/handoff-deepseek-v4.md](docs/ops/handoff-deepseek-v4.md): Handoff — FastLLM 双主线：Qwen V100 服务硬化 + DeepSeek-V4 GGUF bring-up  更新日期： 2026-08-09（活文档，每完成一步回写「当前步骤 
+- [docs/ops/handoff-fastllm.md](docs/ops/handoff-fastllm.md): Handoff — FastLLM Service on V100 for Qwen3.6 Fable Fusion  Author: Sisyphus session (2026-07-28)
+- [docs/ops/handoff-qwen38.md](docs/ops/handoff-qwen38.md): Qwen3.8-27B on doesworkstation V100 32G — 通宵工作报告  生成时间: 2026-08-18 中午
+- [docs/toolcall/constraint-architecture.md](docs/toolcall/constraint-architecture.md): Qwen3.8-27B 工具调用故障族：架构、根因与验证方法  日期：2026-08-21 → 08-22
+- [docs/toolcall/copy-fidelity.md](docs/toolcall/copy-fidelity.md): Qwen3.8-27B on V100：逐字抄写破坏与工具调用失败的两个根因  日期：2026-08-19 · 环境：单卡 V100 32G，Cyber Q5_K_M + MTP=2 + turbo4
+
+## Results
+
+基准结果数据(MATRIX 汇总与 raw json)
+
+- [results/q38-sweep/MATRIX.md](results/q38-sweep/MATRIX.md): Qwen3.8-27B on V100 32G — 扫描矩阵结果  口径: 全部走生产链路 nginx:80 → thinking_proxy:8000 → fastllm:8002;
+- [results/q38-sweep/raw/toolcall_bench_2026-08-22/SUMMARY.md](results/q38-sweep/raw/toolcall_bench_2026-08-22/SUMMARY.md): Qwen3.8-27B 工具调用 bench 对比（2026-08-22）  修复「工具调用约束故障族」（A 参数值退化/空值、B 工具名被改写、C 调度器死锁）并上线
+
+## Repo Root
+
+README 与顶层文档
+
+- [README.md](README.md): V100 32G PCIe · FastLLM 本地推理性能与运维   主力部署：Qwen3.8-27B（混合注意力，16 full-attention + 48 GDN/linear + MTP），
+- [docs/EXPERIENCE.md](docs/EXPERIENCE.md): V100-32GB (SM70) LLM 推理经验总结   本文记录了在 Tesla V100-PCIE-32GB 上运行 Qwen3.6-27B (混合注意力架构) 过程中遇到的所有坑、解决方案和调
+- [docs/analysis/optane-l3-feasibility.md](docs/analysis/optane-l3-feasibility.md): 傲腾 NVMe 作为 L3/prefill-cache 盘：可行性测算（2026-08-22）  硬件背景：ASUS TUF GAMING B660M-PLUS WIFI D4（BIOS 3212）+
+- [docs/analysis/prefill-exact-port-investigation.md](docs/analysis/prefill-exact-port-investigation.md): 「大矩阵 exact 方案」调研与移植报告  调研对象：1Cat-vLLM v1.3.0 的 long-prefill exact-dense 路径
+- [docs/analysis/shortprefill-optimization-plan.md](docs/analysis/shortprefill-optimization-plan.md): Qwen3.8-27B 短 prefill（qLen 512–2048）优化计划  日期：2026-08-22 · 生产档：q38-PROD-cyber-iq4xs-imatrix-mtp2-sm70
+- [docs/analysis/silent-hang-diagnosis.md](docs/analysis/silent-hang-diagnosis.md): 后端「静默僵死」的诊断手册  2026-08-20 的一次生产事故：后端进程活着、显存照占，但一个请求都不再完成，
+- [docs/analysis/upstream-cherry-pick-assessment.md](docs/analysis/upstream-cherry-pick-assessment.md): 上游 cherry-pick 评估（2026-08-22，merge-base af23441b）  状态：HEAD=831476ab（本地领先 43 / 上游新提交 133... 实测 upstre
+- [docs/benchmarks/fastllm-qwen36-legacy.md](docs/benchmarks/fastllm-qwen36-legacy.md): FastLLM 在 V100 上运行 Qwen3.6 Fable Fusion 的性能报告  更新日期： 2026-08-01
+- [docs/benchmarks/vllm-performance.md](docs/benchmarks/vllm-performance.md): 1CatVLLM 性能分析报告   硬件: 1× Tesla V100-PCIE-32GB (SM70, 32GB VRAM)
+- [docs/legacy/qwen35-q4km-sm70-design.md](docs/legacy/qwen35-q4km-sm70-design.md): Qwen3.6 Q4_K_M on V100 (SM70) optimization design  Date: 2026-08-09
+- [docs/ops/handoff-deepseek-v4.md](docs/ops/handoff-deepseek-v4.md): Handoff — FastLLM 双主线：Qwen V100 服务硬化 + DeepSeek-V4 GGUF bring-up  更新日期： 2026-08-09（活文档，每完成一步回写「当前步骤 
+- [docs/ops/handoff-fastllm.md](docs/ops/handoff-fastllm.md): Handoff — FastLLM Service on V100 for Qwen3.6 Fable Fusion  Author: Sisyphus session (2026-07-28)
+- [docs/ops/handoff-qwen38.md](docs/ops/handoff-qwen38.md): Qwen3.8-27B on doesworkstation V100 32G — 通宵工作报告  生成时间: 2026-08-18 中午
+- [docs/toolcall/constraint-architecture.md](docs/toolcall/constraint-architecture.md): Qwen3.8-27B 工具调用故障族：架构、根因与验证方法  日期：2026-08-21 → 08-22
+- [docs/toolcall/copy-fidelity.md](docs/toolcall/copy-fidelity.md): Qwen3.8-27B on V100：逐字抄写破坏与工具调用失败的两个根因  日期：2026-08-19 · 环境：单卡 V100 32G，Cyber Q5_K_M + MTP=2 + turbo4
+- [handoff/HANDOFF-2026-08-20.md](handoff/HANDOFF-2026-08-20.md): 交接 2026-08-20  给下一个接手的 agent。目标机 ezra@doesworkstation（ssh dw-jump），
+- [handoff/scripts/quant-recipes/README-recipes.md](handoff/scripts/quant-recipes/README-recipes.md): IQ4_XS 升档配方  llama-quantize --tensor-type-file 的输入。格式受 llama.cpp 限制:
+- [handoff/scripts/silent-hang-diagnosis.md](handoff/scripts/silent-hang-diagnosis.md): 后端「静默僵死」的诊断手册  2026-08-20 的一次生产事故：后端进程活着、显存照占，但一个请求都不再完成，
+- [results/q38-sweep/MATRIX.md](results/q38-sweep/MATRIX.md): Qwen3.8-27B on V100 32G — 扫描矩阵结果  口径: 全部走生产链路 nginx:80 → thinking_proxy:8000 → fastllm:8002;
+- [results/q38-sweep/raw/toolcall_bench_2026-08-22/SUMMARY.md](results/q38-sweep/raw/toolcall_bench_2026-08-22/SUMMARY.md): Qwen3.8-27B 工具调用 bench 对比（2026-08-22）  修复「工具调用约束故障族」（A 参数值退化/空值、B 工具名被改写、C 调度器死锁）并上线
+- [video-gen/README.md](video-gen/README.md): MiniMax H3 Video Generation on Tesla V100 32GB  This directory is the video-generation companion to 
+
+## Optional
+
+- [Full EXPERIENCE chronicle](docs/EXPERIENCE.md): 完整故障排查编年史(最长)
