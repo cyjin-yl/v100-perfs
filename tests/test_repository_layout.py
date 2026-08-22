@@ -1,3 +1,4 @@
+import gc
 import hashlib
 import json
 import os
@@ -5,6 +6,7 @@ import stat
 import subprocess
 import tempfile
 import unittest
+import warnings
 from pathlib import Path
 
 from tools.repository_layout.layout_manifest import (
@@ -92,6 +94,21 @@ class LayoutManifestTests(unittest.TestCase):
         )
         self.assertEqual(by_path["bin/run"].git_mode, "100755")
         self.assertEqual(by_path["tracked"].disposition, "same-byte-identical")
+
+    def test_blob_reader_closes_all_subprocess_pipes(self):
+        self.add_files({"tracked": b"indexed"})
+        mapping = self.mapping(identity_pins=["tracked"])
+
+        with warnings.catch_warnings(record=True) as caught:
+            warnings.simplefilter("always", ResourceWarning)
+            build_baseline_ledger(self.repo, mapping)
+            gc.collect()
+
+        resource_warnings = [
+            warning for warning in caught
+            if issubclass(warning.category, ResourceWarning)
+        ]
+        self.assertEqual(resource_warnings, [])
 
     def test_rejects_unmapped_baseline_path(self):
         self.add_files({"unknown": b"x"})

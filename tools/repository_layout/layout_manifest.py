@@ -296,45 +296,49 @@ def _blob_metadata(repo: Path, object_ids: Iterable[str]) -> Mapping[str, tuple[
     assert process.stdout is not None
     assert process.stderr is not None
     result: dict[str, tuple[int, str]] = {}
-    try:
-        for requested_oid in unique_ids:
-            process.stdin.write(requested_oid.encode("ascii") + b"\n")
-            process.stdin.flush()
-            header = process.stdout.readline()
-            parts = header.rstrip(b"\n").split(b" ")
-            if len(parts) != 3:
-                raise LayoutError(
-                    f"cannot read baseline object {requested_oid}: "
-                    f"{header.decode('utf-8', 'replace').strip()}"
-                )
-            actual_oid, object_type, raw_size = parts
-            if object_type != b"blob":
-                raise LayoutError(
-                    f"baseline object {requested_oid} is not a blob: "
-                    f"{object_type.decode('ascii', 'replace')}"
-                )
-            size = int(raw_size)
-            digest = hashlib.sha256()
-            remaining = size
-            while remaining:
-                chunk = process.stdout.read(min(1024 * 1024, remaining))
-                if not chunk:
-                    raise LayoutError(f"truncated baseline blob {requested_oid}")
-                digest.update(chunk)
-                remaining -= len(chunk)
-            if process.stdout.read(1) != b"\n":
-                raise LayoutError(f"malformed git cat-file record for {requested_oid}")
-            result[requested_oid] = (size, digest.hexdigest())
-            if actual_oid.decode("ascii") != requested_oid:
-                raise LayoutError(f"git returned the wrong object for {requested_oid}")
-    except (BrokenPipeError, OSError, ValueError) as exc:
-        raise LayoutError(f"cannot read baseline blobs: {exc}") from exc
-    finally:
-        process.stdin.close()
+    error = b""
+    return_code = 0
+    with process:
+        try:
+            for requested_oid in unique_ids:
+                process.stdin.write(requested_oid.encode("ascii") + b"\n")
+                process.stdin.flush()
+                header = process.stdout.readline()
+                parts = header.rstrip(b"\n").split(b" ")
+                if len(parts) != 3:
+                    raise LayoutError(
+                        f"cannot read baseline object {requested_oid}: "
+                        f"{header.decode('utf-8', 'replace').strip()}"
+                    )
+                actual_oid, object_type, raw_size = parts
+                if object_type != b"blob":
+                    raise LayoutError(
+                        f"baseline object {requested_oid} is not a blob: "
+                        f"{object_type.decode('ascii', 'replace')}"
+                    )
+                size = int(raw_size)
+                digest = hashlib.sha256()
+                remaining = size
+                while remaining:
+                    chunk = process.stdout.read(min(1024 * 1024, remaining))
+                    if not chunk:
+                        raise LayoutError(f"truncated baseline blob {requested_oid}")
+                    digest.update(chunk)
+                    remaining -= len(chunk)
+                if process.stdout.read(1) != b"\n":
+                    raise LayoutError(f"malformed git cat-file record for {requested_oid}")
+                result[requested_oid] = (size, digest.hexdigest())
+                if actual_oid.decode("ascii") != requested_oid:
+                    raise LayoutError(f"git returned the wrong object for {requested_oid}")
+        except (BrokenPipeError, OSError, ValueError) as exc:
+            raise LayoutError(f"cannot read baseline blobs: {exc}") from exc
+        finally:
+            process.stdin.close()
+        error = process.stderr.read()
         return_code = process.wait()
     if return_code:
-        error = process.stderr.read().decode("utf-8", "replace").strip()
-        raise LayoutError(f"git cat-file --batch failed: {error}")
+        detail = error.decode("utf-8", "replace").strip()
+        raise LayoutError(f"git cat-file --batch failed: {detail}")
     return result
 
 
