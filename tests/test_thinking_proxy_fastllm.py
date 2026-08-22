@@ -501,6 +501,99 @@ class AnthropicReasoningControlTests(unittest.IsolatedAsyncioTestCase):
         })
         normalize_tools.assert_not_called()
 
+    async def test_invalid_haiku_stream_is_rejected_before_fast_path(self):
+        body = {
+            "model": "claude-3-5-haiku-latest",
+            "stream": True,
+            "thinking": {"type": "disabled", "budget_tokens": 4096},
+        }
+
+        async def unused_stream():
+            yield b"unexpected"
+
+        stream = unused_stream()
+        try:
+            with (
+                mock.patch.object(
+                    thinking_proxy.backend_penalty,
+                    "score",
+                    return_value=0,
+                ),
+                mock.patch.object(
+                    thinking_proxy,
+                    "_cc_stream",
+                    return_value=stream,
+                ) as cc_stream,
+            ):
+                response = await thinking_proxy.anthropic_messages(
+                    self.JsonRequest(body)
+                )
+        finally:
+            await stream.aclose()
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(json.loads(response.body), {
+            "type": "error",
+            "error": {
+                "type": "invalid_request_error",
+                "message": (
+                    "thinking.budget_tokens: thinking.budget_tokens cannot be "
+                    "used when thinking.type is disabled"
+                ),
+            },
+        })
+        cc_stream.assert_not_called()
+
+    async def test_count_tokens_returns_exact_reasoning_error_envelope(self):
+        body = {
+            "thinking": {"type": "adaptive", "budget_tokens": 4096},
+        }
+        with mock.patch.object(
+            thinking_proxy.backend_lifecycle,
+            "acquire",
+            side_effect=AssertionError("invalid controls reached backend"),
+        ) as acquire:
+            try:
+                response = await thinking_proxy.anthropic_count_tokens(
+                    self.JsonRequest(body)
+                )
+            except ReasoningControlError as exc:
+                self.fail(f"count_tokens leaked ReasoningControlError: {exc}")
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(json.loads(response.body), {
+            "type": "error",
+            "error": {
+                "type": "invalid_request_error",
+                "message": (
+                    "thinking.budget_tokens: thinking.budget_tokens cannot be "
+                    "used when thinking.type is adaptive"
+                ),
+            },
+        })
+        acquire.assert_not_called()
+
+    def test_disabled_and_off_effort_traces_are_labeled_disabled(self):
+        cases = (
+            {"thinking": {"type": "disabled"}},
+            {"output_config": {"effort": "off"}},
+        )
+        for body in cases:
+            with (
+                self.subTest(body=body),
+                mock.patch.object(thinking_proxy, "ANTHROPIC_EFFORT_TRACE", True),
+                mock.patch.object(thinking_proxy, "print") as trace_print,
+            ):
+                converted = thinking_proxy._anthropic_to_openai(body)
+
+                self.assertEqual(
+                    converted["chat_template_kwargs"],
+                    {"enable_thinking": False},
+                )
+                trace = trace_print.call_args.args[0]
+                self.assertIn("[proxy] anthropic effort: disabled ", trace)
+                self.assertNotIn("UNSET(template default xhigh)", trace)
+
     def test_anthropic_controls_render_exact_qwen38_reasoning_states(self):
         low_instruction = (
             "Reasoning effort is set to low. Keep your thinking brief and "

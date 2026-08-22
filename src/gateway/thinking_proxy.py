@@ -3201,12 +3201,39 @@ async def openai_chat(request: Request):
 
 # ─── Anthropic endpoint ─────────────────────────────────────────
 
+def _resolve_anthropic_reasoning_controls(
+    body: dict[str, object],
+) -> ThinkingResolution:
+    candidates = extract_anthropic_candidates(body)
+    return resolve_reasoning_candidates(candidates)
+
+
+def _anthropic_reasoning_error_response(
+    exc: ReasoningControlError,
+) -> JSONResponse:
+    return JSONResponse(
+        status_code=400,
+        content={
+            "type": "error",
+            "error": {
+                "type": "invalid_request_error",
+                "message": f"{exc.field_path}: {exc}",
+            },
+        },
+    )
+
+
 @app.post("/v1/messages")
 async def anthropic_messages(request: Request):
     try:
         body = await request.json()
     except ClientDisconnect:
         return Response(status_code=499)
+    try:
+        reasoning_resolution = _resolve_anthropic_reasoning_controls(body)
+    except ReasoningControlError as exc:
+        return _anthropic_reasoning_error_response(exc)
+
     raw_model = body.get("model", "")
     if _is_h2(raw_model):
         pkey = f"cc:{raw_model}"
@@ -3222,19 +3249,7 @@ async def anthropic_messages(request: Request):
                 print(f"[route] cc-switch failed, falling through", flush=True)
 
     stream = body.get("stream", False)
-    try:
-        openai_body = _anthropic_to_openai(body)
-    except ReasoningControlError as exc:
-        return JSONResponse(
-            status_code=400,
-            content={
-                "type": "error",
-                "error": {
-                    "type": "invalid_request_error",
-                    "message": f"{exc.field_path}: {exc}",
-                },
-            },
-        )
+    openai_body = _anthropic_to_openai(body, reasoning_resolution)
     _normalize_tool_schema(openai_body)
     try:
         await _convert_images(openai_body.get("messages", []))
@@ -3385,7 +3400,10 @@ async def anthropic_count_tokens(request: Request):
         body = await request.json()
     except ClientDisconnect:
         return Response(status_code=499)
-    openai_body = _anthropic_to_openai(body)
+    try:
+        openai_body = _anthropic_to_openai(body)
+    except ReasoningControlError as exc:
+        return _anthropic_reasoning_error_response(exc)
     openai_body["model"] = _to_backend_model(openai_body.get("model", ""))
     openai_body["max_tokens"] = 1
     openai_body["stream"] = False
@@ -3462,9 +3480,12 @@ def _strip_claude_code_attribution(text):
     return s, stripped
 
 
-def _anthropic_to_openai(body: dict) -> dict:
-    candidates = extract_anthropic_candidates(body)
-    resolution = resolve_reasoning_candidates(candidates)
+def _anthropic_to_openai(
+    body: dict,
+    resolution: ThinkingResolution | None = None,
+) -> dict:
+    if resolution is None:
+        resolution = _resolve_anthropic_reasoning_controls(body)
     canonical_kwargs = chat_template_kwargs_for(resolution)
 
     messages = []
@@ -3570,9 +3591,13 @@ def _anthropic_to_openai(body: dict) -> dict:
 
     if ANTHROPIC_EFFORT_TRACE:
         sources = ",".join(source.value for source in resolution.sources) or "none"
+        effort_label = (
+            resolution.template_effort
+            if resolution.enabled
+            else "disabled"
+        ) or "UNSET(template default xhigh)"
         print(
-            "[proxy] anthropic effort: "
-            f"{resolution.template_effort or 'UNSET(template default xhigh)'} "
+            f"[proxy] anthropic effort: {effort_label} "
             f"via {sources} "
             f"(public_effort={resolution.public_effort!r} "
             f"budget_tokens={resolution.explicit_budget_tokens!r} "
