@@ -26,6 +26,15 @@ sys.path.insert(
     str(Path(__file__).resolve().parents[1] / "src" / "gateway"),
 )
 import thinking_proxy
+from reasoning_controls import ReasoningControlError
+
+
+QWEN38_TEMPLATE = (
+    Path(__file__).resolve().parents[1]
+    / "config"
+    / "chat-templates"
+    / "qwen3.8_unsloth_ud.jinja"
+)
 
 
 def tearDownModule():
@@ -319,45 +328,342 @@ class AnthropicToolConversionTests(unittest.TestCase):
         self.assertFalse(converted["chat_template_kwargs"]["enable_thinking"])
         self.assertNotIn("reasoning", converted)
 
-class ReasoningControlTests(unittest.TestCase):
-    def test_named_effort_is_forwarded_to_qwen_chat_template(self):
-        body = {"reasoning_effort": "low"}
+class ThinkingProxyFastLLMTests(unittest.IsolatedAsyncioTestCase):
+    class JsonRequest:
+        def __init__(self, body):
+            self._body = body
 
-        thinking_proxy._normalize_openai_reasoning_controls(body)
+        async def json(self):
+            return dict(self._body)
 
-        self.assertEqual(
-            body["chat_template_kwargs"],
-            {"enable_thinking": True, "reasoning_effort": "low"},
-        )
-        self.assertEqual(body["reasoning"]["budget"], 2048)
-
-    def test_effort_aliases_match_qwen38_levels(self):
-        for requested, expected in (
-            ("minimal", "low"),
-            ("high", "high"),
-            ("max", "xhigh"),
-            ("xhigh", "xhigh"),
-        ):
-            with self.subTest(requested=requested):
-                body = {"reasoning_effort": requested}
-                thinking_proxy._normalize_openai_reasoning_controls(body)
-                self.assertEqual(
-                    body["chat_template_kwargs"]["reasoning_effort"],
-                    expected,
-                )
-
-    def test_disabled_thinking_does_not_forward_an_effort(self):
+    def test_openwebui_reasoning_effort_off_closes_thinking(self):
         body = {
-            "reasoning_effort": "none",
-            "chat_template_kwargs": {"reasoning_effort": "xhigh"},
+            "model": "qwen3.8-fastllm",
+            "messages": [{"role": "user", "content": "Answer directly."}],
+            "reasoning_effort": "off",
         }
 
-        thinking_proxy._normalize_openai_reasoning_controls(body)
+        resolution = thinking_proxy._normalize_openai_reasoning_controls(body)
 
+        self.assertFalse(resolution.enabled)
         self.assertEqual(
             body["chat_template_kwargs"], {"enable_thinking": False}
         )
         self.assertNotIn("reasoning", body)
+        self.assertNotIn("reasoning_effort", body)
+
+    def test_openwebui_low_reaches_template_without_fake_budget(self):
+        body = {"reasoning_effort": "low"}
+
+        resolution = thinking_proxy._normalize_openai_reasoning_controls(body)
+
+        self.assertEqual(resolution.public_effort, "low")
+        self.assertEqual(
+            body["chat_template_kwargs"],
+            {"enable_thinking": True, "reasoning_effort": "low"},
+        )
+        self.assertNotIn("reasoning", body)
+        self.assertNotIn("reasoning_effort", body)
+
+    def test_openai_effort_matrix_serializes_exact_template_kwargs(self):
+        cases = (
+            (None, True, None, {"enable_thinking": True}),
+            ("off", False, None, {"enable_thinking": False}),
+            ("none", False, None, {"enable_thinking": False}),
+            (
+                "minimal",
+                True,
+                "low",
+                {"enable_thinking": True, "reasoning_effort": "low"},
+            ),
+            (
+                "low",
+                True,
+                "low",
+                {"enable_thinking": True, "reasoning_effort": "low"},
+            ),
+            (
+                "medium",
+                True,
+                "medium",
+                {"enable_thinking": True, "reasoning_effort": "medium"},
+            ),
+            (
+                "high",
+                True,
+                "xhigh",
+                {"enable_thinking": True, "reasoning_effort": "xhigh"},
+            ),
+            (
+                "xhigh",
+                True,
+                "xhigh",
+                {"enable_thinking": True, "reasoning_effort": "xhigh"},
+            ),
+            (
+                "max",
+                True,
+                "xhigh",
+                {"enable_thinking": True, "reasoning_effort": "xhigh"},
+            ),
+        )
+        for effort, enabled, template_effort, expected_kwargs in cases:
+            with self.subTest(effort=effort):
+                body = {} if effort is None else {"reasoning_effort": effort}
+
+                resolution = thinking_proxy._normalize_openai_reasoning_controls(
+                    body
+                )
+
+                self.assertEqual(resolution.enabled, enabled)
+                self.assertEqual(resolution.template_effort, template_effort)
+                self.assertEqual(body, {
+                    "chat_template_kwargs": expected_kwargs,
+                })
+
+    def test_nested_effort_and_explicit_false_are_preserved_canonically(self):
+        nested_effort = {"reasoning": {"effort": "medium"}}
+        explicit_false = {
+            "chat_template_kwargs": {
+                "enable_thinking": False,
+                "custom_template_option": "kept",
+            }
+        }
+
+        medium = thinking_proxy._normalize_openai_reasoning_controls(
+            nested_effort
+        )
+        disabled = thinking_proxy._normalize_openai_reasoning_controls(
+            explicit_false
+        )
+
+        self.assertEqual(medium.public_effort, "medium")
+        self.assertEqual(nested_effort, {
+            "chat_template_kwargs": {
+                "enable_thinking": True,
+                "reasoning_effort": "medium",
+            }
+        })
+        self.assertFalse(disabled.enabled)
+        self.assertEqual(explicit_false["chat_template_kwargs"], {
+            "enable_thinking": False,
+            "custom_template_option": "kept",
+        })
+
+    def test_equivalent_duplicate_controls_are_consumed_after_resolution(self):
+        body = {
+            "reasoning_effort": " LOW\t",
+            "reasoning": {"effort": "low\n"},
+            "enable_thinking": True,
+            "chat_template_kwargs": {
+                "reasoning_effort": "LoW",
+                "enable_thinking": True,
+                "custom_template_option": "kept",
+            },
+        }
+
+        resolution = thinking_proxy._normalize_openai_reasoning_controls(body)
+
+        self.assertEqual(resolution.public_effort, "low")
+        self.assertEqual(body, {
+            "chat_template_kwargs": {
+                "reasoning_effort": "low",
+                "enable_thinking": True,
+                "custom_template_option": "kept",
+            }
+        })
+
+    def test_public_tier_conflict_does_not_mutate_body(self):
+        body = {
+            "reasoning_effort": "minimal",
+            "reasoning": {"effort": "low"},
+        }
+        original = {
+            "reasoning_effort": "minimal",
+            "reasoning": {"effort": "low"},
+        }
+
+        with self.assertRaises(ReasoningControlError) as raised:
+            thinking_proxy._normalize_openai_reasoning_controls(body)
+
+        self.assertEqual(raised.exception.code, "conflicting_controls")
+        self.assertEqual(raised.exception.field_path, "reasoning.effort")
+        self.assertEqual(body, original)
+
+    def test_malformed_and_invalid_controls_fail_without_mutation(self):
+        cases = (
+            (
+                {"reasoning": []},
+                "invalid_type",
+                "reasoning",
+                "reasoning must be an object or null",
+            ),
+            (
+                {"chat_template_kwargs": []},
+                "invalid_type",
+                "chat_template_kwargs",
+                "chat_template_kwargs must be an object or null",
+            ),
+            (
+                {"reasoning_effort": "unknown"},
+                "invalid_value",
+                "reasoning_effort",
+                (
+                    "reasoning_effort must be one of: off, none, minimal, "
+                    "low, medium, high, xhigh, max"
+                ),
+            ),
+            (
+                {"enable_thinking": "false"},
+                "invalid_type",
+                "enable_thinking",
+                "enable_thinking must be a boolean or null",
+            ),
+        )
+        for body, code, field_path, message in cases:
+            with self.subTest(body=body):
+                original = body.copy()
+                with self.assertRaises(ReasoningControlError) as raised:
+                    thinking_proxy._normalize_openai_reasoning_controls(body)
+                self.assertEqual(raised.exception.code, code)
+                self.assertEqual(raised.exception.field_path, field_path)
+                self.assertEqual(str(raised.exception), message)
+                self.assertEqual(body, original)
+
+    def test_explicit_budgets_select_template_tier_without_backend_budget(self):
+        cases = (
+            (1, "low"),
+            (4096, "low"),
+            (4097, "medium"),
+            (8192, "medium"),
+            (8193, "xhigh"),
+        )
+        for budget, effort in cases:
+            with self.subTest(budget=budget):
+                body = {"thinking_budget": budget}
+
+                resolution = thinking_proxy._normalize_openai_reasoning_controls(
+                    body
+                )
+
+                self.assertEqual(resolution.explicit_budget_tokens, budget)
+                self.assertEqual(body, {
+                    "chat_template_kwargs": {
+                        "enable_thinking": True,
+                        "reasoning_effort": effort,
+                    }
+                })
+                self.assertNotIn("reasoning", body)
+
+    def test_literal_extra_body_is_not_unpacked(self):
+        body = {"extra_body": {"reasoning_effort": "off"}}
+
+        resolution = thinking_proxy._normalize_openai_reasoning_controls(body)
+
+        self.assertTrue(resolution.enabled)
+        self.assertEqual(body, {
+            "extra_body": {"reasoning_effort": "off"},
+            "chat_template_kwargs": {"enable_thinking": True},
+        })
+
+    async def test_openai_endpoint_returns_exact_reasoning_error_envelopes(self):
+        cases = (
+            (
+                {"reasoning_effort": "unknown"},
+                (
+                    "reasoning_effort must be one of: off, none, minimal, "
+                    "low, medium, high, xhigh, max"
+                ),
+                "reasoning_effort",
+                "invalid_value",
+            ),
+            (
+                {"reasoning_effort": "off", "enable_thinking": True},
+                "enable_thinking conflicts with reasoning_effort",
+                "enable_thinking",
+                "conflicting_controls",
+            ),
+            (
+                {"reasoning": []},
+                "reasoning must be an object or null",
+                "reasoning",
+                "invalid_type",
+            ),
+        )
+        for body, message, param, code in cases:
+            with (
+                self.subTest(body=body),
+                mock.patch.object(
+                    thinking_proxy,
+                    "_normalize_tool_schema",
+                    side_effect=AssertionError(
+                        "invalid controls reached request handling"
+                    ),
+                ) as normalize_tools,
+            ):
+                response = await thinking_proxy.openai_chat(
+                    self.JsonRequest(body)
+                )
+
+                self.assertEqual(response.status_code, 400)
+                self.assertEqual(json.loads(response.body), {
+                    "error": {
+                        "message": message,
+                        "type": "invalid_request_error",
+                        "param": param,
+                        "code": code,
+                    }
+                })
+                normalize_tools.assert_not_called()
+
+    async def test_openai_endpoint_does_not_relabel_unrelated_exceptions(self):
+        request = self.JsonRequest({})
+
+        with (
+            mock.patch.object(
+                thinking_proxy,
+                "_normalize_openai_reasoning_controls",
+                side_effect=RuntimeError("unrelated"),
+            ),
+            self.assertRaisesRegex(RuntimeError, "unrelated"),
+        ):
+            await thinking_proxy.openai_chat(request)
+
+    def test_real_qwen38_template_renders_exact_reasoning_states(self):
+        low_instruction = (
+            "Reasoning effort is set to low. Keep your thinking brief and "
+            "focused, moving directly to the conclusion without unnecessary "
+            "elaboration."
+        )
+        xhigh_instruction = (
+            "Reasoning effort is set to xhigh. Please think carefully through "
+            "the task, validate key assumptions, consider plausible "
+            "alternatives, and prioritize correctness, consistency, and "
+            "clarity in the final answer."
+        )
+        prompts = {}
+        for effort in ("off", "low", "medium", "xhigh"):
+            body = {
+                "model": "qwen3.8-fastllm",
+                "messages": [{"role": "user", "content": "Solve this."}],
+                "reasoning_effort": effort,
+            }
+            thinking_proxy._normalize_openai_reasoning_controls(body)
+            prompts[effort] = thinking_proxy.prepare_fastllm_body(
+                body, QWEN38_TEMPLATE
+            )["prompt"]
+
+        self.assertTrue(prompts["off"].endswith(
+            "<|im_start|>assistant\n<think>\n\n</think>\n\n"
+        ))
+        self.assertIn(low_instruction, prompts["low"])
+        self.assertNotIn("Reasoning effort is set to", prompts["medium"])
+        self.assertIn(xhigh_instruction, prompts["xhigh"])
+        for effort in ("low", "medium", "xhigh"):
+            with self.subTest(effort=effort):
+                self.assertTrue(prompts[effort].endswith(
+                    "<|im_start|>assistant\n<think>\n"
+                ))
 
 
 

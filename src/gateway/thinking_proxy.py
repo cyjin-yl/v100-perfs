@@ -85,6 +85,13 @@ _FASTLLM_SUPPORT_DIR = Path(__file__).resolve().parents[2]
 if str(_FASTLLM_SUPPORT_DIR) not in sys.path:
     sys.path.insert(0, str(_FASTLLM_SUPPORT_DIR))
 from fastllm_adapter import adapt_fastllm_response, prepare_fastllm_body
+from reasoning_controls import (
+    ReasoningControlError,
+    ThinkingResolution,
+    chat_template_kwargs_for,
+    extract_openai_candidates,
+    resolve_reasoning_candidates,
+)
 
 # ─── Config ─────────────────────────────────────────────────────
 
@@ -2954,20 +2961,6 @@ async def list_models():
 
 
 # ─── OpenAI endpoint ────────────────────────────────────────────
-_QWEN_REASONING_EFFORT_ALIASES = {
-    "minimal": "low",
-    "low": "low",
-    "medium": "medium",
-    "high": "high",
-    "xhigh": "xhigh",
-    "max": "xhigh",
-}
-_EFFORT_BUDGETS = {
-    "low": 2048,
-    "medium": 4096,
-    "high": 8192,
-    "xhigh": 16384,
-}
 
 # Qwen3.8 官方 chat template 只接受三档: low / medium / xhigh。
 # 模板自身把 'high' 别名到 'xhigh',其余取值直接 raise_exception。
@@ -2996,57 +2989,37 @@ def _budget_to_template_effort(budget: int) -> str:
     return "xhigh"
 
 
-def _normalize_openai_reasoning_controls(body: dict) -> None:
-    """Translate public reasoning controls into template and backend fields."""
-    effort = body.pop("reasoning_effort", None)
-    reasoning_obj = body.pop("reasoning", None)
-    enable_thinking_top = body.pop("enable_thinking", None)
-    thinking_budget = body.pop("thinking_budget", None)
+def _normalize_openai_reasoning_controls(
+    body: dict[str, object],
+) -> ThinkingResolution:
+    """Resolve, consume, and serialize public OpenAI reasoning controls."""
+    candidates = extract_openai_candidates(body)
+    resolution = resolve_reasoning_candidates(candidates)
+    canonical_kwargs = chat_template_kwargs_for(resolution)
 
-    requested_effort = effort
-    enable = True
-    if isinstance(effort, str) and effort.lower() == "none":
-        enable = False
-    if isinstance(reasoning_obj, dict):
-        requested_effort = reasoning_obj.get("effort") or requested_effort
-        if (
-            isinstance(reasoning_obj.get("effort"), str)
-            and reasoning_obj["effort"].lower() == "none"
-        ):
-            enable = False
-    elif reasoning_obj == "off":
-        enable = False
-    if enable_thinking_top is True:
-        enable = True
-    elif enable_thinking_top is False:
-        enable = False
+    for field in (
+        "reasoning_effort",
+        "reasoning",
+        "enable_thinking",
+        "thinking_budget",
+    ):
+        body.pop(field, None)
 
-    kwargs = body.setdefault("chat_template_kwargs", {})
-    kwargs["enable_thinking"] = enable
-    if not enable:
-        kwargs.pop("reasoning_effort", None)
-        return
+    existing_kwargs = body.get("chat_template_kwargs")
+    if existing_kwargs is None:
+        existing_kwargs = {}
+        body["chat_template_kwargs"] = existing_kwargs
 
-    template_effort = requested_effort
-    if template_effort is None:
-        template_effort = kwargs.get("reasoning_effort")
-    effort_key = (
-        template_effort.strip().lower()
-        if isinstance(template_effort, str)
-        else ""
-    )
-    normalized_effort = _QWEN_REASONING_EFFORT_ALIASES.get(effort_key)
-    if normalized_effort is None:
-        kwargs.pop("reasoning_effort", None)
+    if "enable_thinking" not in existing_kwargs:
+        existing_kwargs["enable_thinking"] = canonical_kwargs["enable_thinking"]
+    if "reasoning_effort" in canonical_kwargs:
+        existing_kwargs["reasoning_effort"] = canonical_kwargs[
+            "reasoning_effort"
+        ]
     else:
-        kwargs["reasoning_effort"] = normalized_effort
+        existing_kwargs.pop("reasoning_effort", None)
 
-    if effort_key == "max":
-        return
-    budget = thinking_budget
-    if budget is None or budget <= 0:
-        budget = _EFFORT_BUDGETS.get(normalized_effort, 4096)
-    body.setdefault("reasoning", {})["budget"] = budget
+    return resolution
 
 
 
@@ -3057,7 +3030,20 @@ async def openai_chat(request: Request):
     except ClientDisconnect:
         return Response(status_code=499)
 
-    _normalize_openai_reasoning_controls(body)
+    try:
+        _normalize_openai_reasoning_controls(body)
+    except ReasoningControlError as exc:
+        return JSONResponse(
+            status_code=400,
+            content={
+                "error": {
+                    "message": str(exc),
+                    "type": "invalid_request_error",
+                    "param": exc.field_path,
+                    "code": exc.code,
+                }
+            },
+        )
     _normalize_tool_schema(body)
     try:
         await _convert_images(body.get("messages", []))
