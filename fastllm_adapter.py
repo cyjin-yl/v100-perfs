@@ -21,7 +21,7 @@ from jinja2 import Environment, FileSystemLoader, StrictUndefined
 # 乘法 repeat penalty 与 OpenAI additive presence/frequency penalty 是三套
 # 独立语义。生产默认需要可 A/B,但不得再借 frequency_penalty 字段冒充。
 _DEFAULT_REPEAT_PENALTY = float(
-    os.environ.get("FASTLLM_DEFAULT_REPEAT_PENALTY", "1.0"))
+    os.environ.get("FASTLLM_DEFAULT_REPEAT_PENALTY", "1.05"))
 
 
 
@@ -301,12 +301,6 @@ def prepare_fastllm_body(
         prepared.setdefault("top_k", 20)
         prepared.setdefault("top_p", 0.95 if enable_thinking else 0.8)
         prepared.setdefault("temperature", 1.0 if enable_thinking else 0.7)
-        prepared.setdefault(
-            "presence_penalty", 0.0 if enable_thinking else 1.5)
-    elif "qwen3.5" in model_name:
-        prepared.setdefault("top_k", 20)
-        prepared.setdefault("top_p", 0.95 if enable_thinking else 0.8)
-        prepared.setdefault("temperature", 0.6 if enable_thinking else 0.7)
         prepared.setdefault(
             "presence_penalty", 0.0 if enable_thinking else 1.5)
     else:

@@ -1674,10 +1674,10 @@
   },
   {
     "path": "docs/qwen38-sampling.md",
-    "title": "Qwen3.5 / Qwen3.8 采样与模板配置",
+    "title": "Qwen3.8 27B 采样与模板配置",
     "category": "docs",
     "ext": ".md",
-    "bytes": 3014
+    "bytes": 2730
   },
   {
     "path": "docs/toolcall/constraint-architecture.md",
@@ -1698,7 +1698,7 @@
     "title": "乘法 repeat penalty 与 OpenAI additive presence/frequency penalty 是三套",
     "category": "root",
     "ext": ".py",
-    "bytes": 15806
+    "bytes": 15491
   },
   {
     "path": "frp/frpc.toml",
@@ -2776,7 +2776,7 @@
     "title": "test_fastllm_adapter.py",
     "category": "tests",
     "ext": ".py",
-    "bytes": 17837
+    "bytes": 16662
   },
   {
     "path": "tests/test_fastllm_cache_benchmark.py",

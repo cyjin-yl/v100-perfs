@@ -1,22 +1,13 @@
-# Qwen3.5 / Qwen3.8 采样与模板配置
+# Qwen3.8 27B 采样与模板配置
 
 ## 推荐采样参数
 
-Qwen3.5 与 Qwen3.8 必须按模型代际和推理模式选择采样档，不能使用统一默认值。
-
-Qwen3.8 27B 官方档：
+Qwen3.8 27B 必须按推理模式选择采样档，不能沿用旧的统一 `temperature=0.6` 默认值。
 
 | 模式 | `temperature` | `top_p` | `top_k` | `presence_penalty` |
 |---|---:|---:|---:|---:|
 | Thinking（默认） | 1.0 | 0.95 | 20 | 0.0 |
 | Instruct / non-thinking | 0.7 | 0.80 | 20 | 1.5 |
-
-Qwen3.5 官方通用文本档：
-
-| 模式 | `temperature` | `top_p` | `top_k` | `presence_penalty` | `repeat_penalty` |
-|---|---:|---:|---:|---:|---:|
-| Thinking | 0.6 | 0.95 | 20 | 0.0 | 1.0 |
-| Instruct / non-thinking | 0.7 | 0.80 | 20 | 1.5 | 1.0 |
 
 仓库中的 Qwen3.6 是衍生权重，没有独立的 Qwen 官方采样档；其参数由对应 profile 或客户端显式给出，不伪称官方推荐。
 

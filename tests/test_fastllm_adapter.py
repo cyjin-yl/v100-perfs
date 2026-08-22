@@ -120,31 +120,6 @@ class FastLLMAdapterTests(unittest.TestCase):
         self.assertEqual(actual["top_k"], 20)
         self.assertEqual(actual["presence_penalty"], 1.5)
 
-    def test_prepare_body_uses_qwen35_thinking_sampling_defaults(self):
-        actual = fastllm_adapter.prepare_fastllm_body({
-            "model": "qwen3.5-27b",
-            "messages": [{"role": "user", "content": "Think carefully."}],
-            "chat_template_kwargs": {"enable_thinking": True},
-        }, TEMPLATE)
-
-        self.assertEqual(actual["temperature"], 0.6)
-        self.assertEqual(actual["top_p"], 0.95)
-        self.assertEqual(actual["top_k"], 20)
-        self.assertEqual(actual["presence_penalty"], 0.0)
-        self.assertEqual(actual["repeat_penalty"], 1.0)
-
-    def test_prepare_body_uses_qwen35_non_thinking_sampling_defaults(self):
-        actual = fastllm_adapter.prepare_fastllm_body({
-            "model": "qwen3.5-27b",
-            "messages": [{"role": "user", "content": "Answer directly."}],
-            "chat_template_kwargs": {"enable_thinking": False},
-        }, TEMPLATE)
-
-        self.assertEqual(actual["temperature"], 0.7)
-        self.assertEqual(actual["top_p"], 0.8)
-        self.assertEqual(actual["top_k"], 20)
-        self.assertEqual(actual["presence_penalty"], 1.5)
-        self.assertEqual(actual["repeat_penalty"], 1.0)
 
     def test_prepare_body_preserves_explicit_sampling_parameters(self):
         actual = fastllm_adapter.prepare_fastllm_body({
