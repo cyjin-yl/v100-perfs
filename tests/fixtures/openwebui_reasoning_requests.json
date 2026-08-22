@@ -1,0 +1,158 @@
+{
+  "source": "OpenWebUI v0.9.6 provider-boundary captures",
+  "rows": [
+    {
+      "name": "unset",
+      "request": {
+        "model": "qwen3.8-fastllm",
+        "messages": [{"role": "user", "content": "Answer."}]
+      },
+      "expected": {
+        "enabled": true,
+        "public_effort": null,
+        "template_effort": null,
+        "chat_template_kwargs": {"enable_thinking": true}
+      }
+    },
+    {
+      "name": "off",
+      "request": {"reasoning_effort": "off"},
+      "expected": {
+        "enabled": false,
+        "public_effort": "off",
+        "template_effort": null,
+        "chat_template_kwargs": {"enable_thinking": false}
+      }
+    },
+    {
+      "name": "minimal",
+      "request": {"reasoning_effort": "minimal"},
+      "expected": {
+        "enabled": true,
+        "public_effort": "minimal",
+        "template_effort": "low",
+        "chat_template_kwargs": {
+          "enable_thinking": true,
+          "reasoning_effort": "low"
+        }
+      }
+    },
+    {
+      "name": "low",
+      "request": {"reasoning_effort": "low"},
+      "expected": {
+        "enabled": true,
+        "public_effort": "low",
+        "template_effort": "low",
+        "chat_template_kwargs": {
+          "enable_thinking": true,
+          "reasoning_effort": "low"
+        }
+      }
+    },
+    {
+      "name": "medium",
+      "request": {"reasoning_effort": "medium"},
+      "expected": {
+        "enabled": true,
+        "public_effort": "medium",
+        "template_effort": "medium",
+        "chat_template_kwargs": {
+          "enable_thinking": true,
+          "reasoning_effort": "medium"
+        }
+      }
+    },
+    {
+      "name": "high",
+      "request": {"reasoning_effort": "high"},
+      "expected": {
+        "enabled": true,
+        "public_effort": "high",
+        "template_effort": "xhigh",
+        "chat_template_kwargs": {
+          "enable_thinking": true,
+          "reasoning_effort": "xhigh"
+        }
+      }
+    },
+    {
+      "name": "xhigh",
+      "request": {"reasoning_effort": "xhigh"},
+      "expected": {
+        "enabled": true,
+        "public_effort": "xhigh",
+        "template_effort": "xhigh",
+        "chat_template_kwargs": {
+          "enable_thinking": true,
+          "reasoning_effort": "xhigh"
+        }
+      }
+    },
+    {
+      "name": "max",
+      "request": {"reasoning_effort": "max"},
+      "expected": {
+        "enabled": true,
+        "public_effort": "max",
+        "template_effort": "xhigh",
+        "chat_template_kwargs": {
+          "enable_thinking": true,
+          "reasoning_effort": "xhigh"
+        }
+      }
+    },
+    {
+      "name": "nested_custom_params",
+      "request": {
+        "reasoning": {"effort": "medium"},
+        "chat_template_kwargs": {
+          "custom_template_option": "preserved"
+        }
+      },
+      "expected": {
+        "enabled": true,
+        "public_effort": "medium",
+        "template_effort": "medium",
+        "chat_template_kwargs": {
+          "custom_template_option": "preserved",
+          "enable_thinking": true,
+          "reasoning_effort": "medium"
+        }
+      }
+    },
+    {
+      "name": "malformed_effort_object",
+      "request": {"reasoning_effort": {"value": "high"}},
+      "expected_error": {
+        "code": "invalid_type",
+        "field_path": "reasoning_effort"
+      }
+    },
+    {
+      "name": "malformed_nested_params",
+      "request": {"chat_template_kwargs": ["enable_thinking", true]},
+      "expected_error": {
+        "code": "invalid_type",
+        "field_path": "chat_template_kwargs"
+      }
+    },
+    {
+      "name": "model_level_override",
+      "openwebui_precedence": {
+        "per_chat_params": {"reasoning_effort": "low"},
+        "model_params": {"reasoning_effort": "high"}
+      },
+      "request": {"reasoning_effort": "high"},
+      "expected": {
+        "enabled": true,
+        "public_effort": "high",
+        "template_effort": "xhigh",
+        "chat_template_kwargs": {
+          "enable_thinking": true,
+          "reasoning_effort": "xhigh"
+        }
+      }
+    }
+  ]
+}

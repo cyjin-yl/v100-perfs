@@ -1,4 +1,5 @@
 import base64
+import copy
 import io
 import asyncio
 import json
@@ -25,6 +26,7 @@ sys.path.insert(
     0,
     str(Path(__file__).resolve().parents[1] / "src" / "gateway"),
 )
+import fastllm_adapter
 import thinking_proxy
 from reasoning_controls import ReasoningControlError
 
@@ -35,11 +37,303 @@ QWEN38_TEMPLATE = (
     / "chat-templates"
     / "qwen3.8_unsloth_ud.jinja"
 )
+OPENWEBUI_REASONING_FIXTURE = (
+    Path(__file__).resolve().parent
+    / "fixtures"
+    / "openwebui_reasoning_requests.json"
+)
 
 
 def tearDownModule():
     thinking_proxy.service_history._conn.close()
     _TEST_PROJECT.cleanup()
+
+
+class ReasoningResponseInvariantTests(unittest.IsolatedAsyncioTestCase):
+    def test_captured_openwebui_flattened_request_matrix(self):
+        fixture = json.loads(OPENWEBUI_REASONING_FIXTURE.read_text())
+        rows = fixture["rows"]
+        self.assertEqual(
+            {row["name"] for row in rows},
+            {
+                "unset",
+                "off",
+                "minimal",
+                "low",
+                "medium",
+                "high",
+                "xhigh",
+                "max",
+                "nested_custom_params",
+                "malformed_effort_object",
+                "malformed_nested_params",
+                "model_level_override",
+            },
+        )
+
+        for row in rows:
+            with self.subTest(name=row["name"]):
+                body = copy.deepcopy(row["request"])
+                original = copy.deepcopy(body)
+                expected_error = row.get("expected_error")
+                if expected_error is not None:
+                    with self.assertRaises(ReasoningControlError) as raised:
+                        thinking_proxy._normalize_openai_reasoning_controls(body)
+                    self.assertEqual(raised.exception.code, expected_error["code"])
+                    self.assertEqual(
+                        raised.exception.field_path,
+                        expected_error["field_path"],
+                    )
+                    self.assertEqual(body, original)
+                    continue
+
+                expected = row["expected"]
+                resolution = (
+                    thinking_proxy._normalize_openai_reasoning_controls(body)
+                )
+                self.assertEqual(resolution.enabled, expected["enabled"])
+                self.assertEqual(
+                    resolution.public_effort,
+                    expected["public_effort"],
+                )
+                self.assertEqual(
+                    resolution.template_effort,
+                    expected["template_effort"],
+                )
+                self.assertEqual(
+                    body["chat_template_kwargs"],
+                    expected["chat_template_kwargs"],
+                )
+                for field in (
+                    "reasoning",
+                    "reasoning_effort",
+                    "enable_thinking",
+                    "thinking_budget",
+                ):
+                    self.assertNotIn(field, body)
+
+    def test_reasoning_is_preserved_with_parallel_native_tool_calls(self):
+        upstream = {
+            "choices": [{
+                "finish_reason": "tool_calls",
+                "message": {
+                    "reasoning_content": "I need both tools.",
+                    "content": "",
+                    "tool_calls": [
+                        {
+                            "id": "call_weather",
+                            "type": "function",
+                            "function": {
+                                "name": "weather",
+                                "arguments": "{}",
+                            },
+                        },
+                        {
+                            "id": "call_time",
+                            "type": "function",
+                            "function": {
+                                "name": "time",
+                                "arguments": "{}",
+                            },
+                        },
+                    ],
+                },
+            }],
+        }
+
+        response = fastllm_adapter.adapt_fastllm_response(upstream)
+        message = response["choices"][0]["message"]
+
+        self.assertEqual(message["reasoning_content"], "I need both tools.")
+        self.assertEqual(
+            {call["function"]["name"] for call in message["tool_calls"]},
+            {"weather", "time"},
+        )
+        self.assertEqual(
+            set(message) & {"reasoning", "reasoning_content"},
+            {"reasoning_content"},
+        )
+
+    def test_reasoning_only_response_uses_one_openai_reasoning_field(self):
+        upstream = {
+            "choices": [{
+                "finish_reason": None,
+                "message": {
+                    "role": "assistant",
+                    "content": "<think>Private plan.</think>",
+                },
+            }],
+        }
+
+        message = fastllm_adapter.adapt_fastllm_response(
+            upstream
+        )["choices"][0]["message"]
+
+        self.assertEqual(message["reasoning_content"], "Private plan.")
+        self.assertEqual(message["content"], "")
+        self.assertEqual(
+            set(message) & {"reasoning", "reasoning_content"},
+            {"reasoning_content"},
+        )
+
+    def test_malformed_or_unclosed_reasoning_marker_remains_plain_content(self):
+        for raw_content in (
+            "<think>unfinished plan",
+            "<think>wrong close</thinking>",
+        ):
+            with self.subTest(raw_content=raw_content):
+                upstream = {
+                    "choices": [{
+                        "finish_reason": None,
+                        "message": {
+                            "role": "assistant",
+                            "content": raw_content,
+                        },
+                    }],
+                }
+
+                response = fastllm_adapter.adapt_fastllm_response(upstream)
+                message = response["choices"][0]["message"]
+
+                self.assertEqual(message["content"], raw_content)
+                self.assertNotIn("reasoning", message)
+                self.assertNotIn("reasoning_content", message)
+                self.assertEqual(
+                    response["choices"][0]["finish_reason"],
+                    "stop",
+                )
+
+    def test_disabled_plain_text_does_not_invent_reasoning(self):
+        upstream = {
+            "choices": [{
+                "finish_reason": None,
+                "message": {
+                    "role": "assistant",
+                    "content": "Direct answer.",
+                },
+            }],
+        }
+
+        response = fastllm_adapter.adapt_fastllm_response(upstream)
+        message = response["choices"][0]["message"]
+
+        self.assertEqual(message["content"], "Direct answer.")
+        self.assertNotIn("reasoning", message)
+        self.assertNotIn("reasoning_content", message)
+        self.assertEqual(response["choices"][0]["finish_reason"], "stop")
+
+    def test_anthropic_response_orders_reasoning_text_then_parallel_tools(self):
+        upstream = {
+            "model": "qwen3.8-fastllm",
+            "choices": [{
+                "finish_reason": "tool_calls",
+                "message": {
+                    "reasoning_content": "Choose both tools.",
+                    "content": "I will check.",
+                    "tool_calls": [
+                        {
+                            "id": "call_weather",
+                            "type": "function",
+                            "function": {
+                                "name": "weather",
+                                "arguments": "{\"city\":\"Paris\"}",
+                            },
+                        },
+                        {
+                            "id": "call_time",
+                            "type": "function",
+                            "function": {
+                                "name": "time",
+                                "arguments": "{\"zone\":\"UTC\"}",
+                            },
+                        },
+                    ],
+                },
+            }],
+        }
+
+        response = thinking_proxy._openai_to_anthropic(upstream)
+
+        self.assertEqual(
+            [block["type"] for block in response["content"]],
+            ["thinking", "text", "tool_use", "tool_use"],
+        )
+        self.assertEqual(
+            [block.get("name") for block in response["content"][2:]],
+            ["weather", "time"],
+        )
+        self.assertEqual(response["stop_reason"], "tool_use")
+
+    async def test_fragmented_sse_delimiters_keep_reasoning_before_parallel_tools(
+        self,
+    ):
+        chunks = [
+            (
+                b'data: {"choices":[{"delta":{"reasoning_content":"plan"},'
+                b'"finish_reason":null}]}\r'
+            ),
+            b"\n\r",
+            (
+                b'\ndata: {"choices":[{"delta":{"tool_calls":['
+                b'{"index":0,"id":"call_weather","type":"function",'
+                b'"function":{"name":"weather","arguments":"{}"}},'
+                b'{"index":1,"id":"call_time","type":"function",'
+                b'"function":{"name":"time","arguments":"{}"}}]},'
+                b'"finish_reason":null}]}\r\n\r'
+            ),
+            (
+                b'\ndata: {"choices":[{"delta":{},'
+                b'"finish_reason":"tool_calls"}],'
+                b'"usage":{"prompt_tokens":5,"completion_tokens":3}}\n'
+            ),
+            b"\ndata: [DONE]\r\n\r",
+            b"\n",
+        ]
+
+        async def byte_chunks():
+            for chunk in chunks:
+                yield chunk
+
+        output = "".join([
+            event
+            async for event in thinking_proxy._anthropic_events_from_payloads(
+                thinking_proxy._iter_sse_byte_payloads(byte_chunks()),
+                {"model": "qwen3.8-fastllm"},
+            )
+        ])
+        events = []
+        for frame in output.strip().split("\n\n"):
+            data_line = next(
+                line for line in frame.splitlines() if line.startswith("data: ")
+            )
+            events.append(json.loads(data_line[6:]))
+
+        starts = [
+            event["content_block"]
+            for event in events
+            if event["type"] == "content_block_start"
+        ]
+        self.assertEqual(
+            [block["type"] for block in starts],
+            ["thinking", "tool_use", "tool_use"],
+        )
+        self.assertEqual(
+            [block.get("name") for block in starts[1:]],
+            ["weather", "time"],
+        )
+        thinking_deltas = [
+            event["delta"]["thinking"]
+            for event in events
+            if (
+                event["type"] == "content_block_delta"
+                and event["delta"]["type"] == "thinking_delta"
+            )
+        ]
+        self.assertEqual(thinking_deltas, ["plan"])
+        message_delta = next(
+            event for event in events if event["type"] == "message_delta"
+        )
+        self.assertEqual(message_delta["delta"]["stop_reason"], "tool_use")
 
 
 class ModelRewriteTests(unittest.TestCase):
