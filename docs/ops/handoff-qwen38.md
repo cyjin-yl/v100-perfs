@@ -52,7 +52,7 @@ L3 的实证: omp 真实负载 14 次工具调用 3 次失败, 模型自己在 t
 
 ---
 
-## 三、实验矩阵(两张表见 v100-perfs/results/MATRIX.md 与 docs/EXPERIENCE.md 15.32)
+## 三、实验矩阵(两张表见 v100-perfs/results/q38-sweep/MATRIX.md 与 docs/EXPERIENCE.md 15.32)
 
 关键结论:
 1. **Q5 明显优于 Q4**: 工具调用空值漂移随量化误差上升 ——

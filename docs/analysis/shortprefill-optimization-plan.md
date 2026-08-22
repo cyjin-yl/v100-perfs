@@ -45,7 +45,7 @@ Attention 侧 (paged attention native 入口):
 
 ## 三、瓶颈定性（为什么短 prefill 只有 ~700–950 tok/s）
 
-P-A【GEMM 效率·主因】n=512–1024 时 cuBLAS HGEMM 处于 46–90 TFLOP/s 区间（峰值 112），且每 chunk 支付 154.87ms 权重反量化固定开销。已有实测：M=512 时 966µs/tok vs M=2048 时 654µs/tok（`docs/prefill_exact_port_investigation.md §4.4`）——大 chunk 摊薄固定开销。
+P-A【GEMM 效率·主因】n=512–1024 时 cuBLAS HGEMM 处于 46–90 TFLOP/s 区间（峰值 112），且每 chunk 支付 154.87ms 权重反量化固定开销。已有实测：M=512 时 966µs/tok vs M=2048 时 654µs/tok（`docs/analysis/prefill-exact-port-investigation.md §4.4`）——大 chunk 摊薄固定开销。
 
 P-B【chunk 过小】1024-token chunk 让 2K prefill 变成 2 个串行 forward，每次都重付权重展开固定开销 + per-forward 调度开销。investigation §6.B 预估 chunk 提到 2048 有 +21.8%@8K / +17.1%@32K 收益 [INFERENCE：该预估基于长上下文场景，对 2K 场景方向一致但幅度未测]。
 

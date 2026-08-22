@@ -51,7 +51,7 @@
 
 > 4×140K 配置在真实 agent 负载中, agent 通常是轮流工作而非同时生成。1-2 个 agent 活跃时单 agent 约 30 tok/s; 只有 4 个 agent 同时在 140K context 上并发解码时才会降到 5.5 tok/s (attention 计算量随 context 平方增长)。这个配置的核心价值是 "4 个 agent 各自拥有 140K 上下文", 这是单 V100-32GB 上能达到的最大并发 × 上下文组合。
 
-> FastLLM这一行是exact-window容量验证,不是与多轮steady-state tok/s的直接排名:256K请求以261,888-token冷prompt + 256-token decode完成,E2E 745.467 s,采样显存峰值31,088 MiB。完整worktree/git历史审计显示:既有native split-KV是5月已进入上游的FastLLM baseline,不是本次FlashInfer-SM70移植;当前PR真正落地的是`b693ad8`的Flash-Attention-V100式GQA6 XQA,其单层microbenchmark比原route快2.22×/3.37×/4.03× (8K/32K/128K KV)。FlashInfer-SM70 backend/prefill kernel未进入当前worktree,不声明其FastLLM性能。长上下文artifact早于最后的XQA commit,最终分支仍需重跑完整exact-window矩阵;详见[`docs/fastllm_benchmark.md`](docs/fastllm_benchmark.md)。
+> FastLLM这一行是exact-window容量验证,不是与多轮steady-state tok/s的直接排名:256K请求以261,888-token冷prompt + 256-token decode完成,E2E 745.467 s,采样显存峰值31,088 MiB。完整worktree/git历史审计显示:既有native split-KV是5月已进入上游的FastLLM baseline,不是本次FlashInfer-SM70移植;当前PR真正落地的是`b693ad8`的Flash-Attention-V100式GQA6 XQA,其单层microbenchmark比原route快2.22×/3.37×/4.03× (8K/32K/128K KV)。FlashInfer-SM70 backend/prefill kernel未进入当前worktree,不声明其FastLLM性能。长上下文artifact早于最后的XQA commit,最终分支仍需重跑完整exact-window矩阵;详见[`docs/benchmarks/fastllm-qwen36-legacy.md`](docs/benchmarks/fastllm-qwen36-legacy.md)。
 
 > FastLLM 的 **FP8 速度 profile** 保留单请求 MTP2，并用 `FASTLLM_QWEN35_BATCHED_MTP=0` 让多请求走 plain batched decode；短 decode 的 4 并发 aggregate 从 batched MTP2 的 47.57 tok/s 提升到 81.13 tok/s，同时单请求保持 50.85 tok/s。`--batch 5` 同时传给 HTTP worker 和模型 scheduler；运行时 route 为 `chunk=8192, decode_lanes=4, resident_lanes=4`。推荐的 Turbo3 缓存 profile 则使用 262,144-token GPU pool、MTP2 和 2K prefix snapshot quantum。
 

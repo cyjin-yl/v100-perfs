@@ -230,13 +230,13 @@ The command above is a verified 256K-capable configuration, not a currently acti
 | Chat template (jinja) | `/run/media/ezra/13D010B6FDBC1A06/1CatVLLM/chat_templates/qwen3.6_merged.jinja` |
 | Thinking proxy | `/run/media/ezra/13D010B6FDBC1A06/1CatVLLM/v100-perfs/thinking_proxy.py` |
 | llama.cpp server (working baseline) | `/run/media/ezra/13D010B6FDBC1A06/1CatVLLM/llama.cpp-turboquant/build/bin/llama-server` |
-| Build and benchmark notes | `/run/media/ezra/13D010B6FDBC1A06/1CatVLLM/v100-perfs/docs/fastllm_benchmark.md` |
+| Build and benchmark notes | `/run/media/ezra/13D010B6FDBC1A06/1CatVLLM/v100-perfs/docs/benchmarks/fastllm-qwen36-legacy.md` |
 | Conda env | `/home/ezra/.conda/envs/tsenv/` |
 | nvcc wrapper (recreate after reboot) | `/tmp/nvcc-wrapper` (content in §3.2) |
 
 ## 12. Current caveats
 
-- Exact-window result artifacts and methodology are in `docs/fastllm_benchmark.md`; only the 160K client captured a reliable first-content TTFT, so no TTFT is claimed for 128K or 256K.
+- Exact-window result artifacts and methodology are in `docs/benchmarks/fastllm-qwen36-legacy.md`; only the 160K client captured a reliable first-content TTFT, so no TTFT is claimed for 128K or 256K.
 - The official Python `ftllm bench` runner enters a different FP32 GGUF matmul path and aborted during 128K warmup, so it is not used for production-path numbers.
 - TurboQuant 256K has a completed historical result and VRAM trace, but its prefix reuse/concurrency/cache workload differs from the cold exact-window FastLLM runs.
 - The FastLLM Jinja parser still does not support the embedded macros; proxy-side Jinja2 rendering is the planned workaround, but the independent fifth-backend deployment is not currently active.

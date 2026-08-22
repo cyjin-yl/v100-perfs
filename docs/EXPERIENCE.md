@@ -1464,7 +1464,7 @@ fastllm 侧有两个**已实现但默认关闭**的开关值得先 A/B:
 
 反例：`running=1 pending=1` 且 `decode 442 tok (29.5 tok/s)` 是正常繁忙，别误判。
 
-**三条命令定位到具体锁**（详见 `EzraVastLLM/docs/silent-hang-diagnosis.md`）：
+**三条命令定位到具体锁**（详见 `EzraVastLLM/docs/analysis/silent-hang-diagnosis.md`）：
 
 1. `gdb -p PID -batch -ex "thread apply all bt 8"` —— 看有没有线程停在
    `__lll_lock_wait`，以及**有没有任何线程在跑模型前向**。若其余线程全在
@@ -1849,7 +1849,7 @@ decode 应该走 `gguf.mmvq`, 而它已经跑到 V100 带宽的 82%。IQ4_XS 不
 |---|---|
 | `fastllm/docs/qwen35_v100_local_stack.md:204` | 「**不启用负结果。** … GQA batched cuBLAS、async gather、fused preprocess 和 persistent scratch 也**没有稳定收益**」, 并在 215 行列进「当前实验 gate 均默认关闭」 |
 | `v100-perfs/docs/EXPERIENCE.md:1426` | 「fastllm 侧有两个**已实现但默认关闭**的开关**值得先 A/B**」 |
-| `v100-perfs/docs/prefill_exact_port_investigation.md:344` | 同上, 逐字重复 |
+| `v100-perfs/docs/analysis/prefill-exact-port-investigation.md:344` | 同上, 逐字重复 |
 
 一处判了死刑, 两处说值得试。**而那个 A/B 到今天为止一次都没跑过。**
 

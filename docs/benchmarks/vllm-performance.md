@@ -1352,7 +1352,7 @@ Qwen3.6 默认在每次回复前生成 `<think>` 推理过程。在生产 agent 
 
 ## 19. FastLLM Qwen3.6 GGUF 与 V100 Attention 审计
 
-本节记录FastLLM在同一张V100 32GB上运行Qwen3.6-27B IQ4_XS (64层trunk + 1层MTP)的最新结果,并区分既有native attention、未落地的FlashInfer-SM70候选和已落地的Flash-Attention-V100式XQA。完整方法、补丁说明和原始artifact见[`docs/fastllm_benchmark.md`](fastllm_benchmark.md)。
+本节记录FastLLM在同一张V100 32GB上运行Qwen3.6-27B IQ4_XS (64层trunk + 1层MTP)的最新结果,并区分既有native attention、未落地的FlashInfer-SM70候选和已落地的Flash-Attention-V100式XQA。完整方法、补丁说明和原始artifact见[`docs/benchmarks/fastllm-qwen36-legacy.md`](fastllm_benchmark.md)。
 
 ### 19.1 Exact-window 端到端容量
 

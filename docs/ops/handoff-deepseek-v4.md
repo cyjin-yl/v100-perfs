@@ -76,7 +76,7 @@ cmake --build build-v2 --target testDeepSeekV4QuantizedDiskMoe testDeepSeekV4GGU
 | 量化 Disk MoE 测试 | `WT/test/gguf/deepseek4QuantizedDiskMoeTest.cpp` |
 | allow-list 测试 | `WT/test/models/deepseek4ExpertAllowListTest.cpp` |
 | profile 生命周期 | `WT/tools/fastllm_pytools/profile.py`、`deploy.py` |
-| Qwen benchmark 报告（中文） | `/run/media/ezra/13D010B6FDBC1A06/1CatVLLM/v100-perfs/docs/fastllm_benchmark.md` |
+| Qwen benchmark 报告（中文） | `/run/media/ezra/13D010B6FDBC1A06/1CatVLLM/v100-perfs/docs/benchmarks/fastllm-qwen36-legacy.md` |
 
 ## 4. 任务状态（活）
 
