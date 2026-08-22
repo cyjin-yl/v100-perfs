@@ -2825,3 +2825,67 @@ grammar 修模型内部思考。生产已切回 Unsloth UD-Q5_K_M；Cyber 保留
 验证：C++ 增量编译通过；浏览器实际登录后可见 ud-q5 READY、262K/batch4、
 页池/显存/cache 数据与日志；无 token 为 401；profile 读取 56 个键、
 其中 21 个 checkbox；临时 profile 原子修改两项并校验成功。
+
+### 15.61 傲腾可行性、逐出静态审计、restore 永久失败根因 (2026-08-22 下午)
+
+#### A. 256G 傲腾(@690 元)能不能用 —— 主板已查明
+
+主板 ASUS TUF GAMING B660M-PLUS WIFI D4 (BIOS 3212) + i3-12100:
+
+- **傲腾 DIMM(PMem): 不支持**。PMem 需要 ACPI NFIT 表, 本机 ACPI 只有
+  APIC/DMAR/TPM2 等, 无 NFIT; 也无 /dev/pmem*。B660 消费级平台本来就不支持
+  Optane Persistent Memory(那是 C620A/C740 芯片组 + Xeon/特定酷睿的能力)。
+- **傲腾 NVMe SSD(Q系列/P系列): 可以用**, 但收益取决于插哪:
+  - M.2_1 由 CPU 直连 x4(当前 Kioxia NVMe 占用, Gen4 x4);
+  - 其余 M.2 走 B660 chipset PCH, 共享 DMI3 (~3.9GB/s);
+  - V100 已占 CPU x16 controller #1 的第一条 x16(GPU 01:00.0)。
+- **结论**: 买傲腾 NVMe 当 L3/prefill-cache 盘是划算的(顺序读写远超机械盘,
+  低 QD 随机延迟 <100µs vs HDD 12ms seek); 但别期待 PMem 级字节寻址。
+- 注意系统盘 btrfs 已用 91%(剩 179G), 新盘应独立挂载, 别塞进根分区。
+
+#### B. 容量压力淘汰链路 —— 静态审计(未动生产)
+
+L1→L2→L3 全链路代码级确认(fastllm.cpp):
+
+- L1 取页缺货 → EvictColdPagesLocked 批量淘汰(32页滞回),
+  LFU+LRU+最小驻留期(1s), 两阶段兜底保证不会取不到页;
+- 受害页走 PageOutTrieNode: 先试 L2(CPU 层 CAS 计数器 + HostCacheBudget
+  共享预算), 满则 RotateCpuTierToDiskLocked 把 L2 最冷载荷轮转到 L3;
+  L2 放不下且轮转不动才直接写 L3; L3 也写不下才真丢(hard-drop 有计数);
+- L2 内存压力 → HostCacheBudget 回调 EvictCpuTierPayloads:
+  先"只搬家不丢"(allowDrop=false), 再允许丢(allowDrop=true);
+- 主动路径 DemoteColdTriePages 在调度期把冷页提前下沉, 避开前向关键路径。
+
+**判定: 压力驱动的容量淘汰链路完整可用**(与历史 bug 修复后的版本一致,
+testPrefixCacheTier 29/29 通过)。仍然缺的只有两样: 时间 TTL 和跨 root 孤儿清理
+(代码注释明确承认孤儿无回收出口; 实测 ud-q5 root 7.86GB/gen-1 正常,
+prefix-cache 下另有 qwen3.6 两个旧 root 共 0.6GB)。
+
+#### C. "每次 load 自动恢复持久化 cache" —— 已经存在, 但有一个致命 bug
+
+机制本来就在: apiserver 启动 → PrepareServerPersistentPrefixCache →
+PreparePersistentPrefixCacheFromEnv(按模型指纹自动派生 cacheKey) →
+LoadPersistentPrefixCacheGeneration 读 CURRENT 指向的 gen-N manifest →
+MODEL_EXTRA(linear snapshot) 即时导入, paged trie/page 按 manager 懒恢复。
+
+但生产日志连续多次 `restore skipped; cold start: persistent Qwen3.5 prefix
+snapshot is incompatible`, gen-1(5.25GB) 成了只写不可读的死数据。
+
+**静态取证定位根因**(对 gen-1 的 19 个 linear_snapshot 逐字节解析验证):
+- 外层(manifest)FNV 与内层(snapshot 尾部)FNV 全部匹配;
+- 结构遍历 19 个全部 OK, layers=64=block_cnt;
+- 唯一失败点: mtpKey/mtpValue 的 ReadTensor 字节数校验。
+  dims=[4,32896,256] fp16 紧凑应为 67,371,008B, 实际写出了 67,629,056B
+  (= 行距 257 元素的 padded 布局)。WriteTensor 直接写 GetBytes()(含 stride
+  padding), ReadTensor 用 prod(dims)*unitSize 校验 —— 写读不对称,
+  **checkpoint 必然成功、restore 必然失败**。
+
+**修复**(qwen3_5.cpp WriteTensor): strides 为紧凑布局时零拷贝直写;
+非紧凑时先把 GetBytes() 镜像 append 进缓冲, 再按 N 维索引 gather 覆盖成紧凑
+数据。编译通过; testPrefixCacheTier/testQwen35MultimodalPrefixPosition/
+testPagedKvBudget/testPrefixCacheRouting 全绿。已提交 8ebfe39a。
+
+遗留: 磁盘上现存的坏 gen-1 无法被新代码读取(格式仍是 padded), 下一次
+checkpoint 会写出可读的 gen-2 并由 prune 收掉 gen-1; 或手动删除该 root 让其
+重建。11:20 那次中断的 .staging-* (2.6GB) 属 RemoveStaleStaging 清理范围,
+下次提交时自动清。
