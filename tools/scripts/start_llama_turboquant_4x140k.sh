@@ -9,7 +9,9 @@ set -euo pipefail
 #   PORT=8080 ./start_llama_turboquant_4x140k.sh
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-cd "$SCRIPT_DIR"
+REPOSITORY_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+WORKSPACE_ROOT="$(cd "$REPOSITORY_ROOT/.." && pwd)"
+cd "$WORKSPACE_ROOT"
 
 export LD_LIBRARY_PATH="/home/ezra/.conda/envs/tsenv/lib:${LD_LIBRARY_PATH:-}"
 
@@ -31,7 +33,7 @@ exec ./llama.cpp-turboquant/build/bin/llama-server \
   --cache-type-k "$TURBO_CACHE_K" --cache-type-v "$TURBO_CACHE_V" \
   --cache-ram 0 \
   --jinja \
-  --chat-template-file ./chat_templates/qwen3.6_merged.jinja \
+  --chat-template-file "$REPOSITORY_ROOT/config/chat-templates/qwen3.6_merged.jinja" \
   --chat-template-kwargs '{"enable_thinking":false}' \
   --alias qwen3.6-27b-awq \
   --host 0.0.0.0 --port "$PORT" \

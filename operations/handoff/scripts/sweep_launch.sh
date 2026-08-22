@@ -67,7 +67,7 @@ fi
 
 PROXY_SHELL="set -o pipefail; set -a; . $ROOT/.env; . $ENV_FILE; set +a; \
 LD_LIBRARY_PATH=/home/ezra/.conda/envs/tsenv/lib\${LD_LIBRARY_PATH:+:\$LD_LIBRARY_PATH} \
-/home/ezra/.conda/envs/tsenv/bin/python $ROOT/thinking_proxy.py 2>&1 \
+/home/ezra/.conda/envs/tsenv/bin/python $ROOT/v100-perfs/src/gateway/thinking_proxy.py 2>&1 \
 | /usr/bin/tee -a $PROXY_LOG_FILE; rc=\${PIPESTATUS[0]}; \
 printf '\\n[tmux] thinking proxy exited rc=%s\\n' \"\$rc\"; exec sleep 86400"
 

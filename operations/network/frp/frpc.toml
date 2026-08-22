@@ -1,5 +1,5 @@
 # ─── frpc.toml — 本机客户端配置 ───────────────────────────────
-# 运行: frpc -c ./frp/frpc.toml
+# 运行: frpc -c ./operations/network/frp/frpc.toml
 # 或通过 start_frpc.sh 在 tmux 中启动
 
 serverAddr = "<TAILSCALE_IP_FRPS>"

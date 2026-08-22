@@ -52,7 +52,7 @@ if [ "${CONFIRM_UPLOAD:-0}" != "1" ]; then
   echo "  这是一道防手滑的闸门 —— 发布是对外的、不可撤回的动作。" >&2
   echo "  放行前确认: (1) 用的是 v2 imatrix(带 --parse-special);" >&2
   echo "              (2) 大文件要发布前, 三方留出集对比已有数字。" >&2
-  echo "    CONFIRM_UPLOAD=1 ~/projects/EzraVastLLM/scripts/upload_to_hf.sh" >&2
+  echo "    CONFIRM_UPLOAD=1 $0" >&2
   exit 0
 fi
 

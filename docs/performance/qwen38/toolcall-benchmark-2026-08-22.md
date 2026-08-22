@@ -43,11 +43,11 @@
 ```
 cd /run/media/ezra/13D010B6FDBC1A06/1CatVLLM
 # 单个模型（先加载该模型的 profile，再）
-python3 v100-perfs/benchmarks/fastllm/agentic_toolcall_bench.py \
+python3 v100-perfs/evidence/benchmarks/fastllm/agentic_toolcall_bench.py \
     --sandbox /tmp/agentbench_<name> \
     --runner opencode --model catvllm/qwen3.8-27b \
     --tasks file_roundtrip --timeout 600 \
-    --output v100-perfs/results/toolcall_bench_2026-08-22/<name>_file_roundtrip.json
+    --output v100-perfs/evidence/results/q38-sweep/raw/toolcall_bench_2026-08-22/<name>_file_roundtrip.json
 # Claude Code（runner=claude；会用临时空 CLAUDE_CONFIG_DIR 指向本网关）
 python3 ... --runner claude --model qwen3.8-27b --tasks file_roundtrip ...
 ```

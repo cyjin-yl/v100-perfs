@@ -21,7 +21,10 @@ os.environ["FASTLLM_PUBLIC_ALIASES"] = (
 )
 os.environ["FASTLLM_AUTO_ROUTE_ALIASES"] = "auto"
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+sys.path.insert(
+    0,
+    str(Path(__file__).resolve().parents[1] / "src" / "gateway"),
+)
 import thinking_proxy
 
 

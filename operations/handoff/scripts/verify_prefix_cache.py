@@ -60,7 +60,7 @@ TOOL_RESULT = (
     "drwxr-xr-x 12 ezra ezra  4096 Aug 20 06:30 fastllm\n"
     "drwxr-xr-x  9 ezra ezra  4096 Aug 19 22:11 llama.cpp\n"
     "drwxr-xr-x  7 ezra ezra  4096 Aug 20 05:16 v100-perfs\n"
-    "-rw-r--r--  1 ezra ezra 20812 Aug 18 03:02 thinking_proxy.py\n"
+    "-rw-r--r--  1 ezra ezra  1542 Aug 18 03:02 .env\n"
 ) * 4   # 模拟真实的工具输出体量
 
 

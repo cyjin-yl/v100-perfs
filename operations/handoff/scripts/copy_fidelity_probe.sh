@@ -23,7 +23,7 @@
 #      判定前剥掉 <think>...</think>, 只在正文里找。
 #
 # 用法:
-#   MODEL=/path/to.gguf ~/projects/EzraVastLLM/scripts/copy_fidelity_probe.sh
+#   MODEL=/path/to.gguf ./operations/handoff/scripts/copy_fidelity_probe.sh
 #   PROBE_DEBUG=1 ...   # 打印原始输出, 用来确认探针本身是对的
 set -uo pipefail
 

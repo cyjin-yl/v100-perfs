@@ -11,6 +11,7 @@ set -uo pipefail
 
 PROFILE="${1:-/run/media/ezra/13D010B6FDBC1A06/1CatVLLM/v100-perfs/runtime/fastllm-native-profiles/q38-PROD-cyber-q5-mtp2-turbo4-sm70.env}"
 ROOT=/run/media/ezra/13D010B6FDBC1A06/1CatVLLM
+PERF=$ROOT/v100-perfs
 PY=/home/ezra/.conda/envs/tsenv/bin/python  # 与线上一致; .venv-1cat 缺 uvicorn/fastapi
 
 # 1) 先停代理(它会尝试带走自己的后端), 再补杀孤儿后端
@@ -52,4 +53,4 @@ if [ -n "${MTP:-}" ]; then export FASTLLM_QWEN35_ENABLE_MTP="$MTP"; fi
 echo "[start_prod] MTP=${FASTLLM_QWEN35_ENABLE_MTP:-未设置}  LOCK_DEBUG=${FASTLLM_MTP_LOCK_DEBUG:-0}"
 
 cd "$ROOT"
-exec "$PY" "$ROOT/thinking_proxy.py"
+exec "$PY" "$PERF/src/gateway/thinking_proxy.py"

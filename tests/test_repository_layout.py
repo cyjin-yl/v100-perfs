@@ -16,7 +16,10 @@ from tools.repository_layout.layout_manifest import (
     LayoutError,
     LayoutMapping,
     build_baseline_ledger,
+    load_ledger,
     main as layout_main,
+    rewrite_repository_reference,
+    scan_internal_references,
     verify_final_tree,
 )
 from tools.repository_layout.route_manifest import (
@@ -220,6 +223,99 @@ class LayoutManifestTests(unittest.TestCase):
                 regenerate_allowlist=["x"],
             )
 
+    def test_repository_reference_rewriter_preserves_suffixes(self):
+        self.assertEqual(
+            rewrite_repository_reference(
+                "./docs/qwen38-sampling.md?plain=1#template"
+            ),
+            "./docs/reference/models/qwen38/sampling-and-template.md"
+            "?plain=1#template",
+        )
+        self.assertEqual(
+            rewrite_repository_reference("scripts/start_proxy.sh"),
+            "tools/scripts/start_proxy.sh",
+        )
+        self.assertEqual(
+            rewrite_repository_reference("docs/current.md"),
+            "docs/current.md",
+        )
+
+    def test_reference_scanner_separates_active_from_historical_old_paths(self):
+        self.add_files({
+            "current.md": b"[legacy](legacy/a.md)\n",
+            "archive.md": b"Recorded legacy/a.md for history.\n",
+            "legacy/a.md": b"target\n",
+        })
+        rows = build_baseline_ledger(
+            self.repo,
+            self.mapping(
+                identity_pins=["current.md", "archive.md"],
+                exact_moves={"legacy/a.md": "current/a.md"},
+                rewrite_allowlist=["current.md"],
+            ),
+        )
+        self.move_rows(rows)
+
+        report = scan_internal_references(self.repo, rows)
+
+        self.assertEqual(
+            [
+                (
+                    finding.source_path,
+                    finding.line_number,
+                    finding.reference,
+                    finding.resolved_path,
+                )
+                for finding in report.stale_old_paths
+            ],
+            [("current.md", 1, "legacy/a.md", "current/a.md")],
+        )
+        self.assertEqual(
+            [
+                (
+                    finding.source_path,
+                    finding.line_number,
+                    finding.reference,
+                    finding.resolved_path,
+                )
+                for finding in report.broken_internal_links
+            ],
+            [("current.md", 1, "legacy/a.md", "legacy/a.md")],
+        )
+        self.assertEqual(
+            {
+                classification: len(findings)
+                for classification, findings
+                in report.historical_old_paths.items()
+            },
+            {"other-byte-identical": 1},
+        )
+        (self.repo / "current/a.md").unlink()
+        missing_target = scan_internal_references(self.repo, rows)
+        self.assertIn(
+            ("archive.md", 1, "legacy/a.md", "current/a.md"),
+            {
+                (
+                    finding.source_path,
+                    finding.line_number,
+                    finding.reference,
+                    finding.resolved_path,
+                )
+                for finding in missing_target.broken_internal_links
+            },
+        )
+        (self.repo / "current/a.md").write_text("target\n", encoding="utf-8")
+
+
+        (self.repo / "current.md").write_text(
+            "[current](current/a.md)\n",
+            encoding="utf-8",
+        )
+        repaired = scan_internal_references(self.repo, rows)
+        self.assertEqual(repaired.stale_old_paths, [])
+        self.assertEqual(repaired.broken_internal_links, [])
+
+
     def test_verifier_rejects_rewritten_byte_identical_blob(self):
         self.add_files({"benchmarks/a.log": b"a"})
         rows = build_baseline_ledger(
@@ -327,6 +423,17 @@ class LayoutManifestTests(unittest.TestCase):
         changed_code, changed_output = self.run_layout_main("verify-moves")
         self.assertEqual(changed_code, 1)
         self.assertIn("unexpected_rewrites=1", changed_output)
+
+    def test_every_tracked_internal_reference_resolves_after_mapping(self):
+        ledger_path = next(
+            Path("operations/migrations").glob("*-repository-layout.json")
+        )
+        report = scan_internal_references(
+            Path.cwd(),
+            load_ledger(ledger_path),
+        )
+        self.assertEqual(report.broken_internal_links, [])
+        self.assertEqual(report.stale_old_paths, [])
 
     def test_production_mapping_contains_the_complete_explicit_docs_rules(self):
         mapping = LayoutMapping.from_file(PRODUCTION_MAPPING)

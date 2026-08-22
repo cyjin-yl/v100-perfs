@@ -260,7 +260,7 @@ sampling, VAE decode, audio decode, and MP4 muxing.
 `mp_0.3` was interrupted through `/interrupt` followed by deletion of only its
 prompt ID when the shared GPU had to be handed to FastLLM. The harness wrote the
 interrupted row and submitted no later cases. The result record is in
-`video-gen/results/resolution_1step.json`; its successful rows reference the two
+`experiments/video-generation/results/resolution_1step.json`; its successful rows reference the two
 MP4s retained under the ComfyUI output directory. This is a checkpoint, not a
 completed 0.1--1.0 MP scaling claim. The measured post-cleanup state was 32,012
 MiB free in NVML (483 MiB used) and an empty ComfyUI queue.

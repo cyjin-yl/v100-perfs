@@ -60,7 +60,7 @@ stop_session
 mkdir -p "$(dirname "$PROXY_LOG_FILE")"
 : > "$PROXY_LOG_FILE"
 
-PROXY_SHELL="set -o pipefail; set -a; . /run/media/ezra/13D010B6FDBC1A06/1CatVLLM/.env; . $ENV_FILE; set +a; LD_LIBRARY_PATH=/home/ezra/.conda/envs/tsenv/lib\${LD_LIBRARY_PATH:+:\$LD_LIBRARY_PATH} /home/ezra/.conda/envs/tsenv/bin/python /run/media/ezra/13D010B6FDBC1A06/1CatVLLM/thinking_proxy.py 2>&1 | /usr/bin/tee -a $PROXY_LOG_FILE; rc=\${PIPESTATUS[0]}; printf '\\n[tmux] thinking proxy exited rc=%s\\n' \"\$rc\"; exit \"\$rc\""
+PROXY_SHELL="set -o pipefail; set -a; . /run/media/ezra/13D010B6FDBC1A06/1CatVLLM/.env; . $ENV_FILE; set +a; LD_LIBRARY_PATH=/home/ezra/.conda/envs/tsenv/lib\${LD_LIBRARY_PATH:+:\$LD_LIBRARY_PATH} /home/ezra/.conda/envs/tsenv/bin/python /run/media/ezra/13D010B6FDBC1A06/1CatVLLM/v100-perfs/src/gateway/thinking_proxy.py 2>&1 | /usr/bin/tee -a $PROXY_LOG_FILE; rc=\${PIPESTATUS[0]}; printf '\\n[tmux] thinking proxy exited rc=%s\\n' \"\$rc\"; exit \"\$rc\""
 
 "$TMUX_BIN" new-session -d -s "$SESSION" -n "$WINDOW" \
   -c /run/media/ezra/13D010B6FDBC1A06/1CatVLLM/v100-perfs \

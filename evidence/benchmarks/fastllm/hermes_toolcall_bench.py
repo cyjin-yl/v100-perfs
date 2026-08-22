@@ -227,9 +227,10 @@ def main() -> int:
             "args_valid": sum(1 for c in calls if c["args_valid"]),
             "required_ok": sum(1 for c in calls if c["required_ok"]),
         }
-    out_path = pathlib.Path(args.output) if args.output else pathlib.Path(
-        "/run/media/ezra/13D010B6FDBC1A06/1CatVLLM/v100-perfs/benchmarks/"
-        f"fastllm/results/hermes_wechat_toolcall_fidelity_{time.strftime('%Y%m%d_%H%M%S')}.json")
+    out_path = pathlib.Path(args.output) if args.output else (
+        pathlib.Path(__file__).resolve().parent / "results" /
+        f"hermes_wechat_toolcall_fidelity_{time.strftime('%Y%m%d_%H%M%S')}.json"
+    )
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(json.dumps(summary, ensure_ascii=False, indent=2))
     print(f"wrote {out_path}")

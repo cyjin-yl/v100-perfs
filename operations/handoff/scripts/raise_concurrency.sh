@@ -33,7 +33,7 @@ else
 
 # 2026-08-20 并发从 1 提到 $BATCH。
 # 两道闸门必须一起提, 只提一道没用:
-#   PROXY_STREAM_SLOTS  proxy 的信号量槽位(thinking_proxy.py:1374)
+#   PROXY_STREAM_SLOTS  proxy 的信号量槽位(src/gateway/thinking_proxy.py:1374)
 #   --batch             后端 maxActivateQueryNumber(apiserver.cpp:2326)
 # 目标是验收里的"5~10 并发 subagent 无报错"。先到 $BATCH, 稳了再往上。
 PROXY_STREAM_SLOTS=$SLOTS

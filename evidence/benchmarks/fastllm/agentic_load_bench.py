@@ -10,7 +10,7 @@ finish_reason, tool_calls count. Plus proxy concurrency samples.
 
 Usage:
   python3 agentic_load_bench.py --main-agents 2 --subagents 8 --rounds 4 \
-      --output results/agentic_load_2m8s_4r.json
+      --output evidence/results/agentic_load_2m8s_4r.json
 """
 from __future__ import annotations
 
@@ -25,7 +25,7 @@ import time
 import urllib.request
 from typing import Any
 
-REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
+REPO_ROOT = pathlib.Path(__file__).resolve().parents[3]
 PROXY_HEALTH = "http://127.0.0.1:8000/health"
 
 SYSTEM_PROMPT = (
@@ -210,7 +210,7 @@ def main() -> int:
         "requests": results,
     }
     out_path = pathlib.Path(args.output) if args.output else (
-        REPO_ROOT / "benchmarks" / "fastllm" / "results" /
+        REPO_ROOT / "evidence" / "benchmarks" / "fastllm" / "results" /
         f"agentic_load_{args.main_agents}m{args.subagents}s_"
         f"{args.rounds}r_{time.strftime('%Y%m%d_%H%M%S')}.json")
     out_path.parent.mkdir(parents=True, exist_ok=True)

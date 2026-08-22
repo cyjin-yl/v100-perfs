@@ -26,7 +26,7 @@ llms += "> 单卡 PCIe 记录; 双卡 TP2 与傲腾 NVMe L3 为规划中路线�
 
 const sections = [
   { title: "Docs", dir: join(repo, "docs"), note: "叙述性文档: 架构/分析/运维/工具调用" },
-  { title: "Results", dir: join(repo, "results"), note: "基准结果数据(MATRIX 汇总与 raw json)" },
+  { title: "Results", dir: join(repo, "evidence", "results"), note: "基准结果数据(MATRIX 汇总与 raw json)" },
   { title: "Repo Root", dir: repo, note: "README 与顶层文档" },
 ];
 
@@ -46,7 +46,7 @@ for (const sec of sections) {
   }
   llms += "\n";
 }
-llms += "## Optional\n\n- [Full EXPERIENCE chronicle](docs/EXPERIENCE.md): 完整故障排查编年史(最长)\n";
+llms += "## Optional\n\n- [Full EXPERIENCE chronicle](docs/archive/chronicles/v100-fastllm-experience.md): 完整故障排查编年史(最长)\n";
 
 writeFileSync(join(repo, "llms.txt"), llms);
 console.log("llms.txt written,", llms.split("\n").length, "lines");

@@ -18,7 +18,7 @@
 #   代价约 +1.5GB 显存。显存吃紧就去掉这两行。
 #
 # RECIPE=<file> 走 --tensor-type-file, 对指定张量类别单独指定档位。
-#   备好的配方在 scripts/quant-recipes/, 依据与实测数据见那里的 README-recipes.md。
+#   备好的配方在 operations/handoff/scripts/quant-recipes/, 依据与实测数据见那里的 README-recipes.md。
 #   一句话: 上游 GGUF 里那 288 个 Q8_0 张量不是"有意保留高精度", 而是根本没被
 #   量化(与 Q8_0 源逐字节相同), 所以不值得照抄; 真正划算的只有 ssm_alpha/
 #   ssm_beta/attn_k/attn_v/attn_output 这几类小张量, 合计 +121 MiB。

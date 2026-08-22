@@ -13,7 +13,7 @@
 # 注意: 这些工具会建 CUDA 上下文(约 300MB 显存), 跑之前确认显存有余量。
 set -euo pipefail
 R=/run/media/ezra/13D010B6FDBC1A06/1CatVLLM/fastllm
-D=/home/ezra/projects/EzraVastLLM/scripts/sm70-audit
+D="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 NVCC=/home/ezra/.conda/envs/tsenv/bin/nvcc
 HOSTCXX=/home/ezra/.conda/envs/tsenv/bin/x86_64-conda-linux-gnu-g++
 OBJS=$(find "$R/build-rw/CMakeFiles/fastllm.dir" -name '*.o' | tr '\n' ' ')

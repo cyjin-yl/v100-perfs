@@ -10,8 +10,9 @@
 set -uo pipefail
 
 ROOT=/run/media/ezra/13D010B6FDBC1A06/1CatVLLM
-START_PROD=~/projects/EzraVastLLM/scripts/start_prod.sh
-RUN_IMATRIX=~/projects/EzraVastLLM/scripts/run_imatrix.sh
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+START_PROD="$SCRIPT_DIR/../start_prod.sh"
+RUN_IMATRIX="$SCRIPT_DIR/run_imatrix.sh"
 LOGDIR=$ROOT/imatrix/logs
 mkdir -p "$LOGDIR"
 

@@ -11,7 +11,7 @@
 #   不划算 —— 真正的显存收益应该从主模型(IQ4_XS 省约 4GB)拿, 不是从 draft 拿。
 set -uo pipefail
 ROOT=/run/media/ezra/13D010B6FDBC1A06/1CatVLLM
-GRAFT=$ROOT/v100-perfs/scripts/graft_gguf_mtp.py
+GRAFT=$ROOT/v100-perfs/tools/scripts/graft_gguf_mtp.py
 MTP="${MTP:-$ROOT/models/Qwen3.8-27B-Uncensored-Cyber-GGUF/new-2026-08-19/mtp-Qwen3.8-27B-Uncensored-Cyber-Q8_0.gguf}"
 QDIR="${QDIR:-$ROOT/models/Qwen3.8-27B-Uncensored-Cyber-GGUF/imatrix}"
 PY=$ROOT/.venv-1cat/bin/python

@@ -6,12 +6,15 @@ import argparse
 import hashlib
 import json
 import os
+import re
 import stat
 import subprocess
 import unicodedata
 from dataclasses import asdict, dataclass
+from functools import cache
 from pathlib import Path, PurePosixPath
 from typing import Iterable, Mapping, Sequence
+from urllib.parse import unquote
 
 
 _ALLOWED_CONFIG_KEYS = {
@@ -82,6 +85,19 @@ class ApplyReport:
     def ok(self) -> bool:
         return self.conflicts == 0 and self.missing == 0
 
+@dataclass(frozen=True, order=True)
+class ReferenceFinding:
+    source_path: str
+    line_number: int
+    reference: str
+    resolved_path: str
+
+
+@dataclass(frozen=True)
+class ReferenceReport:
+    broken_internal_links: list[ReferenceFinding]
+    stale_old_paths: list[ReferenceFinding]
+    historical_old_paths: dict[str, list[ReferenceFinding]]
 
 @dataclass(frozen=True)
 class LayoutMapping:
@@ -597,6 +613,184 @@ def _repository_ledger_path(repo: Path) -> Path:
             f"found {len(matches)}"
         )
     return matches[0]
+
+@cache
+def _reference_layout_mapping() -> LayoutMapping:
+    return LayoutMapping.from_file(Path(__file__).with_name("layout-map.json"))
+
+
+def rewrite_repository_reference(path: str) -> str:
+    """Rewrite one repository-relative path while preserving URL suffixes."""
+    leading = "./" if path.startswith("./") else ""
+    reference = path[2:] if leading else path
+    suffix_at = min(
+        (index for marker in ("?", "#")
+         if (index := reference.find(marker)) >= 0),
+        default=len(reference),
+    )
+    repository_path = reference[:suffix_at]
+    suffix = reference[suffix_at:]
+    rewritten = _reference_layout_mapping().map_path(repository_path)
+    return leading + (rewritten or repository_path) + suffix
+
+
+_MARKDOWN_LINK = re.compile(
+    r"!?\[[^\]\n]*\]\(\s*(?:<(?P<angle>[^>\n]+)>|(?P<plain>[^)\s]+))"
+)
+_REFERENCE_PATH_CHARACTERS = frozenset(
+    "abcdefghijklmnopqrstuvwxyz"
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    "0123456789_./@+~-"
+)
+_CAPTURED_ARTIFACT_SUFFIXES = {
+    ".json",
+    ".jsonl",
+    ".log",
+    ".patch",
+    ".prof",
+    ".snapshot",
+    ".tsv",
+}
+
+
+def _old_path_offsets(text: str, old_path: str) -> Iterable[int]:
+    for match in re.finditer(re.escape(old_path), text):
+        start, end = match.span()
+        if end < len(text) and text[end] in _REFERENCE_PATH_CHARACTERS:
+            continue
+        if start and text[start - 1] in _REFERENCE_PATH_CHARACTERS:
+            if not text[:start].endswith("/v100-perfs/"):
+                continue
+        yield start
+
+
+def _historical_reference_classification(row: LedgerRow) -> str:
+    path = PurePosixPath(row.new_path)
+    if row.disposition == "proven-generated-regenerate":
+        return "generated"
+    if row.new_path.startswith("docs/archive/"):
+        return "archive"
+    if row.new_path.startswith("docs/research/"):
+        return "supporting-research"
+    if row.new_path.startswith("evidence/"):
+        return "evidence"
+    if row.new_path == "operations/handoff/PRODUCTION-PROFILE.env":
+        return "captured-evidence"
+    if row.new_path.startswith("site/dist/"):
+        return "generated-site"
+    if (
+        row.new_path.startswith(("operations/patches/", "operations/snapshots/"))
+        or path.suffix.lower() in _CAPTURED_ARTIFACT_SUFFIXES
+    ):
+        return "captured-artifact"
+    if row.old_path == row.new_path:
+        return "identity-pinned"
+    return "other-byte-identical"
+
+
+def _markdown_target_path(
+    repo: Path,
+    source_path: str,
+    target: str,
+) -> tuple[str, Path] | None:
+    target = unquote(target)
+    target = target.split("#", 1)[0].split("?", 1)[0]
+    if (
+        not target
+        or target.startswith(("/", "#", "//"))
+        or re.match(r"^[A-Za-z][A-Za-z0-9+.-]*:", target)
+        or any(character in target for character in "*${}")
+    ):
+        return None
+    source_parent = PurePosixPath(source_path).parent
+    resolved = source_parent.joinpath(PurePosixPath(target))
+    normalized = PurePosixPath(os.path.normpath(resolved.as_posix()))
+    if normalized.is_absolute() or ".." in normalized.parts:
+        return None
+    return normalized.as_posix(), repo / normalized
+
+
+def scan_internal_references(
+    repo: Path,
+    ledger: Sequence[LedgerRow],
+) -> ReferenceReport:
+    """Scan mutable current files and classify preserved historical references."""
+    repo = repo.resolve()
+    moved_rows = sorted(
+        (
+            row for row in ledger
+            if row.old_path != row.new_path
+            and (
+                "/" in row.old_path
+                or PurePosixPath(row.old_path).name
+                != PurePosixPath(row.new_path).name
+            )
+        ),
+        key=lambda row: (-len(row.old_path), row.old_path),
+    )
+    stale: list[ReferenceFinding] = []
+    broken: list[ReferenceFinding] = []
+    historical: dict[str, list[ReferenceFinding]] = {}
+
+    for source_row in sorted(ledger, key=lambda row: row.new_path):
+        source = repo / source_row.new_path
+        try:
+            text = source.read_text(encoding="utf-8")
+        except (OSError, UnicodeDecodeError):
+            continue
+
+        active = source_row.disposition == "approved-rewrite"
+        occupied_offsets: set[int] = set()
+        for moved_row in moved_rows:
+            for offset in _old_path_offsets(text, moved_row.old_path):
+                if offset in occupied_offsets:
+                    continue
+                occupied_offsets.add(offset)
+                finding = ReferenceFinding(
+                    source_path=source_row.new_path,
+                    line_number=text.count("\n", 0, offset) + 1,
+                    reference=moved_row.old_path,
+                    resolved_path=moved_row.new_path,
+                )
+                canonical_exists = (repo / moved_row.new_path).exists()
+                if not canonical_exists:
+                    broken.append(finding)
+                elif active:
+                    stale.append(finding)
+                else:
+                    classification = _historical_reference_classification(
+                        source_row
+                    )
+                    historical.setdefault(classification, []).append(finding)
+
+        if active and source.suffix.lower() == ".md":
+            for match in _MARKDOWN_LINK.finditer(text):
+                target = match.group("angle") or match.group("plain")
+                resolved = _markdown_target_path(
+                    repo,
+                    source_row.new_path,
+                    target,
+                )
+                if resolved is None:
+                    continue
+                resolved_path, absolute_path = resolved
+                if not absolute_path.exists():
+                    broken.append(ReferenceFinding(
+                        source_path=source_row.new_path,
+                        line_number=text.count("\n", 0, match.start()) + 1,
+                        reference=target,
+                        resolved_path=resolved_path,
+                    ))
+
+    for findings in historical.values():
+        findings.sort()
+    return ReferenceReport(
+        broken_internal_links=sorted(set(broken)),
+        stale_old_paths=sorted(set(stale)),
+        historical_old_paths=dict(sorted(historical.items())),
+    )
+
+
 
 
 def _path_exists(path: Path) -> bool:

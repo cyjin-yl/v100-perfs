@@ -38,7 +38,7 @@ C="$QDIR/Qwen3.8-27B-Uncensored-Cyber-Q5_K_M-plus-mtp.gguf"
 restore() {
   echo "[window] 恢复生产 ..."
   # 显式带命令: 不带命令的 respawn-pane 会重跑 pane 原命令, profile 参数无效
-  tmux respawn-pane -k -t fastllm-prod:0.0 '~/projects/EzraVastLLM/scripts/start_prod.sh' 2>/dev/null
+  tmux respawn-pane -k -t fastllm-prod:0.0 "$ROOT/v100-perfs/operations/handoff/start_prod.sh" 2>/dev/null
   echo "[window] 已拉起(权重加载约 8 分钟)"
 }
 trap restore EXIT

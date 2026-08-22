@@ -75,8 +75,8 @@
         "expected_model": "qwen3.6-fastllm"
       },
       "evidence": {
-        "full_result": "benchmarks/fastllm/results/thinkingcap_q4_fastllm_mtp0.json",
-        "current_smoke": "benchmarks/fastllm/results/thinkingcap_q4_current_smoke.json",
+        "full_result": "evidence/benchmarks/fastllm/results/thinkingcap_q4_fastllm_mtp0.json",
+        "current_smoke": "evidence/benchmarks/fastllm/results/thinkingcap_q4_current_smoke.json",
         "validation": "10/10 full fixture requests and 5/5 current smoke requests passed transport validation",
         "vram": "not measured for this run because the earlier NVML userspace/kernel mismatch made sampling unavailable",
         "quality": "four semantic fixtures pass; required_tool_call payload is emitted in assistant content, not an OpenAI tool_calls delta",
@@ -133,8 +133,8 @@
         "expected_model": "qwen3.6-fastllm"
       },
       "evidence": {
-        "full_result": "benchmarks/fastllm/results/thinkingcap_q6_fastllm_mtp0.json",
-        "current_smoke": "benchmarks/fastllm/results/thinkingcap_q6_current_smoke.json",
+        "full_result": "evidence/benchmarks/fastllm/results/thinkingcap_q6_fastllm_mtp0.json",
+        "current_smoke": "evidence/benchmarks/fastllm/results/thinkingcap_q6_current_smoke.json",
         "validation": "10/10 full fixture requests and 5/5 current smoke requests passed transport validation",
         "vram": "not measured for this run because the earlier NVML userspace/kernel mismatch made sampling unavailable",
         "quality": "arithmetic, exact instruction, balance-scale, and vision fixtures pass; required_tool_call violates the city schema with location",
@@ -353,11 +353,11 @@
         "expected_model": "qwen3.6-fastllm"
       },
       "evidence": {
-        "mtp0_result": "benchmarks/fastllm/results/thinkingcap_heretic_q8_fastllm_mtp0.json",
-        "mtp2_result": "benchmarks/fastllm/results/thinkingcap_heretic_q8_fastllm_mtp2.json",
-        "mtp0_vram": "benchmarks/fastllm/results/thinkingcap_heretic_q8_mtp0_vram.json",
-        "mtp2_vram": "benchmarks/fastllm/results/thinkingcap_heretic_q8_mtp2_vram.json",
-        "plain_control_negative": "benchmarks/fastllm/results/thinkingcap_heretic_raw_base_q8_negative.json",
+        "mtp0_result": "evidence/benchmarks/fastllm/results/thinkingcap_heretic_q8_fastllm_mtp0.json",
+        "mtp2_result": "evidence/benchmarks/fastllm/results/thinkingcap_heretic_q8_fastllm_mtp2.json",
+        "mtp0_vram": "evidence/benchmarks/fastllm/results/thinkingcap_heretic_q8_mtp0_vram.json",
+        "mtp2_vram": "evidence/benchmarks/fastllm/results/thinkingcap_heretic_q8_mtp2_vram.json",
+        "plain_control_negative": "evidence/benchmarks/fastllm/results/thinkingcap_heretic_raw_base_q8_negative.json",
         "validation": "MTP0 and MTP2 each completed 10/10 HTTP fixture requests; plain un-grafted Q8 control failed vision request with HTTP 502",
         "vram": "MTP0 peak 31525 MiB / minimum free 970 MiB; MTP2 peak 32393 MiB / minimum free 374 MiB, below the 512 MiB safety gate",
         "quality": "four semantic fixtures pass; required_tool_call payload is present in assistant content but no OpenAI tool_calls delta is emitted",

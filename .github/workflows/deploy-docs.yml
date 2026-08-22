@@ -3,7 +3,7 @@ name: Deploy docs site (Astro + Proto-UI)
 on:
   push:
     branches: [main]
-    paths: ["site/**", "docs/**", "README.md", "results/**/*.md", "llms.txt"]
+    paths: ["site/**", "docs/**", "README.md", "evidence/results/**/*.md", "llms.txt"]
   workflow_dispatch:
 
 permissions:

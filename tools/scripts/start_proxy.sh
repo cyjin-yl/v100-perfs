@@ -30,10 +30,11 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
-# The root thinking_proxy.py is the single canonical fair-routing proxy.
+REPOSITORY_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+PROJECT_ROOT="$(cd "$REPOSITORY_ROOT/.." && pwd)"
 cd "$PROJECT_ROOT"
-PROXY_LOG_FILE="${PROXY_LOG_FILE:-${PROJECT_DIR:-$PROJECT_ROOT/v100-perfs}/runtime/fastllm-native-profiles/logs/proxy-8000-live.log}"
+PROXY_SOURCE="$REPOSITORY_ROOT/src/gateway/thinking_proxy.py"
+PROXY_LOG_FILE="${PROXY_LOG_FILE:-${PROJECT_DIR:-$REPOSITORY_ROOT}/runtime/fastllm-native-profiles/logs/proxy-8000-live.log}"
 
 VENV="${VENV:-$PROJECT_ROOT/.venv-1cat/bin/python}"
 
@@ -82,7 +83,7 @@ fi
 if [[ -n "${PROXY_LOG_FILE:-}" ]]; then
   mkdir -p "$(dirname "$PROXY_LOG_FILE")"
   echo "[start_proxy] logging stdout/stderr -> $PROXY_LOG_FILE"
-  "$VENV" "$PROJECT_ROOT/thinking_proxy.py" 2>&1 | /usr/bin/tee -a "$PROXY_LOG_FILE"
+  "$VENV" "$PROXY_SOURCE" 2>&1 | /usr/bin/tee -a "$PROXY_LOG_FILE"
   exit "${PIPESTATUS[0]}"
 fi
-exec "$VENV" "$PROJECT_ROOT/thinking_proxy.py"
+exec "$VENV" "$PROXY_SOURCE"

@@ -34,8 +34,8 @@ When FASTLLM_BACKEND_URL is unset, behavior is unchanged from the original
 llama-server proxy. A new owned child starts a new tensor-cache epoch; only
 remote-provider routing hints survive child shutdown.
 
-Run:  python thinking_proxy.py
-  or:  uvicorn thinking_proxy:app --host 0.0.0.0 --port 8000
+Run:  python src/gateway/thinking_proxy.py
+  or:  uvicorn --app-dir src/gateway thinking_proxy:app --host 0.0.0.0 --port 8000
 """
 
 import asyncio
@@ -81,7 +81,7 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import ClientDisconnect
 from starlette.responses import JSONResponse as _StarletteJSONResponse, Response
 
-_FASTLLM_SUPPORT_DIR = Path(__file__).resolve().parent / "v100-perfs"
+_FASTLLM_SUPPORT_DIR = Path(__file__).resolve().parents[2]
 if str(_FASTLLM_SUPPORT_DIR) not in sys.path:
     sys.path.insert(0, str(_FASTLLM_SUPPORT_DIR))
 from fastllm_adapter import adapt_fastllm_response, prepare_fastllm_body
@@ -214,7 +214,8 @@ if FASTLLM_OWNED and not FASTLLM_MODE:
     raise RuntimeError("FASTLLM_OWNED=1 requires FASTLLM_BACKEND_URL")
 FASTLLM_CHAT_TEMPLATE = Path(os.environ.get(
     "FASTLLM_CHAT_TEMPLATE",
-    os.path.join(PROJECT_DIR, "chat_templates", "qwen3.6_gguf_original.jinja"),
+    _FASTLLM_SUPPORT_DIR / "config" / "chat-templates"
+    / "qwen3.6_gguf_original.jinja",
 ))
 LLAMA_ENABLED = os.environ.get("LLAMA_ENABLED", "1") == "1"
 if FASTLLM_MODE and QUEUE_TIMEOUT < 600:
@@ -248,8 +249,9 @@ LLAMA_ARGS = [
     "--cache-type-k", "turbo4", "--cache-type-v", "turbo4",
     "--spec-type", "draft-mtp", "--spec-draft-n-max", "9",
     "--jinja",
-    "--chat-template-file", os.path.join(
-        PROJECT_DIR, "chat_templates/qwen3.6_merged.jinja"),
+    "--chat-template-file", str(
+        _FASTLLM_SUPPORT_DIR / "config" / "chat-templates"
+        / "qwen3.6_merged.jinja"),
     "--reasoning", "on",
     "--alias", "qwen3.6-27b-awq,qwen3.6-27b-heretic",
     "--host", "127.0.0.1", "--port", str(BACKEND_PORT),

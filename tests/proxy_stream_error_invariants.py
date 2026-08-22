@@ -6,9 +6,9 @@ import importlib.util
 from pathlib import Path
 
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[1]
 SPEC = importlib.util.spec_from_file_location(
-    "thinking_proxy_under_test", ROOT / "thinking_proxy.py"
+    "thinking_proxy_under_test", ROOT / "src" / "gateway" / "thinking_proxy.py"
 )
 proxy = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(proxy)

@@ -24,7 +24,7 @@ say "=== $TAG 开始 ==="
 
 # --- 冷启 ---
 t0=$(date +%s)
-WAIT_READY=1800 bash "$PERF/scripts/sweep_launch.sh" "$PROFILE" fastllm-prod proxy-8000 \
+WAIT_READY=1800 bash "$PERF/tools/scripts/sweep_launch.sh" "$PROFILE" fastllm-prod proxy-8000 \
   >>"$RUNLOG" 2>&1
 rc=$?
 cold=$(( $(date +%s) - t0 ))
@@ -53,7 +53,7 @@ set -a; . "$ROOT/.env"; set +a
 run_suite() {
   local name="$1"; shift
   say "-- suite $name"
-  timeout 3600 $PY scripts/chain_acceptance.py "$@" >>"$RUNLOG" 2>&1
+  timeout 3600 $PY tools/scripts/chain_acceptance.py "$@" >>"$RUNLOG" 2>&1
   say "-- suite $name rc=$?"
 }
 
@@ -76,7 +76,7 @@ run_suite conc    --suite concurrency --concurrency 6 --rounds 1 \
 # 降智/拒答对照只在候选档位跑(每次约 5 分钟), 由 driver 用 INTEL=1 指定
 if [[ "${INTEL:-0}" == "1" ]]; then
   say "-- intel probe(能力题 + 网络安全防御题)"
-  timeout 1800 $PY scripts/intel_probe.py --tag "$TAG" \
+  timeout 1800 $PY tools/scripts/intel_probe.py --tag "$TAG" \
     --json "$OUTDIR/$TAG.intel.json" >>"$RUNLOG" 2>&1
   say "-- intel probe rc=$?"
 fi

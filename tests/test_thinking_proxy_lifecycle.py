@@ -11,7 +11,10 @@ _TEST_PROJECT = tempfile.TemporaryDirectory()
 os.environ.setdefault("PROJECT_DIR", _TEST_PROJECT.name)
 os.environ.setdefault("FASTLLM_BACKEND_URL", "http://127.0.0.1:8002")
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+sys.path.insert(
+    0,
+    str(Path(__file__).resolve().parents[1] / "src" / "gateway"),
+)
 import thinking_proxy
 
 
