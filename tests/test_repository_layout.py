@@ -680,6 +680,33 @@ class ContentManifestTests(unittest.TestCase):
                     item["sha256"], hashlib.sha256(blob).hexdigest()
                 )
 
+    def test_llms_generator_uses_only_indexed_markdown_and_is_clean(self):
+        llms_path = Path("llms.txt")
+        original = llms_path.read_bytes()
+        scratch_root = Path(".superpowers")
+        scratch_root.mkdir(exist_ok=True)
+        marker = "UNTRACKED-LLMS-SCRATCH-MUST-NOT-PUBLISH"
+        try:
+            with tempfile.TemporaryDirectory(
+                prefix="llms-generator-test-",
+                dir=scratch_root,
+            ) as temp:
+                Path(temp, "scratch.md").write_text(
+                    f"# {marker}\n",
+                    encoding="utf-8",
+                )
+                subprocess.run(
+                    ["node", "site/scripts/gen-llms-txt.mjs"],
+                    check=True,
+                    stdout=subprocess.PIPE,
+                    text=True,
+                )
+                generated = llms_path.read_bytes()
+                self.assertEqual(generated, original)
+                self.assertNotIn(marker.encode(), generated)
+        finally:
+            llms_path.write_bytes(original)
+
     def test_manifest_routes_are_unique_and_partitioned(self):
         manifest = load_content_manifest(self.manifest_path)
         route_owners: dict[str, str] = {}

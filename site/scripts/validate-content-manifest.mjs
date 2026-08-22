@@ -260,6 +260,13 @@ for (let index = 0; index < manifest.length; index += 1) {
     ) {
       fail(`Git-index metadata mismatch for ${item.source_path}`);
     }
+    if (item.generated_from !== null) {
+      const workingBytes = readFileSync(resolve(repo, item.source_path));
+      const workingSha256 = createHash("sha256").update(workingBytes).digest("hex");
+      if (workingBytes.length !== bytes.length || workingSha256 !== sha256) {
+        fail(`generated working-tree content differs from Git index: ${item.source_path}`);
+      }
+    }
   }
   const expectedExtension = extname(item.source_path).toLocaleLowerCase("en-US");
   if (item.extension !== expectedExtension) fail(`extension mismatch for ${item.source_path}`);
@@ -309,6 +316,22 @@ for (const row of ledger.rows) {
     ) {
       fail(`unapproved generated baseline replacement: ${row.new_path} -> ${owner}`);
     }
+  }
+}
+
+const packageJson = JSON.parse(
+  readFileSync(resolve(site, "package.json"), "utf8"),
+);
+const generationPipeline = [
+  "node scripts/generate-repo-index.mjs",
+  "node scripts/gen-llms-txt.mjs",
+  "node scripts/generate-repo-index.mjs",
+].join(" && ");
+for (const scriptName of ["predev", "prebuild"]) {
+  if (packageJson.scripts?.[scriptName] !== generationPipeline) {
+    fail(
+      `${scriptName} must regenerate the manifest after llms.txt generation`,
+    );
   }
 }
 
