@@ -444,7 +444,7 @@ class LayoutManifestTests(unittest.TestCase):
 
         payload["rows"][0]["old_path"] = "tests/*.py"
         amendment_path.write_text(json.dumps(payload), encoding="utf-8")
-        with self.assertRaisesRegex(LayoutError, "not present in ledger"):
+        with self.assertRaisesRegex(LayoutError, "paths must be explicit"):
             load_approved_rewrite_amendments(amendment_path, rows)
 
 
