@@ -4,10 +4,12 @@
 
 Qwen3.8 27B 必须按推理模式选择采样档，不能沿用旧的统一 `temperature=0.6` 默认值。
 
-| 模式 | `temperature` | `top_p` | `top_k` | `presence_penalty` |
-|---|---:|---:|---:|---:|
-| Thinking（默认） | 1.0 | 0.95 | 20 | 0.0 |
-| Instruct / non-thinking | 0.7 | 0.80 | 20 | 1.5 |
+| 模式 | `temperature` | `top_p` | `top_k` | `min_p` | `presence_penalty` | `repetition_penalty` |
+|---|---:|---:|---:|---:|---:|---:|
+| Thinking（默认） | 1.0 | 0.95 | 20 | 0.0 | 0.0 | 1.0 |
+| Instruct / non-thinking | 0.7 | 0.80 | 20 | 0.0 | 1.5 | 1.0 |
+
+来源：[Qwen/Qwen3.8-27B README](https://huggingface.co/Qwen/Qwen3.8-27B)。`min_p=0.0` 表示关闭该过滤器，因此当前官方档不需要修改采样热路径；不得把“接受一个零值字段”宣传成支持非零 min-p。
 
 仓库中的 Qwen3.6 是衍生权重，没有独立的 Qwen 官方采样档；其参数由对应 profile 或客户端显式给出，不伪称官方推荐。
 
@@ -21,7 +23,7 @@ FastLLM 分别实现三种 penalty，不再把 OpenAI `frequency_penalty` 偷换
 
 - `presence_penalty`：token 在生成历史中出现过时，logit 固定减去该值。
 - `frequency_penalty`：logit 减去“该值 × 生成历史出现次数”。
-- `repeat_penalty`：保留 FastLLM 的正负 logit 乘除语义；本机生产 profile 当前为 1.08。这是本地 A/B 参数，不是上表中的 Qwen 官方推荐字段。
+- `repeat_penalty`：FastLLM 对官方 `repetition_penalty` 的内部字段名，保留正负 logit 乘除语义；Qwen3.8 生产 profile 使用官方值 1.0。
 
 执行顺序为乘法 repeat penalty、加法 presence/frequency penalty、temperature/softmax、top-k/top-p。普通 CPU 采样、CUDA handoff 和 MTP exact/typical acceptance 使用同一份惩罚后分布；否则 draft 与 verify posterior 不一致，会破坏 exact acceptance。
 
@@ -45,4 +47,4 @@ UD-Q5_K_M 与 UD-Q6_K_M 的内嵌模板均已分别导出并校验：二者都�
 
 ## 当前生产组合
 
-当前生产实例为 UD-Q6_K_M、turbo3 KV、MTP3、exact acceptance、repeat penalty 1.08，并按 thinking/non-thinking 选择上表 Qwen3.8 官方采样档。Q5 保留为对照 profile；两者除权重量化档位和对应 GGUF 模板导出路径外保持相同。
+当前生产实例为 UD-Q6_K_M、turbo3 KV、MTP3、exact acceptance，并使用上表完整 Qwen3.8 官方采样档。Q5 保留为对照 profile；两者除权重量化档位和对应 GGUF 模板导出路径外保持相同。

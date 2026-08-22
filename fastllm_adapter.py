@@ -19,9 +19,10 @@ from typing import Any
 from jinja2 import Environment, FileSystemLoader, StrictUndefined
 
 # 乘法 repeat penalty 与 OpenAI additive presence/frequency penalty 是三套
-# 独立语义。生产默认需要可 A/B,但不得再借 frequency_penalty 字段冒充。
-_DEFAULT_REPEAT_PENALTY = float(
-    os.environ.get("FASTLLM_DEFAULT_REPEAT_PENALTY", "1.05"))
+# 独立语义。Qwen3.8 官方默认是 1.0;旧衍生模型仍保留 1.05,profile 可显式覆盖。
+_CONFIGURED_REPEAT_PENALTY = os.environ.get("FASTLLM_DEFAULT_REPEAT_PENALTY")
+_LEGACY_REPEAT_PENALTY = float(_CONFIGURED_REPEAT_PENALTY or "1.05")
+_QWEN38_REPEAT_PENALTY = float(_CONFIGURED_REPEAT_PENALTY or "1.0")
 
 
 
@@ -308,7 +309,10 @@ def prepare_fastllm_body(
         prepared.setdefault("top_p", 0.8)
         prepared.setdefault("temperature", 0.6)
     if "repeat_penalty" not in prepared:
-        prepared["repeat_penalty"] = _DEFAULT_REPEAT_PENALTY
+        prepared["repeat_penalty"] = (
+            _QWEN38_REPEAT_PENALTY
+            if "qwen3.8" in model_name
+            else _LEGACY_REPEAT_PENALTY)
     return prepared
 
 
