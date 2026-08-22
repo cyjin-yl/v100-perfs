@@ -288,7 +288,7 @@ class LayoutManifestTests(unittest.TestCase):
                 for classification, findings
                 in report.historical_old_paths.items()
             },
-            {"other-byte-identical": 1},
+            {"identity-pinned": 1},
         )
         (self.repo / "current/a.md").unlink()
         missing_target = scan_internal_references(self.repo, rows)
