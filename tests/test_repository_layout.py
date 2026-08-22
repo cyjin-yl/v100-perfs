@@ -7,6 +7,7 @@ import subprocess
 import tempfile
 import unittest
 import warnings
+from dataclasses import asdict
 from pathlib import Path
 
 from tools.repository_layout.layout_manifest import (
@@ -15,9 +16,18 @@ from tools.repository_layout.layout_manifest import (
     build_baseline_ledger,
     verify_final_tree,
 )
+from tools.repository_layout.route_manifest import (
+    LegacyRoute,
+    capture_legacy_routes,
+    validate_alias_targets,
+)
 
 
 PRODUCTION_MAPPING = Path("tools/repository_layout/layout-map.json")
+PRODUCTION_ROUTE_LEDGER = Path(
+    "operations/migrations/"
+    "67ef398f9da504e020db1349956e2990f2876171-legacy-routes.json"
+)
 
 
 class LayoutManifestTests(unittest.TestCase):
@@ -243,6 +253,102 @@ class LayoutManifestTests(unittest.TestCase):
             "docs/superpowers/specs/**": "docs/archive/design-decisions/specs/",
             "docs/superpowers/plans/**": "docs/archive/design-decisions/plans/",
         })
+
+
+class RouteManifestTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.routes = capture_legacy_routes(Path.cwd(), Path("site/dist"))
+        cls.by_old_url = {route.old_url: route for route in cls.routes}
+
+    def test_baseline_route_capture_counts_every_page(self):
+        self.assertEqual(len(self.routes), 424)
+        self.assertEqual(len(self.by_old_url), 424)
+        self.assertIn(
+            "/v100-perfs/docs/getting-started/",
+            {route.trailing_slash_url for route in self.routes},
+        )
+
+    def test_committed_route_ledger_is_the_exact_immutable_capture(self):
+        payload = json.loads(PRODUCTION_ROUTE_LEDGER.read_text(encoding="utf-8"))
+        self.assertEqual(payload["base_path"], "/v100-perfs")
+        self.assertEqual(payload["curated_route_count"], 9)
+        self.assertEqual(payload["read_route_count"], 413)
+        self.assertEqual(payload["row_count"], 424)
+        self.assertEqual(payload["rows"], [asdict(route) for route in self.routes])
+
+    def test_route_forms_and_canonical_targets_are_exact(self):
+        self.assertEqual(
+            self.by_old_url["/v100-perfs/docs/experience"],
+            LegacyRoute(
+                old_url="/v100-perfs/docs/experience",
+                encoded_url="/v100-perfs/docs/experience",
+                trailing_slash_url="/v100-perfs/docs/experience/",
+                canonical_target=(
+                    "/v100-perfs/archive/chronicles/"
+                    "v100-fastllm-experience/"
+                ),
+            ),
+        )
+        self.assertEqual(
+            self.by_old_url[
+                "/v100-perfs/read/site/src/pages/docs/[...slug].astro"
+            ],
+            LegacyRoute(
+                old_url=(
+                    "/v100-perfs/read/site/src/pages/docs/[...slug].astro"
+                ),
+                encoded_url=(
+                    "/v100-perfs/read/site/src/pages/docs/"
+                    "%5B...slug%5D.astro"
+                ),
+                trailing_slash_url=(
+                    "/v100-perfs/read/site/src/pages/docs/"
+                    "%5B...slug%5D.astro/"
+                ),
+                canonical_target=(
+                    "/v100-perfs/repository/site/src/pages/docs/"
+                    "%5B...slug%5D.astro/"
+                ),
+            ),
+        )
+        self.assertEqual(
+            self.by_old_url[
+                "/v100-perfs/read/results/q38-sweep/MATRIX.md"
+            ].canonical_target,
+            "/v100-perfs/docs/performance/qwen38/sweep-matrix/",
+        )
+        self.assertEqual(
+            self.by_old_url[
+                "/v100-perfs/read/benchmarks/agent_bench.py"
+            ].canonical_target,
+            "/v100-perfs/evidence/benchmarks/agent_bench.py/",
+        )
+
+    def test_generator_eligible_routes_missing_from_old_index_are_frozen(self):
+        route = self.by_old_url[
+            "/v100-perfs/read/docs/superpowers/plans/"
+            "2026-08-22-full-repository-docs-migration.md"
+        ]
+        self.assertEqual(
+            route.canonical_target,
+            "/v100-perfs/archive/design-decisions/plans/"
+            "2026-08-22-full-repository-docs-migration/",
+        )
+
+    def test_alias_graph_rejects_alias_to_alias_cycle(self):
+        with self.assertRaisesRegex(ValueError, "alias cycle"):
+            validate_alias_targets({
+                "/old-a": "/old-b",
+                "/old-b": "/old-a",
+            })
+
+    def test_alias_graph_rejects_acyclic_alias_to_alias_target(self):
+        with self.assertRaisesRegex(ValueError, "target is another alias"):
+            validate_alias_targets({
+                "/old-a": "/old-b",
+                "/old-b": "/canonical",
+            })
 
 
 if __name__ == "__main__":

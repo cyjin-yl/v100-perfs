@@ -1,0 +1,2560 @@
+{
+  "schema_version": 1,
+  "base_commit": "67ef398f9da504e020db1349956e2990f2876171",
+  "base_path": "/v100-perfs",
+  "source_layout_ledger": "operations/migrations/67ef398f9da504e020db1349956e2990f2876171-repository-layout.json",
+  "baseline_route_definitions": [
+    "site/astro.config.mjs",
+    "site/src/pages/docs/[...slug].astro",
+    "site/src/data/repo-index.json"
+  ],
+  "curated_route_count": 9,
+  "read_route_count": 413,
+  "row_count": 424,
+  "rows": [
+    {
+      "old_url": "/v100-perfs/",
+      "encoded_url": "/v100-perfs/",
+      "trailing_slash_url": "/v100-perfs/",
+      "canonical_target": "/v100-perfs/"
+    },
+    {
+      "old_url": "/v100-perfs/repo",
+      "encoded_url": "/v100-perfs/repo",
+      "trailing_slash_url": "/v100-perfs/repo/",
+      "canonical_target": "/v100-perfs/repo/"
+    },
+    {
+      "old_url": "/v100-perfs/docs/getting-started",
+      "encoded_url": "/v100-perfs/docs/getting-started",
+      "trailing_slash_url": "/v100-perfs/docs/getting-started/",
+      "canonical_target": "/v100-perfs/docs/getting-started/overview/"
+    },
+    {
+      "old_url": "/v100-perfs/docs/architecture",
+      "encoded_url": "/v100-perfs/docs/architecture",
+      "trailing_slash_url": "/v100-perfs/docs/architecture/",
+      "canonical_target": "/v100-perfs/docs/concepts/architecture/system-overview/"
+    },
+    {
+      "old_url": "/v100-perfs/docs/toolcall",
+      "encoded_url": "/v100-perfs/docs/toolcall",
+      "trailing_slash_url": "/v100-perfs/docs/toolcall/",
+      "canonical_target": "/v100-perfs/docs/concepts/tool-calling/constraint-architecture/"
+    },
+    {
+      "old_url": "/v100-perfs/docs/performance",
+      "encoded_url": "/v100-perfs/docs/performance",
+      "trailing_slash_url": "/v100-perfs/docs/performance/",
+      "canonical_target": "/v100-perfs/docs/performance/qwen38/sweep-matrix/"
+    },
+    {
+      "old_url": "/v100-perfs/docs/ops",
+      "encoded_url": "/v100-perfs/docs/ops",
+      "trailing_slash_url": "/v100-perfs/docs/ops/",
+      "canonical_target": "/v100-perfs/archive/handoffs/2026-08-18-qwen38/"
+    },
+    {
+      "old_url": "/v100-perfs/docs/experience",
+      "encoded_url": "/v100-perfs/docs/experience",
+      "trailing_slash_url": "/v100-perfs/docs/experience/",
+      "canonical_target": "/v100-perfs/archive/chronicles/v100-fastllm-experience/"
+    },
+    {
+      "old_url": "/v100-perfs/docs/optane",
+      "encoded_url": "/v100-perfs/docs/optane",
+      "trailing_slash_url": "/v100-perfs/docs/optane/",
+      "canonical_target": "/v100-perfs/docs/research/storage/optane-l3/"
+    },
+    {
+      "old_url": "/v100-perfs/docs/prefill-plan",
+      "encoded_url": "/v100-perfs/docs/prefill-plan",
+      "trailing_slash_url": "/v100-perfs/docs/prefill-plan/",
+      "canonical_target": "/v100-perfs/docs/research/performance/short-prefill-plan/"
+    },
+    {
+      "old_url": "/v100-perfs/docs/upstream",
+      "encoded_url": "/v100-perfs/docs/upstream",
+      "trailing_slash_url": "/v100-perfs/docs/upstream/",
+      "canonical_target": "/v100-perfs/archive/assessments/2026-08-22-upstream-cherry-pick/"
+    },
+    {
+      "old_url": "/v100-perfs/read/.github/workflows/deploy-docs.yml",
+      "encoded_url": "/v100-perfs/read/.github/workflows/deploy-docs.yml",
+      "trailing_slash_url": "/v100-perfs/read/.github/workflows/deploy-docs.yml/",
+      "canonical_target": "/v100-perfs/repository/.github/workflows/deploy-docs.yml/"
+    },
+    {
+      "old_url": "/v100-perfs/read/README.md",
+      "encoded_url": "/v100-perfs/read/README.md",
+      "trailing_slash_url": "/v100-perfs/read/README.md/",
+      "canonical_target": "/v100-perfs/repository/README.md/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/agent_bench.py",
+      "encoded_url": "/v100-perfs/read/benchmarks/agent_bench.py",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/agent_bench.py/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/agent_bench.py/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/agentic_load_bench.py",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/agentic_load_bench.py",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/agentic_load_bench.py/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/agentic_load_bench.py/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/agentic_toolcall_bench.py",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/agentic_toolcall_bench.py",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/agentic_toolcall_bench.py/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/agentic_toolcall_bench.py/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/configs/operator_iq4xs_wide_n.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/configs/operator_iq4xs_wide_n.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/configs/operator_iq4xs_wide_n.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/configs/operator_iq4xs_wide_n.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/configs/thinkingcap_native_profiles.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/configs/thinkingcap_native_profiles.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/configs/thinkingcap_native_profiles.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/configs/thinkingcap_native_profiles.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/feature_bench.py",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/feature_bench.py",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/feature_bench.py/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/feature_bench.py/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/hermes_toolcall_bench.py",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/hermes_toolcall_bench.py",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/hermes_toolcall_bench.py/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/hermes_toolcall_bench.py/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/kv_recall_ab.py",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/kv_recall_ab.py",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/kv_recall_ab.py/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/kv_recall_ab.py/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/measure_iq6_throughput.py",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/measure_iq6_throughput.py",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/measure_iq6_throughput.py/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/measure_iq6_throughput.py/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/requests/prefix_pressure_b.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/requests/prefix_pressure_b.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/requests/prefix_pressure_b.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/requests/prefix_pressure_b.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/requests/prefix_restore_a.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/requests/prefix_restore_a.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/requests/prefix_restore_a.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/requests/prefix_restore_a.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/requests/prefix_seed_a.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/requests/prefix_seed_a.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/requests/prefix_seed_a.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/requests/prefix_seed_a.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/requests/prefix_shared_variant.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/requests/prefix_shared_variant.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/requests/prefix_shared_variant.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/requests/prefix_shared_variant.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/requests/prefix_warmup.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/requests/prefix_warmup.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/requests/prefix_warmup.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/requests/prefix_warmup.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/requests/resident_32k_a.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/requests/resident_32k_a.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/requests/resident_32k_a.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/requests/resident_32k_a.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/requests/resident_32k_b.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/requests/resident_32k_b.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/requests/resident_32k_b.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/requests/resident_32k_b.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/requests/resident_32k_c.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/requests/resident_32k_c.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/requests/resident_32k_c.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/requests/resident_32k_c.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/requests/resident_decode_32k_a.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/requests/resident_decode_32k_a.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/requests/resident_decode_32k_a.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/requests/resident_decode_32k_a.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/requests/resident_decode_32k_b.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/requests/resident_decode_32k_b.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/requests/resident_decode_32k_b.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/requests/resident_decode_32k_b.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/requests/thinkingcap_arithmetic_126.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/requests/thinkingcap_arithmetic_126.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/requests/thinkingcap_arithmetic_126.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/requests/thinkingcap_arithmetic_126.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/requests/thinkingcap_balance_scale_reasoning.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/requests/thinkingcap_balance_scale_reasoning.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/requests/thinkingcap_balance_scale_reasoning.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/requests/thinkingcap_balance_scale_reasoning.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/requests/thinkingcap_exact_instruction.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/requests/thinkingcap_exact_instruction.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/requests/thinkingcap_exact_instruction.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/requests/thinkingcap_exact_instruction.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/requests/thinkingcap_required_tool_call.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/requests/thinkingcap_required_tool_call.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/requests/thinkingcap_required_tool_call.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/requests/thinkingcap_required_tool_call.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/requests/thinkingcap_vision_red_pixel.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/requests/thinkingcap_vision_red_pixel.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/requests/thinkingcap_vision_red_pixel.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/requests/thinkingcap_vision_red_pixel.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/agentic_load_2m8s_4r.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/agentic_load_2m8s_4r.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/agentic_load_2m8s_4r.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/agentic_load_2m8s_4r.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/agentic_load_2m8s_4r_b4s4w4.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/agentic_load_2m8s_4r_b4s4w4.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/agentic_load_2m8s_4r_b4s4w4.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/agentic_load_2m8s_4r_b4s4w4.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/agentic_load_2m8s_4r_batch4.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/agentic_load_2m8s_4r_batch4.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/agentic_load_2m8s_4r_batch4.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/agentic_load_2m8s_4r_batch4.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/agentic_load_2m8s_4r_batch4slot4.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/agentic_load_2m8s_4r_batch4slot4.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/agentic_load_2m8s_4r_batch4slot4.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/agentic_load_2m8s_4r_batch4slot4.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_agentic_toolcall_omp_20260813_223827.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_agentic_toolcall_omp_20260813_223827.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_agentic_toolcall_omp_20260813_223827.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_agentic_toolcall_omp_20260813_223827.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_agentic_toolcall_omp_20260813_224214.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_agentic_toolcall_omp_20260813_224214.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_agentic_toolcall_omp_20260813_224214.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_agentic_toolcall_omp_20260813_224214.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_agentic_toolcall_omp_20260813_225246.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_agentic_toolcall_omp_20260813_225246.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_agentic_toolcall_omp_20260813_225246.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_agentic_toolcall_omp_20260813_225246.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_agentic_toolcall_omp_20260813_234634.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_agentic_toolcall_omp_20260813_234634.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_agentic_toolcall_omp_20260813_234634.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_agentic_toolcall_omp_20260813_234634.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_agentic_toolcall_omp_20260814_000418.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_agentic_toolcall_omp_20260814_000418.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_agentic_toolcall_omp_20260814_000418.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_agentic_toolcall_omp_20260814_000418.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_agentic_toolcall_omp_20260814_002644.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_agentic_toolcall_omp_20260814_002644.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_agentic_toolcall_omp_20260814_002644.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_agentic_toolcall_omp_20260814_002644.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_complete_natural_green.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_complete_natural_green.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_complete_natural_green.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_complete_natural_green.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_complete_natural_request.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_complete_natural_request.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_complete_natural_request.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_complete_natural_request.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_halfway_anthropic_stream_green.sse",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_halfway_anthropic_stream_green.sse",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_halfway_anthropic_stream_green.sse/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_halfway_anthropic_stream_green.sse/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_halfway_anthropic_stream_parser_fixed.sse",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_halfway_anthropic_stream_parser_fixed.sse",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_halfway_anthropic_stream_parser_fixed.sse/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_halfway_anthropic_stream_parser_fixed.sse/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_halfway_anthropic_stream_request.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_halfway_anthropic_stream_request.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_halfway_anthropic_stream_request.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_halfway_anthropic_stream_request.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_halfway_anthropic_stream_single.sse",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_halfway_anthropic_stream_single.sse",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_halfway_anthropic_stream_single.sse/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_halfway_anthropic_stream_single.sse/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_halfway_anthropic_upstream_raw.sse",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_halfway_anthropic_upstream_raw.sse",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_halfway_anthropic_upstream_raw.sse/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_halfway_anthropic_upstream_raw.sse/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_halfway_anthropic_upstream_request.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_halfway_anthropic_upstream_request.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_halfway_anthropic_upstream_request.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_halfway_anthropic_upstream_request.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_halfway_length_green.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_halfway_length_green.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_halfway_length_green.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_halfway_length_green.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_halfway_length_red.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_halfway_length_red.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_halfway_length_red.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_halfway_length_red.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_halfway_length_request.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_halfway_length_request.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_halfway_length_request.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_halfway_length_request.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_halfway_stream_green.sse",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_halfway_stream_green.sse",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_halfway_stream_green.sse/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_halfway_stream_green.sse/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_halfway_stream_request.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_halfway_stream_request.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_halfway_stream_request.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_halfway_stream_request.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_hybrid_mtp2_plain_batch_short_decode_c1_c4.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_hybrid_mtp2_plain_batch_short_decode_c1_c4.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_hybrid_mtp2_plain_batch_short_decode_c1_c4.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_hybrid_mtp2_plain_batch_short_decode_c1_c4.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_iq6_prefill_decode_throughput_20260812.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_iq6_prefill_decode_throughput_20260812.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_iq6_prefill_decode_throughput_20260812.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_iq6_prefill_decode_throughput_20260812.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp1_agents1_ab.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp1_agents1_ab.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp1_agents1_ab.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_mtp1_agents1_ab.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp1_agents1_ab_raw.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp1_agents1_ab_raw.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp1_agents1_ab_raw.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_mtp1_agents1_ab_raw.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_agents1_ab.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_agents1_ab.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_agents1_ab.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_mtp2_agents1_ab.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_agents1_ab_raw.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_agents1_ab_raw.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_agents1_ab_raw.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_mtp2_agents1_ab_raw.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_agents1_native.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_agents1_native.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_agents1_native.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_mtp2_agents1_native.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_agents1_native_analysis.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_agents1_native_analysis.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_agents1_native_analysis.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_mtp2_agents1_native_analysis.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_agents1_native_correctness.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_agents1_native_correctness.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_agents1_native_correctness.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_mtp2_agents1_native_correctness.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_agents1_native_correctness_v2.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_agents1_native_correctness_v2.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_agents1_native_correctness_v2.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_mtp2_agents1_native_correctness_v2.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_agents1_native_raw.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_agents1_native_raw.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_agents1_native_raw.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_mtp2_agents1_native_raw.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_agents1_sm70.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_agents1_sm70.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_agents1_sm70.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_mtp2_agents1_sm70.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_agents1_sm70_analysis.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_agents1_sm70_analysis.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_agents1_sm70_analysis.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_mtp2_agents1_sm70_analysis.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_agents1_sm70_correctness_v2.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_agents1_sm70_correctness_v2.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_agents1_sm70_correctness_v2.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_mtp2_agents1_sm70_correctness_v2.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_agents1_sm70_fixed.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_agents1_sm70_fixed.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_agents1_sm70_fixed.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_mtp2_agents1_sm70_fixed.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_agents1_sm70_fixed_raw.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_agents1_sm70_fixed_raw.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_agents1_sm70_fixed_raw.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_mtp2_agents1_sm70_fixed_raw.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_agents1_sm70_raw.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_agents1_sm70_raw.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_agents1_sm70_raw.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_mtp2_agents1_sm70_raw.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_agents1_xqa.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_agents1_xqa.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_agents1_xqa.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_mtp2_agents1_xqa.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_agents1_xqa_analysis.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_agents1_xqa_analysis.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_agents1_xqa_analysis.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_mtp2_agents1_xqa_analysis.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_agents1_xqa_correctness_v2.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_agents1_xqa_correctness_v2.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_agents1_xqa_correctness_v2.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_mtp2_agents1_xqa_correctness_v2.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_agents1_xqa_raw.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_agents1_xqa_raw.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_agents1_xqa_raw.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_mtp2_agents1_xqa_raw.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_32704_batch1.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_32704_batch1.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_32704_batch1.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_32704_batch1.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c1_32k_http_native_fp8.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c1_32k_http_native_fp8.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c1_32k_http_native_fp8.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c1_32k_http_native_fp8.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c1_32k_http_native_fp8_gateoff_newbinary.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c1_32k_http_native_fp8_gateoff_newbinary.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c1_32k_http_native_fp8_gateoff_newbinary.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c1_32k_http_native_fp8_gateoff_newbinary.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c1_32k_http_native_fp8_interleave_8k.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c1_32k_http_native_fp8_interleave_8k.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c1_32k_http_native_fp8_interleave_8k.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c1_32k_http_native_fp8_interleave_8k.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c1_32k_http_native_fp8_prefix_cache_off.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c1_32k_http_native_fp8_prefix_cache_off.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c1_32k_http_native_fp8_prefix_cache_off.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c1_32k_http_native_fp8_prefix_cache_off.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c1_32k_http_native_fp8_prefix_cache_on_paired.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c1_32k_http_native_fp8_prefix_cache_on_paired.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c1_32k_http_native_fp8_prefix_cache_on_paired.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c1_32k_http_native_fp8_prefix_cache_on_paired.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c1_32k_http_native_fp8_snapshot32.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c1_32k_http_native_fp8_snapshot32.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c1_32k_http_native_fp8_snapshot32.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c1_32k_http_native_fp8_snapshot32.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c2_32k_http_native_fp8.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c2_32k_http_native_fp8.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c2_32k_http_native_fp8.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c2_32k_http_native_fp8.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c2_32k_http_native_fp8_interleave_batch5.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c2_32k_http_native_fp8_interleave_batch5.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c2_32k_http_native_fp8_interleave_batch5.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c2_32k_http_native_fp8_interleave_batch5.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c2_32k_http_native_fp8_interleave_fixed.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c2_32k_http_native_fp8_interleave_fixed.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c2_32k_http_native_fp8_interleave_fixed.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c2_32k_http_native_fp8_interleave_fixed.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c2_32k_http_native_fp8_prefix_cache_off.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c2_32k_http_native_fp8_prefix_cache_off.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c2_32k_http_native_fp8_prefix_cache_off.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c2_32k_http_native_fp8_prefix_cache_off.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c2_32k_http_native_fp8_prefix_cache_on_paired.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c2_32k_http_native_fp8_prefix_cache_on_paired.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c2_32k_http_native_fp8_prefix_cache_on_paired.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c2_32k_http_native_fp8_prefix_cache_on_paired.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c4_32k_http_native_fp8.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c4_32k_http_native_fp8.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c4_32k_http_native_fp8.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c4_32k_http_native_fp8.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c4_32k_http_native_fp8_prefix_cache_off.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c4_32k_http_native_fp8_prefix_cache_off.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c4_32k_http_native_fp8_prefix_cache_off.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c4_32k_http_native_fp8_prefix_cache_off.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c4_32k_http_native_fp8_prefix_cache_on_paired.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c4_32k_http_native_fp8_prefix_cache_on_paired.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c4_32k_http_native_fp8_prefix_cache_on_paired.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c4_32k_http_native_fp8_prefix_cache_on_paired.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c4_32k_http_native_fp8_snapshot32.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c4_32k_http_native_fp8_snapshot32.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c4_32k_http_native_fp8_snapshot32.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c4_32k_http_native_fp8_snapshot32.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_fixed_correctness_request.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_fixed_correctness_request.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_fixed_correctness_request.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_mtp2_fixed_correctness_request.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_fixed_correctness_request_v2.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_fixed_correctness_request_v2.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_fixed_correctness_request_v2.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_mtp2_fixed_correctness_request_v2.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_fp8_208k_pool_c4_interleave_8k.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_fp8_208k_pool_c4_interleave_8k.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_fp8_208k_pool_c4_interleave_8k.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_mtp2_fp8_208k_pool_c4_interleave_8k.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_short_decode_batch_propagated_c1_c4.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_short_decode_batch_propagated_c1_c4.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_short_decode_batch_propagated_c1_c4.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_mtp2_short_decode_batch_propagated_c1_c4.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_sm70_fixed_correctness_v2.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_sm70_fixed_correctness_v2.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_sm70_fixed_correctness_v2.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_mtp2_sm70_fixed_correctness_v2.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_sm70_fixed_tool_smoke_v2.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_sm70_fixed_tool_smoke_v2.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp2_sm70_fixed_tool_smoke_v2.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_mtp2_sm70_fixed_tool_smoke_v2.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp3_agents1_ab.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp3_agents1_ab.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp3_agents1_ab.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_mtp3_agents1_ab.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp3_agents1_ab_raw.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp3_agents1_ab_raw.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp3_agents1_ab_raw.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_mtp3_agents1_ab_raw.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp9_128k.txt",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp9_128k.txt",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp9_128k.txt/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_mtp9_128k.txt/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp9_128k_exact.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp9_128k_exact.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp9_128k_exact.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_mtp9_128k_exact.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp9_160k_exact.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp9_160k_exact.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp9_160k_exact.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_mtp9_160k_exact.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp9_256k_exact.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp9_256k_exact.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp9_256k_exact.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_mtp9_256k_exact.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp9_agents1_ab.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp9_agents1_ab.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp9_agents1_ab.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_mtp9_agents1_ab.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp9_agents1_ab_raw.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp9_agents1_ab_raw.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp9_agents1_ab_raw.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_mtp9_agents1_ab_raw.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp9_agents1_short_native.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp9_agents1_short_native.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp9_agents1_short_native.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_mtp9_agents1_short_native.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp9_agents1_short_native_raw.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp9_agents1_short_native_raw.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp9_agents1_short_native_raw.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_mtp9_agents1_short_native_raw.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp9_agents1_short_sm70_flash.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp9_agents1_short_sm70_flash.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp9_agents1_short_sm70_flash.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_mtp9_agents1_short_sm70_flash.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp9_agents1_short_sm70_flash_raw.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp9_agents1_short_sm70_flash_raw.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp9_agents1_short_sm70_flash_raw.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_mtp9_agents1_short_sm70_flash_raw.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp9_agents2_short_native.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp9_agents2_short_native.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp9_agents2_short_native.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_mtp9_agents2_short_native.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp9_agents2_short_native_raw.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp9_agents2_short_native_raw.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp9_agents2_short_native_raw.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_mtp9_agents2_short_native_raw.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp9_agents2_short_sm70_flash.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp9_agents2_short_sm70_flash.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp9_agents2_short_sm70_flash.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_mtp9_agents2_short_sm70_flash.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp9_agents2_short_sm70_flash_raw.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp9_agents2_short_sm70_flash_raw.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp9_agents2_short_sm70_flash_raw.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_mtp9_agents2_short_sm70_flash_raw.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp9_agents5_short_native.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp9_agents5_short_native.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp9_agents5_short_native.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_mtp9_agents5_short_native.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp9_agents5_short_native_raw.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp9_agents5_short_native_raw.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp9_agents5_short_native_raw.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_mtp9_agents5_short_native_raw.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp9_agents5_short_sm70_flash.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp9_agents5_short_sm70_flash.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp9_agents5_short_sm70_flash.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_mtp9_agents5_short_sm70_flash.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp9_agents5_short_sm70_flash_raw.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp9_agents5_short_sm70_flash_raw.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp9_agents5_short_sm70_flash_raw.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_mtp9_agents5_short_sm70_flash_raw.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp9_fp8_longctx_final.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp9_fp8_longctx_final.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_mtp9_fp8_longctx_final.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_mtp9_fp8_longctx_final.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_multiturn_concurrent_nonce_green.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_multiturn_concurrent_nonce_green.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_multiturn_concurrent_nonce_green.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_multiturn_concurrent_nonce_green.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_multiturn_concurrent_nonce_stop_fixed.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_multiturn_concurrent_nonce_stop_fixed.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_multiturn_concurrent_nonce_stop_fixed.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_multiturn_concurrent_nonce_stop_fixed.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_multiturn_latest_green.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_multiturn_latest_green.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_multiturn_latest_green.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_multiturn_latest_green.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_multiturn_latest_red.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_multiturn_latest_red.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_multiturn_latest_red.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_multiturn_latest_red.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_multiturn_latest_request.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_multiturn_latest_request.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_multiturn_latest_request.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_multiturn_latest_request.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_multiturn_tidal_default_stop_fixed.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_multiturn_tidal_default_stop_fixed.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_multiturn_tidal_default_stop_fixed.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_multiturn_tidal_default_stop_fixed.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_multiturn_tidal_endoftext_stop_control.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_multiturn_tidal_endoftext_stop_control.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_multiturn_tidal_endoftext_stop_control.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_multiturn_tidal_endoftext_stop_control.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_multiturn_tidal_sequential_control.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_multiturn_tidal_sequential_control.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_multiturn_tidal_sequential_control.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_multiturn_tidal_sequential_control.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_natural_eos_green.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_natural_eos_green.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_natural_eos_green.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_natural_eos_green.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_persistent_prefix_cache_v100_smoke.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_persistent_prefix_cache_v100_smoke.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_persistent_prefix_cache_v100_smoke.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_persistent_prefix_cache_v100_smoke.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_production_reasoning_smoke.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_production_reasoning_smoke.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_production_reasoning_smoke.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_production_reasoning_smoke.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_production_tool_smoke.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_production_tool_smoke.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_production_tool_smoke.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_production_tool_smoke.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_production_tool_smoke_request.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_production_tool_smoke_request.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_production_tool_smoke_request.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_production_tool_smoke_request.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_production_tool_smoke_request_v2.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_production_tool_smoke_request_v2.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_production_tool_smoke_request_v2.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_production_tool_smoke_request_v2.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_production_tool_smoke_v2.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_production_tool_smoke_v2.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_production_tool_smoke_v2.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_production_tool_smoke_v2.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_sm70_chunk_gdn_prefill_experiments.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_sm70_chunk_gdn_prefill_experiments.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_sm70_chunk_gdn_prefill_experiments.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_sm70_chunk_gdn_prefill_experiments.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_sm70_iq4xs_wide_n_reliable_ab.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_sm70_iq4xs_wide_n_reliable_ab.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_sm70_iq4xs_wide_n_reliable_ab.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_sm70_iq4xs_wide_n_reliable_ab.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_sm70_paged_xqa.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_sm70_paged_xqa.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_sm70_paged_xqa.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_sm70_paged_xqa.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_subagent_fanout_batch2_20260814.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_subagent_fanout_batch2_20260814.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_subagent_fanout_batch2_20260814.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_subagent_fanout_batch2_20260814.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_turbo3_c1_c2_exact_256k.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_turbo3_c1_c2_exact_256k.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_turbo3_c1_c2_exact_256k.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_turbo3_c1_c2_exact_256k.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_turbo3_mtp2_cpu_swap_l3_32k_control.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_turbo3_mtp2_cpu_swap_l3_32k_control.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_turbo3_mtp2_cpu_swap_l3_32k_control.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_turbo3_mtp2_cpu_swap_l3_32k_control.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_turbo3_mtp2_cpu_swap_l3_32k_controls_abc.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_turbo3_mtp2_cpu_swap_l3_32k_controls_abc.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_turbo3_mtp2_cpu_swap_l3_32k_controls_abc.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_turbo3_mtp2_cpu_swap_l3_32k_controls_abc.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_turbo3_mtp2_cpu_swap_l3_32k_controls_bc.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_turbo3_mtp2_cpu_swap_l3_32k_controls_bc.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_turbo3_mtp2_cpu_swap_l3_32k_controls_bc.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_turbo3_mtp2_cpu_swap_l3_32k_controls_bc.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_turbo3_mtp2_cpu_swap_l3_3x32k_reliable.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_turbo3_mtp2_cpu_swap_l3_3x32k_reliable.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_turbo3_mtp2_cpu_swap_l3_3x32k_reliable.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_turbo3_mtp2_cpu_swap_l3_3x32k_reliable.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_turbo3_mtp2_cpu_swap_l3_acceptance.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_turbo3_mtp2_cpu_swap_l3_acceptance.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_turbo3_mtp2_cpu_swap_l3_acceptance.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_turbo3_mtp2_cpu_swap_l3_acceptance.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_turbo3_mtp2_cpu_swap_l3_acceptance_controls.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_turbo3_mtp2_cpu_swap_l3_acceptance_controls.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_turbo3_mtp2_cpu_swap_l3_acceptance_controls.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_turbo3_mtp2_cpu_swap_l3_acceptance_controls.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_turbo3_mtp2_resident_batch_2x32k_reliable.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_turbo3_mtp2_resident_batch_2x32k_reliable.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_turbo3_mtp2_resident_batch_2x32k_reliable.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_turbo3_mtp2_resident_batch_2x32k_reliable.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_turbo3_mtp2_resident_batch_acceptance.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_turbo3_mtp2_resident_batch_acceptance.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_turbo3_mtp2_resident_batch_acceptance.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_turbo3_mtp2_resident_batch_acceptance.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_turbo3_mtp2_resident_decode_batch_fixed.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_turbo3_mtp2_resident_decode_batch_fixed.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_turbo3_mtp2_resident_decode_batch_fixed.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_turbo3_mtp2_resident_decode_batch_fixed.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_turbo3_mtp2_resident_decode_batch_fixed_hot.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_turbo3_mtp2_resident_decode_batch_fixed_hot.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_turbo3_mtp2_resident_decode_batch_fixed_hot.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_turbo3_mtp2_resident_decode_batch_fixed_hot.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_turbo3_mtp2_resident_decode_batch_smoke.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_turbo3_mtp2_resident_decode_batch_smoke.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_turbo3_mtp2_resident_decode_batch_smoke.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_turbo3_mtp2_resident_decode_batch_smoke.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_turbo3_mtp2_resident_plain_batch_off.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_turbo3_mtp2_resident_plain_batch_off.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_turbo3_mtp2_resident_plain_batch_off.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_turbo3_mtp2_resident_plain_batch_off.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_turbo3_mtp2_resident_plain_batch_off_steady.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_turbo3_mtp2_resident_plain_batch_off_steady.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_turbo3_mtp2_resident_plain_batch_off_steady.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_turbo3_mtp2_resident_plain_batch_off_steady.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_turbo3_prefix_tier_16k_acceptance.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_turbo3_prefix_tier_16k_acceptance.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_turbo3_prefix_tier_16k_acceptance.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_turbo3_prefix_tier_16k_acceptance.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_turbo3_prefix_tier_16k_acceptance_pre_zstd_metrics.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_turbo3_prefix_tier_16k_acceptance_pre_zstd_metrics.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_turbo3_prefix_tier_16k_acceptance_pre_zstd_metrics.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_turbo3_prefix_tier_16k_acceptance_pre_zstd_metrics.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_turbo3_prefix_tier_16k_acceptance_pre_zstd_metrics_warmup.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_turbo3_prefix_tier_16k_acceptance_pre_zstd_metrics_warmup.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_turbo3_prefix_tier_16k_acceptance_pre_zstd_metrics_warmup.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_turbo3_prefix_tier_16k_acceptance_pre_zstd_metrics_warmup.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_turbo3_prefix_tier_16k_acceptance_warmup.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_turbo3_prefix_tier_16k_acceptance_warmup.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_turbo3_prefix_tier_16k_acceptance_warmup.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_turbo3_prefix_tier_16k_acceptance_warmup.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_turbo3_prefix_tier_16k_probe_layer_negative.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_turbo3_prefix_tier_16k_probe_layer_negative.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_turbo3_prefix_tier_16k_probe_layer_negative.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_turbo3_prefix_tier_16k_probe_layer_negative.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_turbo3_prefix_tier_16k_unaligned_negative.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_turbo3_prefix_tier_16k_unaligned_negative.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/fastllm_turbo3_prefix_tier_16k_unaligned_negative.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/fastllm_turbo3_prefix_tier_16k_unaligned_negative.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/hermes_wechat_toolcall_fidelity_20260814_105648.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/hermes_wechat_toolcall_fidelity_20260814_105648.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/hermes_wechat_toolcall_fidelity_20260814_105648.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/hermes_wechat_toolcall_fidelity_20260814_105648.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/kv_recall_turbo3-v2_100k.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/kv_recall_turbo3-v2_100k.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/kv_recall_turbo3-v2_100k.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/kv_recall_turbo3-v2_100k.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/kv_recall_turbo3_100k.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/kv_recall_turbo3_100k.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/kv_recall_turbo3_100k.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/kv_recall_turbo3_100k.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/kv_recall_turbo4_100k.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/kv_recall_turbo4_100k.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/kv_recall_turbo4_100k.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/kv_recall_turbo4_100k.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/kv_recall_turbo4_200k.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/kv_recall_turbo4_200k.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/kv_recall_turbo4_200k.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/kv_recall_turbo4_200k.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/kv_recall_turbo4_lowwm_200k.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/kv_recall_turbo4_lowwm_200k.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/kv_recall_turbo4_lowwm_200k.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/kv_recall_turbo4_lowwm_200k.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/kv_recall_udq4-turbo4-100k.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/kv_recall_udq4-turbo4-100k.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/kv_recall_udq4-turbo4-100k.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/kv_recall_udq4-turbo4-100k.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/kv_recall_udq4-turbo4-200k.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/kv_recall_udq4-turbo4-200k.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/kv_recall_udq4-turbo4-200k.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/kv_recall_udq4-turbo4-200k.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/thinkingcap_heretic_base_q8_fastllm_mtp0.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/thinkingcap_heretic_base_q8_fastllm_mtp0.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/thinkingcap_heretic_base_q8_fastllm_mtp0.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/thinkingcap_heretic_base_q8_fastllm_mtp0.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/thinkingcap_heretic_q8_fastllm_mtp0.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/thinkingcap_heretic_q8_fastllm_mtp0.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/thinkingcap_heretic_q8_fastllm_mtp0.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/thinkingcap_heretic_q8_fastllm_mtp0.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/thinkingcap_heretic_q8_fastllm_mtp2.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/thinkingcap_heretic_q8_fastllm_mtp2.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/thinkingcap_heretic_q8_fastllm_mtp2.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/thinkingcap_heretic_q8_fastllm_mtp2.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/thinkingcap_heretic_q8_mtp0_vram.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/thinkingcap_heretic_q8_mtp0_vram.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/thinkingcap_heretic_q8_mtp0_vram.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/thinkingcap_heretic_q8_mtp0_vram.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/thinkingcap_heretic_q8_mtp2_vram.csv",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/thinkingcap_heretic_q8_mtp2_vram.csv",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/thinkingcap_heretic_q8_mtp2_vram.csv/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/thinkingcap_heretic_q8_mtp2_vram.csv/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/thinkingcap_heretic_q8_mtp2_vram.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/thinkingcap_heretic_q8_mtp2_vram.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/thinkingcap_heretic_q8_mtp2_vram.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/thinkingcap_heretic_q8_mtp2_vram.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/thinkingcap_heretic_q8_replacement_recommendation.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/thinkingcap_heretic_q8_replacement_recommendation.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/thinkingcap_heretic_q8_replacement_recommendation.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/thinkingcap_heretic_q8_replacement_recommendation.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/thinkingcap_heretic_raw_base_q8_negative.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/thinkingcap_heretic_raw_base_q8_negative.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/thinkingcap_heretic_raw_base_q8_negative.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/thinkingcap_heretic_raw_base_q8_negative.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/thinkingcap_native_launcher_q4_check.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/thinkingcap_native_launcher_q4_check.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/thinkingcap_native_launcher_q4_check.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/thinkingcap_native_launcher_q4_check.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/thinkingcap_q4_current_smoke.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/thinkingcap_q4_current_smoke.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/thinkingcap_q4_current_smoke.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/thinkingcap_q4_current_smoke.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/thinkingcap_q4_fastllm_mtp0.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/thinkingcap_q4_fastllm_mtp0.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/thinkingcap_q4_fastllm_mtp0.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/thinkingcap_q4_fastllm_mtp0.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/thinkingcap_q4_long_context_vision_gate.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/thinkingcap_q4_long_context_vision_gate.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/thinkingcap_q4_long_context_vision_gate.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/thinkingcap_q4_long_context_vision_gate.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/thinkingcap_q6_current_smoke.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/thinkingcap_q6_current_smoke.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/thinkingcap_q6_current_smoke.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/thinkingcap_q6_current_smoke.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/thinkingcap_q6_fastllm_mtp0.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/thinkingcap_q6_fastllm_mtp0.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/thinkingcap_q6_fastllm_mtp0.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/thinkingcap_q6_fastllm_mtp0.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/thinkingcap_q8_mtp2_fastllm_v100.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/thinkingcap_q8_mtp2_fastllm_v100.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/thinkingcap_q8_mtp2_fastllm_v100.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/thinkingcap_q8_mtp2_fastllm_v100.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/thinkingcap_replacement_recommendation.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/thinkingcap_replacement_recommendation.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/thinkingcap_replacement_recommendation.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/thinkingcap_replacement_recommendation.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/results/thinkingcap_six_model_matrix.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/results/thinkingcap_six_model_matrix.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/results/thinkingcap_six_model_matrix.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/results/thinkingcap_six_model_matrix.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/fastllm/run_cache_benchmark.py",
+      "encoded_url": "/v100-perfs/read/benchmarks/fastllm/run_cache_benchmark.py",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/fastllm/run_cache_benchmark.py/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/fastllm/run_cache_benchmark.py/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/llama-nospec/llama_nospec_agents1.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/llama-nospec/llama_nospec_agents1.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/llama-nospec/llama_nospec_agents1.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/llama-nospec/llama_nospec_agents1.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/llama-nospec/llama_nospec_agents1_raw.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/llama-nospec/llama_nospec_agents1_raw.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/llama-nospec/llama_nospec_agents1_raw.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/llama-nospec/llama_nospec_agents1_raw.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/llama-nospec/llama_nospec_agents2.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/llama-nospec/llama_nospec_agents2.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/llama-nospec/llama_nospec_agents2.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/llama-nospec/llama_nospec_agents2.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/llama-nospec/llama_nospec_agents2_raw.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/llama-nospec/llama_nospec_agents2_raw.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/llama-nospec/llama_nospec_agents2_raw.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/llama-nospec/llama_nospec_agents2_raw.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/llama-nospec/llama_nospec_agents4.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/llama-nospec/llama_nospec_agents4.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/llama-nospec/llama_nospec_agents4.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/llama-nospec/llama_nospec_agents4.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/llama-nospec/llama_nospec_agents4_raw.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/llama-nospec/llama_nospec_agents4_raw.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/llama-nospec/llama_nospec_agents4_raw.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/llama-nospec/llama_nospec_agents4_raw.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/run_agent_bench.sh",
+      "encoded_url": "/v100-perfs/read/benchmarks/run_agent_bench.sh",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/run_agent_bench.sh/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/run_agent_bench.sh/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/turboquant/results/llama_tq3_140k_4slot_stress.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/turboquant/results/llama_tq3_140k_4slot_stress.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/turboquant/results/llama_tq3_140k_4slot_stress.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/turboquant/results/llama_tq3_140k_4slot_stress.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/turboquant/results/llama_tq3_140k_4slot_stress_raw.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/turboquant/results/llama_tq3_140k_4slot_stress_raw.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/turboquant/results/llama_tq3_140k_4slot_stress_raw.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/turboquant/results/llama_tq3_140k_4slot_stress_raw.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/turboquant/results/llama_tq3_iq4_256k_2slot_short.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/turboquant/results/llama_tq3_iq4_256k_2slot_short.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/turboquant/results/llama_tq3_iq4_256k_2slot_short.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/turboquant/results/llama_tq3_iq4_256k_2slot_short.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/turboquant/results/llama_tq3_iq4_256k_2slot_short_raw.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/turboquant/results/llama_tq3_iq4_256k_2slot_short_raw.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/turboquant/results/llama_tq3_iq4_256k_2slot_short_raw.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/turboquant/results/llama_tq3_iq4_256k_2slot_short_raw.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/turboquant/results/llama_tq3_longctx_agents1.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/turboquant/results/llama_tq3_longctx_agents1.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/turboquant/results/llama_tq3_longctx_agents1.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/turboquant/results/llama_tq3_longctx_agents1.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/turboquant/results/llama_tq3_longctx_agents1_raw.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/turboquant/results/llama_tq3_longctx_agents1_raw.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/turboquant/results/llama_tq3_longctx_agents1_raw.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/turboquant/results/llama_tq3_longctx_agents1_raw.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/turboquant/results/llama_tq3_longctx_agents2.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/turboquant/results/llama_tq3_longctx_agents2.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/turboquant/results/llama_tq3_longctx_agents2.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/turboquant/results/llama_tq3_longctx_agents2.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/turboquant/results/llama_tq3_longctx_agents2_raw.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/turboquant/results/llama_tq3_longctx_agents2_raw.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/turboquant/results/llama_tq3_longctx_agents2_raw.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/turboquant/results/llama_tq3_longctx_agents2_raw.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/turboquant/results/llama_tq3_longctx_agents4.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/turboquant/results/llama_tq3_longctx_agents4.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/turboquant/results/llama_tq3_longctx_agents4.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/turboquant/results/llama_tq3_longctx_agents4.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/turboquant/results/llama_tq3_longctx_agents4_raw.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/turboquant/results/llama_tq3_longctx_agents4_raw.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/turboquant/results/llama_tq3_longctx_agents4_raw.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/turboquant/results/llama_tq3_longctx_agents4_raw.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/turboquant/results/llama_tq4_256k_agents1.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/turboquant/results/llama_tq4_256k_agents1.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/turboquant/results/llama_tq4_256k_agents1.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/turboquant/results/llama_tq4_256k_agents1.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/turboquant/results/llama_tq4_256k_agents1_raw.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/turboquant/results/llama_tq4_256k_agents1_raw.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/turboquant/results/llama_tq4_256k_agents1_raw.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/turboquant/results/llama_tq4_256k_agents1_raw.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/turboquant/results/llama_tq4_256k_agents2.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/turboquant/results/llama_tq4_256k_agents2.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/turboquant/results/llama_tq4_256k_agents2.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/turboquant/results/llama_tq4_256k_agents2.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/turboquant/results/llama_tq4_256k_agents2_raw.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/turboquant/results/llama_tq4_256k_agents2_raw.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/turboquant/results/llama_tq4_256k_agents2_raw.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/turboquant/results/llama_tq4_256k_agents2_raw.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/turboquant/results/llama_tq4_256k_agents4.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/turboquant/results/llama_tq4_256k_agents4.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/turboquant/results/llama_tq4_256k_agents4.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/turboquant/results/llama_tq4_256k_agents4.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/turboquant/results/llama_tq4_256k_agents4_raw.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/turboquant/results/llama_tq4_256k_agents4_raw.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/turboquant/results/llama_tq4_256k_agents4_raw.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/turboquant/results/llama_tq4_256k_agents4_raw.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/turboquant/results/llama_tq4_256k_agents5.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/turboquant/results/llama_tq4_256k_agents5.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/turboquant/results/llama_tq4_256k_agents5.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/turboquant/results/llama_tq4_256k_agents5.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/turboquant/results/llama_tq4_256k_agents5_raw.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/turboquant/results/llama_tq4_256k_agents5_raw.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/turboquant/results/llama_tq4_256k_agents5_raw.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/turboquant/results/llama_tq4_256k_agents5_raw.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/turboquant/results/llama_tq4_baseline_agents1.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/turboquant/results/llama_tq4_baseline_agents1.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/turboquant/results/llama_tq4_baseline_agents1.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/turboquant/results/llama_tq4_baseline_agents1.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/turboquant/results/llama_tq4_baseline_agents1_raw.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/turboquant/results/llama_tq4_baseline_agents1_raw.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/turboquant/results/llama_tq4_baseline_agents1_raw.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/turboquant/results/llama_tq4_baseline_agents1_raw.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/turboquant/results/llama_tq4_baseline_agents2.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/turboquant/results/llama_tq4_baseline_agents2.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/turboquant/results/llama_tq4_baseline_agents2.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/turboquant/results/llama_tq4_baseline_agents2.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/turboquant/results/llama_tq4_baseline_agents2_raw.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/turboquant/results/llama_tq4_baseline_agents2_raw.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/turboquant/results/llama_tq4_baseline_agents2_raw.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/turboquant/results/llama_tq4_baseline_agents2_raw.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/turboquant/results/llama_tq4_baseline_agents4.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/turboquant/results/llama_tq4_baseline_agents4.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/turboquant/results/llama_tq4_baseline_agents4.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/turboquant/results/llama_tq4_baseline_agents4.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/turboquant/results/llama_tq4_baseline_agents4_raw.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/turboquant/results/llama_tq4_baseline_agents4_raw.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/turboquant/results/llama_tq4_baseline_agents4_raw.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/turboquant/results/llama_tq4_baseline_agents4_raw.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/turboquant/results/llama_tq4_iq4_mtp_65k_1slot.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/turboquant/results/llama_tq4_iq4_mtp_65k_1slot.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/turboquant/results/llama_tq4_iq4_mtp_65k_1slot.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/turboquant/results/llama_tq4_iq4_mtp_65k_1slot.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/turboquant/results/llama_tq4_iq4_mtp_65k_1slot_raw.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/turboquant/results/llama_tq4_iq4_mtp_65k_1slot_raw.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/turboquant/results/llama_tq4_iq4_mtp_65k_1slot_raw.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/turboquant/results/llama_tq4_iq4_mtp_65k_1slot_raw.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/vllm-120/v120_agents1.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/vllm-120/v120_agents1.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/vllm-120/v120_agents1.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/vllm-120/v120_agents1.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/vllm-120/v120_agents1_raw.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/vllm-120/v120_agents1_raw.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/vllm-120/v120_agents1_raw.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/vllm-120/v120_agents1_raw.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/vllm-120/v120_agents2.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/vllm-120/v120_agents2.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/vllm-120/v120_agents2.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/vllm-120/v120_agents2.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/vllm-120/v120_agents2_raw.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/vllm-120/v120_agents2_raw.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/vllm-120/v120_agents2_raw.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/vllm-120/v120_agents2_raw.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/vllm-120/v120_agents4.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/vllm-120/v120_agents4.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/vllm-120/v120_agents4.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/vllm-120/v120_agents4.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/vllm-120/v120_agents4_raw.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/vllm-120/v120_agents4_raw.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/vllm-120/v120_agents4_raw.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/vllm-120/v120_agents4_raw.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/vllm-121/v121_agents1.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/vllm-121/v121_agents1.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/vllm-121/v121_agents1.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/vllm-121/v121_agents1.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/vllm-121/v121_agents1_raw.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/vllm-121/v121_agents1_raw.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/vllm-121/v121_agents1_raw.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/vllm-121/v121_agents1_raw.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/vllm-121/v121_agents2.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/vllm-121/v121_agents2.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/vllm-121/v121_agents2.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/vllm-121/v121_agents2.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/vllm-121/v121_agents2_raw.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/vllm-121/v121_agents2_raw.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/vllm-121/v121_agents2_raw.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/vllm-121/v121_agents2_raw.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/vllm-121/v121_agents4.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/vllm-121/v121_agents4.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/vllm-121/v121_agents4.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/vllm-121/v121_agents4.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/vllm-121/v121_agents4_raw.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/vllm-121/v121_agents4_raw.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/vllm-121/v121_agents4_raw.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/vllm-121/v121_agents4_raw.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/benchmarks/vllm-121/v121_prefill_metric_attribution.json",
+      "encoded_url": "/v100-perfs/read/benchmarks/vllm-121/v121_prefill_metric_attribution.json",
+      "trailing_slash_url": "/v100-perfs/read/benchmarks/vllm-121/v121_prefill_metric_attribution.json/",
+      "canonical_target": "/v100-perfs/evidence/benchmarks/vllm-121/v121_prefill_metric_attribution.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/chat_templates/qwen3.6_gguf_original.jinja",
+      "encoded_url": "/v100-perfs/read/chat_templates/qwen3.6_gguf_original.jinja",
+      "trailing_slash_url": "/v100-perfs/read/chat_templates/qwen3.6_gguf_original.jinja/",
+      "canonical_target": "/v100-perfs/repository/config/chat-templates/qwen3.6_gguf_original.jinja/"
+    },
+    {
+      "old_url": "/v100-perfs/read/chat_templates/qwen3.6_merged.jinja",
+      "encoded_url": "/v100-perfs/read/chat_templates/qwen3.6_merged.jinja",
+      "trailing_slash_url": "/v100-perfs/read/chat_templates/qwen3.6_merged.jinja/",
+      "canonical_target": "/v100-perfs/repository/config/chat-templates/qwen3.6_merged.jinja/"
+    },
+    {
+      "old_url": "/v100-perfs/read/chat_templates/qwen3.8_unsloth_ud.jinja",
+      "encoded_url": "/v100-perfs/read/chat_templates/qwen3.8_unsloth_ud.jinja",
+      "trailing_slash_url": "/v100-perfs/read/chat_templates/qwen3.8_unsloth_ud.jinja/",
+      "canonical_target": "/v100-perfs/repository/config/chat-templates/qwen3.8_unsloth_ud.jinja/"
+    },
+    {
+      "old_url": "/v100-perfs/read/deployed/thinking_proxy.py",
+      "encoded_url": "/v100-perfs/read/deployed/thinking_proxy.py",
+      "trailing_slash_url": "/v100-perfs/read/deployed/thinking_proxy.py/",
+      "canonical_target": "/v100-perfs/repository/operations/snapshots/deployed/thinking_proxy.py/"
+    },
+    {
+      "old_url": "/v100-perfs/read/docs/EXPERIENCE.md",
+      "encoded_url": "/v100-perfs/read/docs/EXPERIENCE.md",
+      "trailing_slash_url": "/v100-perfs/read/docs/EXPERIENCE.md/",
+      "canonical_target": "/v100-perfs/archive/chronicles/v100-fastllm-experience/"
+    },
+    {
+      "old_url": "/v100-perfs/read/docs/analysis/optane-l3-feasibility.md",
+      "encoded_url": "/v100-perfs/read/docs/analysis/optane-l3-feasibility.md",
+      "trailing_slash_url": "/v100-perfs/read/docs/analysis/optane-l3-feasibility.md/",
+      "canonical_target": "/v100-perfs/docs/research/storage/optane-l3/"
+    },
+    {
+      "old_url": "/v100-perfs/read/docs/analysis/prefill-exact-port-investigation.md",
+      "encoded_url": "/v100-perfs/read/docs/analysis/prefill-exact-port-investigation.md",
+      "trailing_slash_url": "/v100-perfs/read/docs/analysis/prefill-exact-port-investigation.md/",
+      "canonical_target": "/v100-perfs/docs/research/performance/prefill-exact-port/"
+    },
+    {
+      "old_url": "/v100-perfs/read/docs/analysis/shortprefill-optimization-plan.md",
+      "encoded_url": "/v100-perfs/read/docs/analysis/shortprefill-optimization-plan.md",
+      "trailing_slash_url": "/v100-perfs/read/docs/analysis/shortprefill-optimization-plan.md/",
+      "canonical_target": "/v100-perfs/docs/research/performance/short-prefill-plan/"
+    },
+    {
+      "old_url": "/v100-perfs/read/docs/analysis/silent-hang-diagnosis.md",
+      "encoded_url": "/v100-perfs/read/docs/analysis/silent-hang-diagnosis.md",
+      "trailing_slash_url": "/v100-perfs/read/docs/analysis/silent-hang-diagnosis.md/",
+      "canonical_target": "/v100-perfs/docs/operations/troubleshooting/silent-hang/"
+    },
+    {
+      "old_url": "/v100-perfs/read/docs/analysis/upstream-cherry-pick-assessment.md",
+      "encoded_url": "/v100-perfs/read/docs/analysis/upstream-cherry-pick-assessment.md",
+      "trailing_slash_url": "/v100-perfs/read/docs/analysis/upstream-cherry-pick-assessment.md/",
+      "canonical_target": "/v100-perfs/archive/assessments/2026-08-22-upstream-cherry-pick/"
+    },
+    {
+      "old_url": "/v100-perfs/read/docs/benchmarks/fastllm-qwen36-legacy.md",
+      "encoded_url": "/v100-perfs/read/docs/benchmarks/fastllm-qwen36-legacy.md",
+      "trailing_slash_url": "/v100-perfs/read/docs/benchmarks/fastllm-qwen36-legacy.md/",
+      "canonical_target": "/v100-perfs/archive/qwen36/performance/fastllm/"
+    },
+    {
+      "old_url": "/v100-perfs/read/docs/benchmarks/vllm-performance.md",
+      "encoded_url": "/v100-perfs/read/docs/benchmarks/vllm-performance.md",
+      "trailing_slash_url": "/v100-perfs/read/docs/benchmarks/vllm-performance.md/",
+      "canonical_target": "/v100-perfs/archive/qwen36/performance/vllm-and-multi-engine/"
+    },
+    {
+      "old_url": "/v100-perfs/read/docs/legacy/qwen35-q4km-sm70-design.md",
+      "encoded_url": "/v100-perfs/read/docs/legacy/qwen35-q4km-sm70-design.md",
+      "trailing_slash_url": "/v100-perfs/read/docs/legacy/qwen35-q4km-sm70-design.md/",
+      "canonical_target": "/v100-perfs/archive/qwen35/design/q4km-sm70/"
+    },
+    {
+      "old_url": "/v100-perfs/read/docs/ops/handoff-deepseek-v4.md",
+      "encoded_url": "/v100-perfs/read/docs/ops/handoff-deepseek-v4.md",
+      "trailing_slash_url": "/v100-perfs/read/docs/ops/handoff-deepseek-v4.md/",
+      "canonical_target": "/v100-perfs/archive/handoffs/2026-08-09-deepseek-v4/"
+    },
+    {
+      "old_url": "/v100-perfs/read/docs/ops/handoff-fastllm.md",
+      "encoded_url": "/v100-perfs/read/docs/ops/handoff-fastllm.md",
+      "trailing_slash_url": "/v100-perfs/read/docs/ops/handoff-fastllm.md/",
+      "canonical_target": "/v100-perfs/archive/handoffs/2026-07-28-fastllm/"
+    },
+    {
+      "old_url": "/v100-perfs/read/docs/ops/handoff-qwen38.md",
+      "encoded_url": "/v100-perfs/read/docs/ops/handoff-qwen38.md",
+      "trailing_slash_url": "/v100-perfs/read/docs/ops/handoff-qwen38.md/",
+      "canonical_target": "/v100-perfs/archive/handoffs/2026-08-18-qwen38/"
+    },
+    {
+      "old_url": "/v100-perfs/read/docs/qwen38-sampling.md",
+      "encoded_url": "/v100-perfs/read/docs/qwen38-sampling.md",
+      "trailing_slash_url": "/v100-perfs/read/docs/qwen38-sampling.md/",
+      "canonical_target": "/v100-perfs/docs/reference/models/qwen38/sampling-and-template/"
+    },
+    {
+      "old_url": "/v100-perfs/read/docs/superpowers/plans/2026-08-22-full-repository-docs-migration.md",
+      "encoded_url": "/v100-perfs/read/docs/superpowers/plans/2026-08-22-full-repository-docs-migration.md",
+      "trailing_slash_url": "/v100-perfs/read/docs/superpowers/plans/2026-08-22-full-repository-docs-migration.md/",
+      "canonical_target": "/v100-perfs/archive/design-decisions/plans/2026-08-22-full-repository-docs-migration/"
+    },
+    {
+      "old_url": "/v100-perfs/read/docs/superpowers/plans/2026-08-22-reasoning-control-compatibility.md",
+      "encoded_url": "/v100-perfs/read/docs/superpowers/plans/2026-08-22-reasoning-control-compatibility.md",
+      "trailing_slash_url": "/v100-perfs/read/docs/superpowers/plans/2026-08-22-reasoning-control-compatibility.md/",
+      "canonical_target": "/v100-perfs/archive/design-decisions/plans/2026-08-22-reasoning-control-compatibility/"
+    },
+    {
+      "old_url": "/v100-perfs/read/docs/superpowers/specs/2026-08-22-full-repository-docs-and-thinking-controls-design.md",
+      "encoded_url": "/v100-perfs/read/docs/superpowers/specs/2026-08-22-full-repository-docs-and-thinking-controls-design.md",
+      "trailing_slash_url": "/v100-perfs/read/docs/superpowers/specs/2026-08-22-full-repository-docs-and-thinking-controls-design.md/",
+      "canonical_target": "/v100-perfs/archive/design-decisions/specs/2026-08-22-full-repository-docs-and-thinking-controls-design/"
+    },
+    {
+      "old_url": "/v100-perfs/read/docs/toolcall/constraint-architecture.md",
+      "encoded_url": "/v100-perfs/read/docs/toolcall/constraint-architecture.md",
+      "trailing_slash_url": "/v100-perfs/read/docs/toolcall/constraint-architecture.md/",
+      "canonical_target": "/v100-perfs/docs/concepts/tool-calling/constraint-architecture/"
+    },
+    {
+      "old_url": "/v100-perfs/read/docs/toolcall/copy-fidelity.md",
+      "encoded_url": "/v100-perfs/read/docs/toolcall/copy-fidelity.md",
+      "trailing_slash_url": "/v100-perfs/read/docs/toolcall/copy-fidelity.md/",
+      "canonical_target": "/v100-perfs/docs/operations/troubleshooting/tool-call-copy-fidelity/"
+    },
+    {
+      "old_url": "/v100-perfs/read/fastllm_adapter.py",
+      "encoded_url": "/v100-perfs/read/fastllm_adapter.py",
+      "trailing_slash_url": "/v100-perfs/read/fastllm_adapter.py/",
+      "canonical_target": "/v100-perfs/repository/fastllm_adapter.py/"
+    },
+    {
+      "old_url": "/v100-perfs/read/frp/frpc.toml",
+      "encoded_url": "/v100-perfs/read/frp/frpc.toml",
+      "trailing_slash_url": "/v100-perfs/read/frp/frpc.toml/",
+      "canonical_target": "/v100-perfs/repository/operations/network/frp/frpc.toml/"
+    },
+    {
+      "old_url": "/v100-perfs/read/frp/frps.toml",
+      "encoded_url": "/v100-perfs/read/frp/frps.toml",
+      "trailing_slash_url": "/v100-perfs/read/frp/frps.toml/",
+      "canonical_target": "/v100-perfs/repository/operations/network/frp/frps.toml/"
+    },
+    {
+      "old_url": "/v100-perfs/read/frp/setup_frpc.sh",
+      "encoded_url": "/v100-perfs/read/frp/setup_frpc.sh",
+      "trailing_slash_url": "/v100-perfs/read/frp/setup_frpc.sh/",
+      "canonical_target": "/v100-perfs/repository/operations/network/frp/setup_frpc.sh/"
+    },
+    {
+      "old_url": "/v100-perfs/read/frp/setup_frps.sh",
+      "encoded_url": "/v100-perfs/read/frp/setup_frps.sh",
+      "trailing_slash_url": "/v100-perfs/read/frp/setup_frps.sh/",
+      "canonical_target": "/v100-perfs/repository/operations/network/frp/setup_frps.sh/"
+    },
+    {
+      "old_url": "/v100-perfs/read/handoff/HANDOFF-2026-08-20.md",
+      "encoded_url": "/v100-perfs/read/handoff/HANDOFF-2026-08-20.md",
+      "trailing_slash_url": "/v100-perfs/read/handoff/HANDOFF-2026-08-20.md/",
+      "canonical_target": "/v100-perfs/archive/handoffs/2026-08-20-production/"
+    },
+    {
+      "old_url": "/v100-perfs/read/handoff/scripts/ab_perplexity.sh",
+      "encoded_url": "/v100-perfs/read/handoff/scripts/ab_perplexity.sh",
+      "trailing_slash_url": "/v100-perfs/read/handoff/scripts/ab_perplexity.sh/",
+      "canonical_target": "/v100-perfs/repository/operations/handoff/scripts/ab_perplexity.sh/"
+    },
+    {
+      "old_url": "/v100-perfs/read/handoff/scripts/apply_conc_and_prefix.sh",
+      "encoded_url": "/v100-perfs/read/handoff/scripts/apply_conc_and_prefix.sh",
+      "trailing_slash_url": "/v100-perfs/read/handoff/scripts/apply_conc_and_prefix.sh/",
+      "canonical_target": "/v100-perfs/repository/operations/handoff/scripts/apply_conc_and_prefix.sh/"
+    },
+    {
+      "old_url": "/v100-perfs/read/handoff/scripts/build_imatrix_corpus.py",
+      "encoded_url": "/v100-perfs/read/handoff/scripts/build_imatrix_corpus.py",
+      "trailing_slash_url": "/v100-perfs/read/handoff/scripts/build_imatrix_corpus.py/",
+      "canonical_target": "/v100-perfs/repository/operations/handoff/scripts/build_imatrix_corpus.py/"
+    },
+    {
+      "old_url": "/v100-perfs/read/handoff/scripts/chain_acceptance.py",
+      "encoded_url": "/v100-perfs/read/handoff/scripts/chain_acceptance.py",
+      "trailing_slash_url": "/v100-perfs/read/handoff/scripts/chain_acceptance.py/",
+      "canonical_target": "/v100-perfs/repository/operations/handoff/scripts/chain_acceptance.py/"
+    },
+    {
+      "old_url": "/v100-perfs/read/handoff/scripts/copy_fidelity.py",
+      "encoded_url": "/v100-perfs/read/handoff/scripts/copy_fidelity.py",
+      "trailing_slash_url": "/v100-perfs/read/handoff/scripts/copy_fidelity.py/",
+      "canonical_target": "/v100-perfs/repository/operations/handoff/scripts/copy_fidelity.py/"
+    },
+    {
+      "old_url": "/v100-perfs/read/handoff/scripts/copy_fidelity_http.py",
+      "encoded_url": "/v100-perfs/read/handoff/scripts/copy_fidelity_http.py",
+      "trailing_slash_url": "/v100-perfs/read/handoff/scripts/copy_fidelity_http.py/",
+      "canonical_target": "/v100-perfs/repository/operations/handoff/scripts/copy_fidelity_http.py/"
+    },
+    {
+      "old_url": "/v100-perfs/read/handoff/scripts/copy_fidelity_probe.sh",
+      "encoded_url": "/v100-perfs/read/handoff/scripts/copy_fidelity_probe.sh",
+      "trailing_slash_url": "/v100-perfs/read/handoff/scripts/copy_fidelity_probe.sh/",
+      "canonical_target": "/v100-perfs/repository/operations/handoff/scripts/copy_fidelity_probe.sh/"
+    },
+    {
+      "old_url": "/v100-perfs/read/handoff/scripts/copy_fidelity_vision.py",
+      "encoded_url": "/v100-perfs/read/handoff/scripts/copy_fidelity_vision.py",
+      "trailing_slash_url": "/v100-perfs/read/handoff/scripts/copy_fidelity_vision.py/",
+      "canonical_target": "/v100-perfs/repository/operations/handoff/scripts/copy_fidelity_vision.py/"
+    },
+    {
+      "old_url": "/v100-perfs/read/handoff/scripts/corruption_rate.py",
+      "encoded_url": "/v100-perfs/read/handoff/scripts/corruption_rate.py",
+      "trailing_slash_url": "/v100-perfs/read/handoff/scripts/corruption_rate.py/",
+      "canonical_target": "/v100-perfs/repository/operations/handoff/scripts/corruption_rate.py/"
+    },
+    {
+      "old_url": "/v100-perfs/read/handoff/scripts/deploy_bundle.sh",
+      "encoded_url": "/v100-perfs/read/handoff/scripts/deploy_bundle.sh",
+      "trailing_slash_url": "/v100-perfs/read/handoff/scripts/deploy_bundle.sh/",
+      "canonical_target": "/v100-perfs/repository/operations/handoff/scripts/deploy_bundle.sh/"
+    },
+    {
+      "old_url": "/v100-perfs/read/handoff/scripts/deploy_fused_xqa.sh",
+      "encoded_url": "/v100-perfs/read/handoff/scripts/deploy_fused_xqa.sh",
+      "trailing_slash_url": "/v100-perfs/read/handoff/scripts/deploy_fused_xqa.sh/",
+      "canonical_target": "/v100-perfs/repository/operations/handoff/scripts/deploy_fused_xqa.sh/"
+    },
+    {
+      "old_url": "/v100-perfs/read/handoff/scripts/deploy_mtp_attr.sh",
+      "encoded_url": "/v100-perfs/read/handoff/scripts/deploy_mtp_attr.sh",
+      "trailing_slash_url": "/v100-perfs/read/handoff/scripts/deploy_mtp_attr.sh/",
+      "canonical_target": "/v100-perfs/repository/operations/handoff/scripts/deploy_mtp_attr.sh/"
+    },
+    {
+      "old_url": "/v100-perfs/read/handoff/scripts/fetch_imatrix_sources.sh",
+      "encoded_url": "/v100-perfs/read/handoff/scripts/fetch_imatrix_sources.sh",
+      "trailing_slash_url": "/v100-perfs/read/handoff/scripts/fetch_imatrix_sources.sh/",
+      "canonical_target": "/v100-perfs/repository/operations/handoff/scripts/fetch_imatrix_sources.sh/"
+    },
+    {
+      "old_url": "/v100-perfs/read/handoff/scripts/follow_backend_log.sh",
+      "encoded_url": "/v100-perfs/read/handoff/scripts/follow_backend_log.sh",
+      "trailing_slash_url": "/v100-perfs/read/handoff/scripts/follow_backend_log.sh/",
+      "canonical_target": "/v100-perfs/repository/operations/handoff/scripts/follow_backend_log.sh/"
+    },
+    {
+      "old_url": "/v100-perfs/read/handoff/scripts/goal_acceptance.py",
+      "encoded_url": "/v100-perfs/read/handoff/scripts/goal_acceptance.py",
+      "trailing_slash_url": "/v100-perfs/read/handoff/scripts/goal_acceptance.py/",
+      "canonical_target": "/v100-perfs/repository/operations/handoff/scripts/goal_acceptance.py/"
+    },
+    {
+      "old_url": "/v100-perfs/read/handoff/scripts/gpu_bench_window.sh",
+      "encoded_url": "/v100-perfs/read/handoff/scripts/gpu_bench_window.sh",
+      "trailing_slash_url": "/v100-perfs/read/handoff/scripts/gpu_bench_window.sh/",
+      "canonical_target": "/v100-perfs/repository/operations/handoff/scripts/gpu_bench_window.sh/"
+    },
+    {
+      "old_url": "/v100-perfs/read/handoff/scripts/gpu_verify_window.sh",
+      "encoded_url": "/v100-perfs/read/handoff/scripts/gpu_verify_window.sh",
+      "trailing_slash_url": "/v100-perfs/read/handoff/scripts/gpu_verify_window.sh/",
+      "canonical_target": "/v100-perfs/repository/operations/handoff/scripts/gpu_verify_window.sh/"
+    },
+    {
+      "old_url": "/v100-perfs/read/handoff/scripts/graft_mtp.sh",
+      "encoded_url": "/v100-perfs/read/handoff/scripts/graft_mtp.sh",
+      "trailing_slash_url": "/v100-perfs/read/handoff/scripts/graft_mtp.sh/",
+      "canonical_target": "/v100-perfs/repository/operations/handoff/scripts/graft_mtp.sh/"
+    },
+    {
+      "old_url": "/v100-perfs/read/handoff/scripts/imatrix_pipeline.sh",
+      "encoded_url": "/v100-perfs/read/handoff/scripts/imatrix_pipeline.sh",
+      "trailing_slash_url": "/v100-perfs/read/handoff/scripts/imatrix_pipeline.sh/",
+      "canonical_target": "/v100-perfs/repository/operations/handoff/scripts/imatrix_pipeline.sh/"
+    },
+    {
+      "old_url": "/v100-perfs/read/handoff/scripts/imatrix_session.sh",
+      "encoded_url": "/v100-perfs/read/handoff/scripts/imatrix_session.sh",
+      "trailing_slash_url": "/v100-perfs/read/handoff/scripts/imatrix_session.sh/",
+      "canonical_target": "/v100-perfs/repository/operations/handoff/scripts/imatrix_session.sh/"
+    },
+    {
+      "old_url": "/v100-perfs/read/handoff/scripts/intel_probe.py",
+      "encoded_url": "/v100-perfs/read/handoff/scripts/intel_probe.py",
+      "trailing_slash_url": "/v100-perfs/read/handoff/scripts/intel_probe.py/",
+      "canonical_target": "/v100-perfs/repository/operations/handoff/scripts/intel_probe.py/"
+    },
+    {
+      "old_url": "/v100-perfs/read/handoff/scripts/iq4xs_gate.sh",
+      "encoded_url": "/v100-perfs/read/handoff/scripts/iq4xs_gate.sh",
+      "trailing_slash_url": "/v100-perfs/read/handoff/scripts/iq4xs_gate.sh/",
+      "canonical_target": "/v100-perfs/repository/operations/handoff/scripts/iq4xs_gate.sh/"
+    },
+    {
+      "old_url": "/v100-perfs/read/handoff/scripts/make_tables.py",
+      "encoded_url": "/v100-perfs/read/handoff/scripts/make_tables.py",
+      "trailing_slash_url": "/v100-perfs/read/handoff/scripts/make_tables.py/",
+      "canonical_target": "/v100-perfs/repository/operations/handoff/scripts/make_tables.py/"
+    },
+    {
+      "old_url": "/v100-perfs/read/handoff/scripts/mm_cache_experiment.py",
+      "encoded_url": "/v100-perfs/read/handoff/scripts/mm_cache_experiment.py",
+      "trailing_slash_url": "/v100-perfs/read/handoff/scripts/mm_cache_experiment.py/",
+      "canonical_target": "/v100-perfs/repository/operations/handoff/scripts/mm_cache_experiment.py/"
+    },
+    {
+      "old_url": "/v100-perfs/read/handoff/scripts/postcalib_pipeline.sh",
+      "encoded_url": "/v100-perfs/read/handoff/scripts/postcalib_pipeline.sh",
+      "trailing_slash_url": "/v100-perfs/read/handoff/scripts/postcalib_pipeline.sh/",
+      "canonical_target": "/v100-perfs/repository/operations/handoff/scripts/postcalib_pipeline.sh/"
+    },
+    {
+      "old_url": "/v100-perfs/read/handoff/scripts/ppl_paired.py",
+      "encoded_url": "/v100-perfs/read/handoff/scripts/ppl_paired.py",
+      "trailing_slash_url": "/v100-perfs/read/handoff/scripts/ppl_paired.py/",
+      "canonical_target": "/v100-perfs/repository/operations/handoff/scripts/ppl_paired.py/"
+    },
+    {
+      "old_url": "/v100-perfs/read/handoff/scripts/probe_prefix_multimodal.py",
+      "encoded_url": "/v100-perfs/read/handoff/scripts/probe_prefix_multimodal.py",
+      "trailing_slash_url": "/v100-perfs/read/handoff/scripts/probe_prefix_multimodal.py/",
+      "canonical_target": "/v100-perfs/repository/operations/handoff/scripts/probe_prefix_multimodal.py/"
+    },
+    {
+      "old_url": "/v100-perfs/read/handoff/scripts/probe_suite.sh",
+      "encoded_url": "/v100-perfs/read/handoff/scripts/probe_suite.sh",
+      "trailing_slash_url": "/v100-perfs/read/handoff/scripts/probe_suite.sh/",
+      "canonical_target": "/v100-perfs/repository/operations/handoff/scripts/probe_suite.sh/"
+    },
+    {
+      "old_url": "/v100-perfs/read/handoff/scripts/quant-recipes/README-recipes.md",
+      "encoded_url": "/v100-perfs/read/handoff/scripts/quant-recipes/README-recipes.md",
+      "trailing_slash_url": "/v100-perfs/read/handoff/scripts/quant-recipes/README-recipes.md/",
+      "canonical_target": "/v100-perfs/repository/operations/handoff/scripts/quant-recipes/README-recipes.md/"
+    },
+    {
+      "old_url": "/v100-perfs/read/handoff/scripts/quant-recipes/iq4xs-frugal-plus.txt",
+      "encoded_url": "/v100-perfs/read/handoff/scripts/quant-recipes/iq4xs-frugal-plus.txt",
+      "trailing_slash_url": "/v100-perfs/read/handoff/scripts/quant-recipes/iq4xs-frugal-plus.txt/",
+      "canonical_target": "/v100-perfs/repository/operations/handoff/scripts/quant-recipes/iq4xs-frugal-plus.txt/"
+    },
+    {
+      "old_url": "/v100-perfs/read/handoff/scripts/quant-recipes/iq4xs-frugal.txt",
+      "encoded_url": "/v100-perfs/read/handoff/scripts/quant-recipes/iq4xs-frugal.txt",
+      "trailing_slash_url": "/v100-perfs/read/handoff/scripts/quant-recipes/iq4xs-frugal.txt/",
+      "canonical_target": "/v100-perfs/repository/operations/handoff/scripts/quant-recipes/iq4xs-frugal.txt/"
+    },
+    {
+      "old_url": "/v100-perfs/read/handoff/scripts/quantize_with_imatrix.sh",
+      "encoded_url": "/v100-perfs/read/handoff/scripts/quantize_with_imatrix.sh",
+      "trailing_slash_url": "/v100-perfs/read/handoff/scripts/quantize_with_imatrix.sh/",
+      "canonical_target": "/v100-perfs/repository/operations/handoff/scripts/quantize_with_imatrix.sh/"
+    },
+    {
+      "old_url": "/v100-perfs/read/handoff/scripts/quantrecipe/decide.py",
+      "encoded_url": "/v100-perfs/read/handoff/scripts/quantrecipe/decide.py",
+      "trailing_slash_url": "/v100-perfs/read/handoff/scripts/quantrecipe/decide.py/",
+      "canonical_target": "/v100-perfs/repository/operations/handoff/scripts/quantrecipe/decide.py/"
+    },
+    {
+      "old_url": "/v100-perfs/read/handoff/scripts/quantrecipe/dump_kv.py",
+      "encoded_url": "/v100-perfs/read/handoff/scripts/quantrecipe/dump_kv.py",
+      "trailing_slash_url": "/v100-perfs/read/handoff/scripts/quantrecipe/dump_kv.py/",
+      "canonical_target": "/v100-perfs/repository/operations/handoff/scripts/quantrecipe/dump_kv.py/"
+    },
+    {
+      "old_url": "/v100-perfs/read/handoff/scripts/quantrecipe/dump_tensor_types.py",
+      "encoded_url": "/v100-perfs/read/handoff/scripts/quantrecipe/dump_tensor_types.py",
+      "trailing_slash_url": "/v100-perfs/read/handoff/scripts/quantrecipe/dump_tensor_types.py/",
+      "canonical_target": "/v100-perfs/repository/operations/handoff/scripts/quantrecipe/dump_tensor_types.py/"
+    },
+    {
+      "old_url": "/v100-perfs/read/handoff/scripts/quantrecipe/err_iq4xs.json",
+      "encoded_url": "/v100-perfs/read/handoff/scripts/quantrecipe/err_iq4xs.json",
+      "trailing_slash_url": "/v100-perfs/read/handoff/scripts/quantrecipe/err_iq4xs.json/",
+      "canonical_target": "/v100-perfs/repository/operations/handoff/scripts/quantrecipe/err_iq4xs.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/handoff/scripts/quantrecipe/err_iq4xs_recheck.json",
+      "encoded_url": "/v100-perfs/read/handoff/scripts/quantrecipe/err_iq4xs_recheck.json",
+      "trailing_slash_url": "/v100-perfs/read/handoff/scripts/quantrecipe/err_iq4xs_recheck.json/",
+      "canonical_target": "/v100-perfs/repository/operations/handoff/scripts/quantrecipe/err_iq4xs_recheck.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/handoff/scripts/quantrecipe/err_our_q5km.json",
+      "encoded_url": "/v100-perfs/read/handoff/scripts/quantrecipe/err_our_q5km.json",
+      "trailing_slash_url": "/v100-perfs/read/handoff/scripts/quantrecipe/err_our_q5km.json/",
+      "canonical_target": "/v100-perfs/repository/operations/handoff/scripts/quantrecipe/err_our_q5km.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/handoff/scripts/quantrecipe/err_up_q5km.json",
+      "encoded_url": "/v100-perfs/read/handoff/scripts/quantrecipe/err_up_q5km.json",
+      "trailing_slash_url": "/v100-perfs/read/handoff/scripts/quantrecipe/err_up_q5km.json/",
+      "canonical_target": "/v100-perfs/repository/operations/handoff/scripts/quantrecipe/err_up_q5km.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/handoff/scripts/quantrecipe/hash_tensor.py",
+      "encoded_url": "/v100-perfs/read/handoff/scripts/quantrecipe/hash_tensor.py",
+      "trailing_slash_url": "/v100-perfs/read/handoff/scripts/quantrecipe/hash_tensor.py/",
+      "canonical_target": "/v100-perfs/repository/operations/handoff/scripts/quantrecipe/hash_tensor.py/"
+    },
+    {
+      "old_url": "/v100-perfs/read/handoff/scripts/quantrecipe/log-q5km.txt",
+      "encoded_url": "/v100-perfs/read/handoff/scripts/quantrecipe/log-q5km.txt",
+      "trailing_slash_url": "/v100-perfs/read/handoff/scripts/quantrecipe/log-q5km.txt/",
+      "canonical_target": "/v100-perfs/repository/operations/handoff/scripts/quantrecipe/log-q5km.txt/"
+    },
+    {
+      "old_url": "/v100-perfs/read/handoff/scripts/quantrecipe/log-recheck.txt",
+      "encoded_url": "/v100-perfs/read/handoff/scripts/quantrecipe/log-recheck.txt",
+      "trailing_slash_url": "/v100-perfs/read/handoff/scripts/quantrecipe/log-recheck.txt/",
+      "canonical_target": "/v100-perfs/repository/operations/handoff/scripts/quantrecipe/log-recheck.txt/"
+    },
+    {
+      "old_url": "/v100-perfs/read/handoff/scripts/quantrecipe/power_ppl.py",
+      "encoded_url": "/v100-perfs/read/handoff/scripts/quantrecipe/power_ppl.py",
+      "trailing_slash_url": "/v100-perfs/read/handoff/scripts/quantrecipe/power_ppl.py/",
+      "canonical_target": "/v100-perfs/repository/operations/handoff/scripts/quantrecipe/power_ppl.py/"
+    },
+    {
+      "old_url": "/v100-perfs/read/handoff/scripts/quantrecipe/probe-all.txt",
+      "encoded_url": "/v100-perfs/read/handoff/scripts/quantrecipe/probe-all.txt",
+      "trailing_slash_url": "/v100-perfs/read/handoff/scripts/quantrecipe/probe-all.txt/",
+      "canonical_target": "/v100-perfs/repository/operations/handoff/scripts/quantrecipe/probe-all.txt/"
+    },
+    {
+      "old_url": "/v100-perfs/read/handoff/scripts/quantrecipe/probe-q5q6.txt",
+      "encoded_url": "/v100-perfs/read/handoff/scripts/quantrecipe/probe-q5q6.txt",
+      "trailing_slash_url": "/v100-perfs/read/handoff/scripts/quantrecipe/probe-q5q6.txt/",
+      "canonical_target": "/v100-perfs/repository/operations/handoff/scripts/quantrecipe/probe-q5q6.txt/"
+    },
+    {
+      "old_url": "/v100-perfs/read/handoff/scripts/quantrecipe/probe-qkv.txt",
+      "encoded_url": "/v100-perfs/read/handoff/scripts/quantrecipe/probe-qkv.txt",
+      "trailing_slash_url": "/v100-perfs/read/handoff/scripts/quantrecipe/probe-qkv.txt/",
+      "canonical_target": "/v100-perfs/repository/operations/handoff/scripts/quantrecipe/probe-qkv.txt/"
+    },
+    {
+      "old_url": "/v100-perfs/read/handoff/scripts/quantrecipe/requant_probe.py",
+      "encoded_url": "/v100-perfs/read/handoff/scripts/quantrecipe/requant_probe.py",
+      "trailing_slash_url": "/v100-perfs/read/handoff/scripts/quantrecipe/requant_probe.py/",
+      "canonical_target": "/v100-perfs/repository/operations/handoff/scripts/quantrecipe/requant_probe.py/"
+    },
+    {
+      "old_url": "/v100-perfs/read/handoff/scripts/quantrecipe/size_model.py",
+      "encoded_url": "/v100-perfs/read/handoff/scripts/quantrecipe/size_model.py",
+      "trailing_slash_url": "/v100-perfs/read/handoff/scripts/quantrecipe/size_model.py/",
+      "canonical_target": "/v100-perfs/repository/operations/handoff/scripts/quantrecipe/size_model.py/"
+    },
+    {
+      "old_url": "/v100-perfs/read/handoff/scripts/quantrecipe/tensor_error.py",
+      "encoded_url": "/v100-perfs/read/handoff/scripts/quantrecipe/tensor_error.py",
+      "trailing_slash_url": "/v100-perfs/read/handoff/scripts/quantrecipe/tensor_error.py/",
+      "canonical_target": "/v100-perfs/repository/operations/handoff/scripts/quantrecipe/tensor_error.py/"
+    },
+    {
+      "old_url": "/v100-perfs/read/handoff/scripts/quantrecipe/tsv/new_q5km.tsv",
+      "encoded_url": "/v100-perfs/read/handoff/scripts/quantrecipe/tsv/new_q5km.tsv",
+      "trailing_slash_url": "/v100-perfs/read/handoff/scripts/quantrecipe/tsv/new_q5km.tsv/",
+      "canonical_target": "/v100-perfs/repository/operations/handoff/scripts/quantrecipe/tsv/new_q5km.tsv/"
+    },
+    {
+      "old_url": "/v100-perfs/read/handoff/scripts/quantrecipe/tsv/new_q8.tsv",
+      "encoded_url": "/v100-perfs/read/handoff/scripts/quantrecipe/tsv/new_q8.tsv",
+      "trailing_slash_url": "/v100-perfs/read/handoff/scripts/quantrecipe/tsv/new_q8.tsv/",
+      "canonical_target": "/v100-perfs/repository/operations/handoff/scripts/quantrecipe/tsv/new_q8.tsv/"
+    },
+    {
+      "old_url": "/v100-perfs/read/handoff/scripts/quantrecipe/tsv/our_iq4xs.tsv",
+      "encoded_url": "/v100-perfs/read/handoff/scripts/quantrecipe/tsv/our_iq4xs.tsv",
+      "trailing_slash_url": "/v100-perfs/read/handoff/scripts/quantrecipe/tsv/our_iq4xs.tsv/",
+      "canonical_target": "/v100-perfs/repository/operations/handoff/scripts/quantrecipe/tsv/our_iq4xs.tsv/"
+    },
+    {
+      "old_url": "/v100-perfs/read/handoff/scripts/quantrecipe/tsv/our_q5km.tsv",
+      "encoded_url": "/v100-perfs/read/handoff/scripts/quantrecipe/tsv/our_q5km.tsv",
+      "trailing_slash_url": "/v100-perfs/read/handoff/scripts/quantrecipe/tsv/our_q5km.tsv/",
+      "canonical_target": "/v100-perfs/repository/operations/handoff/scripts/quantrecipe/tsv/our_q5km.tsv/"
+    },
+    {
+      "old_url": "/v100-perfs/read/handoff/scripts/quantrecipe/tsv/up_mtp_q8.tsv",
+      "encoded_url": "/v100-perfs/read/handoff/scripts/quantrecipe/tsv/up_mtp_q8.tsv",
+      "trailing_slash_url": "/v100-perfs/read/handoff/scripts/quantrecipe/tsv/up_mtp_q8.tsv/",
+      "canonical_target": "/v100-perfs/repository/operations/handoff/scripts/quantrecipe/tsv/up_mtp_q8.tsv/"
+    },
+    {
+      "old_url": "/v100-perfs/read/handoff/scripts/quantrecipe/tsv/up_q4km.tsv",
+      "encoded_url": "/v100-perfs/read/handoff/scripts/quantrecipe/tsv/up_q4km.tsv",
+      "trailing_slash_url": "/v100-perfs/read/handoff/scripts/quantrecipe/tsv/up_q4km.tsv/",
+      "canonical_target": "/v100-perfs/repository/operations/handoff/scripts/quantrecipe/tsv/up_q4km.tsv/"
+    },
+    {
+      "old_url": "/v100-perfs/read/handoff/scripts/quantrecipe/tsv/up_q4km_plusmtp.tsv",
+      "encoded_url": "/v100-perfs/read/handoff/scripts/quantrecipe/tsv/up_q4km_plusmtp.tsv",
+      "trailing_slash_url": "/v100-perfs/read/handoff/scripts/quantrecipe/tsv/up_q4km_plusmtp.tsv/",
+      "canonical_target": "/v100-perfs/repository/operations/handoff/scripts/quantrecipe/tsv/up_q4km_plusmtp.tsv/"
+    },
+    {
+      "old_url": "/v100-perfs/read/handoff/scripts/quantrecipe/tsv/up_q5km.tsv",
+      "encoded_url": "/v100-perfs/read/handoff/scripts/quantrecipe/tsv/up_q5km.tsv",
+      "trailing_slash_url": "/v100-perfs/read/handoff/scripts/quantrecipe/tsv/up_q5km.tsv/",
+      "canonical_target": "/v100-perfs/repository/operations/handoff/scripts/quantrecipe/tsv/up_q5km.tsv/"
+    },
+    {
+      "old_url": "/v100-perfs/read/handoff/scripts/quantrecipe/tsv/up_q5km_plusmtp.tsv",
+      "encoded_url": "/v100-perfs/read/handoff/scripts/quantrecipe/tsv/up_q5km_plusmtp.tsv",
+      "trailing_slash_url": "/v100-perfs/read/handoff/scripts/quantrecipe/tsv/up_q5km_plusmtp.tsv/",
+      "canonical_target": "/v100-perfs/repository/operations/handoff/scripts/quantrecipe/tsv/up_q5km_plusmtp.tsv/"
+    },
+    {
+      "old_url": "/v100-perfs/read/handoff/scripts/quantrecipe/tsv/up_q6k.tsv",
+      "encoded_url": "/v100-perfs/read/handoff/scripts/quantrecipe/tsv/up_q6k.tsv",
+      "trailing_slash_url": "/v100-perfs/read/handoff/scripts/quantrecipe/tsv/up_q6k.tsv/",
+      "canonical_target": "/v100-perfs/repository/operations/handoff/scripts/quantrecipe/tsv/up_q6k.tsv/"
+    },
+    {
+      "old_url": "/v100-perfs/read/handoff/scripts/raise_concurrency.sh",
+      "encoded_url": "/v100-perfs/read/handoff/scripts/raise_concurrency.sh",
+      "trailing_slash_url": "/v100-perfs/read/handoff/scripts/raise_concurrency.sh/",
+      "canonical_target": "/v100-perfs/repository/operations/handoff/scripts/raise_concurrency.sh/"
+    },
+    {
+      "old_url": "/v100-perfs/read/handoff/scripts/run_copy_fidelity.sh",
+      "encoded_url": "/v100-perfs/read/handoff/scripts/run_copy_fidelity.sh",
+      "trailing_slash_url": "/v100-perfs/read/handoff/scripts/run_copy_fidelity.sh/",
+      "canonical_target": "/v100-perfs/repository/operations/handoff/scripts/run_copy_fidelity.sh/"
+    },
+    {
+      "old_url": "/v100-perfs/read/handoff/scripts/run_imatrix.sh",
+      "encoded_url": "/v100-perfs/read/handoff/scripts/run_imatrix.sh",
+      "trailing_slash_url": "/v100-perfs/read/handoff/scripts/run_imatrix.sh/",
+      "canonical_target": "/v100-perfs/repository/operations/handoff/scripts/run_imatrix.sh/"
+    },
+    {
+      "old_url": "/v100-perfs/read/handoff/scripts/run_mm_experiment.sh",
+      "encoded_url": "/v100-perfs/read/handoff/scripts/run_mm_experiment.sh",
+      "trailing_slash_url": "/v100-perfs/read/handoff/scripts/run_mm_experiment.sh/",
+      "canonical_target": "/v100-perfs/repository/operations/handoff/scripts/run_mm_experiment.sh/"
+    },
+    {
+      "old_url": "/v100-perfs/read/handoff/scripts/run_vision_fidelity.sh",
+      "encoded_url": "/v100-perfs/read/handoff/scripts/run_vision_fidelity.sh",
+      "trailing_slash_url": "/v100-perfs/read/handoff/scripts/run_vision_fidelity.sh/",
+      "canonical_target": "/v100-perfs/repository/operations/handoff/scripts/run_vision_fidelity.sh/"
+    },
+    {
+      "old_url": "/v100-perfs/read/handoff/scripts/runtime_metrics.py",
+      "encoded_url": "/v100-perfs/read/handoff/scripts/runtime_metrics.py",
+      "trailing_slash_url": "/v100-perfs/read/handoff/scripts/runtime_metrics.py/",
+      "canonical_target": "/v100-perfs/repository/operations/handoff/scripts/runtime_metrics.py/"
+    },
+    {
+      "old_url": "/v100-perfs/read/handoff/scripts/silent-hang-diagnosis.md",
+      "encoded_url": "/v100-perfs/read/handoff/scripts/silent-hang-diagnosis.md",
+      "trailing_slash_url": "/v100-perfs/read/handoff/scripts/silent-hang-diagnosis.md/",
+      "canonical_target": "/v100-perfs/repository/operations/handoff/scripts/silent-hang-diagnosis.md/"
+    },
+    {
+      "old_url": "/v100-perfs/read/handoff/scripts/sm70-audit/bench_devprops.cu",
+      "encoded_url": "/v100-perfs/read/handoff/scripts/sm70-audit/bench_devprops.cu",
+      "trailing_slash_url": "/v100-perfs/read/handoff/scripts/sm70-audit/bench_devprops.cu/",
+      "canonical_target": "/v100-perfs/repository/operations/handoff/scripts/sm70-audit/bench_devprops.cu/"
+    },
+    {
+      "old_url": "/v100-perfs/read/handoff/scripts/sm70-audit/bench_mmq_trial.cu",
+      "encoded_url": "/v100-perfs/read/handoff/scripts/sm70-audit/bench_mmq_trial.cu",
+      "trailing_slash_url": "/v100-perfs/read/handoff/scripts/sm70-audit/bench_mmq_trial.cu/",
+      "canonical_target": "/v100-perfs/repository/operations/handoff/scripts/sm70-audit/bench_mmq_trial.cu/"
+    },
+    {
+      "old_url": "/v100-perfs/read/handoff/scripts/sm70-audit/build_bench.sh",
+      "encoded_url": "/v100-perfs/read/handoff/scripts/sm70-audit/build_bench.sh",
+      "trailing_slash_url": "/v100-perfs/read/handoff/scripts/sm70-audit/build_bench.sh/",
+      "canonical_target": "/v100-perfs/repository/operations/handoff/scripts/sm70-audit/build_bench.sh/"
+    },
+    {
+      "old_url": "/v100-perfs/read/handoff/scripts/sm70-audit/probe_routes.cu",
+      "encoded_url": "/v100-perfs/read/handoff/scripts/sm70-audit/probe_routes.cu",
+      "trailing_slash_url": "/v100-perfs/read/handoff/scripts/sm70-audit/probe_routes.cu/",
+      "canonical_target": "/v100-perfs/repository/operations/handoff/scripts/sm70-audit/probe_routes.cu/"
+    },
+    {
+      "old_url": "/v100-perfs/read/handoff/scripts/start_prod.sh",
+      "encoded_url": "/v100-perfs/read/handoff/scripts/start_prod.sh",
+      "trailing_slash_url": "/v100-perfs/read/handoff/scripts/start_prod.sh/",
+      "canonical_target": "/v100-perfs/repository/operations/handoff/scripts/start_prod.sh/"
+    },
+    {
+      "old_url": "/v100-perfs/read/handoff/scripts/sweep_driver.sh",
+      "encoded_url": "/v100-perfs/read/handoff/scripts/sweep_driver.sh",
+      "trailing_slash_url": "/v100-perfs/read/handoff/scripts/sweep_driver.sh/",
+      "canonical_target": "/v100-perfs/repository/operations/handoff/scripts/sweep_driver.sh/"
+    },
+    {
+      "old_url": "/v100-perfs/read/handoff/scripts/sweep_launch.sh",
+      "encoded_url": "/v100-perfs/read/handoff/scripts/sweep_launch.sh",
+      "trailing_slash_url": "/v100-perfs/read/handoff/scripts/sweep_launch.sh/",
+      "canonical_target": "/v100-perfs/repository/operations/handoff/scripts/sweep_launch.sh/"
+    },
+    {
+      "old_url": "/v100-perfs/read/handoff/scripts/sweep_one.sh",
+      "encoded_url": "/v100-perfs/read/handoff/scripts/sweep_one.sh",
+      "trailing_slash_url": "/v100-perfs/read/handoff/scripts/sweep_one.sh/",
+      "canonical_target": "/v100-perfs/repository/operations/handoff/scripts/sweep_one.sh/"
+    },
+    {
+      "old_url": "/v100-perfs/read/handoff/scripts/sweep_profiles.py",
+      "encoded_url": "/v100-perfs/read/handoff/scripts/sweep_profiles.py",
+      "trailing_slash_url": "/v100-perfs/read/handoff/scripts/sweep_profiles.py/",
+      "canonical_target": "/v100-perfs/repository/operations/handoff/scripts/sweep_profiles.py/"
+    },
+    {
+      "old_url": "/v100-perfs/read/handoff/scripts/switch_to_iq4xs.sh",
+      "encoded_url": "/v100-perfs/read/handoff/scripts/switch_to_iq4xs.sh",
+      "trailing_slash_url": "/v100-perfs/read/handoff/scripts/switch_to_iq4xs.sh/",
+      "canonical_target": "/v100-perfs/repository/operations/handoff/scripts/switch_to_iq4xs.sh/"
+    },
+    {
+      "old_url": "/v100-perfs/read/handoff/scripts/toolname_probe.py",
+      "encoded_url": "/v100-perfs/read/handoff/scripts/toolname_probe.py",
+      "trailing_slash_url": "/v100-perfs/read/handoff/scripts/toolname_probe.py/",
+      "canonical_target": "/v100-perfs/repository/operations/handoff/scripts/toolname_probe.py/"
+    },
+    {
+      "old_url": "/v100-perfs/read/handoff/scripts/upload_to_hf.sh",
+      "encoded_url": "/v100-perfs/read/handoff/scripts/upload_to_hf.sh",
+      "trailing_slash_url": "/v100-perfs/read/handoff/scripts/upload_to_hf.sh/",
+      "canonical_target": "/v100-perfs/repository/operations/handoff/scripts/upload_to_hf.sh/"
+    },
+    {
+      "old_url": "/v100-perfs/read/handoff/scripts/verify_downloads.sh",
+      "encoded_url": "/v100-perfs/read/handoff/scripts/verify_downloads.sh",
+      "trailing_slash_url": "/v100-perfs/read/handoff/scripts/verify_downloads.sh/",
+      "canonical_target": "/v100-perfs/repository/operations/handoff/scripts/verify_downloads.sh/"
+    },
+    {
+      "old_url": "/v100-perfs/read/handoff/scripts/verify_iq4xs_cpu.sh",
+      "encoded_url": "/v100-perfs/read/handoff/scripts/verify_iq4xs_cpu.sh",
+      "trailing_slash_url": "/v100-perfs/read/handoff/scripts/verify_iq4xs_cpu.sh/",
+      "canonical_target": "/v100-perfs/repository/operations/handoff/scripts/verify_iq4xs_cpu.sh/"
+    },
+    {
+      "old_url": "/v100-perfs/read/handoff/scripts/verify_prefix_cache.py",
+      "encoded_url": "/v100-perfs/read/handoff/scripts/verify_prefix_cache.py",
+      "trailing_slash_url": "/v100-perfs/read/handoff/scripts/verify_prefix_cache.py/",
+      "canonical_target": "/v100-perfs/repository/operations/handoff/scripts/verify_prefix_cache.py/"
+    },
+    {
+      "old_url": "/v100-perfs/read/handoff/start_prod.sh",
+      "encoded_url": "/v100-perfs/read/handoff/start_prod.sh",
+      "trailing_slash_url": "/v100-perfs/read/handoff/start_prod.sh/",
+      "canonical_target": "/v100-perfs/repository/operations/handoff/start_prod.sh/"
+    },
+    {
+      "old_url": "/v100-perfs/read/llms.txt",
+      "encoded_url": "/v100-perfs/read/llms.txt",
+      "trailing_slash_url": "/v100-perfs/read/llms.txt/",
+      "canonical_target": "/v100-perfs/repository/llms.txt/"
+    },
+    {
+      "old_url": "/v100-perfs/read/patches/thinking_proxy-2026-08-18-stream-timeout-anthropic-effort.patch",
+      "encoded_url": "/v100-perfs/read/patches/thinking_proxy-2026-08-18-stream-timeout-anthropic-effort.patch",
+      "trailing_slash_url": "/v100-perfs/read/patches/thinking_proxy-2026-08-18-stream-timeout-anthropic-effort.patch/",
+      "canonical_target": "/v100-perfs/repository/operations/patches/thinking_proxy-2026-08-18-stream-timeout-anthropic-effort.patch/"
+    },
+    {
+      "old_url": "/v100-perfs/read/results/legacy/deepseek_q2_split_verification.json",
+      "encoded_url": "/v100-perfs/read/results/legacy/deepseek_q2_split_verification.json",
+      "trailing_slash_url": "/v100-perfs/read/results/legacy/deepseek_q2_split_verification.json/",
+      "canonical_target": "/v100-perfs/evidence/results/legacy/deepseek_q2_split_verification.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/results/q38-sweep/MATRIX.md",
+      "encoded_url": "/v100-perfs/read/results/q38-sweep/MATRIX.md",
+      "trailing_slash_url": "/v100-perfs/read/results/q38-sweep/MATRIX.md/",
+      "canonical_target": "/v100-perfs/docs/performance/qwen38/sweep-matrix/"
+    },
+    {
+      "old_url": "/v100-perfs/read/results/q38-sweep/raw/PROD-verify-matrix.json",
+      "encoded_url": "/v100-perfs/read/results/q38-sweep/raw/PROD-verify-matrix.json",
+      "trailing_slash_url": "/v100-perfs/read/results/q38-sweep/raw/PROD-verify-matrix.json/",
+      "canonical_target": "/v100-perfs/evidence/results/q38-sweep/raw/PROD-verify-matrix.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/results/q38-sweep/raw/q38-c1-c-q5km-turbo4-mtp2.intel.json",
+      "encoded_url": "/v100-perfs/read/results/q38-sweep/raw/q38-c1-c-q5km-turbo4-mtp2.intel.json",
+      "trailing_slash_url": "/v100-perfs/read/results/q38-sweep/raw/q38-c1-c-q5km-turbo4-mtp2.intel.json/",
+      "canonical_target": "/v100-perfs/evidence/results/q38-sweep/raw/q38-c1-c-q5km-turbo4-mtp2.intel.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/results/q38-sweep/raw/q38-c1-c-q5km-turbo4-mtp2.json",
+      "encoded_url": "/v100-perfs/read/results/q38-sweep/raw/q38-c1-c-q5km-turbo4-mtp2.json",
+      "trailing_slash_url": "/v100-perfs/read/results/q38-sweep/raw/q38-c1-c-q5km-turbo4-mtp2.json/",
+      "canonical_target": "/v100-perfs/evidence/results/q38-sweep/raw/q38-c1-c-q5km-turbo4-mtp2.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/results/q38-sweep/raw/q38-c6-c-q5km-turbo4-mtp2-sm70.json",
+      "encoded_url": "/v100-perfs/read/results/q38-sweep/raw/q38-c6-c-q5km-turbo4-mtp2-sm70.json",
+      "trailing_slash_url": "/v100-perfs/read/results/q38-sweep/raw/q38-c6-c-q5km-turbo4-mtp2-sm70.json/",
+      "canonical_target": "/v100-perfs/evidence/results/q38-sweep/raw/q38-c6-c-q5km-turbo4-mtp2-sm70.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/results/q38-sweep/raw/q38-n1-n-q4kxl-turbo4-mtp2.json",
+      "encoded_url": "/v100-perfs/read/results/q38-sweep/raw/q38-n1-n-q4kxl-turbo4-mtp2.json",
+      "trailing_slash_url": "/v100-perfs/read/results/q38-sweep/raw/q38-n1-n-q4kxl-turbo4-mtp2.json/",
+      "canonical_target": "/v100-perfs/evidence/results/q38-sweep/raw/q38-n1-n-q4kxl-turbo4-mtp2.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/results/q38-sweep/raw/q38-n4-n-q4kxl-turbo4-mtp0.json",
+      "encoded_url": "/v100-perfs/read/results/q38-sweep/raw/q38-n4-n-q4kxl-turbo4-mtp0.json",
+      "trailing_slash_url": "/v100-perfs/read/results/q38-sweep/raw/q38-n4-n-q4kxl-turbo4-mtp0.json/",
+      "canonical_target": "/v100-perfs/evidence/results/q38-sweep/raw/q38-n4-n-q4kxl-turbo4-mtp0.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/results/q38-sweep/raw/q38-n5-n-q4kxl-turbo4-mtp2-cachetuned.json",
+      "encoded_url": "/v100-perfs/read/results/q38-sweep/raw/q38-n5-n-q4kxl-turbo4-mtp2-cachetuned.json",
+      "trailing_slash_url": "/v100-perfs/read/results/q38-sweep/raw/q38-n5-n-q4kxl-turbo4-mtp2-cachetuned.json/",
+      "canonical_target": "/v100-perfs/evidence/results/q38-sweep/raw/q38-n5-n-q4kxl-turbo4-mtp2-cachetuned.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/results/q38-sweep/raw/q38-n6-n-q4kxl-turbo4-mtp2-sm70.json",
+      "encoded_url": "/v100-perfs/read/results/q38-sweep/raw/q38-n6-n-q4kxl-turbo4-mtp2-sm70.json",
+      "trailing_slash_url": "/v100-perfs/read/results/q38-sweep/raw/q38-n6-n-q4kxl-turbo4-mtp2-sm70.json/",
+      "canonical_target": "/v100-perfs/evidence/results/q38-sweep/raw/q38-n6-n-q4kxl-turbo4-mtp2-sm70.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/results/q38-sweep/raw/q38-n7-n-q5km-turbo4-mtp2.intel.json",
+      "encoded_url": "/v100-perfs/read/results/q38-sweep/raw/q38-n7-n-q5km-turbo4-mtp2.intel.json",
+      "trailing_slash_url": "/v100-perfs/read/results/q38-sweep/raw/q38-n7-n-q5km-turbo4-mtp2.intel.json/",
+      "canonical_target": "/v100-perfs/evidence/results/q38-sweep/raw/q38-n7-n-q5km-turbo4-mtp2.intel.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/results/q38-sweep/raw/q38-n7-n-q5km-turbo4-mtp2.json",
+      "encoded_url": "/v100-perfs/read/results/q38-sweep/raw/q38-n7-n-q5km-turbo4-mtp2.json",
+      "trailing_slash_url": "/v100-perfs/read/results/q38-sweep/raw/q38-n7-n-q5km-turbo4-mtp2.json/",
+      "canonical_target": "/v100-perfs/evidence/results/q38-sweep/raw/q38-n7-n-q5km-turbo4-mtp2.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/results/q38-sweep/raw/toolcall_bench_2026-08-22/SUMMARY.md",
+      "encoded_url": "/v100-perfs/read/results/q38-sweep/raw/toolcall_bench_2026-08-22/SUMMARY.md",
+      "trailing_slash_url": "/v100-perfs/read/results/q38-sweep/raw/toolcall_bench_2026-08-22/SUMMARY.md/",
+      "canonical_target": "/v100-perfs/docs/performance/qwen38/toolcall-benchmark-2026-08-22/"
+    },
+    {
+      "old_url": "/v100-perfs/read/results/q38-sweep/raw/toolcall_bench_2026-08-22/claude_file_roundtrip.json",
+      "encoded_url": "/v100-perfs/read/results/q38-sweep/raw/toolcall_bench_2026-08-22/claude_file_roundtrip.json",
+      "trailing_slash_url": "/v100-perfs/read/results/q38-sweep/raw/toolcall_bench_2026-08-22/claude_file_roundtrip.json/",
+      "canonical_target": "/v100-perfs/evidence/results/q38-sweep/raw/toolcall_bench_2026-08-22/claude_file_roundtrip.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/results/q38-sweep/raw/toolcall_bench_2026-08-22/cyber-q5_file_roundtrip.json",
+      "encoded_url": "/v100-perfs/read/results/q38-sweep/raw/toolcall_bench_2026-08-22/cyber-q5_file_roundtrip.json",
+      "trailing_slash_url": "/v100-perfs/read/results/q38-sweep/raw/toolcall_bench_2026-08-22/cyber-q5_file_roundtrip.json/",
+      "canonical_target": "/v100-perfs/evidence/results/q38-sweep/raw/toolcall_bench_2026-08-22/cyber-q5_file_roundtrip.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/results/q38-sweep/raw/toolcall_bench_2026-08-22/iq4xs_file_roundtrip.json",
+      "encoded_url": "/v100-perfs/read/results/q38-sweep/raw/toolcall_bench_2026-08-22/iq4xs_file_roundtrip.json",
+      "trailing_slash_url": "/v100-perfs/read/results/q38-sweep/raw/toolcall_bench_2026-08-22/iq4xs_file_roundtrip.json/",
+      "canonical_target": "/v100-perfs/evidence/results/q38-sweep/raw/toolcall_bench_2026-08-22/iq4xs_file_roundtrip.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/results/q38-sweep/raw/toolcall_bench_2026-08-22/ud-q5_file_roundtrip.json",
+      "encoded_url": "/v100-perfs/read/results/q38-sweep/raw/toolcall_bench_2026-08-22/ud-q5_file_roundtrip.json",
+      "trailing_slash_url": "/v100-perfs/read/results/q38-sweep/raw/toolcall_bench_2026-08-22/ud-q5_file_roundtrip.json/",
+      "canonical_target": "/v100-perfs/evidence/results/q38-sweep/raw/toolcall_bench_2026-08-22/ud-q5_file_roundtrip.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/scripts/chain_acceptance.py",
+      "encoded_url": "/v100-perfs/read/scripts/chain_acceptance.py",
+      "trailing_slash_url": "/v100-perfs/read/scripts/chain_acceptance.py/",
+      "canonical_target": "/v100-perfs/repository/tools/scripts/chain_acceptance.py/"
+    },
+    {
+      "old_url": "/v100-perfs/read/scripts/context_fidelity_probe.py",
+      "encoded_url": "/v100-perfs/read/scripts/context_fidelity_probe.py",
+      "trailing_slash_url": "/v100-perfs/read/scripts/context_fidelity_probe.py/",
+      "canonical_target": "/v100-perfs/repository/tools/scripts/context_fidelity_probe.py/"
+    },
+    {
+      "old_url": "/v100-perfs/read/scripts/fastllm_native_profile.py",
+      "encoded_url": "/v100-perfs/read/scripts/fastllm_native_profile.py",
+      "trailing_slash_url": "/v100-perfs/read/scripts/fastllm_native_profile.py/",
+      "canonical_target": "/v100-perfs/repository/tools/scripts/fastllm_native_profile.py/"
+    },
+    {
+      "old_url": "/v100-perfs/read/scripts/fastllm_qwen36_iq4xs.patch",
+      "encoded_url": "/v100-perfs/read/scripts/fastllm_qwen36_iq4xs.patch",
+      "trailing_slash_url": "/v100-perfs/read/scripts/fastllm_qwen36_iq4xs.patch/",
+      "canonical_target": "/v100-perfs/repository/tools/scripts/fastllm_qwen36_iq4xs.patch/"
+    },
+    {
+      "old_url": "/v100-perfs/read/scripts/graft_gguf_mtp.py",
+      "encoded_url": "/v100-perfs/read/scripts/graft_gguf_mtp.py",
+      "trailing_slash_url": "/v100-perfs/read/scripts/graft_gguf_mtp.py/",
+      "canonical_target": "/v100-perfs/repository/tools/scripts/graft_gguf_mtp.py/"
+    },
+    {
+      "old_url": "/v100-perfs/read/scripts/intel_probe.py",
+      "encoded_url": "/v100-perfs/read/scripts/intel_probe.py",
+      "trailing_slash_url": "/v100-perfs/read/scripts/intel_probe.py/",
+      "canonical_target": "/v100-perfs/repository/tools/scripts/intel_probe.py/"
+    },
+    {
+      "old_url": "/v100-perfs/read/scripts/launch_proxy_tmux.sh",
+      "encoded_url": "/v100-perfs/read/scripts/launch_proxy_tmux.sh",
+      "trailing_slash_url": "/v100-perfs/read/scripts/launch_proxy_tmux.sh/",
+      "canonical_target": "/v100-perfs/repository/tools/scripts/launch_proxy_tmux.sh/"
+    },
+    {
+      "old_url": "/v100-perfs/read/scripts/make_tables.py",
+      "encoded_url": "/v100-perfs/read/scripts/make_tables.py",
+      "trailing_slash_url": "/v100-perfs/read/scripts/make_tables.py/",
+      "canonical_target": "/v100-perfs/repository/tools/scripts/make_tables.py/"
+    },
+    {
+      "old_url": "/v100-perfs/read/scripts/merge_mtp_head.py",
+      "encoded_url": "/v100-perfs/read/scripts/merge_mtp_head.py",
+      "trailing_slash_url": "/v100-perfs/read/scripts/merge_mtp_head.py/",
+      "canonical_target": "/v100-perfs/repository/tools/scripts/merge_mtp_head.py/"
+    },
+    {
+      "old_url": "/v100-perfs/read/scripts/mtp_batch_acceptance.py",
+      "encoded_url": "/v100-perfs/read/scripts/mtp_batch_acceptance.py",
+      "trailing_slash_url": "/v100-perfs/read/scripts/mtp_batch_acceptance.py/",
+      "canonical_target": "/v100-perfs/repository/tools/scripts/mtp_batch_acceptance.py/"
+    },
+    {
+      "old_url": "/v100-perfs/read/scripts/run_proxy_q6_plain.sh",
+      "encoded_url": "/v100-perfs/read/scripts/run_proxy_q6_plain.sh",
+      "trailing_slash_url": "/v100-perfs/read/scripts/run_proxy_q6_plain.sh/",
+      "canonical_target": "/v100-perfs/repository/tools/scripts/run_proxy_q6_plain.sh/"
+    },
+    {
+      "old_url": "/v100-perfs/read/scripts/run_proxy_q6_plain_turbo4.sh",
+      "encoded_url": "/v100-perfs/read/scripts/run_proxy_q6_plain_turbo4.sh",
+      "trailing_slash_url": "/v100-perfs/read/scripts/run_proxy_q6_plain_turbo4.sh/",
+      "canonical_target": "/v100-perfs/repository/tools/scripts/run_proxy_q6_plain_turbo4.sh/"
+    },
+    {
+      "old_url": "/v100-perfs/read/scripts/run_proxy_q6_plain_turbo4_lowwm.sh",
+      "encoded_url": "/v100-perfs/read/scripts/run_proxy_q6_plain_turbo4_lowwm.sh",
+      "trailing_slash_url": "/v100-perfs/read/scripts/run_proxy_q6_plain_turbo4_lowwm.sh/",
+      "canonical_target": "/v100-perfs/repository/tools/scripts/run_proxy_q6_plain_turbo4_lowwm.sh/"
+    },
+    {
+      "old_url": "/v100-perfs/read/scripts/start.sh",
+      "encoded_url": "/v100-perfs/read/scripts/start.sh",
+      "trailing_slash_url": "/v100-perfs/read/scripts/start.sh/",
+      "canonical_target": "/v100-perfs/repository/tools/scripts/start.sh/"
+    },
+    {
+      "old_url": "/v100-perfs/read/scripts/start_120.sh",
+      "encoded_url": "/v100-perfs/read/scripts/start_120.sh",
+      "trailing_slash_url": "/v100-perfs/read/scripts/start_120.sh/",
+      "canonical_target": "/v100-perfs/repository/tools/scripts/start_120.sh/"
+    },
+    {
+      "old_url": "/v100-perfs/read/scripts/start_121.sh",
+      "encoded_url": "/v100-perfs/read/scripts/start_121.sh",
+      "trailing_slash_url": "/v100-perfs/read/scripts/start_121.sh/",
+      "canonical_target": "/v100-perfs/repository/tools/scripts/start_121.sh/"
+    },
+    {
+      "old_url": "/v100-perfs/read/scripts/start_llama.sh",
+      "encoded_url": "/v100-perfs/read/scripts/start_llama.sh",
+      "trailing_slash_url": "/v100-perfs/read/scripts/start_llama.sh/",
+      "canonical_target": "/v100-perfs/repository/tools/scripts/start_llama.sh/"
+    },
+    {
+      "old_url": "/v100-perfs/read/scripts/start_llama_nospec.sh",
+      "encoded_url": "/v100-perfs/read/scripts/start_llama_nospec.sh",
+      "trailing_slash_url": "/v100-perfs/read/scripts/start_llama_nospec.sh/",
+      "canonical_target": "/v100-perfs/repository/tools/scripts/start_llama_nospec.sh/"
+    },
+    {
+      "old_url": "/v100-perfs/read/scripts/start_llama_turboquant.sh",
+      "encoded_url": "/v100-perfs/read/scripts/start_llama_turboquant.sh",
+      "trailing_slash_url": "/v100-perfs/read/scripts/start_llama_turboquant.sh/",
+      "canonical_target": "/v100-perfs/repository/tools/scripts/start_llama_turboquant.sh/"
+    },
+    {
+      "old_url": "/v100-perfs/read/scripts/start_llama_turboquant_4x140k.sh",
+      "encoded_url": "/v100-perfs/read/scripts/start_llama_turboquant_4x140k.sh",
+      "trailing_slash_url": "/v100-perfs/read/scripts/start_llama_turboquant_4x140k.sh/",
+      "canonical_target": "/v100-perfs/repository/tools/scripts/start_llama_turboquant_4x140k.sh/"
+    },
+    {
+      "old_url": "/v100-perfs/read/scripts/start_proxy.sh",
+      "encoded_url": "/v100-perfs/read/scripts/start_proxy.sh",
+      "trailing_slash_url": "/v100-perfs/read/scripts/start_proxy.sh/",
+      "canonical_target": "/v100-perfs/repository/tools/scripts/start_proxy.sh/"
+    },
+    {
+      "old_url": "/v100-perfs/read/scripts/sweep_driver.sh",
+      "encoded_url": "/v100-perfs/read/scripts/sweep_driver.sh",
+      "trailing_slash_url": "/v100-perfs/read/scripts/sweep_driver.sh/",
+      "canonical_target": "/v100-perfs/repository/tools/scripts/sweep_driver.sh/"
+    },
+    {
+      "old_url": "/v100-perfs/read/scripts/sweep_driver2.sh",
+      "encoded_url": "/v100-perfs/read/scripts/sweep_driver2.sh",
+      "trailing_slash_url": "/v100-perfs/read/scripts/sweep_driver2.sh/",
+      "canonical_target": "/v100-perfs/repository/tools/scripts/sweep_driver2.sh/"
+    },
+    {
+      "old_url": "/v100-perfs/read/scripts/sweep_launch.sh",
+      "encoded_url": "/v100-perfs/read/scripts/sweep_launch.sh",
+      "trailing_slash_url": "/v100-perfs/read/scripts/sweep_launch.sh/",
+      "canonical_target": "/v100-perfs/repository/tools/scripts/sweep_launch.sh/"
+    },
+    {
+      "old_url": "/v100-perfs/read/scripts/sweep_one.sh",
+      "encoded_url": "/v100-perfs/read/scripts/sweep_one.sh",
+      "trailing_slash_url": "/v100-perfs/read/scripts/sweep_one.sh/",
+      "canonical_target": "/v100-perfs/repository/tools/scripts/sweep_one.sh/"
+    },
+    {
+      "old_url": "/v100-perfs/read/scripts/sweep_one2.sh",
+      "encoded_url": "/v100-perfs/read/scripts/sweep_one2.sh",
+      "trailing_slash_url": "/v100-perfs/read/scripts/sweep_one2.sh/",
+      "canonical_target": "/v100-perfs/repository/tools/scripts/sweep_one2.sh/"
+    },
+    {
+      "old_url": "/v100-perfs/read/scripts/sweep_profiles.py",
+      "encoded_url": "/v100-perfs/read/scripts/sweep_profiles.py",
+      "trailing_slash_url": "/v100-perfs/read/scripts/sweep_profiles.py/",
+      "canonical_target": "/v100-perfs/repository/tools/scripts/sweep_profiles.py/"
+    },
+    {
+      "old_url": "/v100-perfs/read/site/README.md",
+      "encoded_url": "/v100-perfs/read/site/README.md",
+      "trailing_slash_url": "/v100-perfs/read/site/README.md/",
+      "canonical_target": "/v100-perfs/repository/site/README.md/"
+    },
+    {
+      "old_url": "/v100-perfs/read/site/astro.config.mjs",
+      "encoded_url": "/v100-perfs/read/site/astro.config.mjs",
+      "trailing_slash_url": "/v100-perfs/read/site/astro.config.mjs/",
+      "canonical_target": "/v100-perfs/repository/site/astro.config.mjs/"
+    },
+    {
+      "old_url": "/v100-perfs/read/site/package-lock.json",
+      "encoded_url": "/v100-perfs/read/site/package-lock.json",
+      "trailing_slash_url": "/v100-perfs/read/site/package-lock.json/",
+      "canonical_target": "/v100-perfs/repository/site/package-lock.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/site/package.json",
+      "encoded_url": "/v100-perfs/read/site/package.json",
+      "trailing_slash_url": "/v100-perfs/read/site/package.json/",
+      "canonical_target": "/v100-perfs/repository/site/package.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/site/scripts/gen-llms-txt.mjs",
+      "encoded_url": "/v100-perfs/read/site/scripts/gen-llms-txt.mjs",
+      "trailing_slash_url": "/v100-perfs/read/site/scripts/gen-llms-txt.mjs/",
+      "canonical_target": "/v100-perfs/repository/site/scripts/gen-llms-txt.mjs/"
+    },
+    {
+      "old_url": "/v100-perfs/read/site/scripts/generate-repo-index.mjs",
+      "encoded_url": "/v100-perfs/read/site/scripts/generate-repo-index.mjs",
+      "trailing_slash_url": "/v100-perfs/read/site/scripts/generate-repo-index.mjs/",
+      "canonical_target": "/v100-perfs/repository/site/scripts/generate-repo-index.mjs/"
+    },
+    {
+      "old_url": "/v100-perfs/read/site/src/components/ProtoDashboard.tsx",
+      "encoded_url": "/v100-perfs/read/site/src/components/ProtoDashboard.tsx",
+      "trailing_slash_url": "/v100-perfs/read/site/src/components/ProtoDashboard.tsx/",
+      "canonical_target": "/v100-perfs/repository/site/src/components/ProtoDashboard.tsx/"
+    },
+    {
+      "old_url": "/v100-perfs/read/site/src/components/RepoExplorer.tsx",
+      "encoded_url": "/v100-perfs/read/site/src/components/RepoExplorer.tsx",
+      "trailing_slash_url": "/v100-perfs/read/site/src/components/RepoExplorer.tsx/",
+      "canonical_target": "/v100-perfs/repository/site/src/components/RepoExplorer.tsx/"
+    },
+    {
+      "old_url": "/v100-perfs/read/site/src/components/StatusCard.tsx",
+      "encoded_url": "/v100-perfs/read/site/src/components/StatusCard.tsx",
+      "trailing_slash_url": "/v100-perfs/read/site/src/components/StatusCard.tsx/",
+      "canonical_target": "/v100-perfs/repository/site/src/components/StatusCard.tsx/"
+    },
+    {
+      "old_url": "/v100-perfs/read/site/src/layouts/BaseLayout.astro",
+      "encoded_url": "/v100-perfs/read/site/src/layouts/BaseLayout.astro",
+      "trailing_slash_url": "/v100-perfs/read/site/src/layouts/BaseLayout.astro/",
+      "canonical_target": "/v100-perfs/repository/site/src/layouts/BaseLayout.astro/"
+    },
+    {
+      "old_url": "/v100-perfs/read/site/src/pages/docs/[...slug].astro",
+      "encoded_url": "/v100-perfs/read/site/src/pages/docs/%5B...slug%5D.astro",
+      "trailing_slash_url": "/v100-perfs/read/site/src/pages/docs/%5B...slug%5D.astro/",
+      "canonical_target": "/v100-perfs/repository/site/src/pages/docs/%5B...slug%5D.astro/"
+    },
+    {
+      "old_url": "/v100-perfs/read/site/src/pages/index.astro",
+      "encoded_url": "/v100-perfs/read/site/src/pages/index.astro",
+      "trailing_slash_url": "/v100-perfs/read/site/src/pages/index.astro/",
+      "canonical_target": "/v100-perfs/repository/site/src/pages/index.astro/"
+    },
+    {
+      "old_url": "/v100-perfs/read/site/src/pages/read/[...path].astro",
+      "encoded_url": "/v100-perfs/read/site/src/pages/read/%5B...path%5D.astro",
+      "trailing_slash_url": "/v100-perfs/read/site/src/pages/read/%5B...path%5D.astro/",
+      "canonical_target": "/v100-perfs/repository/site/src/pages/read/%5B...path%5D.astro/"
+    },
+    {
+      "old_url": "/v100-perfs/read/site/src/pages/repo.astro",
+      "encoded_url": "/v100-perfs/read/site/src/pages/repo.astro",
+      "trailing_slash_url": "/v100-perfs/read/site/src/pages/repo.astro/",
+      "canonical_target": "/v100-perfs/repository/site/src/pages/repo.astro/"
+    },
+    {
+      "old_url": "/v100-perfs/read/site/src/styles/global.css",
+      "encoded_url": "/v100-perfs/read/site/src/styles/global.css",
+      "trailing_slash_url": "/v100-perfs/read/site/src/styles/global.css/",
+      "canonical_target": "/v100-perfs/repository/site/src/styles/global.css/"
+    },
+    {
+      "old_url": "/v100-perfs/read/site/tsconfig.json",
+      "encoded_url": "/v100-perfs/read/site/tsconfig.json",
+      "trailing_slash_url": "/v100-perfs/read/site/tsconfig.json/",
+      "canonical_target": "/v100-perfs/repository/site/tsconfig.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/tests/proxy_stream_error_invariants.py",
+      "encoded_url": "/v100-perfs/read/tests/proxy_stream_error_invariants.py",
+      "trailing_slash_url": "/v100-perfs/read/tests/proxy_stream_error_invariants.py/",
+      "canonical_target": "/v100-perfs/repository/tests/proxy_stream_error_invariants.py/"
+    },
+    {
+      "old_url": "/v100-perfs/read/tests/pytorch_fastllm_token_mask_oracle.py",
+      "encoded_url": "/v100-perfs/read/tests/pytorch_fastllm_token_mask_oracle.py",
+      "trailing_slash_url": "/v100-perfs/read/tests/pytorch_fastllm_token_mask_oracle.py/",
+      "canonical_target": "/v100-perfs/repository/tests/pytorch_fastllm_token_mask_oracle.py/"
+    },
+    {
+      "old_url": "/v100-perfs/read/tests/test_agent_bench.py",
+      "encoded_url": "/v100-perfs/read/tests/test_agent_bench.py",
+      "trailing_slash_url": "/v100-perfs/read/tests/test_agent_bench.py/",
+      "canonical_target": "/v100-perfs/repository/tests/test_agent_bench.py/"
+    },
+    {
+      "old_url": "/v100-perfs/read/tests/test_fastllm_adapter.py",
+      "encoded_url": "/v100-perfs/read/tests/test_fastllm_adapter.py",
+      "trailing_slash_url": "/v100-perfs/read/tests/test_fastllm_adapter.py/",
+      "canonical_target": "/v100-perfs/repository/tests/test_fastllm_adapter.py/"
+    },
+    {
+      "old_url": "/v100-perfs/read/tests/test_fastllm_cache_benchmark.py",
+      "encoded_url": "/v100-perfs/read/tests/test_fastllm_cache_benchmark.py",
+      "trailing_slash_url": "/v100-perfs/read/tests/test_fastllm_cache_benchmark.py/",
+      "canonical_target": "/v100-perfs/repository/tests/test_fastllm_cache_benchmark.py/"
+    },
+    {
+      "old_url": "/v100-perfs/read/tests/test_fastllm_feature_bench.py",
+      "encoded_url": "/v100-perfs/read/tests/test_fastllm_feature_bench.py",
+      "trailing_slash_url": "/v100-perfs/read/tests/test_fastllm_feature_bench.py/",
+      "canonical_target": "/v100-perfs/repository/tests/test_fastllm_feature_bench.py/"
+    },
+    {
+      "old_url": "/v100-perfs/read/tests/test_fastllm_native_profile.py",
+      "encoded_url": "/v100-perfs/read/tests/test_fastllm_native_profile.py",
+      "trailing_slash_url": "/v100-perfs/read/tests/test_fastllm_native_profile.py/",
+      "canonical_target": "/v100-perfs/repository/tests/test_fastllm_native_profile.py/"
+    },
+    {
+      "old_url": "/v100-perfs/read/tests/test_thinking_proxy_fastllm.py",
+      "encoded_url": "/v100-perfs/read/tests/test_thinking_proxy_fastllm.py",
+      "trailing_slash_url": "/v100-perfs/read/tests/test_thinking_proxy_fastllm.py/",
+      "canonical_target": "/v100-perfs/repository/tests/test_thinking_proxy_fastllm.py/"
+    },
+    {
+      "old_url": "/v100-perfs/read/tests/test_thinking_proxy_lifecycle.py",
+      "encoded_url": "/v100-perfs/read/tests/test_thinking_proxy_lifecycle.py",
+      "trailing_slash_url": "/v100-perfs/read/tests/test_thinking_proxy_lifecycle.py/",
+      "canonical_target": "/v100-perfs/repository/tests/test_thinking_proxy_lifecycle.py/"
+    },
+    {
+      "old_url": "/v100-perfs/read/tests/tool_guidance_invariants.py",
+      "encoded_url": "/v100-perfs/read/tests/tool_guidance_invariants.py",
+      "trailing_slash_url": "/v100-perfs/read/tests/tool_guidance_invariants.py/",
+      "canonical_target": "/v100-perfs/repository/tests/tool_guidance_invariants.py/"
+    },
+    {
+      "old_url": "/v100-perfs/read/tests/toolcall_grammar_invariants.py",
+      "encoded_url": "/v100-perfs/read/tests/toolcall_grammar_invariants.py",
+      "trailing_slash_url": "/v100-perfs/read/tests/toolcall_grammar_invariants.py/",
+      "canonical_target": "/v100-perfs/repository/tests/toolcall_grammar_invariants.py/"
+    },
+    {
+      "old_url": "/v100-perfs/read/thinking_proxy.py",
+      "encoded_url": "/v100-perfs/read/thinking_proxy.py",
+      "trailing_slash_url": "/v100-perfs/read/thinking_proxy.py/",
+      "canonical_target": "/v100-perfs/repository/src/gateway/thinking_proxy.py/"
+    },
+    {
+      "old_url": "/v100-perfs/read/video-gen/README.md",
+      "encoded_url": "/v100-perfs/read/video-gen/README.md",
+      "trailing_slash_url": "/v100-perfs/read/video-gen/README.md/",
+      "canonical_target": "/v100-perfs/repository/experiments/video-generation/README.md/"
+    },
+    {
+      "old_url": "/v100-perfs/read/video-gen/bench_h3.py",
+      "encoded_url": "/v100-perfs/read/video-gen/bench_h3.py",
+      "trailing_slash_url": "/v100-perfs/read/video-gen/bench_h3.py/",
+      "canonical_target": "/v100-perfs/repository/experiments/video-generation/bench_h3.py/"
+    },
+    {
+      "old_url": "/v100-perfs/read/video-gen/results/resolution_1step.json",
+      "encoded_url": "/v100-perfs/read/video-gen/results/resolution_1step.json",
+      "trailing_slash_url": "/v100-perfs/read/video-gen/results/resolution_1step.json/",
+      "canonical_target": "/v100-perfs/repository/experiments/video-generation/results/resolution_1step.json/"
+    },
+    {
+      "old_url": "/v100-perfs/read/video-gen/test_bench_h3.py",
+      "encoded_url": "/v100-perfs/read/video-gen/test_bench_h3.py",
+      "trailing_slash_url": "/v100-perfs/read/video-gen/test_bench_h3.py/",
+      "canonical_target": "/v100-perfs/repository/experiments/video-generation/test_bench_h3.py/"
+    },
+    {
+      "old_url": "/v100-perfs/read/video-gen/workflows/minimax_h3_v100_t2v_api.json",
+      "encoded_url": "/v100-perfs/read/video-gen/workflows/minimax_h3_v100_t2v_api.json",
+      "trailing_slash_url": "/v100-perfs/read/video-gen/workflows/minimax_h3_v100_t2v_api.json/",
+      "canonical_target": "/v100-perfs/repository/experiments/video-generation/workflows/minimax_h3_v100_t2v_api.json/"
+    }
+  ]
+}
