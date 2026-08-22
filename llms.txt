@@ -303,6 +303,7 @@
 - https://cyjin-yl.github.io/v100-perfs/evidence/results/q38-sweep/raw/toolcall_bench_2026-08-22/ud-q5_file_roundtrip.json/
 - https://cyjin-yl.github.io/v100-perfs/repository/.github/workflows/deploy-docs.yml/
 - https://cyjin-yl.github.io/v100-perfs/repository/.gitignore/
+- https://cyjin-yl.github.io/v100-perfs/repository/.superpowers/sdd/2026-08-22-full-repository-docs-migration/task-4-report.md/
 - https://cyjin-yl.github.io/v100-perfs/repository/README.md/
 - https://cyjin-yl.github.io/v100-perfs/repository/config/chat-templates/qwen3.6_gguf_original.jinja/
 - https://cyjin-yl.github.io/v100-perfs/repository/config/chat-templates/qwen3.6_merged.jinja/
