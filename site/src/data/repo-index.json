@@ -1677,7 +1677,7 @@
     "title": "Qwen3.5 / Qwen3.8 采样与模板配置",
     "category": "docs",
     "ext": ".md",
-    "bytes": 3015
+    "bytes": 3014
   },
   {
     "path": "docs/toolcall/constraint-architecture.md",
@@ -2314,7 +2314,7 @@
     "title": "V100-32G FastLLM 推理知识库",
     "category": "root",
     "ext": ".txt",
-    "bytes": 8239
+    "bytes": 8251
   },
   {
     "path": "patches/thinking_proxy-2026-08-18-stream-timeout-anthropic-effort.patch",

@@ -54,4 +54,4 @@ UD-Q5_K_M 与 UD-Q6_K_M 的内嵌模板均已分别导出并校验：二者都�
 
 ## 当前生产组合
 
-Q5 过渡实例：UD-Q5_K_M、turbo3 KV、MTP3、exact acceptance、repeat penalty 1.08、按模式选择上表采样档。Q6 目标实例保持相同引擎参数，只替换为 UD-Q6_K_M 权重及其自身内嵌模板。这样 Q5/Q6 对比只改变权重量化档位。
+当前生产实例为 UD-Q6_K_M、turbo3 KV、MTP3、exact acceptance、repeat penalty 1.08，并按 thinking/non-thinking 选择上表 Qwen3.8 官方采样档。Q5 保留为对照 profile；两者除权重量化档位和对应 GGUF 模板导出路径外保持相同。
