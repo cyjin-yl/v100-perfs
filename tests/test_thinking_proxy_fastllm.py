@@ -1320,7 +1320,7 @@ class ImageConversionTests(unittest.TestCase):
         }]
 
         original = messages[0]["content"][0]["image_url"]["url"]
-        thinking_proxy._convert_images(messages)
+        asyncio.run(thinking_proxy._convert_images(messages))
 
         converted = messages[0]["content"][0]["image_url"]["url"]
         self.assertEqual(converted, original)
@@ -1353,6 +1353,9 @@ class LocalOnlyStreamTests(unittest.IsolatedAsyncioTestCase):
         }
 
         with (
+            mock.patch.object(
+                thinking_proxy, "backend_lifecycle",
+                BackendReloadingTests.FakeLifecycle("LOADING")),
             mock.patch.object(
                 thinking_proxy, "prepare_fastllm_body", side_effect=lambda b, _: b
             ),
@@ -1645,6 +1648,20 @@ class BackendReloadingTests(unittest.IsolatedAsyncioTestCase):
         payload = json.loads(response.body)
         testcase.assertEqual(payload["error"]["type"], "service_unavailable")
         testcase.assertEqual(payload["error"]["code"], "backend_reloading")
+
+    class FakeLifecycle:
+        def __init__(self, state):
+            self.state = state
+
+        def snapshot(self):
+            return {"state": self.state}
+
+        async def acquire(self, timeout=None):
+            return self
+
+        async def release(self):
+            return None
+
     async def test_anthropic_auto_uses_fair_route_while_local_reloads(self):
         request = self.JsonRequest({
             "model": "auto",
@@ -1694,13 +1711,21 @@ class BackendReloadingTests(unittest.IsolatedAsyncioTestCase):
         local_submit.assert_not_awaited()
 
     async def test_openai_auto_image_uses_fair_route(self):
+        from PIL import Image
+        source = io.BytesIO()
+        Image.new("RGB", (1, 1), (255, 0, 0)).save(source, format="PNG")
         request = self.JsonRequest({
             "model": "auto",
             "messages": [{
                 "role": "user",
                 "content": [{
                     "type": "image_url",
-                    "image_url": {"url": "https://example.com/image.png"},
+                    "image_url": {
+                        "url": (
+                            "data:image/png;base64,"
+                            + base64.b64encode(source.getvalue()).decode()
+                        ),
+                    },
                 }],
             }],
             "max_tokens": 8,
@@ -1850,6 +1875,9 @@ class BackendReloadingTests(unittest.IsolatedAsyncioTestCase):
         body = {"model": "qwen3.6-fastllm", "messages": [], "stream": True}
         with (
             mock.patch.object(
+                thinking_proxy, "backend_lifecycle",
+                self.FakeLifecycle("LOADING")),
+            mock.patch.object(
                 thinking_proxy, "prepare_fastllm_body", side_effect=lambda b, _: b),
             mock.patch.object(thinking_proxy, "_proxy_stream", failing_local_stream),
             mock.patch.object(thinking_proxy.prefix_tracker, "reserve"),
@@ -1864,6 +1892,34 @@ class BackendReloadingTests(unittest.IsolatedAsyncioTestCase):
         output = b"".join(chunks)
         self.assertIn(b'"type": "service_unavailable"', output)
         self.assertIn(b'"code": "backend_reloading"', output)
+        self.assertTrue(output.endswith(b"data: [DONE]\n\n"))
+
+    async def test_midstream_error_when_ready_is_transport_interrupted(self):
+        async def failing_local_stream(url, body):
+            yield b'data: {"choices":[{"delta":{"content":"ok"}}]}\n\n'
+            raise thinking_proxy.httpx.RemoteProtocolError("truncated body")
+
+        request = self.JsonRequest({})
+        body = {"model": "qwen3.6-fastllm", "messages": [], "stream": True}
+        with (
+            mock.patch.object(
+                thinking_proxy, "backend_lifecycle",
+                self.FakeLifecycle("READY")),
+            mock.patch.object(
+                thinking_proxy, "prepare_fastllm_body", side_effect=lambda b, _: b),
+            mock.patch.object(thinking_proxy, "_proxy_stream", failing_local_stream),
+            mock.patch.object(thinking_proxy.prefix_tracker, "reserve"),
+            mock.patch.object(thinking_proxy.prefix_tracker, "record"),
+            mock.patch.object(thinking_proxy.scheduler, "release_stream"),
+            mock.patch.object(thinking_proxy.backend_penalty, "record_failure"),
+            mock.patch.object(thinking_proxy.service_history, "record"),
+        ):
+            chunks = [chunk async for chunk in thinking_proxy._local_stream(
+                "http://127.0.0.1:8002/v1/chat/completions", body, request,
+                allow_fallback=False)]
+        output = b"".join(chunks)
+        self.assertIn(b'"code": "backend_stream_interrupted"', output)
+        self.assertNotIn(b'"code": "backend_reloading"', output)
         self.assertTrue(output.endswith(b"data: [DONE]\n\n"))
 
 class StreamFallbackBoundaryTests(unittest.IsolatedAsyncioTestCase):
@@ -1913,6 +1969,9 @@ class StreamFallbackBoundaryTests(unittest.IsolatedAsyncioTestCase):
         request = BackendReloadingTests.JsonRequest({})
         body = {"model": "qwen3.6-fastllm", "messages": [], "stream": True}
         with (
+            mock.patch.object(
+                thinking_proxy, "backend_lifecycle",
+                BackendReloadingTests.FakeLifecycle("LOADING")),
             mock.patch.object(thinking_proxy, "_anthropic_stream", partial_local),
             mock.patch.object(
                 thinking_proxy, "_pick_backend",
@@ -1932,6 +1991,7 @@ class StreamFallbackBoundaryTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(cloud_calls, 0)
         self.assertEqual(output.count("event: message_start"), 1)
         self.assertIn('"code": "backend_reloading"', output)
+
     async def test_anthropic_auto_stream_uses_external_token_stream(self):
         request = BackendReloadingTests.JsonRequest({})
         body = {

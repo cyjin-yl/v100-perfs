@@ -4097,6 +4097,7 @@ async def _anthropic_stream_limited(
         return
     prefix_tracker.reserve(openai_body.get("messages", []))
     local_failed = False
+    local_error: BaseException | None = None
     yielded_local_event = False
     try:
         async for chunk in _anthropic_stream(openai_body, public_model):
@@ -4104,8 +4105,9 @@ async def _anthropic_stream_limited(
             yield chunk
             if await request.is_disconnected():
                 return
-    except Exception:
+    except Exception as exc:
         local_failed = True
+        local_error = exc
     finally:
         prefix_tracker.record(openai_body.get("messages", []), "local")
         scheduler.release_stream()

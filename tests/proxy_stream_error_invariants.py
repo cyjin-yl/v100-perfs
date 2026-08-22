@@ -3,10 +3,14 @@
 
 import asyncio
 import importlib.util
+import sys
 from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
+_GATEWAY_DIR = ROOT / "src" / "gateway"
+if str(_GATEWAY_DIR) not in sys.path:
+    sys.path.insert(0, str(_GATEWAY_DIR))
 SPEC = importlib.util.spec_from_file_location(
     "thinking_proxy_under_test", ROOT / "src" / "gateway" / "thinking_proxy.py"
 )
