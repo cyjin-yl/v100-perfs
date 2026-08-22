@@ -1,5 +1,6 @@
 import gc
 import hashlib
+import io
 import json
 import os
 import stat
@@ -7,6 +8,7 @@ import subprocess
 import tempfile
 import unittest
 import warnings
+from contextlib import redirect_stdout
 from dataclasses import asdict
 from pathlib import Path
 
@@ -14,6 +16,7 @@ from tools.repository_layout.layout_manifest import (
     LayoutError,
     LayoutMapping,
     build_baseline_ledger,
+    main as layout_main,
     verify_final_tree,
 )
 from tools.repository_layout.route_manifest import (
@@ -59,6 +62,31 @@ class LayoutManifestTests(unittest.TestCase):
         path = self.repo / "layout-map.json"
         path.write_text(json.dumps(data), encoding="utf-8")
         return LayoutMapping.from_file(path)
+
+    def write_ledger(self, rows):
+        ledger_path = (
+            self.repo
+            / "operations"
+            / "migrations"
+            / f"{'a' * 40}-repository-layout.json"
+        )
+        ledger_path.parent.mkdir(parents=True, exist_ok=True)
+        ledger_path.write_text(
+            json.dumps({
+                "schema_version": 1,
+                "base_commit": "a" * 40,
+                "row_count": len(rows),
+                "rows": [asdict(row) for row in rows],
+            }),
+            encoding="utf-8",
+        )
+        return ledger_path
+
+    def run_layout_main(self, *args):
+        output = io.StringIO()
+        with redirect_stdout(output):
+            return_code = layout_main([*args, "--repo", str(self.repo)])
+        return return_code, output.getvalue()
 
     def move_rows(self, rows):
         for row in rows:
@@ -224,6 +252,81 @@ class LayoutManifestTests(unittest.TestCase):
         self.assertEqual(report.lost_blobs, 1)
         self.assertEqual(report.unexpected_rewrites, 0)
         self.assertEqual(report.mode_changes, 1)
+
+    def test_apply_dry_run_is_read_only_and_reports_ledger_counts(self):
+        self.add_files({"old/nested/data": b"data", "keep": b"keep"})
+        rows = build_baseline_ledger(
+            self.repo,
+            self.mapping(
+                identity_pins=["keep"],
+                prefix_moves={"old/": "new/"},
+            ),
+        )
+        self.write_ledger(rows)
+        status_before = subprocess.run(
+            ["git", "-C", str(self.repo), "status", "--porcelain=v1", "-z"],
+            check=True,
+            stdout=subprocess.PIPE,
+        ).stdout
+
+        return_code, output = self.run_layout_main("apply", "--dry-run")
+
+        status_after = subprocess.run(
+            ["git", "-C", str(self.repo), "status", "--porcelain=v1", "-z"],
+            check=True,
+            stdout=subprocess.PIPE,
+        ).stdout
+        self.assertEqual(return_code, 0)
+        self.assertEqual(status_after, status_before)
+        self.assertTrue((self.repo / "old/nested/data").exists())
+        self.assertFalse((self.repo / "new/nested/data").exists())
+        self.assertEqual(output, (
+            "legacy_rows=2 move_rows=1 identity_rows=1\n"
+            "pending_moves=1 completed_moves=0 conflicts=0 missing=0\n"
+            "dry_run=1 moved=0\n"
+        ))
+
+    def test_apply_and_verify_use_git_index_modes_and_working_tree_bytes(self):
+        self.add_files({"old/data": b"data", "keep": b"keep"})
+        rows = build_baseline_ledger(
+            self.repo,
+            self.mapping(
+                identity_pins=["keep"],
+                prefix_moves={"old/": "new/"},
+            ),
+        )
+        self.write_ledger(rows)
+
+        apply_code, apply_output = self.run_layout_main("apply")
+
+        self.assertEqual(apply_code, 0)
+        self.assertFalse((self.repo / "old/data").exists())
+        self.assertEqual((self.repo / "new/data").read_bytes(), b"data")
+        self.assertEqual(apply_output, (
+            "legacy_rows=2 move_rows=1 identity_rows=1\n"
+            "pending_moves=1 completed_moves=0 conflicts=0 missing=0\n"
+            "dry_run=0 moved=1\n"
+        ))
+
+        subprocess.run(
+            ["git", "-C", str(self.repo), "config", "core.filemode", "false"],
+            check=True,
+        )
+        destination = self.repo / "new/data"
+        destination.chmod(destination.stat().st_mode | stat.S_IXUSR)
+
+        verify_code, verify_output = self.run_layout_main("verify-moves")
+
+        self.assertEqual(verify_code, 0)
+        self.assertEqual(verify_output, (
+            "legacy_rows=2 joined=2\n"
+            "lost_blobs=0 unexpected_rewrites=0 mode_changes=0\n"
+        ))
+
+        destination.write_bytes(b"changed")
+        changed_code, changed_output = self.run_layout_main("verify-moves")
+        self.assertEqual(changed_code, 1)
+        self.assertIn("unexpected_rewrites=1", changed_output)
 
     def test_production_mapping_contains_the_complete_explicit_docs_rules(self):
         mapping = LayoutMapping.from_file(PRODUCTION_MAPPING)

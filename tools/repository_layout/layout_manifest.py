@@ -66,6 +66,22 @@ class VerificationReport:
             and self.mode_changes == 0
         )
 
+@dataclass(frozen=True)
+class ApplyReport:
+    legacy_rows: int
+    move_rows: int
+    identity_rows: int
+    pending_moves: int
+    completed_moves: int
+    conflicts: int
+    missing: int
+    moved: int
+    dry_run: bool
+
+    @property
+    def ok(self) -> bool:
+        return self.conflicts == 0 and self.missing == 0
+
 
 @dataclass(frozen=True)
 class LayoutMapping:
@@ -516,6 +532,182 @@ def verify_final_tree(
         mode_changes=mode_changes,
     )
 
+def load_ledger(path: Path) -> list[LedgerRow]:
+    """Load and validate an immutable repository-layout ledger."""
+    try:
+        payload = json.loads(
+            path.read_text(encoding="utf-8"),
+            object_pairs_hook=_reject_duplicate_json_keys,
+        )
+    except (OSError, json.JSONDecodeError) as exc:
+        raise LayoutError(f"cannot load layout ledger {path}: {exc}") from exc
+    if not isinstance(payload, dict) or payload.get("schema_version") != 1:
+        raise LayoutError("layout ledger must use schema version 1")
+    base_commit = payload.get("base_commit")
+    if (
+        not isinstance(base_commit, str)
+        or path.name != f"{base_commit}-repository-layout.json"
+    ):
+        raise LayoutError("layout ledger filename does not match its base commit")
+    raw_rows = payload.get("rows")
+    if not isinstance(raw_rows, list) or payload.get("row_count") != len(raw_rows):
+        raise LayoutError("layout ledger row count does not match its rows")
+
+    expected_fields = set(LedgerRow.__annotations__)
+    rows: list[LedgerRow] = []
+    for raw_row in raw_rows:
+        if not isinstance(raw_row, dict) or set(raw_row) != expected_fields:
+            raise LayoutError("layout ledger row has invalid fields")
+        if (
+            not isinstance(raw_row["old_path"], str)
+            or not isinstance(raw_row["new_path"], str)
+            or raw_row["git_mode"] not in {"100644", "100755", "120000"}
+            or not isinstance(raw_row["blob_oid"], str)
+            or len(raw_row["blob_oid"]) not in {40, 64}
+            or any(character not in "0123456789abcdef" for character in raw_row["blob_oid"])
+            or type(raw_row["byte_length"]) is not int
+            or raw_row["byte_length"] < 0
+            or not isinstance(raw_row["sha256"], str)
+            or len(raw_row["sha256"]) != 64
+            or any(character not in "0123456789abcdef" for character in raw_row["sha256"])
+            or raw_row["disposition"] not in _ALLOWED_DISPOSITIONS
+        ):
+            raise LayoutError("layout ledger row has invalid values")
+        _validate_relative_path(raw_row["old_path"], "ledger source")
+        _validate_destination(raw_row["new_path"])
+        rows.append(LedgerRow(**raw_row))
+
+    old_paths = [row.old_path for row in rows]
+    if len(old_paths) != len(set(old_paths)):
+        raise LayoutError("layout ledger contains duplicate sources")
+    _validate_destinations(
+        [(row.old_path, row.new_path) for row in rows],
+        set(old_paths),
+    )
+    return rows
+
+
+def _repository_ledger_path(repo: Path) -> Path:
+    matches = sorted(
+        (repo / "operations" / "migrations").glob("*-repository-layout.json")
+    )
+    if len(matches) != 1:
+        raise LayoutError(
+            "expected exactly one immutable repository-layout ledger, "
+            f"found {len(matches)}"
+        )
+    return matches[0]
+
+
+def _path_exists(path: Path) -> bool:
+    return os.path.lexists(path)
+
+
+def apply_layout(
+    repo: Path,
+    ledger: Sequence[LedgerRow],
+    *,
+    dry_run: bool,
+) -> ApplyReport:
+    """Inspect or apply pending ledger moves without rewriting file contents."""
+    repo = repo.resolve()
+    pending: list[LedgerRow] = []
+    completed = 0
+    conflicts = 0
+    missing = 0
+    identity_rows = 0
+    for row in ledger:
+        source_exists = _path_exists(repo / row.old_path)
+        destination_exists = _path_exists(repo / row.new_path)
+        if row.old_path == row.new_path:
+            identity_rows += 1
+            if not source_exists:
+                missing += 1
+        elif source_exists and not destination_exists:
+            pending.append(row)
+        elif not source_exists and destination_exists:
+            completed += 1
+        elif source_exists and destination_exists:
+            conflicts += 1
+        else:
+            missing += 1
+
+    move_rows = len(ledger) - identity_rows
+    report = ApplyReport(
+        legacy_rows=len(ledger),
+        move_rows=move_rows,
+        identity_rows=identity_rows,
+        pending_moves=len(pending),
+        completed_moves=completed,
+        conflicts=conflicts,
+        missing=missing,
+        moved=0,
+        dry_run=dry_run,
+    )
+    if dry_run or not report.ok:
+        return report
+
+    ordered = sorted(
+        pending,
+        key=lambda row: (-len(PurePosixPath(row.old_path).parts), row.old_path),
+    )
+    for row in ordered:
+        (repo / row.new_path).parent.mkdir(parents=True, exist_ok=True)
+        _git(repo, "mv", "--", row.old_path, row.new_path)
+    return ApplyReport(
+        legacy_rows=report.legacy_rows,
+        move_rows=report.move_rows,
+        identity_rows=report.identity_rows,
+        pending_moves=report.pending_moves,
+        completed_moves=report.completed_moves,
+        conflicts=report.conflicts,
+        missing=report.missing,
+        moved=len(ordered),
+        dry_run=False,
+    )
+
+
+def verify_moves(repo: Path, ledger: Sequence[LedgerRow]) -> VerificationReport:
+    """Verify destination bytes plus authoritative Git index blobs and modes."""
+    repo = repo.resolve()
+    index = {entry.path: entry for entry in _baseline_index(repo)}
+    collisions = len(ledger) - len({row.new_path for row in ledger})
+    migrated = 0
+    lost = 0
+    unexpected_rewrites = 0
+    mode_changes = 0
+    for row in ledger:
+        metadata = _working_tree_metadata(repo / row.new_path)
+        index_entry = index.get(row.new_path)
+        if metadata is None or index_entry is None:
+            lost += 1
+            continue
+        migrated += 1
+        if index_entry.git_mode != row.git_mode:
+            mode_changes += 1
+        _, byte_length, sha256 = metadata
+        changed = (
+            byte_length != row.byte_length
+            or sha256 != row.sha256
+            or index_entry.blob_oid != row.blob_oid
+        )
+        approved = row.disposition in {
+            "approved-rewrite",
+            "proven-generated-regenerate",
+        }
+        if changed and not approved:
+            unexpected_rewrites += 1
+
+    return VerificationReport(
+        input_manifest_rows=len(ledger),
+        migrated_legacy_rows=migrated,
+        unmapped=0,
+        collisions=collisions,
+        lost_blobs=lost,
+        unexpected_rewrites=unexpected_rewrites,
+        mode_changes=mode_changes,
+    )
+
 
 def capture_layout(repo: Path, mapping_path: Path) -> Path:
     repo = repo.resolve()
@@ -570,6 +762,17 @@ def _parser() -> argparse.ArgumentParser:
         type=Path,
         default=Path(__file__).with_name("layout-map.json"),
     )
+    apply = subparsers.add_parser(
+        "apply",
+        help="inspect or apply immutable repository-layout moves",
+    )
+    apply.add_argument("--repo", type=Path, default=Path("."))
+    apply.add_argument("--dry-run", action="store_true")
+    verify = subparsers.add_parser(
+        "verify-moves",
+        help="verify migrated destinations against the immutable ledger",
+    )
+    verify.add_argument("--repo", type=Path, default=Path("."))
     return parser
 
 
@@ -587,6 +790,39 @@ def main(argv: Sequence[str] | None = None) -> int:
         print("unmapped=0 collisions=0")
         print(f"ledger={display_path.as_posix()}")
         return 0
+    if args.command == "apply":
+        try:
+            ledger = load_ledger(_repository_ledger_path(args.repo.resolve()))
+            report = apply_layout(args.repo, ledger, dry_run=args.dry_run)
+        except LayoutError as exc:
+            raise SystemExit(f"apply: {exc}") from exc
+        print(
+            f"legacy_rows={report.legacy_rows} move_rows={report.move_rows} "
+            f"identity_rows={report.identity_rows}"
+        )
+        print(
+            f"pending_moves={report.pending_moves} "
+            f"completed_moves={report.completed_moves} "
+            f"conflicts={report.conflicts} missing={report.missing}"
+        )
+        print(f"dry_run={int(report.dry_run)} moved={report.moved}")
+        return 0 if report.ok else 1
+    if args.command == "verify-moves":
+        try:
+            ledger = load_ledger(_repository_ledger_path(args.repo.resolve()))
+            report = verify_moves(args.repo, ledger)
+        except LayoutError as exc:
+            raise SystemExit(f"verify-moves: {exc}") from exc
+        print(
+            f"legacy_rows={report.input_manifest_rows} "
+            f"joined={report.migrated_legacy_rows}"
+        )
+        print(
+            f"lost_blobs={report.lost_blobs} "
+            f"unexpected_rewrites={report.unexpected_rewrites} "
+            f"mode_changes={report.mode_changes}"
+        )
+        return 0 if report.ok else 1
     raise AssertionError(f"unhandled command: {args.command}")
 
 
