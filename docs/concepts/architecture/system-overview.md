@@ -61,7 +61,7 @@ Model weights, multimodal projector, and chat template are independently identif
 ## Control plane and data plane
 
 - Data-plane endpoints accept inference requests. Documentation capture must not call them.
-- Read-only state comes from `/health`, `/props`, authenticated admin state, allowlisted process environment, process command line, and local checksums.
+- Read-only state comes from `/health`, `/props`, authenticated admin state, an explicit process-environment allowlist, and local checksums.
 - Suspend, resume, profile switch, restart, and inference calls are mutations or workload actions. They require a separate operating decision and are outside documentation capture.
 
 ## Tracked source versus deployment

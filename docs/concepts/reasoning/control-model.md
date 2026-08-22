@@ -86,4 +86,22 @@ Fields within a category follow schema order, not JSON insertion order. Equivale
 
 Successful serialization always writes a boolean `chat_template_kwargs.enable_thinking`. It adds `chat_template_kwargs.reasoning_effort` only when thinking is enabled and a non-null template effort was selected. Public compatibility fields are consumed rather than forwarded beside the canonical values.
 
+## Parser ownership and response channels
+
+### Apiserver capability and startup validation
+
+The FastLLM apiserver owns model/parser capability, not client-field aliases. Its capability contract identifies the selected template/parser behavior, supported template controls, native effort values, defaults, and always-on or always-off constraints. It validates the selected parser and template at startup and exposes validity and error state through read-only properties. The proxy must not guess parser capability from a model name or turn an unsupported control into a silent default.
+
+Hard reasoning-budget enforcement would also require an explicit apiserver capability. Until that capability exists, the proxy retains a finite budget as compatibility metadata and sends only the canonical template controls.
+
+### Proxy wire adaptation
+
+The proxy owns protocol adaptation around the engine boundary. On requests it resolves public aliases before template rendering. On responses it recognizes only valid, closed reasoning markers, promotes native tool-call output to protocol tool calls, and maps the result into the selected OpenAI or Anthropic envelope. Malformed or unclosed reasoning markers remain visible content rather than being silently reclassified.
+
+### Independent channels and ordering
+
+Reasoning, visible content, and tool calls are independent channels. A response may contain any valid combination, including reasoning with multiple parallel tool calls. A `tool_calls` finish reason must not erase reasoning, and a reasoning-only response still carries an empty visible-content string where the protocol requires it.
+
+The OpenAI-compatible endpoint emits exactly one reasoning field, `reasoning_content`; it does not also emit a `reasoning` alias that clients could double-count. `content` and `tool_calls` remain beside it. Anthropic conversion preserves the logical block order: thinking first, then visible text, then tool-use blocks. Streaming preserves the same order even when SSE delimiters arrive across arbitrary byte boundaries.
+
 See [Reasoning controls API](../../reference/api/reasoning-controls.md) for exact errors and [Client reasoning fields](../../guides/client-compatibility/reasoning-fields.md) for protocol examples.

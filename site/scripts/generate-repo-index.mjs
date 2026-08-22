@@ -27,17 +27,72 @@ const generatedSources = new Map([
   [outputPath, "site/scripts/generate-repo-index.mjs"],
   ["site/package-lock.json", "site/package.json"],
 ]);
-const navOrder = new Map([
-  ["overview", 0],
-  ["getting-started", 10],
-  ["concepts", 20],
-  ["guides", 30],
-  ["operations", 40],
-  ["reference", 50],
-  ["performance", 60],
-  ["research", 70],
-  ["archive", 80],
-]);
+const primaryNavigation = [
+  { sourcePath: "docs/index.md", section: "overview", label: "Overview", order: 0 },
+  {
+    sourcePath: "docs/getting-started/overview.md",
+    section: "getting-started",
+    label: "Getting Started",
+    order: 1,
+  },
+  {
+    sourcePath: "docs/concepts/architecture/system-overview.md",
+    section: "concepts",
+    label: "Concepts",
+    order: 2,
+  },
+  {
+    sourcePath: "docs/guides/client-compatibility/reasoning-fields.md",
+    section: "guides",
+    label: "Guides",
+    order: 3,
+  },
+  {
+    sourcePath: "docs/operations/current-state/production.md",
+    section: "operations",
+    label: "Operations",
+    order: 4,
+  },
+  {
+    sourcePath: "docs/reference/api/reasoning-controls.md",
+    section: "reference",
+    label: "Reference",
+    order: 5,
+  },
+  {
+    sourcePath: "docs/performance/methodology/index.md",
+    section: "performance",
+    label: "Performance",
+    order: 6,
+  },
+  {
+    sourcePath: "docs/research/performance/short-prefill-plan.md",
+    section: "research",
+    label: "Research",
+    order: 7,
+    target: "/docs#research",
+  },
+  {
+    sourcePath: "docs/archive/design-decisions/specs/2026-08-22-full-repository-docs-and-thinking-controls-design.md",
+    section: "archive",
+    label: "Archive",
+    order: 8,
+    target: "/docs#archive",
+  },
+  {
+    sourcePath: outputPath,
+    section: "repository",
+    label: "Repository",
+    order: 9,
+    target: "/repo",
+  },
+];
+const primaryNavigationBySource = new Map(
+  primaryNavigation.map((item) => [item.sourcePath, item]),
+);
+const navOrder = new Map(
+  primaryNavigation.map((item) => [item.section, item.order * 10]),
+);
 
 function git(args, options = {}) {
   const completed = spawnSync("git", ["-C", repo, ...args], {
@@ -184,6 +239,7 @@ function summaryFor(sourcePath, text, renderKind) {
 }
 
 function modelGenerationFor(sourcePath) {
+  if (sourcePath === "docs/operations/current-state/production.md") return "qwen3.8";
   const normalized = sourcePath.toLocaleLowerCase("en-US").replaceAll(/[^a-z0-9]+/g, "");
   if (normalized.includes("qwen38")) return "qwen3.8";
   if (normalized.includes("qwen36")) return "qwen3.6";
@@ -265,6 +321,17 @@ function navMetadata(sourcePath, status, authority) {
   return { navSection, navOrder: navOrder.get(navSection) ?? null };
 }
 
+function primaryNavMetadata(sourcePath, canonicalRoute) {
+  const item = primaryNavigationBySource.get(sourcePath);
+  if (!item) return null;
+  return {
+    section: item.section,
+    label: item.label,
+    order: item.order,
+    target: item.target ?? canonicalRoute,
+  };
+}
+
 function encodeGitHubPath(sourcePath) {
   return sourcePath.split("/").map(encodeURIComponent).join("/");
 }
@@ -339,6 +406,7 @@ const items = entries.map((entry, index) => {
     updated_at: datedAtFor(entry.sourcePath),
     nav_section: navSection,
     nav_order: itemNavOrder,
+    primary_nav: primaryNavMetadata(entry.sourcePath, canonicalRoute),
     aliases: [],
     baseline_paths: baseline.joins.get(entry.sourcePath) ?? [],
     git_mode: entry.gitMode,

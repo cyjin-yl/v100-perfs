@@ -13,6 +13,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       ".github/workflows/deploy-docs.yml"
@@ -43,6 +44,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       ".gitignore"
@@ -73,6 +75,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "README.md"
@@ -103,6 +106,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "config/chat-templates/qwen3.6_gguf_original.jinja"
@@ -133,6 +137,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "config/chat-templates/qwen3.6_merged.jinja"
@@ -163,6 +168,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "config/chat-templates/qwen3.8_unsloth_ud.jinja"
@@ -193,6 +199,7 @@
     "updated_at": "2026-08-22T00:00:00Z",
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [],
     "git_mode": "100644",
@@ -221,6 +228,7 @@
     "updated_at": "2026-08-22T00:00:00Z",
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "docs/archive/assessments/2026-08-22-upstream-cherry-pick.md"
@@ -251,6 +259,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "docs/archive/chronicles/v100-fastllm-experience.md"
@@ -281,6 +290,7 @@
     "updated_at": "2026-08-22T00:00:00Z",
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "docs/archive/design-decisions/plans/2026-08-22-full-repository-docs-migration.md"
@@ -311,6 +321,7 @@
     "updated_at": "2026-08-22T00:00:00Z",
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "docs/archive/design-decisions/plans/2026-08-22-reasoning-control-compatibility.md"
@@ -341,6 +352,12 @@
     "updated_at": "2026-08-22T00:00:00Z",
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": {
+      "section": "archive",
+      "label": "Archive",
+      "order": 8,
+      "target": "/docs#archive"
+    },
     "aliases": [],
     "baseline_paths": [
       "docs/archive/design-decisions/specs/2026-08-22-full-repository-docs-and-thinking-controls-design.md"
@@ -371,6 +388,7 @@
     "updated_at": "2026-07-28T00:00:00Z",
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "docs/archive/handoffs/2026-07-28-fastllm.md"
@@ -401,6 +419,7 @@
     "updated_at": "2026-08-09T00:00:00Z",
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "docs/archive/handoffs/2026-08-09-deepseek-v4.md"
@@ -431,6 +450,7 @@
     "updated_at": "2026-08-18T00:00:00Z",
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "docs/archive/handoffs/2026-08-18-qwen38.md"
@@ -461,6 +481,7 @@
     "updated_at": "2026-08-20T00:00:00Z",
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "docs/archive/handoffs/2026-08-20-production.md"
@@ -491,6 +512,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "docs/archive/qwen35/design/q4km-sm70.md"
@@ -521,6 +543,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "docs/archive/qwen36/performance/fastllm.md"
@@ -551,6 +574,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "docs/archive/qwen36/performance/vllm-and-multi-engine.md"
@@ -581,12 +605,18 @@
     "updated_at": null,
     "nav_section": "concepts",
     "nav_order": 20,
+    "primary_nav": {
+      "section": "concepts",
+      "label": "Concepts",
+      "order": 2,
+      "target": "/docs/concepts/architecture/system-overview"
+    },
     "aliases": [],
     "baseline_paths": [],
     "git_mode": "100644",
-    "git_blob_oid": "1cfa29c06584edaa96d5d5b13bd677295a0d72aa",
-    "byte_length": 4291,
-    "sha256": "d6c8e21bd56a6a217113cabe1d6d36875f7fb215facac0940d37491f6ea44198",
+    "git_blob_oid": "616aef47d396d4c833b125bf655a5ccdec11631b",
+    "byte_length": 4279,
+    "sha256": "4bf7c2f83159d49623781e672b15ee52f198edbcb190ea47af40ff9d53a04ec2",
     "metadata_scope": "git-index-blob",
     "render_kind": "markdown",
     "media_type": "text/markdown",
@@ -609,12 +639,13 @@
     "updated_at": null,
     "nav_section": "concepts",
     "nav_order": 20,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [],
     "git_mode": "100644",
-    "git_blob_oid": "c5025f172b45f350d41483a5f988b0724aee7a9f",
-    "byte_length": 4032,
-    "sha256": "1dfab52df8a991a55683f85401ac67896d0256dd5c6347ea8f7aa6e5e67884d0",
+    "git_blob_oid": "87600286745541c2a4092ae86c47c55b0e6c6cee",
+    "byte_length": 6090,
+    "sha256": "dbf045215daec19cf5485458a3c1e5db0fc7964898898c5cff53779b86d03949",
     "metadata_scope": "git-index-blob",
     "render_kind": "markdown",
     "media_type": "text/markdown",
@@ -637,6 +668,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "docs/concepts/tool-calling/constraint-architecture.md"
@@ -667,6 +699,12 @@
     "updated_at": null,
     "nav_section": "getting-started",
     "nav_order": 10,
+    "primary_nav": {
+      "section": "getting-started",
+      "label": "Getting Started",
+      "order": 1,
+      "target": "/docs/getting-started/overview"
+    },
     "aliases": [],
     "baseline_paths": [],
     "git_mode": "100644",
@@ -695,6 +733,12 @@
     "updated_at": null,
     "nav_section": "guides",
     "nav_order": 30,
+    "primary_nav": {
+      "section": "guides",
+      "label": "Guides",
+      "order": 3,
+      "target": "/docs/guides/client-compatibility/reasoning-fields"
+    },
     "aliases": [],
     "baseline_paths": [],
     "git_mode": "100644",
@@ -723,6 +767,7 @@
     "updated_at": null,
     "nav_section": "guides",
     "nav_order": 30,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [],
     "git_mode": "100644",
@@ -751,6 +796,12 @@
     "updated_at": null,
     "nav_section": "overview",
     "nav_order": 0,
+    "primary_nav": {
+      "section": "overview",
+      "label": "Overview",
+      "order": 0,
+      "target": "/docs"
+    },
     "aliases": [],
     "baseline_paths": [],
     "git_mode": "100644",
@@ -775,10 +826,16 @@
     "summary": "This is the only canonical production state page. Every value below comes from the immutable Qwen3.8 deployment snapshot ../../ data/deployment snapshots/2026 08 22T15 53 14Z qwen38.json , captured at 2026 08 22 15:53:14 UTC .",
     "status": "current",
     "authority": "canonical",
-    "model_generation": null,
+    "model_generation": "qwen3.8",
     "updated_at": null,
     "nav_section": "operations",
     "nav_order": 40,
+    "primary_nav": {
+      "section": "operations",
+      "label": "Operations",
+      "order": 4,
+      "target": "/docs/operations/current-state/production"
+    },
     "aliases": [],
     "baseline_paths": [],
     "git_mode": "100644",
@@ -807,6 +864,7 @@
     "updated_at": null,
     "nav_section": "operations",
     "nav_order": 40,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [],
     "git_mode": "100644",
@@ -835,6 +893,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "docs/operations/troubleshooting/silent-hang.md"
@@ -865,6 +924,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "docs/operations/troubleshooting/tool-call-copy-fidelity.md"
@@ -895,6 +955,12 @@
     "updated_at": null,
     "nav_section": "performance",
     "nav_order": 60,
+    "primary_nav": {
+      "section": "performance",
+      "label": "Performance",
+      "order": 6,
+      "target": "/docs/performance/methodology"
+    },
     "aliases": [],
     "baseline_paths": [],
     "git_mode": "100644",
@@ -923,6 +989,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "docs/performance/qwen38/sweep-matrix.md"
@@ -953,6 +1020,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "docs/performance/qwen38/toolcall-benchmark-2026-08-22.md"
@@ -983,6 +1051,12 @@
     "updated_at": null,
     "nav_section": "reference",
     "nav_order": 50,
+    "primary_nav": {
+      "section": "reference",
+      "label": "Reference",
+      "order": 5,
+      "target": "/docs/reference/api/reasoning-controls"
+    },
     "aliases": [],
     "baseline_paths": [],
     "git_mode": "100644",
@@ -1011,6 +1085,7 @@
     "updated_at": null,
     "nav_section": "reference",
     "nav_order": 50,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "docs/reference/models/qwen38/sampling-and-template.md"
@@ -1041,6 +1116,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "docs/research/performance/prefill-exact-port.md"
@@ -1071,6 +1147,12 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": {
+      "section": "research",
+      "label": "Research",
+      "order": 7,
+      "target": "/docs#research"
+    },
     "aliases": [],
     "baseline_paths": [
       "docs/research/performance/short-prefill-plan.md"
@@ -1101,6 +1183,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "docs/research/storage/optane-l3.md"
@@ -1131,6 +1214,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/agent_bench.py"
@@ -1161,6 +1245,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/agentic_load_bench.py"
@@ -1191,6 +1276,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/agentic_toolcall_bench.py"
@@ -1221,6 +1307,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/configs/operator_iq4xs_wide_n.json"
@@ -1251,6 +1338,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/configs/thinkingcap_native_profiles.json"
@@ -1281,6 +1369,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/feature_bench.py"
@@ -1311,6 +1400,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/hermes_toolcall_bench.py"
@@ -1341,6 +1431,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/kv_recall_ab.py"
@@ -1371,6 +1462,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/measure_iq6_throughput.py"
@@ -1401,6 +1493,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/requests/prefix_pressure_b.json"
@@ -1431,6 +1524,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/requests/prefix_restore_a.json"
@@ -1461,6 +1555,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/requests/prefix_seed_a.json"
@@ -1491,6 +1586,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/requests/prefix_shared_variant.json"
@@ -1521,6 +1617,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/requests/prefix_warmup.json"
@@ -1551,6 +1648,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/requests/resident_32k_a.json"
@@ -1581,6 +1679,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/requests/resident_32k_b.json"
@@ -1611,6 +1710,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/requests/resident_32k_c.json"
@@ -1641,6 +1741,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/requests/resident_decode_32k_a.json"
@@ -1671,6 +1772,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/requests/resident_decode_32k_b.json"
@@ -1701,6 +1803,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/requests/thinkingcap_arithmetic_126.json"
@@ -1731,6 +1834,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/requests/thinkingcap_balance_scale_reasoning.json"
@@ -1761,6 +1865,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/requests/thinkingcap_exact_instruction.json"
@@ -1791,6 +1896,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/requests/thinkingcap_required_tool_call.json"
@@ -1821,6 +1927,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/requests/thinkingcap_vision_red_pixel.json"
@@ -1851,6 +1958,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/agentic_load_2m8s_4r.json"
@@ -1881,6 +1989,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/agentic_load_2m8s_4r_b4s4w4.json"
@@ -1911,6 +2020,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/agentic_load_2m8s_4r_batch4.json"
@@ -1941,6 +2051,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/agentic_load_2m8s_4r_batch4slot4.json"
@@ -1971,6 +2082,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_agentic_toolcall_omp_20260813_223827.json"
@@ -2001,6 +2113,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_agentic_toolcall_omp_20260813_224214.json"
@@ -2031,6 +2144,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_agentic_toolcall_omp_20260813_225246.json"
@@ -2061,6 +2175,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_agentic_toolcall_omp_20260813_234634.json"
@@ -2091,6 +2206,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_agentic_toolcall_omp_20260814_000418.json"
@@ -2121,6 +2237,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_agentic_toolcall_omp_20260814_002644.json"
@@ -2151,6 +2268,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_complete_natural_green.json"
@@ -2181,6 +2299,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_complete_natural_request.json"
@@ -2211,6 +2330,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_halfway_anthropic_stream_green.sse"
@@ -2241,6 +2361,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_halfway_anthropic_stream_parser_fixed.sse"
@@ -2271,6 +2392,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_halfway_anthropic_stream_request.json"
@@ -2301,6 +2423,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_halfway_anthropic_stream_single.sse"
@@ -2331,6 +2454,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_halfway_anthropic_upstream_raw.sse"
@@ -2361,6 +2485,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_halfway_anthropic_upstream_request.json"
@@ -2391,6 +2516,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_halfway_length_green.json"
@@ -2421,6 +2547,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_halfway_length_red.json"
@@ -2451,6 +2578,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_halfway_length_request.json"
@@ -2481,6 +2609,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_halfway_stream_green.sse"
@@ -2511,6 +2640,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_halfway_stream_request.json"
@@ -2541,6 +2671,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_hybrid_mtp2_plain_batch_short_decode_c1_c4.json"
@@ -2571,6 +2702,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_iq6_prefill_decode_throughput_20260812.json"
@@ -2601,6 +2733,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_mtp1_agents1_ab.json"
@@ -2631,6 +2764,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_mtp1_agents1_ab_raw.json"
@@ -2661,6 +2795,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_mtp2_agents1_ab.json"
@@ -2691,6 +2826,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_mtp2_agents1_ab_raw.json"
@@ -2721,6 +2857,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_mtp2_agents1_native.json"
@@ -2751,6 +2888,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_mtp2_agents1_native_analysis.json"
@@ -2781,6 +2919,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_mtp2_agents1_native_correctness.json"
@@ -2811,6 +2950,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_mtp2_agents1_native_correctness_v2.json"
@@ -2841,6 +2981,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_mtp2_agents1_native_raw.json"
@@ -2871,6 +3012,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_mtp2_agents1_sm70.json"
@@ -2901,6 +3043,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_mtp2_agents1_sm70_analysis.json"
@@ -2931,6 +3074,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_mtp2_agents1_sm70_correctness_v2.json"
@@ -2961,6 +3105,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_mtp2_agents1_sm70_fixed.json"
@@ -2991,6 +3136,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_mtp2_agents1_sm70_fixed_raw.json"
@@ -3021,6 +3167,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_mtp2_agents1_sm70_raw.json"
@@ -3051,6 +3198,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_mtp2_agents1_xqa.json"
@@ -3081,6 +3229,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_mtp2_agents1_xqa_analysis.json"
@@ -3111,6 +3260,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_mtp2_agents1_xqa_correctness_v2.json"
@@ -3141,6 +3291,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_mtp2_agents1_xqa_raw.json"
@@ -3171,6 +3322,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_32704_batch1.json"
@@ -3201,6 +3353,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c1_32k_http_native_fp8.json"
@@ -3231,6 +3384,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c1_32k_http_native_fp8_gateoff_newbinary.json"
@@ -3261,6 +3415,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c1_32k_http_native_fp8_interleave_8k.json"
@@ -3291,6 +3446,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c1_32k_http_native_fp8_prefix_cache_off.json"
@@ -3321,6 +3477,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c1_32k_http_native_fp8_prefix_cache_on_paired.json"
@@ -3351,6 +3508,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c1_32k_http_native_fp8_snapshot32.json"
@@ -3381,6 +3539,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c2_32k_http_native_fp8.json"
@@ -3411,6 +3570,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c2_32k_http_native_fp8_interleave_batch5.json"
@@ -3441,6 +3601,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c2_32k_http_native_fp8_interleave_fixed.json"
@@ -3471,6 +3632,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c2_32k_http_native_fp8_prefix_cache_off.json"
@@ -3501,6 +3663,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c2_32k_http_native_fp8_prefix_cache_on_paired.json"
@@ -3531,6 +3694,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c4_32k_http_native_fp8.json"
@@ -3561,6 +3725,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c4_32k_http_native_fp8_prefix_cache_off.json"
@@ -3591,6 +3756,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c4_32k_http_native_fp8_prefix_cache_on_paired.json"
@@ -3621,6 +3787,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c4_32k_http_native_fp8_snapshot32.json"
@@ -3651,6 +3818,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_mtp2_fixed_correctness_request.json"
@@ -3681,6 +3849,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_mtp2_fixed_correctness_request_v2.json"
@@ -3711,6 +3880,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_mtp2_fp8_208k_pool_c4_interleave_8k.json"
@@ -3741,6 +3911,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_mtp2_short_decode_batch_propagated_c1_c4.json"
@@ -3771,6 +3942,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_mtp2_sm70_fixed_correctness_v2.json"
@@ -3801,6 +3973,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_mtp2_sm70_fixed_tool_smoke_v2.json"
@@ -3831,6 +4004,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_mtp3_agents1_ab.json"
@@ -3861,6 +4035,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_mtp3_agents1_ab_raw.json"
@@ -3891,6 +4066,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_mtp9_128k.exit"
@@ -3921,6 +4097,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_mtp9_128k.txt"
@@ -3951,6 +4128,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_mtp9_128k_exact.json"
@@ -3981,6 +4159,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_mtp9_160k_exact.json"
@@ -4011,6 +4190,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_mtp9_256k_exact.json"
@@ -4041,6 +4221,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_mtp9_agents1_ab.json"
@@ -4071,6 +4252,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_mtp9_agents1_ab_raw.json"
@@ -4101,6 +4283,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_mtp9_agents1_short_native.json"
@@ -4131,6 +4314,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_mtp9_agents1_short_native_raw.json"
@@ -4161,6 +4345,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_mtp9_agents1_short_sm70_flash.json"
@@ -4191,6 +4376,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_mtp9_agents1_short_sm70_flash_raw.json"
@@ -4221,6 +4407,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_mtp9_agents2_short_native.json"
@@ -4251,6 +4438,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_mtp9_agents2_short_native_raw.json"
@@ -4281,6 +4469,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_mtp9_agents2_short_sm70_flash.json"
@@ -4311,6 +4500,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_mtp9_agents2_short_sm70_flash_raw.json"
@@ -4341,6 +4531,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_mtp9_agents5_short_native.json"
@@ -4371,6 +4562,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_mtp9_agents5_short_native_raw.json"
@@ -4401,6 +4593,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_mtp9_agents5_short_sm70_flash.json"
@@ -4431,6 +4624,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_mtp9_agents5_short_sm70_flash_raw.json"
@@ -4461,6 +4655,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_mtp9_fp8_longctx_final.json"
@@ -4491,6 +4686,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_multiturn_concurrent_nonce_green.json"
@@ -4521,6 +4717,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_multiturn_concurrent_nonce_stop_fixed.json"
@@ -4551,6 +4748,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_multiturn_latest_green.json"
@@ -4581,6 +4779,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_multiturn_latest_red.json"
@@ -4611,6 +4810,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_multiturn_latest_request.json"
@@ -4641,6 +4841,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_multiturn_tidal_default_stop_fixed.json"
@@ -4671,6 +4872,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_multiturn_tidal_endoftext_stop_control.json"
@@ -4701,6 +4903,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_multiturn_tidal_sequential_control.json"
@@ -4731,6 +4934,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_natural_eos_green.json"
@@ -4761,6 +4965,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_persistent_prefix_cache_v100_smoke.json"
@@ -4791,6 +4996,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_production_reasoning_smoke.json"
@@ -4821,6 +5027,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_production_tool_smoke.json"
@@ -4851,6 +5058,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_production_tool_smoke_request.json"
@@ -4881,6 +5089,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_production_tool_smoke_request_v2.json"
@@ -4911,6 +5120,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_production_tool_smoke_v2.json"
@@ -4941,6 +5151,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_sm70_chunk_gdn_prefill_experiments.json"
@@ -4971,6 +5182,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_sm70_iq4xs_wide_n_reliable_ab.json"
@@ -5001,6 +5213,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_sm70_paged_xqa.json"
@@ -5031,6 +5244,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_subagent_fanout_batch2_20260814.json"
@@ -5061,6 +5275,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_turbo3_c1_c2_exact_256k.json"
@@ -5091,6 +5306,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_turbo3_mtp2_cpu_swap_l3_32k_control.json"
@@ -5121,6 +5337,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_turbo3_mtp2_cpu_swap_l3_32k_controls_abc.json"
@@ -5151,6 +5368,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_turbo3_mtp2_cpu_swap_l3_32k_controls_bc.json"
@@ -5181,6 +5399,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_turbo3_mtp2_cpu_swap_l3_3x32k_reliable.json"
@@ -5211,6 +5430,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_turbo3_mtp2_cpu_swap_l3_acceptance.json"
@@ -5241,6 +5461,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_turbo3_mtp2_cpu_swap_l3_acceptance_controls.json"
@@ -5271,6 +5492,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_turbo3_mtp2_resident_batch_2x32k_reliable.json"
@@ -5301,6 +5523,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_turbo3_mtp2_resident_batch_acceptance.json"
@@ -5331,6 +5554,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_turbo3_mtp2_resident_decode_batch_fixed.json"
@@ -5361,6 +5585,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_turbo3_mtp2_resident_decode_batch_fixed_hot.json"
@@ -5391,6 +5616,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_turbo3_mtp2_resident_decode_batch_smoke.json"
@@ -5421,6 +5647,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_turbo3_mtp2_resident_plain_batch_off.json"
@@ -5451,6 +5678,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_turbo3_mtp2_resident_plain_batch_off_steady.json"
@@ -5481,6 +5709,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_turbo3_prefix_tier_16k_acceptance.json"
@@ -5511,6 +5740,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_turbo3_prefix_tier_16k_acceptance_pre_zstd_metrics.json"
@@ -5541,6 +5771,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_turbo3_prefix_tier_16k_acceptance_pre_zstd_metrics_warmup.json"
@@ -5571,6 +5802,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_turbo3_prefix_tier_16k_acceptance_warmup.json"
@@ -5601,6 +5833,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_turbo3_prefix_tier_16k_probe_layer_negative.json"
@@ -5631,6 +5864,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/fastllm_turbo3_prefix_tier_16k_unaligned_negative.json"
@@ -5661,6 +5895,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/hermes_wechat_toolcall_fidelity_20260814_105648.json"
@@ -5691,6 +5926,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/kv_recall_turbo3-v2_100k.json"
@@ -5721,6 +5957,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/kv_recall_turbo3_100k.json"
@@ -5751,6 +5988,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/kv_recall_turbo4_100k.json"
@@ -5781,6 +6019,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/kv_recall_turbo4_200k.json"
@@ -5811,6 +6050,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/kv_recall_turbo4_lowwm_200k.json"
@@ -5841,6 +6081,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/kv_recall_udq4-turbo4-100k.json"
@@ -5871,6 +6112,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/kv_recall_udq4-turbo4-200k.json"
@@ -5901,6 +6143,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/thinkingcap_heretic_base_q8_fastllm_mtp0.json"
@@ -5931,6 +6174,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/thinkingcap_heretic_q8_fastllm_mtp0.json"
@@ -5961,6 +6205,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/thinkingcap_heretic_q8_fastllm_mtp0.log"
@@ -5991,6 +6236,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/thinkingcap_heretic_q8_fastllm_mtp2.json"
@@ -6021,6 +6267,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/thinkingcap_heretic_q8_fastllm_mtp2.log"
@@ -6051,6 +6298,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/thinkingcap_heretic_q8_mtp0_vram.json"
@@ -6081,6 +6329,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/thinkingcap_heretic_q8_mtp2_vram.csv"
@@ -6111,6 +6360,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/thinkingcap_heretic_q8_mtp2_vram.json"
@@ -6141,6 +6391,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/thinkingcap_heretic_q8_replacement_recommendation.json"
@@ -6171,6 +6422,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/thinkingcap_heretic_raw_base_q8_negative.json"
@@ -6201,6 +6453,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/thinkingcap_native_launcher_q4_check.json"
@@ -6231,6 +6484,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/thinkingcap_q4_current_smoke.json"
@@ -6261,6 +6515,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/thinkingcap_q4_fastllm_mtp0.json"
@@ -6291,6 +6546,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/thinkingcap_q4_long_context_vision_gate.json"
@@ -6321,6 +6577,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/thinkingcap_q6_current_smoke.json"
@@ -6351,6 +6608,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/thinkingcap_q6_fastllm_mtp0.json"
@@ -6381,6 +6639,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/thinkingcap_q8_mtp2_fastllm_v100.json"
@@ -6411,6 +6670,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/thinkingcap_replacement_recommendation.json"
@@ -6441,6 +6701,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/results/thinkingcap_six_model_matrix.json"
@@ -6471,6 +6732,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/fastllm/run_cache_benchmark.py"
@@ -6501,6 +6763,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/llama-nospec/llama_nospec.log"
@@ -6531,6 +6794,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/llama-nospec/llama_nospec_agents1.json"
@@ -6561,6 +6825,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/llama-nospec/llama_nospec_agents1_raw.json"
@@ -6591,6 +6856,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/llama-nospec/llama_nospec_agents2.json"
@@ -6621,6 +6887,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/llama-nospec/llama_nospec_agents2_raw.json"
@@ -6651,6 +6918,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/llama-nospec/llama_nospec_agents4.json"
@@ -6681,6 +6949,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/llama-nospec/llama_nospec_agents4_raw.json"
@@ -6711,6 +6980,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/run_agent_bench.sh"
@@ -6741,6 +7011,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/runner.log"
@@ -6771,6 +7042,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/turboquant/logs/llama_turboquant_128k_4slot.log"
@@ -6801,6 +7073,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/turboquant/logs/llama_turboquant_140k_4slot.log"
@@ -6831,6 +7104,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/turboquant/logs/llama_turboquant_140k_4slot_stress.log"
@@ -6861,6 +7135,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/turboquant/logs/llama_turboquant_150k_4slot.log"
@@ -6891,6 +7166,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/turboquant/logs/llama_turboquant_155k_4slot.log"
@@ -6921,6 +7197,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/turboquant/logs/llama_turboquant_256k.log"
@@ -6951,6 +7228,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/turboquant/logs/llama_turboquant_256k_1slot.log"
@@ -6981,6 +7259,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/turboquant/logs/llama_turboquant_256k_2slot.log"
@@ -7011,6 +7290,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/turboquant/logs/llama_turboquant_256k_3slot.log"
@@ -7041,6 +7321,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/turboquant/logs/llama_turboquant_5slot.log"
@@ -7071,6 +7352,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/turboquant/logs/llama_turboquant_5slot_large.log"
@@ -7101,6 +7383,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/turboquant/logs/llama_turboquant_85k_6slot.log"
@@ -7131,6 +7414,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/turboquant/logs/llama_turboquant_baseline.log"
@@ -7161,6 +7445,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/turboquant/logs/llama_turboquant_iq4_140k_4slot.log"
@@ -7191,6 +7476,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/turboquant/logs/llama_turboquant_iq4_256k_2slot.log"
@@ -7221,6 +7507,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/turboquant/logs/llama_turboquant_longctx.log"
@@ -7251,6 +7538,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/turboquant/logs/llama_turboquant_maxvram_test1.log"
@@ -7281,6 +7569,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/turboquant/logs/llama_turboquant_maxvram_test2.log"
@@ -7311,6 +7600,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/turboquant/logs/llama_turboquant_maxvram_test3.log"
@@ -7341,6 +7631,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/turboquant/logs/llama_turboquant_maxvram_test4.log"
@@ -7371,6 +7662,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/turboquant/logs/llama_turboquant_yarn_288k_2slot.log"
@@ -7401,6 +7693,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/turboquant/logs/llama_turboquant_yarn_314k_2slot.log"
@@ -7431,6 +7724,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/turboquant/results/llama_tq3_140k_4slot_stress.json"
@@ -7461,6 +7755,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/turboquant/results/llama_tq3_140k_4slot_stress_raw.json"
@@ -7491,6 +7786,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/turboquant/results/llama_tq3_iq4_256k_2slot_short.json"
@@ -7521,6 +7817,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/turboquant/results/llama_tq3_iq4_256k_2slot_short_raw.json"
@@ -7551,6 +7848,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/turboquant/results/llama_tq3_longctx_agents1.json"
@@ -7581,6 +7879,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/turboquant/results/llama_tq3_longctx_agents1_raw.json"
@@ -7611,6 +7910,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/turboquant/results/llama_tq3_longctx_agents2.json"
@@ -7641,6 +7941,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/turboquant/results/llama_tq3_longctx_agents2_raw.json"
@@ -7671,6 +7972,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/turboquant/results/llama_tq3_longctx_agents4.json"
@@ -7701,6 +8003,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/turboquant/results/llama_tq3_longctx_agents4_raw.json"
@@ -7731,6 +8034,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/turboquant/results/llama_tq4_256k_agents1.json"
@@ -7761,6 +8065,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/turboquant/results/llama_tq4_256k_agents1_raw.json"
@@ -7791,6 +8096,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/turboquant/results/llama_tq4_256k_agents2.json"
@@ -7821,6 +8127,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/turboquant/results/llama_tq4_256k_agents2_raw.json"
@@ -7851,6 +8158,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/turboquant/results/llama_tq4_256k_agents4.json"
@@ -7881,6 +8189,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/turboquant/results/llama_tq4_256k_agents4_raw.json"
@@ -7911,6 +8220,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/turboquant/results/llama_tq4_256k_agents5.json"
@@ -7941,6 +8251,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/turboquant/results/llama_tq4_256k_agents5_raw.json"
@@ -7971,6 +8282,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/turboquant/results/llama_tq4_baseline_agents1.json"
@@ -8001,6 +8313,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/turboquant/results/llama_tq4_baseline_agents1_raw.json"
@@ -8031,6 +8344,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/turboquant/results/llama_tq4_baseline_agents2.json"
@@ -8061,6 +8375,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/turboquant/results/llama_tq4_baseline_agents2_raw.json"
@@ -8091,6 +8406,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/turboquant/results/llama_tq4_baseline_agents4.json"
@@ -8121,6 +8437,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/turboquant/results/llama_tq4_baseline_agents4_raw.json"
@@ -8151,6 +8468,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/turboquant/results/llama_tq4_iq4_mtp_65k_1slot.json"
@@ -8181,6 +8499,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/turboquant/results/llama_tq4_iq4_mtp_65k_1slot_raw.json"
@@ -8211,6 +8530,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/vllm-120/v120.log"
@@ -8241,6 +8561,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/vllm-120/v120_agents1.json"
@@ -8271,6 +8592,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/vllm-120/v120_agents1_raw.json"
@@ -8301,6 +8623,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/vllm-120/v120_agents2.json"
@@ -8331,6 +8654,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/vllm-120/v120_agents2_raw.json"
@@ -8361,6 +8685,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/vllm-120/v120_agents4.json"
@@ -8391,6 +8716,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/vllm-120/v120_agents4_raw.json"
@@ -8421,6 +8747,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/vllm-121/v121.log"
@@ -8451,6 +8778,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/vllm-121/v121_agents1.json"
@@ -8481,6 +8809,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/vllm-121/v121_agents1_raw.json"
@@ -8511,6 +8840,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/vllm-121/v121_agents2.json"
@@ -8541,6 +8871,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/vllm-121/v121_agents2_raw.json"
@@ -8571,6 +8902,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/vllm-121/v121_agents4.json"
@@ -8601,6 +8933,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/vllm-121/v121_agents4_raw.json"
@@ -8631,6 +8964,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/benchmarks/vllm-121/v121_prefill_metric_attribution.json"
@@ -8661,6 +8995,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/results/legacy/deepseek_q2_split_verification.json"
@@ -8691,6 +9026,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/results/q38-sweep/raw/PROD-verify-matrix.json"
@@ -8721,6 +9057,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/results/q38-sweep/raw/q38-c1-c-q5km-turbo4-mtp2.intel.json"
@@ -8751,6 +9088,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/results/q38-sweep/raw/q38-c1-c-q5km-turbo4-mtp2.json"
@@ -8781,6 +9119,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/results/q38-sweep/raw/q38-c6-c-q5km-turbo4-mtp2-sm70.json"
@@ -8811,6 +9150,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/results/q38-sweep/raw/q38-n1-n-q4kxl-turbo4-mtp2.json"
@@ -8841,6 +9181,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/results/q38-sweep/raw/q38-n4-n-q4kxl-turbo4-mtp0.json"
@@ -8871,6 +9212,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/results/q38-sweep/raw/q38-n5-n-q4kxl-turbo4-mtp2-cachetuned.json"
@@ -8901,6 +9243,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/results/q38-sweep/raw/q38-n6-n-q4kxl-turbo4-mtp2-sm70.json"
@@ -8931,6 +9274,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/results/q38-sweep/raw/q38-n7-n-q5km-turbo4-mtp2.intel.json"
@@ -8961,6 +9305,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/results/q38-sweep/raw/q38-n7-n-q5km-turbo4-mtp2.json"
@@ -8991,6 +9336,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/results/q38-sweep/raw/toolcall_bench_2026-08-22/claude_file_roundtrip.json"
@@ -9021,6 +9367,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/results/q38-sweep/raw/toolcall_bench_2026-08-22/cyber-q5_file_roundtrip.json"
@@ -9051,6 +9398,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/results/q38-sweep/raw/toolcall_bench_2026-08-22/iq4xs_file_roundtrip.json"
@@ -9081,6 +9429,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "evidence/results/q38-sweep/raw/toolcall_bench_2026-08-22/ud-q5_file_roundtrip.json"
@@ -9111,6 +9460,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "experiments/video-generation/README.md"
@@ -9141,6 +9491,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "experiments/video-generation/bench_h3.py"
@@ -9171,6 +9522,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "experiments/video-generation/results/resolution_1step.json"
@@ -9201,6 +9553,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "experiments/video-generation/test_bench_h3.py"
@@ -9231,6 +9584,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "experiments/video-generation/workflows/minimax_h3_v100_t2v_api.json"
@@ -9261,6 +9615,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "fastllm_adapter.py"
@@ -9291,6 +9646,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "llms.txt"
@@ -9321,6 +9677,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/handoff/PRODUCTION-PROFILE.env"
@@ -9351,6 +9708,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/handoff/scripts/ab_perplexity.sh"
@@ -9381,6 +9739,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/handoff/scripts/apply_conc_and_prefix.sh"
@@ -9411,6 +9770,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/handoff/scripts/build_imatrix_corpus.py"
@@ -9441,6 +9801,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/handoff/scripts/chain_acceptance.py"
@@ -9471,6 +9832,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/handoff/scripts/copy_fidelity.py"
@@ -9501,6 +9863,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/handoff/scripts/copy_fidelity_http.py"
@@ -9531,6 +9894,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/handoff/scripts/copy_fidelity_probe.sh"
@@ -9561,6 +9925,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/handoff/scripts/copy_fidelity_vision.py"
@@ -9591,6 +9956,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/handoff/scripts/corruption_rate.py"
@@ -9621,6 +9987,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/handoff/scripts/deploy_bundle.sh"
@@ -9651,6 +10018,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/handoff/scripts/deploy_fused_xqa.sh"
@@ -9681,6 +10049,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/handoff/scripts/deploy_mtp_attr.sh"
@@ -9711,6 +10080,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/handoff/scripts/fetch_imatrix_sources.sh"
@@ -9741,6 +10111,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/handoff/scripts/follow_backend_log.sh"
@@ -9771,6 +10142,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/handoff/scripts/goal_acceptance.py"
@@ -9801,6 +10173,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/handoff/scripts/gpu_bench_window.sh"
@@ -9831,6 +10204,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/handoff/scripts/gpu_verify_window.sh"
@@ -9861,6 +10235,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/handoff/scripts/graft_mtp.sh"
@@ -9891,6 +10266,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/handoff/scripts/imatrix_pipeline.sh"
@@ -9921,6 +10297,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/handoff/scripts/imatrix_session.sh"
@@ -9951,6 +10328,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/handoff/scripts/intel_probe.py"
@@ -9981,6 +10359,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/handoff/scripts/iq4xs_gate.sh"
@@ -10011,6 +10390,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/handoff/scripts/make_tables.py"
@@ -10041,6 +10421,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/handoff/scripts/mm_cache_experiment.py"
@@ -10071,6 +10452,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/handoff/scripts/postcalib_pipeline.sh"
@@ -10101,6 +10483,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/handoff/scripts/ppl_paired.py"
@@ -10131,6 +10514,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/handoff/scripts/probe_prefix_multimodal.py"
@@ -10161,6 +10545,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/handoff/scripts/probe_suite.sh"
@@ -10191,6 +10576,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/handoff/scripts/quant-recipes/README-recipes.md"
@@ -10221,6 +10607,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/handoff/scripts/quant-recipes/iq4xs-frugal-plus.txt"
@@ -10251,6 +10638,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/handoff/scripts/quant-recipes/iq4xs-frugal.txt"
@@ -10281,6 +10669,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/handoff/scripts/quantize_with_imatrix.sh"
@@ -10311,6 +10700,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/handoff/scripts/quantrecipe/decide.py"
@@ -10341,6 +10731,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/handoff/scripts/quantrecipe/dump_kv.py"
@@ -10371,6 +10762,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/handoff/scripts/quantrecipe/dump_tensor_types.py"
@@ -10401,6 +10793,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/handoff/scripts/quantrecipe/err_iq4xs.json"
@@ -10431,6 +10824,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/handoff/scripts/quantrecipe/err_iq4xs_recheck.json"
@@ -10461,6 +10855,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/handoff/scripts/quantrecipe/err_our_q5km.json"
@@ -10491,6 +10886,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/handoff/scripts/quantrecipe/err_up_q5km.json"
@@ -10521,6 +10917,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/handoff/scripts/quantrecipe/hash_tensor.py"
@@ -10551,6 +10948,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/handoff/scripts/quantrecipe/log-q5km.txt"
@@ -10581,6 +10979,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/handoff/scripts/quantrecipe/log-recheck.txt"
@@ -10611,6 +11010,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/handoff/scripts/quantrecipe/power_ppl.py"
@@ -10641,6 +11041,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/handoff/scripts/quantrecipe/probe-all.txt"
@@ -10671,6 +11072,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/handoff/scripts/quantrecipe/probe-q5q6.txt"
@@ -10701,6 +11103,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/handoff/scripts/quantrecipe/probe-qkv.txt"
@@ -10731,6 +11134,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/handoff/scripts/quantrecipe/requant_probe.py"
@@ -10761,6 +11165,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/handoff/scripts/quantrecipe/size_model.py"
@@ -10791,6 +11196,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/handoff/scripts/quantrecipe/tensor_error.py"
@@ -10821,6 +11227,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/handoff/scripts/quantrecipe/tsv/new_q5km.tsv"
@@ -10851,6 +11258,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/handoff/scripts/quantrecipe/tsv/new_q8.tsv"
@@ -10881,6 +11289,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/handoff/scripts/quantrecipe/tsv/our_iq4xs.tsv"
@@ -10911,6 +11320,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/handoff/scripts/quantrecipe/tsv/our_q5km.tsv"
@@ -10941,6 +11351,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/handoff/scripts/quantrecipe/tsv/up_mtp_q8.tsv"
@@ -10971,6 +11382,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/handoff/scripts/quantrecipe/tsv/up_q4km.tsv"
@@ -11001,6 +11413,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/handoff/scripts/quantrecipe/tsv/up_q4km_plusmtp.tsv"
@@ -11031,6 +11444,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/handoff/scripts/quantrecipe/tsv/up_q5km.tsv"
@@ -11061,6 +11475,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/handoff/scripts/quantrecipe/tsv/up_q5km_plusmtp.tsv"
@@ -11091,6 +11506,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/handoff/scripts/quantrecipe/tsv/up_q6k.tsv"
@@ -11121,6 +11537,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/handoff/scripts/raise_concurrency.sh"
@@ -11151,6 +11568,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/handoff/scripts/run_copy_fidelity.sh"
@@ -11181,6 +11599,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/handoff/scripts/run_imatrix.sh"
@@ -11211,6 +11630,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/handoff/scripts/run_mm_experiment.sh"
@@ -11241,6 +11661,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/handoff/scripts/run_vision_fidelity.sh"
@@ -11271,6 +11692,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/handoff/scripts/runtime_metrics.py"
@@ -11301,6 +11723,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/handoff/scripts/silent-hang-diagnosis.md"
@@ -11331,6 +11754,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/handoff/scripts/sm70-audit/bench_devprops"
@@ -11361,6 +11785,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/handoff/scripts/sm70-audit/bench_devprops.cu"
@@ -11391,6 +11816,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/handoff/scripts/sm70-audit/bench_mmq_trial"
@@ -11421,6 +11847,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/handoff/scripts/sm70-audit/bench_mmq_trial.cu"
@@ -11451,6 +11878,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/handoff/scripts/sm70-audit/build_bench.sh"
@@ -11481,6 +11909,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/handoff/scripts/sm70-audit/probe_routes"
@@ -11511,6 +11940,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/handoff/scripts/sm70-audit/probe_routes.cu"
@@ -11541,6 +11971,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/handoff/scripts/start_prod.sh"
@@ -11571,6 +12002,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/handoff/scripts/sweep_driver.sh"
@@ -11601,6 +12033,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/handoff/scripts/sweep_launch.sh"
@@ -11631,6 +12064,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/handoff/scripts/sweep_one.sh"
@@ -11661,6 +12095,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/handoff/scripts/sweep_profiles.py"
@@ -11691,6 +12126,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/handoff/scripts/switch_to_iq4xs.sh"
@@ -11721,6 +12157,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/handoff/scripts/toolname_probe.py"
@@ -11751,6 +12188,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/handoff/scripts/upload_to_hf.sh"
@@ -11781,6 +12219,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/handoff/scripts/verify_downloads.sh"
@@ -11811,6 +12250,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/handoff/scripts/verify_iq4xs_cpu.sh"
@@ -11841,6 +12281,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/handoff/scripts/verify_prefix_cache.py"
@@ -11871,6 +12312,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/handoff/start_prod.sh"
@@ -11901,6 +12343,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [],
     "git_mode": "100644",
@@ -11929,6 +12372,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [],
     "git_mode": "100644",
@@ -11957,6 +12401,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/network/frp/frpc.toml"
@@ -11987,6 +12432,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/network/frp/frps.toml"
@@ -12017,6 +12463,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/network/frp/setup_frpc.sh"
@@ -12047,6 +12494,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/network/frp/setup_frps.sh"
@@ -12077,6 +12525,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/patches/thinking_proxy-2026-08-18-stream-timeout-anthropic-effort.patch"
@@ -12107,6 +12556,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "operations/snapshots/deployed/thinking_proxy.py"
@@ -12137,6 +12587,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "site/.gitignore"
@@ -12167,6 +12618,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "site/README.md"
@@ -12197,6 +12649,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "site/astro.config.mjs"
@@ -12227,6 +12680,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "site/package-lock.json"
@@ -12257,6 +12711,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "site/package.json"
@@ -12287,6 +12742,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "site/scripts/gen-llms-txt.mjs"
@@ -12317,14 +12773,15 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "site/scripts/generate-repo-index.mjs"
     ],
     "git_mode": "100644",
-    "git_blob_oid": "2d098e4f3b3bd56b01e38c80355de75f25a7b4ff",
-    "byte_length": 14590,
-    "sha256": "7115cac73f8a6f4f13fe1c1eb68fde86eeae639524c2b9a6f705567e62d839f2",
+    "git_blob_oid": "5e2e636e9abc718daf6496dd79fea4b69fb94d51",
+    "byte_length": 16449,
+    "sha256": "a30b3549ea2abf7a449bd781f2ee1181cb351b39cac3d49d2dda040f3de97790",
     "metadata_scope": "git-index-blob",
     "render_kind": "text",
     "media_type": "text/plain",
@@ -12347,12 +12804,13 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [],
     "git_mode": "100644",
-    "git_blob_oid": "7c44314cd6110d05a50ed32c47d30e696311cb97",
-    "byte_length": 13562,
-    "sha256": "51ecdacbc4b372eefccae1580078f3066b61e281a09d3ba22f100248250863a1",
+    "git_blob_oid": "6e60017ff51383a00543dd0a9dad8b0e4c491e26",
+    "byte_length": 15567,
+    "sha256": "346cf531df85d160f41606579ffb2f208c71d0e7d9da6bac2c781009fb7f000a",
     "metadata_scope": "git-index-blob",
     "render_kind": "text",
     "media_type": "text/plain",
@@ -12375,6 +12833,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "site/src/components/ProtoDashboard.tsx"
@@ -12405,6 +12864,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "site/src/components/RepoExplorer.tsx"
@@ -12435,6 +12895,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "site/src/components/StatusCard.tsx"
@@ -12465,6 +12926,12 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": {
+      "section": "repository",
+      "label": "Repository",
+      "order": 9,
+      "target": "/repo"
+    },
     "aliases": [],
     "baseline_paths": [
       "site/src/data/repo-index.json"
@@ -12495,14 +12962,15 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "site/src/layouts/BaseLayout.astro"
     ],
     "git_mode": "100644",
-    "git_blob_oid": "576eea3cfd9c5a2f1cf519aa19721fba9ecb3957",
-    "byte_length": 5862,
-    "sha256": "2b6209a9aa537628ef2c087e144033e8ee5ba265b6a17e97f67649006c5a9bef",
+    "git_blob_oid": "203d61d1f8117e7975f4ecb1f055c65b0f4f493d",
+    "byte_length": 5370,
+    "sha256": "1d61f251b916cd09458d49a260b77dce9acb500f78979c9dfef5feb4a14314a9",
     "metadata_scope": "git-index-blob",
     "render_kind": "text",
     "media_type": "text/plain",
@@ -12525,6 +12993,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [],
     "git_mode": "100644",
@@ -12553,6 +13022,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "site/src/pages/docs/[...slug].astro"
@@ -12583,6 +13053,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [],
     "git_mode": "100644",
@@ -12611,6 +13082,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "site/src/pages/index.astro"
@@ -12641,6 +13113,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "site/src/pages/read/[...path].astro"
@@ -12671,6 +13144,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "site/src/pages/repo.astro"
@@ -12701,6 +13175,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [],
     "git_mode": "100644",
@@ -12729,6 +13204,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "site/src/styles/global.css"
@@ -12759,6 +13235,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "site/tsconfig.json"
@@ -12789,6 +13266,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [],
     "git_mode": "100644",
@@ -12817,6 +13295,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "src/gateway/thinking_proxy.py"
@@ -12847,6 +13326,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [],
     "git_mode": "100644",
@@ -12875,6 +13355,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "tests/proxy_stream_error_invariants.py"
@@ -12905,6 +13386,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "tests/pytorch_fastllm_token_mask_oracle.py"
@@ -12935,6 +13417,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "tests/test_agent_bench.py"
@@ -12965,6 +13448,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "tests/test_fastllm_adapter.py"
@@ -12995,6 +13479,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "tests/test_fastllm_cache_benchmark.py"
@@ -13025,6 +13510,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "tests/test_fastllm_feature_bench.py"
@@ -13055,6 +13541,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "tests/test_fastllm_native_profile.py"
@@ -13085,6 +13572,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [],
     "git_mode": "100644",
@@ -13113,12 +13601,13 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [],
     "git_mode": "100644",
-    "git_blob_oid": "c8f089b35ba6e3a74b0d20e8ffe5016abd8434ab",
-    "byte_length": 39536,
-    "sha256": "1961dba7e7ae41b6f280e8ffe3ee57646a51b6bf507570f9cf1a98e9ce55db8d",
+    "git_blob_oid": "581e67e6c0d2730f3236ac9b59cdfc27a795623d",
+    "byte_length": 42709,
+    "sha256": "a4fc2f9be9ef9b79a35de0dc3264b707b9249624625061bac2af5b57e0474140",
     "metadata_scope": "git-index-blob",
     "render_kind": "text",
     "media_type": "text/plain",
@@ -13141,6 +13630,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "tests/test_thinking_proxy_fastllm.py"
@@ -13171,6 +13661,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "tests/test_thinking_proxy_lifecycle.py"
@@ -13201,6 +13692,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "tests/tool_guidance_invariants.py"
@@ -13231,6 +13723,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "tests/toolcall_grammar_invariants.py"
@@ -13261,6 +13754,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [],
     "git_mode": "100644",
@@ -13289,6 +13783,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [],
     "git_mode": "100644",
@@ -13317,6 +13812,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [],
     "git_mode": "100644",
@@ -13345,6 +13841,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [],
     "git_mode": "100644",
@@ -13373,6 +13870,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "tools/scripts/chain_acceptance.py"
@@ -13403,6 +13901,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "tools/scripts/context_fidelity_probe.py"
@@ -13433,6 +13932,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "tools/scripts/fastllm_native_profile.py"
@@ -13463,6 +13963,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "tools/scripts/fastllm_qwen36_iq4xs.patch"
@@ -13493,6 +13994,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "tools/scripts/graft_gguf_mtp.py"
@@ -13523,6 +14025,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "tools/scripts/intel_probe.py"
@@ -13553,6 +14056,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "tools/scripts/launch_proxy_tmux.sh"
@@ -13583,6 +14087,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "tools/scripts/make_tables.py"
@@ -13613,6 +14118,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "tools/scripts/merge_mtp_head.py"
@@ -13643,6 +14149,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "tools/scripts/mtp_batch_acceptance.py"
@@ -13673,6 +14180,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "tools/scripts/run_proxy_q6_plain.sh"
@@ -13703,6 +14211,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "tools/scripts/run_proxy_q6_plain_turbo4.sh"
@@ -13733,6 +14242,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "tools/scripts/run_proxy_q6_plain_turbo4_lowwm.sh"
@@ -13763,6 +14273,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "tools/scripts/start.sh"
@@ -13793,6 +14304,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "tools/scripts/start_120.sh"
@@ -13823,6 +14335,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "tools/scripts/start_121.sh"
@@ -13853,6 +14366,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "tools/scripts/start_llama.sh"
@@ -13883,6 +14397,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "tools/scripts/start_llama_nospec.sh"
@@ -13913,6 +14428,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "tools/scripts/start_llama_turboquant.sh"
@@ -13943,6 +14459,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "tools/scripts/start_llama_turboquant_4x140k.sh"
@@ -13973,6 +14490,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "tools/scripts/start_proxy.sh"
@@ -14003,6 +14521,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "tools/scripts/sweep_driver.sh"
@@ -14033,6 +14552,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "tools/scripts/sweep_driver2.sh"
@@ -14063,6 +14583,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "tools/scripts/sweep_launch.sh"
@@ -14093,6 +14614,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "tools/scripts/sweep_one.sh"
@@ -14123,6 +14645,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "tools/scripts/sweep_one2.sh"
@@ -14153,6 +14676,7 @@
     "updated_at": null,
     "nav_section": null,
     "nav_order": null,
+    "primary_nav": null,
     "aliases": [],
     "baseline_paths": [
       "tools/scripts/sweep_profiles.py"

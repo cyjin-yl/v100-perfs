@@ -634,6 +634,13 @@ class LayoutManifestTests(unittest.TestCase):
             production_authorities,
             {"docs/operations/current-state/production.md"},
         )
+        production_item = next(
+            item
+            for item in manifest
+            if item["source_path"]
+            == "docs/operations/current-state/production.md"
+        )
+        self.assertEqual(production_item["model_generation"], "qwen3.8")
 
         snapshot_item = next(
             item
@@ -684,6 +691,88 @@ class LayoutManifestTests(unittest.TestCase):
             and item["authority"] == "reference"
         }
         self.assertEqual(actual_supporting_docs, expected_supporting_docs)
+        primary_navigation = [
+            (
+                str(item["source_path"]),
+                str(item["primary_nav"]["section"]),
+                str(item["primary_nav"]["label"]),
+                int(item["primary_nav"]["order"]),
+                str(item["primary_nav"]["target"]),
+            )
+            for item in manifest
+            if item["primary_nav"] is not None
+        ]
+        primary_navigation.sort(key=lambda item: item[3])
+        self.assertEqual(
+            primary_navigation,
+            [
+                ("docs/index.md", "overview", "Overview", 0, "/docs"),
+                (
+                    "docs/getting-started/overview.md",
+                    "getting-started",
+                    "Getting Started",
+                    1,
+                    "/docs/getting-started/overview",
+                ),
+                (
+                    "docs/concepts/architecture/system-overview.md",
+                    "concepts",
+                    "Concepts",
+                    2,
+                    "/docs/concepts/architecture/system-overview",
+                ),
+                (
+                    "docs/guides/client-compatibility/reasoning-fields.md",
+                    "guides",
+                    "Guides",
+                    3,
+                    "/docs/guides/client-compatibility/reasoning-fields",
+                ),
+                (
+                    "docs/operations/current-state/production.md",
+                    "operations",
+                    "Operations",
+                    4,
+                    "/docs/operations/current-state/production",
+                ),
+                (
+                    "docs/reference/api/reasoning-controls.md",
+                    "reference",
+                    "Reference",
+                    5,
+                    "/docs/reference/api/reasoning-controls",
+                ),
+                (
+                    "docs/performance/methodology/index.md",
+                    "performance",
+                    "Performance",
+                    6,
+                    "/docs/performance/methodology",
+                ),
+                (
+                    "docs/research/performance/short-prefill-plan.md",
+                    "research",
+                    "Research",
+                    7,
+                    "/docs#research",
+                ),
+                (
+                    "docs/archive/design-decisions/specs/"
+                    "2026-08-22-full-repository-docs-and-thinking-controls-design.md",
+                    "archive",
+                    "Archive",
+                    8,
+                    "/docs#archive",
+                ),
+                (
+                    "site/src/data/content-manifest.json",
+                    "repository",
+                    "Repository",
+                    9,
+                    "/repo",
+                ),
+            ],
+        )
 
         for path_value in published_docs:
             with self.subTest(path=path_value):

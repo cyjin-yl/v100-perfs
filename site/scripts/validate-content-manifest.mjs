@@ -22,6 +22,7 @@ const requiredFields = new Set([
   "updated_at",
   "nav_section",
   "nav_order",
+  "primary_nav",
   "aliases",
   "baseline_paths",
   "git_mode",
@@ -125,6 +126,13 @@ function safeRoute(route) {
   );
 }
 
+function safePrimaryNavTarget(target) {
+  if (typeof target !== "string") return false;
+  const [route, fragment, extra] = target.split("#");
+  if (extra !== undefined || !safeRoute(route)) return false;
+  return fragment === undefined || /^[a-z][a-z0-9-]*$/.test(fragment);
+}
+
 function addUnique(seen, value, label) {
   if (seen.has(value)) fail(`duplicate ${label}: ${value}`);
   seen.add(value);
@@ -166,6 +174,22 @@ function validateScalarMetadata(item, index) {
   if (item.nav_order !== null && !Number.isSafeInteger(item.nav_order)) {
     fail(`invalid nav_order for ${item.source_path}`);
   }
+  if (item.primary_nav !== null) {
+    if (
+      typeof item.primary_nav !== "object" ||
+      Array.isArray(item.primary_nav) ||
+      Object.keys(item.primary_nav).sort().join(",") !== "label,order,section,target" ||
+      typeof item.primary_nav.section !== "string" ||
+      !/^[a-z][a-z0-9-]*$/.test(item.primary_nav.section) ||
+      typeof item.primary_nav.label !== "string" ||
+      !item.primary_nav.label.trim() ||
+      !Number.isSafeInteger(item.primary_nav.order) ||
+      item.primary_nav.order < 0 ||
+      !safePrimaryNavTarget(item.primary_nav.target)
+    ) {
+      fail(`invalid primary_nav for ${item.source_path}`);
+    }
+  }
   if (item.status === "current" && item.authority !== "canonical") {
     fail(`only canonical content may be current: ${item.source_path}`);
   }
@@ -194,11 +218,15 @@ const normalizedPaths = new Set();
 const actualRoutes = new Map();
 const baselineClaims = new Map();
 const routeCounts = { docs: 0, evidence: 0, repository: 0, archive: 0 };
+const primaryNavigation = [];
 for (let index = 0; index < manifest.length; index += 1) {
   const item = manifest[index];
   const entry = entries[index];
   if (!item || typeof item !== "object" || Array.isArray(item)) fail(`item ${index} is not an object`);
   validateScalarMetadata(item, index);
+  if (item.primary_nav !== null) {
+    primaryNavigation.push({ ...item.primary_nav, source_path: item.source_path });
+  }
   if (!safePath(item.source_path)) fail(`unsafe source_path: ${item.source_path}`);
   if (item.source_path !== entry.sourcePath) {
     fail(`manifest is not sorted Git-index coverage at item ${index}: ${item.source_path}`);
@@ -285,6 +313,27 @@ for (let index = 0; index < manifest.length; index += 1) {
   }
 }
 if (!paths.has(manifestPath)) fail("manifest does not cover itself");
+if (primaryNavigation.length !== 10) {
+  fail(`primary navigation has ${primaryNavigation.length} items, expected 10`);
+}
+const primaryNavSections = new Set();
+const primaryNavLabels = new Set();
+const primaryNavOrders = new Set();
+for (const item of primaryNavigation) {
+  addUnique(primaryNavSections, item.section, "primary navigation section");
+  addUnique(primaryNavLabels, item.label, "primary navigation label");
+  addUnique(primaryNavOrders, item.order, "primary navigation order");
+  const route = item.target.split("#", 1)[0];
+  if (route !== "/repo" && !actualRoutes.has(route)) {
+    fail(`primary navigation target does not resolve: ${item.target}`);
+  }
+}
+const orderedPrimaryNav = [...primaryNavigation].sort(
+  (left, right) => left.order - right.order,
+);
+if (orderedPrimaryNav.some((item, index) => item.order !== index)) {
+  fail("primary navigation order must be contiguous from zero");
+}
 
 const migrationsDirectory = resolve(repo, "operations", "migrations");
 const ledgers = readdirSync(migrationsDirectory)

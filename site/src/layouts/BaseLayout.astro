@@ -16,28 +16,18 @@ const currentCanonical = manifest
     left.source_path.localeCompare(right.source_path)
   );
 
-const navigationSpec = [
-  { section: "overview", label: "Overview" },
-  { section: "getting-started", label: "Getting Started" },
-  { section: "concepts", label: "Concepts" },
-  { section: "guides", label: "Guides" },
-  { section: "operations", label: "Operations" },
-  { section: "reference", label: "Reference" },
-  { section: "performance", label: "Performance" },
-  { section: "research", label: "Research" },
-  { section: "archive", label: "Archive" },
-  { section: "repository", label: "Repository" },
-] as const;
-
-const navigation = navigationSpec.map(({ section, label }) => {
-  if (section === "repository") return { section, label, route: "/repo" };
-  const entry = currentCanonical.find((item) => item.nav_section === section);
-  return {
-    section,
-    label,
-    route: entry?.canonical_route ?? `${overview.canonical_route}#${section}`,
-  };
-});
+const navigation = manifest
+  .flatMap((item) => item.primary_nav ? [item.primary_nav] : [])
+  .sort((left, right) => left.order - right.order)
+  .map((item) => ({
+    section: item.section,
+    label: item.label,
+    order: item.order,
+    route: item.target,
+  }));
+if (navigation.length === 0) {
+  throw new Error("Manifest is missing primary navigation metadata");
+}
 
 function deployedRoute(route: string) {
   const [path, fragment] = route.split("#", 2);
