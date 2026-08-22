@@ -293,12 +293,54 @@ README 只做项目入口，不再复制整套状态和编年史。
 用户批准：
 
 ```text
+.github/workflows/deploy-docs.yml
 README.md
 thinking_proxy.py
-tests/test_thinking_proxy_fastllm.py
 docs/qwen38-sampling.md
+benchmarks/fastllm/agentic_load_bench.py
+benchmarks/fastllm/configs/thinkingcap_native_profiles.json
+benchmarks/fastllm/hermes_toolcall_bench.py
+frp/frpc.toml
+frp/frps.toml
+frp/setup_frpc.sh
+frp/setup_frps.sh
+handoff/scripts/chain_acceptance.py
+handoff/scripts/copy_fidelity_probe.sh
+handoff/scripts/gpu_verify_window.sh
+handoff/scripts/graft_mtp.sh
+handoff/scripts/imatrix_session.sh
+handoff/scripts/quantize_with_imatrix.sh
+handoff/scripts/raise_concurrency.sh
+handoff/scripts/run_copy_fidelity.sh
+handoff/scripts/run_vision_fidelity.sh
+handoff/scripts/sm70-audit/build_bench.sh
+handoff/scripts/sweep_driver.sh
+handoff/scripts/sweep_launch.sh
+handoff/scripts/sweep_one.sh
+handoff/scripts/upload_to_hf.sh
+handoff/scripts/verify_prefix_cache.py
+handoff/start_prod.sh
+results/q38-sweep/raw/toolcall_bench_2026-08-22/SUMMARY.md
+scripts/chain_acceptance.py
+scripts/context_fidelity_probe.py
+scripts/launch_proxy_tmux.sh
+scripts/run_proxy_q6_plain.sh
+scripts/run_proxy_q6_plain_turbo4.sh
+scripts/run_proxy_q6_plain_turbo4_lowwm.sh
+scripts/start_llama_turboquant_4x140k.sh
+scripts/start_proxy.sh
+scripts/sweep_driver.sh
+scripts/sweep_driver2.sh
+scripts/sweep_launch.sh
+scripts/sweep_one.sh
+scripts/sweep_one2.sh
+tests/proxy_stream_error_invariants.py
+tests/test_thinking_proxy_fastllm.py
+tests/test_thinking_proxy_lifecycle.py
+video-gen/README.md
+video-gen/bench_h3.py
 site/README.md
-.github/workflows/deploy-docs.yml
+site/package.json
 site/scripts/generate-repo-index.mjs
 site/scripts/gen-llms-txt.mjs
 site/src/components/ProtoDashboard.tsx
@@ -319,9 +361,10 @@ llms.txt
 site/src/data/repo-index.json
 ```
 
-`fastllm_adapter.py`、`site/package-lock.json`、所有 archive/evidence、patch、log、
-binary 和 snapshot 均不在 rewrite/regenerate allowlist，必须 byte-identical。
-历史/归档 banner 由 site metadata/layout 渲染，禁止插入历史文件正文。
+`fastllm_adapter.py`、`site/package-lock.json`、所有不在上述 allowlist 的 archive、
+captured evidence、patch、log、binary 和 snapshot 均不得 rewrite/regenerate，
+必须 byte-identical。历史/归档 banner 由 site metadata/layout 渲染，禁止插入
+历史文件正文。
 
 生成时拒绝：
 
