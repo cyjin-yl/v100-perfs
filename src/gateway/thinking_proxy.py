@@ -3010,7 +3010,7 @@ def _normalize_openai_reasoning_controls(
         existing_kwargs = {}
         body["chat_template_kwargs"] = existing_kwargs
 
-    if "enable_thinking" not in existing_kwargs:
+    if not isinstance(existing_kwargs.get("enable_thinking"), bool):
         existing_kwargs["enable_thinking"] = canonical_kwargs["enable_thinking"]
     if "reasoning_effort" in canonical_kwargs:
         existing_kwargs["reasoning_effort"] = canonical_kwargs[

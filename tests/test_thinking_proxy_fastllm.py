@@ -450,6 +450,31 @@ class ThinkingProxyFastLLMTests(unittest.IsolatedAsyncioTestCase):
             "custom_template_option": "kept",
         })
 
+    def test_null_template_toggle_becomes_canonical_true_before_rendering(self):
+        body = {
+            "model": "qwen3.8-fastllm",
+            "messages": [{"role": "user", "content": "Think briefly."}],
+            "reasoning_effort": "low",
+            "chat_template_kwargs": {"enable_thinking": None},
+        }
+
+        resolution = thinking_proxy._normalize_openai_reasoning_controls(body)
+        prepared = thinking_proxy.prepare_fastllm_body(body, QWEN38_TEMPLATE)
+
+        self.assertTrue(resolution.enabled)
+        self.assertEqual(body["chat_template_kwargs"], {
+            "enable_thinking": True,
+            "reasoning_effort": "low",
+        })
+        self.assertIn(
+            "Reasoning effort is set to low.",
+            prepared["prompt"],
+        )
+        self.assertTrue(prepared["prompt"].endswith(
+            "<|im_start|>assistant\n<think>\n"
+        ))
+        self.assertEqual(prepared["temperature"], 1.0)
+
     def test_equivalent_duplicate_controls_are_consumed_after_resolution(self):
         body = {
             "reasoning_effort": " LOW\t",
