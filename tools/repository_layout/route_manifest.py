@@ -95,6 +95,17 @@ class LegacyRoute:
 
 
 @dataclass(frozen=True)
+class AliasReport:
+    """Result of checking the built legacy compatibility surface."""
+
+    missing: list[str]
+    wrong_targets: list[str]
+    cycles: list[str]
+    alias_count: int
+    canonical_passthrough_count: int
+
+
+@dataclass(frozen=True)
 class _BaselinePath:
     old_path: str
     new_path: str
@@ -402,6 +413,125 @@ def _normalized_url(value: str) -> str:
         raise ValueError(f"route must be an absolute URL path: {value!r}")
     decoded = unquote(value)
     return decoded if decoded == "/" else decoded.rstrip("/")
+
+
+def _route_below_base(route: str, base_path: str) -> str:
+    decoded = unquote(route)
+    if decoded == base_path or decoded == f"{base_path}/":
+        return "/"
+    prefix = f"{base_path}/"
+    if not decoded.startswith(prefix):
+        raise RouteManifestError(
+            f"route {route!r} is outside ledger base path {base_path!r}"
+        )
+    return f"/{decoded[len(prefix):].rstrip('/')}"
+
+
+def _alias_targets_from_html(html: str) -> tuple[str | None, ...]:
+    patterns = (
+        r'<link rel="canonical" href="([^"]+)">',
+        r'<meta http-equiv="refresh" content="0;url=([^"]+)">',
+        r'location\.replace\(("[^"]+")\)',
+        r'<a href="([^"]+)">([^<]+)</a>',
+    )
+    canonical = re.search(patterns[0], html)
+    refresh = re.search(patterns[1], html)
+    javascript = re.search(patterns[2], html)
+    anchor = re.search(patterns[3], html)
+    javascript_target = (
+        json.loads(javascript.group(1)) if javascript is not None else None
+    )
+    anchor_href = anchor.group(1) if anchor is not None else None
+    anchor_text = anchor.group(2) if anchor is not None else None
+    return (
+        canonical.group(1) if canonical is not None else None,
+        refresh.group(1) if refresh is not None else None,
+        javascript_target,
+        anchor_href,
+        anchor_text,
+    )
+
+
+def verify_alias_build(route_ledger_path: Path, dist: Path) -> AliasReport:
+    """Verify every frozen legacy route and the removed repo-index route."""
+    payload = _load_json(route_ledger_path)
+    if not isinstance(payload, dict):
+        raise RouteManifestError("route ledger must be a JSON object")
+    base_path = payload.get("base_path")
+    rows = payload.get("rows")
+    if not isinstance(base_path, str) or not isinstance(rows, list):
+        raise RouteManifestError("route ledger is missing base_path or rows")
+
+    routes: list[LegacyRoute] = []
+    for row in rows:
+        if not isinstance(row, dict):
+            raise RouteManifestError("route ledger rows must be objects")
+        try:
+            routes.append(LegacyRoute(**row))
+        except TypeError as exc:
+            raise RouteManifestError(f"invalid route ledger row: {row!r}") from exc
+
+    special_alias = (
+        f"{base_path}/read/site/src/data/repo-index.json",
+        f"{base_path}/repository/site/src/data/content-manifest.json/",
+    )
+    expected_aliases = {
+        route.encoded_url: route.canonical_target
+        for route in routes
+        if _normalized_url(route.encoded_url)
+        != _normalized_url(route.canonical_target)
+    }
+    expected_aliases[special_alias[0]] = special_alias[1]
+
+    missing: list[str] = []
+    wrong_targets: list[str] = []
+    actual_aliases: dict[str, str] = {}
+    for alias, expected_target in expected_aliases.items():
+        artifact = _artifact_path(
+            dist,
+            _route_below_base(alias, base_path),
+        )
+        if not artifact.is_file():
+            missing.append(alias)
+            continue
+        targets = _alias_targets_from_html(
+            artifact.read_text(encoding="utf-8")
+        )
+        if any(target != expected_target for target in targets):
+            wrong_targets.append(
+                f"{alias}: expected five targets {expected_target!r}, "
+                f"found {targets!r}"
+            )
+            continue
+        actual_aliases[alias] = expected_target
+
+    canonical_passthroughs = [
+        route
+        for route in routes
+        if _normalized_url(route.encoded_url)
+        == _normalized_url(route.canonical_target)
+    ]
+    for route in canonical_passthroughs:
+        artifact = _artifact_path(
+            dist,
+            _route_below_base(route.encoded_url, base_path),
+        )
+        if not artifact.is_file():
+            missing.append(route.encoded_url)
+
+    cycles: list[str] = []
+    try:
+        validate_alias_targets(actual_aliases)
+    except ValueError as exc:
+        cycles.append(str(exc))
+
+    return AliasReport(
+        missing=sorted(missing),
+        wrong_targets=sorted(wrong_targets),
+        cycles=cycles,
+        alias_count=len(expected_aliases),
+        canonical_passthrough_count=len(canonical_passthroughs),
+    )
 
 
 def validate_alias_targets(aliases: Mapping[str, str]) -> None:

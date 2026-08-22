@@ -1,75 +1,50 @@
-// Generate the legacy llms.txt content from tracked Markdown only.
-// Task 7 replaces the content model; this generator only makes the current
-// artifact deterministic and prevents ignored working-tree files from leaking.
-import { spawnSync } from "node:child_process";
-import { writeFileSync } from "node:fs";
+import { readFileSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const site = dirname(dirname(fileURLToPath(import.meta.url)));
 const repo = resolve(site, "..");
+const manifest = JSON.parse(
+  readFileSync(resolve(site, "src", "data", "content-manifest.json"), "utf8"),
+);
 
-function git(args) {
-  const completed = spawnSync("git", ["-C", repo, ...args], {
-    encoding: null,
-    maxBuffer: 1024 * 1024 * 1024,
-  });
-  if (completed.error) throw completed.error;
-  if (completed.status !== 0) {
-    const detail = completed.stderr?.toString("utf8").trim();
-    throw new Error(`git ${args.join(" ")} failed${detail ? `: ${detail}` : ""}`);
+if (!Array.isArray(manifest)) throw new Error("content manifest must be an array");
+
+const origin = "https://cyjin-yl.github.io";
+const basePath = "/v100-perfs";
+
+function encodedRoute(route) {
+  if (typeof route !== "string" || !route.startsWith("/")) {
+    throw new Error(`canonical route must be absolute: ${route}`);
   }
-  return completed.stdout;
+  return route.split("/").map((segment) => encodeURIComponent(segment)).join("/");
 }
 
-const trackedMarkdown = git(["ls-files", "-z"])
-  .toString("utf8")
-  .split("\0")
-  .filter((path) => path.endsWith(".md"))
+function canonicalUrl(route) {
+  const encoded = encodedRoute(route);
+  return `${origin}${basePath}${encoded}${encoded.endsWith("/") ? "" : "/"}`;
+}
+
+const urls = manifest
+  .map((item) => canonicalUrl(item.canonical_route))
   .sort((left, right) => left < right ? -1 : left > right ? 1 : 0);
-
-function indexedText(path) {
-  return git(["cat-file", "blob", `:${path}`]).toString("utf8");
+const uniqueUrls = new Set(urls);
+if (uniqueUrls.size !== urls.length) {
+  throw new Error(`content manifest has ${urls.length - uniqueUrls.size} duplicate canonical URLs`);
+}
+if (urls.some((url) => !url.startsWith("https://"))) {
+  throw new Error("llms.txt URLs must all use absolute HTTPS URLs");
 }
 
-let llms = "# V100-32G FastLLM 推理知识库\n\n";
-llms += "> Qwen3.8-27B on Tesla V100-PCIE-32GB (SM70), FastLLM + thinking_proxy.\n";
-llms += "> 单卡 PCIe 记录; 双卡 TP2 与傲腾 NVMe L3 为规划中路线。\n\n";
-
-const sections = [
-  {
-    title: "Docs",
-    files: trackedMarkdown.filter((path) => path.startsWith("docs/")),
-    note: "叙述性文档: 架构/分析/运维/工具调用",
-  },
-  {
-    title: "Results",
-    files: trackedMarkdown.filter((path) => path.startsWith("evidence/results/")),
-    note: "基准结果数据(MATRIX 汇总与 raw json)",
-  },
-  {
-    title: "Repo Root",
-    files: trackedMarkdown.filter((path) => !path.startsWith("site/")),
-    note: "README 与顶层文档",
-  },
-];
-
-for (const section of sections) {
-  if (!section.files.length) continue;
-  llms += `## ${section.title}\n\n${section.note}\n\n`;
-  for (const path of section.files) {
-    const head = indexedText(path)
-      .split("\n")
-      .slice(0, 3)
-      .join(" ")
-      .replace(/[#*>`]/g, "")
-      .trim();
-    const description = head ? `: ${head.slice(0, 100)}` : "";
-    llms += `- [${path}](${path})${description}\n`;
-  }
-  llms += "\n";
-}
-llms += "## Optional\n\n- [Full EXPERIENCE chronicle](docs/archive/chronicles/v100-fastllm-experience.md): 完整故障排查编年史(最长)\n";
+const llms = [
+  "# V100-32G FastLLM documentation",
+  "",
+  "> Canonical documentation, evidence, archive, and repository artifacts.",
+  "> Generated from site/src/data/content-manifest.json; each canonical target appears once.",
+  "",
+  ...urls.map((url) => `- ${url}`),
+  "",
+].join("\n");
 
 writeFileSync(resolve(repo, "llms.txt"), llms);
-console.log("llms.txt written,", llms.split("\n").length, "lines");
+console.log(`llms.txt: ${urls.length} unique absolute HTTPS canonical URLs`);

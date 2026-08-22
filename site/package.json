@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
+    "postbuild": "node scripts/generate-legacy-aliases.mjs",
     "preview": "astro preview",
     "llms-txt": "node scripts/gen-llms-txt.mjs",
     "predev": "node scripts/generate-repo-index.mjs && node scripts/gen-llms-txt.mjs && node scripts/generate-repo-index.mjs",

@@ -3,7 +3,6 @@ name: Deploy docs site (Astro + Proto-UI)
 on:
   push:
     branches: [main]
-    paths: ["site/**", "docs/**", "README.md", "evidence/results/**/*.md", "llms.txt"]
   workflow_dispatch:
 
 permissions:
@@ -25,13 +24,9 @@ jobs:
       - name: Install deps
         working-directory: site
         run: npm install
-      - name: Generate llms.txt
-        run: node site/scripts/gen-llms-txt.mjs
-      - name: Build Astro
+      - name: Build docs, aliases, sitemap, and llms.txt
         working-directory: site
-        run: npx astro build
-      - name: Copy llms.txt into dist
-        run: cp llms.txt site/dist/llms.txt
+        run: npm run build
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with: { path: site/dist }

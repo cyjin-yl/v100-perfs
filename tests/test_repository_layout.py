@@ -12,6 +12,8 @@ import warnings
 from contextlib import redirect_stdout
 from dataclasses import asdict
 from pathlib import Path
+from urllib.parse import quote, unquote, urlsplit
+from xml.etree import ElementTree
 
 from tools.repository_layout.layout_manifest import (
     LayoutError,
@@ -26,6 +28,7 @@ from tools.repository_layout.layout_manifest import (
 from tools.repository_layout.route_manifest import (
     LegacyRoute,
     validate_alias_targets,
+    verify_alias_build,
 )
 
 
@@ -950,6 +953,76 @@ class ContentManifestTests(unittest.TestCase):
                 for route in canonical_routes
             )
         )
+
+    def test_llms_urls_are_unique_canonical_https_artifacts(self):
+        manifest = load_content_manifest(self.manifest_path)
+        expected = {
+            "https://cyjin-yl.github.io/v100-perfs"
+            + quote(str(item["canonical_route"]), safe="/")
+            + ("" if str(item["canonical_route"]).endswith("/") else "/")
+            for item in manifest
+        }
+        urls = [
+            line[2:].strip()
+            for line in Path("llms.txt").read_text(encoding="utf-8").splitlines()
+            if line.startswith("- https://")
+        ]
+        self.assertEqual(len(urls), len(set(urls)))
+        self.assertEqual(set(urls), expected)
+        for url in urls:
+            route = unquote(urlsplit(url).path).removeprefix("/v100-perfs/")
+            artifact = (
+                Path("site/dist") / route.strip("/") / "index.html"
+                if route
+                else Path("site/dist/index.html")
+            )
+            with self.subTest(url=url):
+                self.assertTrue(artifact.is_file(), artifact)
+
+    def test_sitemap_contains_only_unique_canonical_routes(self):
+        manifest = load_content_manifest(self.manifest_path)
+        expected = {
+            "https://cyjin-yl.github.io/v100-perfs/",
+            "https://cyjin-yl.github.io/v100-perfs/repo/",
+            *{
+                "https://cyjin-yl.github.io/v100-perfs"
+                + quote(str(item["canonical_route"]), safe="/")
+                + ("" if str(item["canonical_route"]).endswith("/") else "/")
+                for item in manifest
+            },
+        }
+        sitemap = ElementTree.parse("site/dist/sitemap-0.xml")
+        urls = [
+            element.text
+            for element in sitemap.findall(
+                ".//{http://www.sitemaps.org/schemas/sitemap/0.9}loc"
+            )
+        ]
+        self.assertEqual(len(urls), len(set(urls)))
+        self.assertEqual(set(urls), expected)
+
+
+class LegacyAliasBuildTests(unittest.TestCase):
+    def test_every_legacy_route_builds_exact_noncyclic_alias(self):
+        report = verify_alias_build(
+            PRODUCTION_ROUTE_LEDGER,
+            Path("site/dist"),
+        )
+        self.assertEqual(report.missing, [])
+        self.assertEqual(report.wrong_targets, [])
+        self.assertEqual(report.cycles, [])
+
+    def test_removed_repo_index_route_targets_content_manifest(self):
+        alias = Path(
+            "site/dist/read/site/src/data/repo-index.json/index.html"
+        ).read_text(encoding="utf-8")
+        expected = (
+            "/v100-perfs/repository/site/src/data/content-manifest.json/"
+        )
+        self.assertIn(f'<link rel="canonical" href="{expected}">', alias)
+        self.assertIn(f'<meta http-equiv="refresh" content="0;url={expected}">', alias)
+        self.assertIn(f'location.replace("{expected}")', alias)
+        self.assertIn(f'<a href="{expected}">{expected}</a>', alias)
 
 
 class RouteManifestTests(unittest.TestCase):
