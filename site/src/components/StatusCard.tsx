@@ -1,4 +1,9 @@
 import { useState } from "react";
+import * as React from "react";
+import { createReactAdapter } from "@proto.ui/adapter-react";
+import { shadcnButton } from "@proto.ui/prototypes-shadcn/button";
+
+const ProtoButton = createReactAdapter({ React })(shadcnButton);
 
 /**
  * Proto-UI 试用组件: shadcn 风格的状态卡片。
@@ -60,14 +65,17 @@ export default function StatusCard() {
           <span style={{color:"hsl(var(--muted-foreground))"}}>点击右侧按钮拉取</span>
         )}
       </div>
-      <button onClick={refresh} disabled={loading}
-        style={{
+      <ProtoButton
+        variant="default"
+        size="sm"
+        disabled={loading}
+        onClick={refresh}
+        hostStyle={{
           background:"hsl(var(--primary))", color:"#0b1220", border:0,
           borderRadius:"var(--radius)", padding:"6px 14px", cursor:"pointer",
           fontWeight:600, opacity: loading?0.6:1,
-        }}>
-        {loading ? "加载中…" : "刷新状态"}
-      </button>
+        }}
+      >{loading ? "加载中…" : "刷新状态"}</ProtoButton>
     </div>
   );
 }

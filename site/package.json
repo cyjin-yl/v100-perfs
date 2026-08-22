@@ -12,10 +12,13 @@
   "dependencies": {
     "@astrojs/react": "^4.2.0",
     "@astrojs/sitemap": "^3.2.0",
+    "@proto.ui/adapter-react": "^0.2.0",
+    "@proto.ui/core": "^0.2.0",
+    "@proto.ui/prototypes-shadcn": "^0.2.0",
     "astro": "^5.7.0",
+    "marked": "^15.0.0",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "marked": "^15.0.0"
+    "react-dom": "^19.0.0"
   },
   "devDependencies": {
     "@types/react": "^19.0.0",

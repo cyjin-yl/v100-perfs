@@ -75,7 +75,7 @@ site/                      # 文档站(Astro + Proto-UI, GitHub Pages)
 ./handoff/start_prod.sh <profile.env 绝对路径>
 
 # 或用 TUI/管理面
-python fastllm/tools/apiserver_tui.py --check   # 已由内嵌 WebUI 取代
+浏览器访问 http://<host>:8000/admin   # C++ 内嵌管理 WebUI
 # 浏览器访问 http://<host>:8000/admin
 ```
 
