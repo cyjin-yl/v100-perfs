@@ -97,6 +97,7 @@ class ReferenceFinding:
 class ReferenceReport:
     broken_internal_links: list[ReferenceFinding]
     stale_old_paths: list[ReferenceFinding]
+    resolved_internal_links: list[ReferenceFinding]
     historical_old_paths: dict[str, list[ReferenceFinding]]
 
 @dataclass(frozen=True)
@@ -637,6 +638,11 @@ def rewrite_repository_reference(path: str) -> str:
 _MARKDOWN_LINK = re.compile(
     r"!?\[[^\]\n]*\]\(\s*(?:<(?P<angle>[^>\n]+)>|(?P<plain>[^)\s]+))"
 )
+_ASTRO_REPO_DOCS_JOIN = re.compile(
+    r"join\(\s*repoDocs\s*,"
+    r"(?P<arguments>(?:\s*\"(?:\\.|[^\"\\])*\"\s*,?)+)\)"
+)
+_QUOTED_STRING = re.compile(r'"(?P<value>(?:\\.|[^"\\])*)"')
 _REFERENCE_PATH_CHARACTERS = frozenset(
     "abcdefghijklmnopqrstuvwxyz"
     "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -659,7 +665,11 @@ def _old_path_offsets(text: str, old_path: str) -> Iterable[int]:
         if end < len(text) and text[end] in _REFERENCE_PATH_CHARACTERS:
             continue
         if start and text[start - 1] in _REFERENCE_PATH_CHARACTERS:
-            if not text[:start].endswith("/v100-perfs/"):
+            prefix = text[:start]
+            if not (
+                prefix.endswith("./")
+                or prefix.endswith("/v100-perfs/")
+            ):
                 continue
         yield start
 
@@ -709,6 +719,33 @@ def _markdown_target_path(
         return None
     return normalized.as_posix(), repo / normalized
 
+def _astro_repo_docs_targets(
+    repo: Path,
+    source_path: str,
+    text: str,
+) -> Iterable[tuple[ReferenceFinding, Path]]:
+    for match in _ASTRO_REPO_DOCS_JOIN.finditer(text):
+        segments = [
+            json.loads(f'"{quoted.group("value")}"')
+            for quoted in _QUOTED_STRING.finditer(match.group("arguments"))
+        ]
+        resolved = PurePosixPath(os.path.normpath(
+            PurePosixPath("docs").joinpath(*segments).as_posix()
+        ))
+        if resolved.is_absolute() or ".." in resolved.parts:
+            continue
+        yield (
+            ReferenceFinding(
+                source_path=source_path,
+                line_number=text.count("\n", 0, match.start()) + 1,
+                reference=match.group(0),
+                resolved_path=resolved.as_posix(),
+            ),
+            repo / resolved,
+        )
+
+
+
 
 def scan_internal_references(
     repo: Path,
@@ -730,6 +767,7 @@ def scan_internal_references(
     )
     stale: list[ReferenceFinding] = []
     broken: list[ReferenceFinding] = []
+    resolved_links: list[ReferenceFinding] = []
     historical: dict[str, list[ReferenceFinding]] = {}
 
     for source_row in sorted(ledger, key=lambda row: row.new_path):
@@ -774,19 +812,34 @@ def scan_internal_references(
                 if resolved is None:
                     continue
                 resolved_path, absolute_path = resolved
-                if not absolute_path.exists():
-                    broken.append(ReferenceFinding(
-                        source_path=source_row.new_path,
-                        line_number=text.count("\n", 0, match.start()) + 1,
-                        reference=target,
-                        resolved_path=resolved_path,
-                    ))
+                finding = ReferenceFinding(
+                    source_path=source_row.new_path,
+                    line_number=text.count("\n", 0, match.start()) + 1,
+                    reference=target,
+                    resolved_path=resolved_path,
+                )
+                if absolute_path.exists():
+                    resolved_links.append(finding)
+                else:
+                    broken.append(finding)
+
+        if active and source.suffix.lower() == ".astro":
+            for finding, absolute_path in _astro_repo_docs_targets(
+                repo,
+                source_row.new_path,
+                text,
+            ):
+                if absolute_path.exists():
+                    resolved_links.append(finding)
+                else:
+                    broken.append(finding)
 
     for findings in historical.values():
         findings.sort()
     return ReferenceReport(
         broken_internal_links=sorted(set(broken)),
         stale_old_paths=sorted(set(stale)),
+        resolved_internal_links=sorted(set(resolved_links)),
         historical_old_paths=dict(sorted(historical.items())),
     )
 

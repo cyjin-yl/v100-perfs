@@ -242,7 +242,7 @@ class LayoutManifestTests(unittest.TestCase):
 
     def test_reference_scanner_separates_active_from_historical_old_paths(self):
         self.add_files({
-            "current.md": b"[legacy](legacy/a.md)\n",
+            "current.md": b"[legacy](./legacy/a.md)\n",
             "archive.md": b"Recorded legacy/a.md for history.\n",
             "legacy/a.md": b"target\n",
         })
@@ -280,7 +280,7 @@ class LayoutManifestTests(unittest.TestCase):
                 )
                 for finding in report.broken_internal_links
             ],
-            [("current.md", 1, "legacy/a.md", "legacy/a.md")],
+            [("current.md", 1, "./legacy/a.md", "legacy/a.md")],
         )
         self.assertEqual(
             {
@@ -306,7 +306,6 @@ class LayoutManifestTests(unittest.TestCase):
         )
         (self.repo / "current/a.md").write_text("target\n", encoding="utf-8")
 
-
         (self.repo / "current.md").write_text(
             "[current](current/a.md)\n",
             encoding="utf-8",
@@ -314,6 +313,13 @@ class LayoutManifestTests(unittest.TestCase):
         repaired = scan_internal_references(self.repo, rows)
         self.assertEqual(repaired.stale_old_paths, [])
         self.assertEqual(repaired.broken_internal_links, [])
+        self.assertEqual(
+            {
+                finding.resolved_path
+                for finding in repaired.resolved_internal_links
+            },
+            {"current/a.md"},
+        )
 
 
     def test_verifier_rejects_rewritten_byte_identical_blob(self):
@@ -434,6 +440,26 @@ class LayoutManifestTests(unittest.TestCase):
         )
         self.assertEqual(report.broken_internal_links, [])
         self.assertEqual(report.stale_old_paths, [])
+        curated_source = "site/src/pages/docs/[...slug].astro"
+        curated_paths = {
+            finding.resolved_path
+            for finding in report.resolved_internal_links
+            if finding.source_path == curated_source
+        }
+        self.assertEqual(curated_paths, {
+            "README.md",
+            "docs/archive/assessments/2026-08-22-upstream-cherry-pick.md",
+            "docs/archive/chronicles/v100-fastllm-experience.md",
+            "docs/archive/handoffs/2026-08-18-qwen38.md",
+            "docs/concepts/tool-calling/constraint-architecture.md",
+            "docs/performance/qwen38/sweep-matrix.md",
+            "docs/research/performance/short-prefill-plan.md",
+            "docs/research/storage/optane-l3.md",
+        })
+        for path_value in curated_paths:
+            with self.subTest(path=path_value):
+                self.assertTrue(Path(path_value).exists())
+
 
     def test_production_mapping_contains_the_complete_explicit_docs_rules(self):
         mapping = LayoutMapping.from_file(PRODUCTION_MAPPING)
