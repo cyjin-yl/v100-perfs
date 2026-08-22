@@ -224,7 +224,7 @@ from tools.repository_layout.route_manifest import (
 class RouteManifestTests(unittest.TestCase):
     def test_baseline_route_capture_counts_every_page(self):
         routes = capture_legacy_routes(Path.cwd(), Path("site/dist"))
-        self.assertEqual(len(routes), 421)
+        self.assertEqual(len(routes), 424)
         self.assertIn(
             "/v100-perfs/docs/getting-started/",
             {r.trailing_slash_url for r in routes},
@@ -250,9 +250,9 @@ Expected: `capture_legacy_routes` missing.
 
 - [ ] **Step 3: Implement baseline build/route capture**
 
-Run the current site build before mutation. Capture `/`, `/repo`, nine curated `/docs/*`, and 410 `/read/*` routes from baseline definitions and `dist/`. Store base path, raw path, percent-encoded form, trailing-slash form and approved canonical target. Do not infer old routes from the post-migration site.
+Run the current site build before mutation. Capture `/`, `/repo`, nine curated `/docs/*`, and 413 `/read/*` routes from baseline definitions and `dist/`. Store base path, raw path, percent-encoded form, trailing-slash form and approved canonical target. Do not infer old routes from the post-migration site.
 
-- [ ] **Step 4: Generate and validate the 421-row route ledger**
+- [ ] **Step 4: Generate and validate the 424-row route ledger**
 
 ```bash
 npm --prefix site run build
@@ -262,7 +262,7 @@ python -m tools.repository_layout.route_manifest capture --repo . --dist site/di
 Expected:
 
 ```text
-legacy_routes=421 missing_artifacts=0 duplicate_urls=0
+legacy_routes=424 missing_artifacts=0 duplicate_urls=0
 ```
 
 - [ ] **Step 5: Commit the immutable route ledger**
@@ -591,7 +591,7 @@ python -m unittest tests.test_repository_layout -v
 node site/scripts/validate-content-manifest.mjs
 ```
 
-Expected: 421/421 legacy route aliases valid; internal links zero broken; `llms.txt` unique and locally resolvable.
+Expected: 424/424 legacy route aliases valid; internal links zero broken; `llms.txt` unique and locally resolvable.
 
 - [ ] **Step 6: Commit URL compatibility layer**
 

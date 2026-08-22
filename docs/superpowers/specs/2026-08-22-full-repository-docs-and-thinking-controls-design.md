@@ -430,8 +430,8 @@ GitHub Pages alias 使用静态页面：canonical link、立即 meta refresh/JS 
 
 在 mutation 前另冻结不可变 route ledger
 `operations/migrations/<base-commit>-legacy-routes.json`。它从 baseline Astro
-build 和当前 route definitions 采集全部 421 个页面：`/`、`/repo`、9 个
-curated `/docs/*`、410 个 `/read/*`，同时记录 base `/v100-perfs`、原始 path、
+build 和当前 route definitions 采集实施基线的全部 424 个页面：`/`、`/repo`、
+9 个 curated `/docs/*`、413 个 `/read/*`，同时记录 base `/v100-perfs`、原始 path、
 percent-encoded path、trailing-slash form 和预期 canonical target。迁移不得靠
 “重新扫描新站点”推断旧 URL。
 
