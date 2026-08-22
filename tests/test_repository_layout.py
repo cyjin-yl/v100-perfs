@@ -542,7 +542,13 @@ class LayoutManifestTests(unittest.TestCase):
                 "config/chat-templates"
             ),
             "controller_ruling_reference": (
-                "Main controller ruling: Task 4 final pre-review fix"
+                "User delegated instruction (verbatim): "
+                "`最终的决定权交给你，别漏文件`; controller decision: The exact "
+                "approved exception is only baseline "
+                "`tests/test_fastllm_adapter.py` changing two fixture constants "
+                "from removed `chat_templates/...` to "
+                "`config/chat-templates/...`. No wildcard or general path-class "
+                "approval."
             ),
         }])
         baseline_row = next(
