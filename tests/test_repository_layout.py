@@ -476,6 +476,10 @@ class LayoutManifestTests(unittest.TestCase):
             if str(item["source_path"]).startswith("docs/")
         }
         self.assertEqual(published_docs, {
+            "docs/_data/deployment-snapshots/2026-08-22T15-53-14Z-qwen38.json": (
+                "docs",
+                "/docs/_data/deployment-snapshots/2026-08-22T15-53-14Z-qwen38.json",
+            ),
             "docs/archive/assessments/2026-08-22-upstream-cherry-pick.md": (
                 "archive",
                 "/archive/assessments/2026-08-22-upstream-cherry-pick",
@@ -524,9 +528,41 @@ class LayoutManifestTests(unittest.TestCase):
                 "archive",
                 "/archive/qwen36/performance/vllm-and-multi-engine",
             ),
+            "docs/concepts/architecture/system-overview.md": (
+                "docs",
+                "/docs/concepts/architecture/system-overview",
+            ),
+            "docs/concepts/reasoning/control-model.md": (
+                "docs",
+                "/docs/concepts/reasoning/control-model",
+            ),
             "docs/concepts/tool-calling/constraint-architecture.md": (
                 "docs",
                 "/docs/concepts/tool-calling/constraint-architecture",
+            ),
+            "docs/getting-started/overview.md": (
+                "docs",
+                "/docs/getting-started/overview",
+            ),
+            "docs/guides/client-compatibility/reasoning-fields.md": (
+                "docs",
+                "/docs/guides/client-compatibility/reasoning-fields",
+            ),
+            "docs/guides/openwebui/reasoning-controls.md": (
+                "docs",
+                "/docs/guides/openwebui/reasoning-controls",
+            ),
+            "docs/index.md": (
+                "docs",
+                "/docs",
+            ),
+            "docs/operations/current-state/production.md": (
+                "docs",
+                "/docs/operations/current-state/production",
+            ),
+            "docs/operations/runbooks/proxy.md": (
+                "docs",
+                "/docs/operations/runbooks/proxy",
             ),
             "docs/operations/troubleshooting/silent-hang.md": (
                 "docs",
@@ -536,6 +572,10 @@ class LayoutManifestTests(unittest.TestCase):
                 "docs",
                 "/docs/operations/troubleshooting/tool-call-copy-fidelity",
             ),
+            "docs/performance/methodology/index.md": (
+                "docs",
+                "/docs/performance/methodology",
+            ),
             "docs/performance/qwen38/sweep-matrix.md": (
                 "docs",
                 "/docs/performance/qwen38/sweep-matrix",
@@ -543,6 +583,10 @@ class LayoutManifestTests(unittest.TestCase):
             "docs/performance/qwen38/toolcall-benchmark-2026-08-22.md": (
                 "docs",
                 "/docs/performance/qwen38/toolcall-benchmark-2026-08-22",
+            ),
+            "docs/reference/api/reasoning-controls.md": (
+                "docs",
+                "/docs/reference/api/reasoning-controls",
             ),
             "docs/reference/models/qwen38/sampling-and-template.md": (
                 "docs",
@@ -561,6 +605,86 @@ class LayoutManifestTests(unittest.TestCase):
                 "/docs/research/storage/optane-l3",
             ),
         })
+        current_canonical = {
+            str(item["source_path"])
+            for item in manifest
+            if item["status"] == "current"
+            and item["authority"] == "canonical"
+        }
+        expected_current_canonical = {
+            "docs/index.md",
+            "docs/getting-started/overview.md",
+            "docs/concepts/architecture/system-overview.md",
+            "docs/concepts/reasoning/control-model.md",
+            "docs/guides/openwebui/reasoning-controls.md",
+            "docs/guides/client-compatibility/reasoning-fields.md",
+            "docs/operations/current-state/production.md",
+            "docs/operations/runbooks/proxy.md",
+            "docs/reference/api/reasoning-controls.md",
+            "docs/reference/models/qwen38/sampling-and-template.md",
+            "docs/performance/methodology/index.md",
+        }
+        self.assertEqual(current_canonical, expected_current_canonical)
+        production_authorities = {
+            path_value
+            for path_value in current_canonical
+            if path_value.startswith("docs/operations/current-state/")
+        }
+        self.assertEqual(
+            production_authorities,
+            {"docs/operations/current-state/production.md"},
+        )
+
+        snapshot_item = next(
+            item
+            for item in manifest
+            if item["source_path"]
+            == "docs/_data/deployment-snapshots/2026-08-22T15-53-14Z-qwen38.json"
+        )
+        self.assertEqual(
+            (
+                snapshot_item["route_kind"],
+                snapshot_item["status"],
+                snapshot_item["authority"],
+                snapshot_item["nav_section"],
+                snapshot_item["nav_order"],
+            ),
+            ("docs", "supporting", "reference", None, None),
+        )
+
+        expected_archive = {
+            path_value
+            for path_value, (route_kind, _) in published_docs.items()
+            if route_kind == "archive"
+        }
+        actual_archive = {
+            str(item["source_path"])
+            for item in manifest
+            if item["status"] == "historical"
+            and item["authority"] == "archive"
+        }
+        self.assertEqual(actual_archive, expected_archive)
+
+        expected_supporting_docs = {
+            "docs/_data/deployment-snapshots/2026-08-22T15-53-14Z-qwen38.json",
+            "docs/concepts/tool-calling/constraint-architecture.md",
+            "docs/operations/troubleshooting/silent-hang.md",
+            "docs/operations/troubleshooting/tool-call-copy-fidelity.md",
+            "docs/performance/qwen38/sweep-matrix.md",
+            "docs/performance/qwen38/toolcall-benchmark-2026-08-22.md",
+            "docs/research/performance/prefill-exact-port.md",
+            "docs/research/performance/short-prefill-plan.md",
+            "docs/research/storage/optane-l3.md",
+        }
+        actual_supporting_docs = {
+            str(item["source_path"])
+            for item in manifest
+            if str(item["source_path"]).startswith("docs/")
+            and item["status"] == "supporting"
+            and item["authority"] == "reference"
+        }
+        self.assertEqual(actual_supporting_docs, expected_supporting_docs)
+
         for path_value in published_docs:
             with self.subTest(path=path_value):
                 self.assertTrue(Path(path_value).is_file())
