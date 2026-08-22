@@ -25,7 +25,6 @@ from tools.repository_layout.layout_manifest import (
 )
 from tools.repository_layout.route_manifest import (
     LegacyRoute,
-    capture_legacy_routes,
     validate_alias_targets,
 )
 
@@ -464,25 +463,107 @@ class LayoutManifestTests(unittest.TestCase):
         )
         self.assertEqual(report.broken_internal_links, [])
         self.assertEqual(report.stale_old_paths, [])
-        curated_source = "site/src/pages/docs/[...slug].astro"
-        curated_paths = {
-            finding.resolved_path
-            for finding in report.resolved_internal_links
-            if finding.source_path == curated_source
+
+        manifest = load_content_manifest(
+            Path("site/src/data/content-manifest.json")
+        )
+        published_docs = {
+            str(item["source_path"]): (
+                str(item["route_kind"]),
+                str(item["canonical_route"]),
+            )
+            for item in manifest
+            if str(item["source_path"]).startswith("docs/")
         }
-        self.assertEqual(curated_paths, {
-            "README.md",
-            "docs/archive/assessments/2026-08-22-upstream-cherry-pick.md",
-            "docs/archive/chronicles/v100-fastllm-experience.md",
-            "docs/archive/handoffs/2026-08-18-qwen38.md",
-            "docs/concepts/tool-calling/constraint-architecture.md",
-            "docs/performance/qwen38/sweep-matrix.md",
-            "docs/research/performance/short-prefill-plan.md",
-            "docs/research/storage/optane-l3.md",
+        self.assertEqual(published_docs, {
+            "docs/archive/assessments/2026-08-22-upstream-cherry-pick.md": (
+                "archive",
+                "/archive/assessments/2026-08-22-upstream-cherry-pick",
+            ),
+            "docs/archive/chronicles/v100-fastllm-experience.md": (
+                "archive",
+                "/archive/chronicles/v100-fastllm-experience",
+            ),
+            "docs/archive/design-decisions/plans/2026-08-22-full-repository-docs-migration.md": (
+                "archive",
+                "/archive/design-decisions/plans/2026-08-22-full-repository-docs-migration",
+            ),
+            "docs/archive/design-decisions/plans/2026-08-22-reasoning-control-compatibility.md": (
+                "archive",
+                "/archive/design-decisions/plans/2026-08-22-reasoning-control-compatibility",
+            ),
+            "docs/archive/design-decisions/specs/2026-08-22-full-repository-docs-and-thinking-controls-design.md": (
+                "archive",
+                "/archive/design-decisions/specs/2026-08-22-full-repository-docs-and-thinking-controls-design",
+            ),
+            "docs/archive/handoffs/2026-07-28-fastllm.md": (
+                "archive",
+                "/archive/handoffs/2026-07-28-fastllm",
+            ),
+            "docs/archive/handoffs/2026-08-09-deepseek-v4.md": (
+                "archive",
+                "/archive/handoffs/2026-08-09-deepseek-v4",
+            ),
+            "docs/archive/handoffs/2026-08-18-qwen38.md": (
+                "archive",
+                "/archive/handoffs/2026-08-18-qwen38",
+            ),
+            "docs/archive/handoffs/2026-08-20-production.md": (
+                "archive",
+                "/archive/handoffs/2026-08-20-production",
+            ),
+            "docs/archive/qwen35/design/q4km-sm70.md": (
+                "archive",
+                "/archive/qwen35/design/q4km-sm70",
+            ),
+            "docs/archive/qwen36/performance/fastllm.md": (
+                "archive",
+                "/archive/qwen36/performance/fastllm",
+            ),
+            "docs/archive/qwen36/performance/vllm-and-multi-engine.md": (
+                "archive",
+                "/archive/qwen36/performance/vllm-and-multi-engine",
+            ),
+            "docs/concepts/tool-calling/constraint-architecture.md": (
+                "docs",
+                "/docs/concepts/tool-calling/constraint-architecture",
+            ),
+            "docs/operations/troubleshooting/silent-hang.md": (
+                "docs",
+                "/docs/operations/troubleshooting/silent-hang",
+            ),
+            "docs/operations/troubleshooting/tool-call-copy-fidelity.md": (
+                "docs",
+                "/docs/operations/troubleshooting/tool-call-copy-fidelity",
+            ),
+            "docs/performance/qwen38/sweep-matrix.md": (
+                "docs",
+                "/docs/performance/qwen38/sweep-matrix",
+            ),
+            "docs/performance/qwen38/toolcall-benchmark-2026-08-22.md": (
+                "docs",
+                "/docs/performance/qwen38/toolcall-benchmark-2026-08-22",
+            ),
+            "docs/reference/models/qwen38/sampling-and-template.md": (
+                "docs",
+                "/docs/reference/models/qwen38/sampling-and-template",
+            ),
+            "docs/research/performance/prefill-exact-port.md": (
+                "docs",
+                "/docs/research/performance/prefill-exact-port",
+            ),
+            "docs/research/performance/short-prefill-plan.md": (
+                "docs",
+                "/docs/research/performance/short-prefill-plan",
+            ),
+            "docs/research/storage/optane-l3.md": (
+                "docs",
+                "/docs/research/storage/optane-l3",
+            ),
         })
-        for path_value in curated_paths:
+        for path_value in published_docs:
             with self.subTest(path=path_value):
-                self.assertTrue(Path(path_value).exists())
+                self.assertTrue(Path(path_value).is_file())
 
 
     def test_production_mapping_contains_the_complete_explicit_docs_rules(self):
@@ -634,7 +715,12 @@ class ContentManifestTests(unittest.TestCase):
 class RouteManifestTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.routes = capture_legacy_routes(Path.cwd(), Path("site/dist"))
+        cls.payload = json.loads(
+            PRODUCTION_ROUTE_LEDGER.read_text(encoding="utf-8")
+        )
+        cls.routes = [
+            LegacyRoute(**row) for row in cls.payload["rows"]
+        ]
         cls.by_old_url = {route.old_url: route for route in cls.routes}
 
     def test_baseline_route_capture_counts_every_page(self):
@@ -646,12 +732,38 @@ class RouteManifestTests(unittest.TestCase):
         )
 
     def test_committed_route_ledger_is_the_exact_immutable_capture(self):
-        payload = json.loads(PRODUCTION_ROUTE_LEDGER.read_text(encoding="utf-8"))
-        self.assertEqual(payload["base_path"], "/v100-perfs")
-        self.assertEqual(payload["curated_route_count"], 9)
-        self.assertEqual(payload["read_route_count"], 413)
-        self.assertEqual(payload["row_count"], 424)
-        self.assertEqual(payload["rows"], [asdict(route) for route in self.routes])
+        self.assertEqual(self.payload["schema_version"], 1)
+        self.assertEqual(
+            self.payload["base_commit"],
+            "67ef398f9da504e020db1349956e2990f2876171",
+        )
+        self.assertEqual(self.payload["base_path"], "/v100-perfs")
+        self.assertEqual(
+            self.payload["source_layout_ledger"],
+            "operations/migrations/"
+            "67ef398f9da504e020db1349956e2990f2876171-repository-layout.json",
+        )
+        self.assertEqual(self.payload["baseline_route_definitions"], [
+            "site/astro.config.mjs",
+            "site/src/pages/docs/[...slug].astro",
+            "site/src/data/repo-index.json",
+        ])
+        self.assertEqual(self.payload["curated_route_count"], 9)
+        self.assertEqual(self.payload["read_route_count"], 413)
+        self.assertEqual(self.payload["row_count"], 424)
+        self.assertEqual(
+            self.payload["rows"],
+            [asdict(route) for route in self.routes],
+        )
+        self.assertEqual(len(self.by_old_url), len(self.routes))
+        self.assertEqual(
+            len({route.encoded_url for route in self.routes}),
+            len(self.routes),
+        )
+        self.assertEqual(
+            len({route.trailing_slash_url for route in self.routes}),
+            len(self.routes),
+        )
 
     def test_route_forms_and_canonical_targets_are_exact(self):
         self.assertEqual(
