@@ -89,6 +89,7 @@ from reasoning_controls import (
     ReasoningControlError,
     ThinkingResolution,
     chat_template_kwargs_for,
+    extract_anthropic_candidates,
     extract_openai_candidates,
     resolve_reasoning_candidates,
 )
@@ -2962,31 +2963,6 @@ async def list_models():
 
 # ─── OpenAI endpoint ────────────────────────────────────────────
 
-# Qwen3.8 官方 chat template 只接受三档: low / medium / xhigh。
-# 模板自身把 'high' 别名到 'xhigh',其余取值直接 raise_exception。
-# 缺省不传 reasoning_effort 时模板取默认 xhigh —— 所以"推不出来"等于
-# 静默升到最高档,必须显式覆盖全部客户端档位。
-_QWEN_TEMPLATE_EFFORT = {
-    "minimal": "low",
-    "low": "low",
-    "medium": "medium",
-    "high": "xhigh",
-    "xhigh": "xhigh",
-    "max": "xhigh",
-}
-# Anthropic 协议没有 reasoning_effort 字段,客户端只发 thinking.budget_tokens。
-# 边界按 OMP Anthropic adapter 的实际预算划分:
-#   minimal=1024, low=4096, medium=8192, high/xhigh>=16384
-# 旧实现用 proxy 自己的 _EFFORT_BUDGETS(2048/4096/8192)当阈值,导致
-#   low(4096)->medium、medium(8192)->xhigh 整体上移一档,high/xhigh 全部坍缩。
-_ANTHROPIC_BUDGET_EFFORT_TIERS = ((4096, "low"), (8192, "medium"))
-
-
-def _budget_to_template_effort(budget: int) -> str:
-    for limit, name in _ANTHROPIC_BUDGET_EFFORT_TIERS:
-        if budget <= limit:
-            return name
-    return "xhigh"
 
 
 def _normalize_openai_reasoning_controls(
@@ -3246,7 +3222,19 @@ async def anthropic_messages(request: Request):
                 print(f"[route] cc-switch failed, falling through", flush=True)
 
     stream = body.get("stream", False)
-    openai_body = _anthropic_to_openai(body)
+    try:
+        openai_body = _anthropic_to_openai(body)
+    except ReasoningControlError as exc:
+        return JSONResponse(
+            status_code=400,
+            content={
+                "type": "error",
+                "error": {
+                    "type": "invalid_request_error",
+                    "message": f"{exc.field_path}: {exc}",
+                },
+            },
+        )
     _normalize_tool_schema(openai_body)
     try:
         await _convert_images(openai_body.get("messages", []))
@@ -3475,6 +3463,10 @@ def _strip_claude_code_attribution(text):
 
 
 def _anthropic_to_openai(body: dict) -> dict:
+    candidates = extract_anthropic_candidates(body)
+    resolution = resolve_reasoning_candidates(candidates)
+    canonical_kwargs = chat_template_kwargs_for(resolution)
+
     messages = []
 
     system = body.get("system")
@@ -3561,20 +3553,13 @@ def _anthropic_to_openai(body: dict) -> dict:
             continue
         messages.append(msg_dict)
 
-    thinking_param = body.get("thinking") or {}
-    enable = thinking_param.get("type") != "disabled"
-
-    output_config = body.get("output_config") or {}
-    requested_effort = output_config.get("effort")
-    if requested_effort:
-        enable = str(requested_effort).lower() != "none"
 
     result = {
         "model": body.get("model", "qwen3.6-27b-awq"),
         "messages": messages,
         "max_tokens": _default_max_tokens(body),
         "stream": body.get("stream", False),
-        "chat_template_kwargs": {"enable_thinking": enable},
+        "chat_template_kwargs": canonical_kwargs,
     }
     # 采样参数只在客户端显式给出时才透传:否则交给 prepare_fastllm_body 注入
     # Qwen3 推荐档(temp 0.6 / top_p 0.8 / top_k 20)。原先硬写 1.0/1.0 会让
@@ -3583,39 +3568,17 @@ def _anthropic_to_openai(body: dict) -> dict:
         if body.get(key) is not None:
             result[key] = body[key]
 
-    if enable:
-        # Anthropic 协议没有 reasoning_effort 字段,effort 只能从
-        # output_config.effort / thinking.type / thinking.budget_tokens 推。
-        # 不推的话模板恒取默认 xhigh —— Anthropic 侧 thinking effort 等于不可控。
-        effort = None
-        source = "none"
-        if requested_effort:
-            effort = _QWEN_TEMPLATE_EFFORT.get(str(requested_effort).lower())
-            if effort:
-                source = "output_config.effort"
-        if effort is None and thinking_param.get("type") == "max":
-            effort, source = "xhigh", "thinking.type=max"
-        if effort is None:
-            budget_hint = thinking_param.get("budget_tokens")
-            if isinstance(budget_hint, int) and budget_hint > 0:
-                effort = _budget_to_template_effort(budget_hint)
-                source = f"budget_tokens={budget_hint}"
-        if effort:
-            result["chat_template_kwargs"]["reasoning_effort"] = effort
-        if ANTHROPIC_EFFORT_TRACE:
-            print(
-                f"[proxy] anthropic effort: {effort or 'UNSET(template default xhigh)'} "
-                f"via {source} "
-                f"(output_config.effort={requested_effort!r} "
-                f"thinking.type={thinking_param.get('type')!r} "
-                f"budget_tokens={thinking_param.get('budget_tokens')!r})",
-                flush=True)
-
-        if thinking_param.get("type") == "max":
-            result.pop("reasoning", None)
-        else:
-            budget = thinking_param.get("budget_tokens") or 4096
-            result.setdefault("reasoning", {})["budget"] = budget
+    if ANTHROPIC_EFFORT_TRACE:
+        sources = ",".join(source.value for source in resolution.sources) or "none"
+        print(
+            "[proxy] anthropic effort: "
+            f"{resolution.template_effort or 'UNSET(template default xhigh)'} "
+            f"via {sources} "
+            f"(public_effort={resolution.public_effort!r} "
+            f"budget_tokens={resolution.explicit_budget_tokens!r} "
+            f"unlimited={resolution.unlimited})",
+            flush=True,
+        )
 
     if body.get("stop_sequences"):
         result["stop"] = body["stop_sequences"]

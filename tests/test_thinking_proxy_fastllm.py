@@ -328,6 +328,227 @@ class AnthropicToolConversionTests(unittest.TestCase):
         self.assertFalse(converted["chat_template_kwargs"]["enable_thinking"])
         self.assertNotIn("reasoning", converted)
 
+
+class AnthropicReasoningControlTests(unittest.IsolatedAsyncioTestCase):
+    class JsonRequest:
+        def __init__(self, body):
+            self._body = body
+
+        async def json(self):
+            return dict(self._body)
+
+    def test_anthropic_adaptive_max_is_unlimited_without_backend_budget(self):
+        body = {
+            "thinking": {"type": "adaptive"},
+            "output_config": {"effort": "max"},
+            "messages": [{"role": "user", "content": "Solve."}],
+        }
+
+        converted = thinking_proxy._anthropic_to_openai(body)
+
+        self.assertEqual(converted["chat_template_kwargs"], {
+            "enable_thinking": True,
+            "reasoning_effort": "xhigh",
+        })
+        self.assertNotIn("reasoning", converted)
+
+    def test_anthropic_thinking_type_matrix_serializes_exact_template_kwargs(self):
+        cases = (
+            ("enabled", {"enable_thinking": True}),
+            ("adaptive", {"enable_thinking": True}),
+            ("disabled", {"enable_thinking": False}),
+        )
+        for thinking_type, expected_kwargs in cases:
+            with self.subTest(thinking_type=thinking_type):
+                converted = thinking_proxy._anthropic_to_openai({
+                    "thinking": {"type": thinking_type},
+                })
+
+                self.assertEqual(
+                    converted["chat_template_kwargs"],
+                    expected_kwargs,
+                )
+                self.assertNotIn("thinking", converted)
+                self.assertNotIn("output_config", converted)
+                self.assertNotIn("reasoning", converted)
+
+    def test_anthropic_output_effort_matrix_serializes_exact_template_kwargs(self):
+        cases = (
+            ("off", {"enable_thinking": False}),
+            ("none", {"enable_thinking": False}),
+            (
+                "minimal",
+                {"enable_thinking": True, "reasoning_effort": "low"},
+            ),
+            ("low", {"enable_thinking": True, "reasoning_effort": "low"}),
+            (
+                "medium",
+                {"enable_thinking": True, "reasoning_effort": "medium"},
+            ),
+            ("high", {"enable_thinking": True, "reasoning_effort": "xhigh"}),
+            (
+                "xhigh",
+                {"enable_thinking": True, "reasoning_effort": "xhigh"},
+            ),
+            ("max", {"enable_thinking": True, "reasoning_effort": "xhigh"}),
+        )
+        for effort, expected_kwargs in cases:
+            with self.subTest(effort=effort):
+                converted = thinking_proxy._anthropic_to_openai({
+                    "output_config": {"effort": effort},
+                })
+
+                self.assertEqual(
+                    converted["chat_template_kwargs"],
+                    expected_kwargs,
+                )
+                self.assertNotIn("thinking", converted)
+                self.assertNotIn("output_config", converted)
+                self.assertNotIn("reasoning", converted)
+
+    def test_anthropic_budget_boundaries_select_tier_without_backend_budget(self):
+        cases = (
+            (1024, "low"),
+            (4096, "low"),
+            (4097, "medium"),
+            (8192, "medium"),
+            (8193, "xhigh"),
+            (16384, "xhigh"),
+        )
+        for budget, expected_effort in cases:
+            with self.subTest(budget=budget):
+                converted = thinking_proxy._anthropic_to_openai({
+                    "thinking": {
+                        "type": "enabled",
+                        "budget_tokens": budget,
+                    },
+                })
+
+                self.assertEqual(converted["chat_template_kwargs"], {
+                    "enable_thinking": True,
+                    "reasoning_effort": expected_effort,
+                })
+                self.assertNotIn("reasoning", converted)
+
+    def test_anthropic_invalid_budget_and_conflicts_are_stable(self):
+        cases = (
+            (
+                {"thinking": {"type": "enabled", "budget_tokens": 1}},
+                "invalid_value",
+                "thinking.budget_tokens",
+                "thinking.budget_tokens must be at least 1024",
+            ),
+            (
+                {"thinking": {"type": "adaptive", "budget_tokens": 4096}},
+                "conflicting_controls",
+                "thinking.budget_tokens",
+                (
+                    "thinking.budget_tokens cannot be used when "
+                    "thinking.type is adaptive"
+                ),
+            ),
+            (
+                {"thinking": {"type": "disabled", "budget_tokens": 4096}},
+                "conflicting_controls",
+                "thinking.budget_tokens",
+                (
+                    "thinking.budget_tokens cannot be used when "
+                    "thinking.type is disabled"
+                ),
+            ),
+            (
+                {
+                    "thinking": {"type": "enabled", "budget_tokens": 4096},
+                    "output_config": {"effort": "max"},
+                },
+                "conflicting_controls",
+                "thinking.budget_tokens",
+                "thinking.budget_tokens cannot be used with max reasoning effort",
+            ),
+        )
+        for body, code, field_path, message in cases:
+            with self.subTest(body=body):
+                with self.assertRaises(ReasoningControlError) as raised:
+                    thinking_proxy._anthropic_to_openai(body)
+
+                self.assertEqual(raised.exception.code, code)
+                self.assertEqual(raised.exception.field_path, field_path)
+                self.assertEqual(str(raised.exception), message)
+
+    async def test_anthropic_endpoint_returns_exact_reasoning_error_envelope(self):
+        body = {
+            "thinking": {"type": "disabled", "budget_tokens": 4096},
+        }
+        with mock.patch.object(
+            thinking_proxy,
+            "_normalize_tool_schema",
+            side_effect=AssertionError("invalid controls reached request handling"),
+        ) as normalize_tools:
+            response = await thinking_proxy.anthropic_messages(
+                self.JsonRequest(body)
+            )
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(json.loads(response.body), {
+            "type": "error",
+            "error": {
+                "type": "invalid_request_error",
+                "message": (
+                    "thinking.budget_tokens: thinking.budget_tokens cannot be "
+                    "used when thinking.type is disabled"
+                ),
+            },
+        })
+        normalize_tools.assert_not_called()
+
+    def test_anthropic_controls_render_exact_qwen38_reasoning_states(self):
+        low_instruction = (
+            "Reasoning effort is set to low. Keep your thinking brief and "
+            "focused, moving directly to the conclusion without unnecessary "
+            "elaboration."
+        )
+        xhigh_instruction = (
+            "Reasoning effort is set to xhigh. Please think carefully through "
+            "the task, validate key assumptions, consider plausible "
+            "alternatives, and prioritize correctness, consistency, and "
+            "clarity in the final answer."
+        )
+        cases = {
+            "off": {"output_config": {"effort": "off"}},
+            "low": {
+                "thinking": {"type": "enabled", "budget_tokens": 4096},
+            },
+            "medium": {"output_config": {"effort": "medium"}},
+            "xhigh": {
+                "thinking": {"type": "adaptive"},
+                "output_config": {"effort": "max"},
+            },
+        }
+        prompts = {}
+        for name, controls in cases.items():
+            body = {
+                **controls,
+                "model": "qwen3.8-fastllm",
+                "messages": [{"role": "user", "content": "Solve this."}],
+            }
+            converted = thinking_proxy._anthropic_to_openai(body)
+            prompts[name] = thinking_proxy.prepare_fastllm_body(
+                converted,
+                QWEN38_TEMPLATE,
+            )["prompt"]
+
+        self.assertTrue(prompts["off"].endswith(
+            "<|im_start|>assistant\n<think>\n\n</think>\n\n"
+        ))
+        self.assertIn(low_instruction, prompts["low"])
+        self.assertNotIn("Reasoning effort is set to", prompts["medium"])
+        self.assertIn(xhigh_instruction, prompts["xhigh"])
+        for effort in ("low", "medium", "xhigh"):
+            with self.subTest(effort=effort):
+                self.assertTrue(prompts[effort].endswith(
+                    "<|im_start|>assistant\n<think>\n"
+                ))
+
 class ThinkingProxyFastLLMTests(unittest.IsolatedAsyncioTestCase):
     class JsonRequest:
         def __init__(self, body):
