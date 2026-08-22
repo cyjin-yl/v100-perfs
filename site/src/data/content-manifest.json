@@ -9681,9 +9681,9 @@
       "llms.txt"
     ],
     "git_mode": "100644",
-    "git_blob_oid": "672319de2ea70aa56ad9b16dd63d7b02d7e0f289",
-    "byte_length": 50284,
-    "sha256": "ed0d019ad6968e8c29331eb2f0a34c99d5a094349286452a319f52bb850b7a2e",
+    "git_blob_oid": "f5c73fbd7e484dcde50917e7e83a5a8c46ece520",
+    "byte_length": 50412,
+    "sha256": "d84a139168df6920109859271364421439922150205a6c4eb1f935226f6cdeb7",
     "metadata_scope": "git-index-blob",
     "render_kind": "text",
     "media_type": "text/plain",
