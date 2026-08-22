@@ -164,7 +164,14 @@ evidence/results/q38-sweep/raw/toolcall_bench_2026-08-22/SUMMARY.md
 
 最后两项移动后，raw evidence 目录保留其余原始 JSON；摘要成为 canonical performance 文档。manifest 仍记录旧路径、经过 prefix 后的中间路径和最终路径。
 
-本 spec 在实施时迁入 `docs/archive/design-decisions/`，保持字节不变。
+本 spec 与实施计划在实施时按下列规则迁入 archive，保持字节不变：
+
+```text
+docs/superpowers/specs/**
+  -> docs/archive/design-decisions/specs/**
+docs/superpowers/plans/**
+  -> docs/archive/design-decisions/plans/**
+```
 
 ## 5. 目标文档信息架构
 
@@ -705,8 +712,10 @@ tracked canonical proxy source 和本地非生产测试进程。
 7. 重写 allowlist 内的 canonical narrative、README、导航、sitemap 和 `llms.txt`。
 8. 为 reasoning resolver 写失败测试。
 9. 在 moved tracked canonical proxy source 中实现 resolver，让 OpenAI/Anthropic 路径共用；`fastllm_adapter.py` byte-identical。
-10. 运行 ledger/join/link/unit/build/browser verification，并比较 production dependency closure checksum。
-11. 提交迁移与 resolver；不向 sibling production proxy 同步，不执行生产重启。
+10. 在隔离 worktree 运行 ledger/join/link/unit/build/browser verification，并比较 production dependency closure checksum。
+11. 将验证通过的实施 commits 合并回当前 `main`；不向 sibling production proxy 同步，不执行生产重启。
+12. 在合并后的主工作区重新运行 ledger/join、focused tests、Astro build 和 browser smoke，证明 merge 未改变结果。
+13. 删除隔离 worktree，执行 `git worktree prune`，并断言 `git worktree list --porcelain` 不含实施 worktree 路径。
 
 文档迁移与 resolver 实现由两个 subagent 独立负责；它们不得编辑同一文件。集成
 边界：文档 agent 拥有 repository layout、全部 docs/site/workflow/README/llms；
