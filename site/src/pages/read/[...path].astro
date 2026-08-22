@@ -1,0 +1,76 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { readFileSync, realpathSync } from "node:fs";
+import { resolve, sep } from "node:path";
+import { marked, Renderer } from "marked";
+import index from "../../data/repo-index.json";
+
+export function getStaticPaths() {
+  return index.map((item) => ({ params: { path: item.path }, props: { item } }));
+}
+
+function escapeHtml(value: string) {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
+}
+
+function safeUrl(value: string) {
+  const url = value.trim();
+  if (!url || /^[\\/]{2}/.test(url)) return null;
+  const normalizedForScheme = url.replace(/[\u0000-\u0020\u007f]+/g, "");
+  const scheme = normalizedForScheme.match(/^([a-z][a-z0-9+.-]*):/i)?.[1]?.toLowerCase();
+  if (scheme && !["http", "https", "mailto"].includes(scheme)) return null;
+  return url;
+}
+
+const item = Astro.props.item as (typeof index)[number] | undefined;
+const indexedItem = item && index.find((candidate) => candidate.path === item.path);
+if (!item || !indexedItem || item.path.startsWith("/") || item.path.split("/").includes("..")) {
+  throw new Error("Refusing to read a path outside the build-time repository index");
+}
+
+const repoRoot = realpathSync(resolve(process.cwd(), ".."));
+const sourcePath = realpathSync(resolve(repoRoot, item.path));
+if (!sourcePath.startsWith(`${repoRoot}${sep}`)) {
+  throw new Error("Refusing to read a path outside the repository");
+}
+
+const source = readFileSync(sourcePath, "utf8");
+const isMarkdown = item.ext === ".md" || item.ext === ".txt";
+let html = "";
+if (isMarkdown) {
+  const renderer = new Renderer();
+  renderer.html = ({ text }) => escapeHtml(text);
+  renderer.link = function ({ href, title, tokens }) {
+    const label = this.parser.parseInline(tokens);
+    const url = safeUrl(href);
+    if (!url) return label;
+    const titleAttribute = title ? ` title="${escapeHtml(title)}"` : "";
+    return `<a href="${escapeHtml(url)}"${titleAttribute}>${label}</a>`;
+  };
+  renderer.image = ({ href, title, text }) => {
+    const url = safeUrl(href);
+    if (!url) return escapeHtml(text);
+    const titleAttribute = title ? ` title="${escapeHtml(title)}"` : "";
+    return `<img src="${escapeHtml(url)}" alt="${escapeHtml(text)}"${titleAttribute} loading="lazy">`;
+  };
+  html = marked.parse(source, { renderer, async: false });
+}
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+---
+<BaseLayout title={`${item.title} · V100 FastLLM`}>
+  <div style="margin-bottom:12px;color:hsl(var(--muted-foreground));font-size:12px">
+    <a href={`${base}/repo`}>← 仓库索引</a> · {item.category} · {item.path}
+  </div>
+  {isMarkdown ? <article set:html={html} /> : (
+    <>
+      <h1>{item.title}</h1>
+      <p style="color:hsl(var(--muted-foreground));font-size:12px">{item.path}</p>
+      <pre style="overflow:auto;background:hsl(var(--card));border:1px solid hsl(var(--border));border-radius:var(--radius);padding:16px;font-size:12px;line-height:1.5"><code>{source}</code></pre>
+    </>
+  )}
+</BaseLayout>

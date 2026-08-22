@@ -1,0 +1,2865 @@
+[
+  {
+    "path": ".github/workflows/deploy-docs.yml",
+    "title": "deploy-docs.yml",
+    "category": ".github",
+    "ext": ".yml",
+    "bytes": 1189
+  },
+  {
+    "path": "benchmarks/agent_bench.py",
+    "title": "A tiny valid 1x1 red PNG for multimodal turns",
+    "category": "benchmarks",
+    "ext": ".py",
+    "bytes": 25844
+  },
+  {
+    "path": "benchmarks/fastllm/agentic_load_bench.py",
+    "title": "agentic_load_bench.py",
+    "category": "benchmarks",
+    "ext": ".py",
+    "bytes": 9186
+  },
+  {
+    "path": "benchmarks/fastllm/agentic_toolcall_bench.py",
+    "title": "agentic_toolcall_bench.py",
+    "category": "benchmarks",
+    "ext": ".py",
+    "bytes": 12922
+  },
+  {
+    "path": "benchmarks/fastllm/configs/operator_iq4xs_wide_n.json",
+    "title": "operator_iq4xs_wide_n.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 1106
+  },
+  {
+    "path": "benchmarks/fastllm/configs/thinkingcap_native_profiles.json",
+    "title": "thinkingcap_native_profiles.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 14200
+  },
+  {
+    "path": "benchmarks/fastllm/feature_bench.py",
+    "title": "feature_bench.py",
+    "category": "benchmarks",
+    "ext": ".py",
+    "bytes": 34796
+  },
+  {
+    "path": "benchmarks/fastllm/hermes_toolcall_bench.py",
+    "title": "hermes_toolcall_bench.py",
+    "category": "benchmarks",
+    "ext": ".py",
+    "bytes": 8907
+  },
+  {
+    "path": "benchmarks/fastllm/kv_recall_ab.py",
+    "title": "kv_recall_ab.py",
+    "category": "benchmarks",
+    "ext": ".py",
+    "bytes": 5681
+  },
+  {
+    "path": "benchmarks/fastllm/measure_iq6_throughput.py",
+    "title": "--- 1. decode: short prompt, long generation -----------------------------",
+    "category": "benchmarks",
+    "ext": ".py",
+    "bytes": 3206
+  },
+  {
+    "path": "benchmarks/fastllm/requests/prefix_pressure_b.json",
+    "title": "prefix_pressure_b.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 472
+  },
+  {
+    "path": "benchmarks/fastllm/requests/prefix_restore_a.json",
+    "title": "prefix_restore_a.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 467
+  },
+  {
+    "path": "benchmarks/fastllm/requests/prefix_seed_a.json",
+    "title": "prefix_seed_a.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 464
+  },
+  {
+    "path": "benchmarks/fastllm/requests/prefix_shared_variant.json",
+    "title": "prefix_shared_variant.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 477
+  },
+  {
+    "path": "benchmarks/fastllm/requests/prefix_warmup.json",
+    "title": "prefix_warmup.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 409
+  },
+  {
+    "path": "benchmarks/fastllm/requests/resident_32k_a.json",
+    "title": "resident_32k_a.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 431
+  },
+  {
+    "path": "benchmarks/fastllm/requests/resident_32k_b.json",
+    "title": "resident_32k_b.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 431
+  },
+  {
+    "path": "benchmarks/fastllm/requests/resident_32k_c.json",
+    "title": "resident_32k_c.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 431
+  },
+  {
+    "path": "benchmarks/fastllm/requests/resident_decode_32k_a.json",
+    "title": "resident_decode_32k_a.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 546
+  },
+  {
+    "path": "benchmarks/fastllm/requests/resident_decode_32k_b.json",
+    "title": "resident_decode_32k_b.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 546
+  },
+  {
+    "path": "benchmarks/fastllm/requests/thinkingcap_arithmetic_126.json",
+    "title": "thinkingcap_arithmetic_126.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 345
+  },
+  {
+    "path": "benchmarks/fastllm/requests/thinkingcap_balance_scale_reasoning.json",
+    "title": "thinkingcap_balance_scale_reasoning.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 486
+  },
+  {
+    "path": "benchmarks/fastllm/requests/thinkingcap_exact_instruction.json",
+    "title": "thinkingcap_exact_instruction.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 461
+  },
+  {
+    "path": "benchmarks/fastllm/requests/thinkingcap_required_tool_call.json",
+    "title": "thinkingcap_required_tool_call.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 888
+  },
+  {
+    "path": "benchmarks/fastllm/requests/thinkingcap_vision_red_pixel.json",
+    "title": "thinkingcap_vision_red_pixel.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 685
+  },
+  {
+    "path": "benchmarks/fastllm/results/agentic_load_2m8s_4r_b4s4w4.json",
+    "title": "agentic_load_2m8s_4r_b4s4w4.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 10581
+  },
+  {
+    "path": "benchmarks/fastllm/results/agentic_load_2m8s_4r_batch4.json",
+    "title": "agentic_load_2m8s_4r_batch4.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 10569
+  },
+  {
+    "path": "benchmarks/fastllm/results/agentic_load_2m8s_4r_batch4slot4.json",
+    "title": "agentic_load_2m8s_4r_batch4slot4.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 10569
+  },
+  {
+    "path": "benchmarks/fastllm/results/agentic_load_2m8s_4r.json",
+    "title": "agentic_load_2m8s_4r.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 10565
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_agentic_toolcall_omp_20260813_223827.json",
+    "title": "fastllm_agentic_toolcall_omp_20260813_223827.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 1969
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_agentic_toolcall_omp_20260813_224214.json",
+    "title": "fastllm_agentic_toolcall_omp_20260813_224214.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 580
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_agentic_toolcall_omp_20260813_225246.json",
+    "title": "fastllm_agentic_toolcall_omp_20260813_225246.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 380
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_agentic_toolcall_omp_20260813_234634.json",
+    "title": "fastllm_agentic_toolcall_omp_20260813_234634.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 5650
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_agentic_toolcall_omp_20260814_000418.json",
+    "title": "fastllm_agentic_toolcall_omp_20260814_000418.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 1822
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_agentic_toolcall_omp_20260814_002644.json",
+    "title": "fastllm_agentic_toolcall_omp_20260814_002644.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 1703
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_complete_natural_green.json",
+    "title": "fastllm_complete_natural_green.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 1777
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_complete_natural_request.json",
+    "title": "fastllm_complete_natural_request.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 307
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_halfway_anthropic_stream_green.sse",
+    "title": "fastllm_halfway_anthropic_stream_green.sse",
+    "category": "benchmarks",
+    "ext": ".sse",
+    "bytes": 503
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_halfway_anthropic_stream_parser_fixed.sse",
+    "title": "fastllm_halfway_anthropic_stream_parser_fixed.sse",
+    "category": "benchmarks",
+    "ext": ".sse",
+    "bytes": 9566
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_halfway_anthropic_stream_request.json",
+    "title": "fastllm_halfway_anthropic_stream_request.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 287
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_halfway_anthropic_stream_single.sse",
+    "title": "fastllm_halfway_anthropic_stream_single.sse",
+    "category": "benchmarks",
+    "ext": ".sse",
+    "bytes": 503
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_halfway_anthropic_upstream_raw.sse",
+    "title": "fastllm_halfway_anthropic_upstream_raw.sse",
+    "category": "benchmarks",
+    "ext": ".sse",
+    "bytes": 28819
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_halfway_anthropic_upstream_request.json",
+    "title": "fastllm_halfway_anthropic_upstream_request.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 649
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_halfway_length_green.json",
+    "title": "fastllm_halfway_length_green.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 1323
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_halfway_length_red.json",
+    "title": "fastllm_halfway_length_red.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 1321
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_halfway_length_request.json",
+    "title": "fastllm_halfway_length_request.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 340
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_halfway_stream_green.sse",
+    "title": "fastllm_halfway_stream_green.sse",
+    "category": "benchmarks",
+    "ext": ".sse",
+    "bytes": 17745
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_halfway_stream_request.json",
+    "title": "fastllm_halfway_stream_request.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 332
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_hybrid_mtp2_plain_batch_short_decode_c1_c4.json",
+    "title": "fastllm_hybrid_mtp2_plain_batch_short_decode_c1_c4.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 1526
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_iq6_prefill_decode_throughput_20260812.json",
+    "title": "fastllm_iq6_prefill_decode_throughput_20260812.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 1142
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_mtp1_agents1_ab_raw.json",
+    "title": "fastllm_mtp1_agents1_ab_raw.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 1826
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_mtp1_agents1_ab.json",
+    "title": "fastllm_mtp1_agents1_ab.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 3143
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_mtp2_agents1_ab_raw.json",
+    "title": "fastllm_mtp2_agents1_ab_raw.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 1827
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_mtp2_agents1_ab.json",
+    "title": "fastllm_mtp2_agents1_ab.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 3139
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_mtp2_agents1_native_analysis.json",
+    "title": "fastllm_mtp2_agents1_native_analysis.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 1284
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_mtp2_agents1_native_correctness_v2.json",
+    "title": "fastllm_mtp2_agents1_native_correctness_v2.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 496
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_mtp2_agents1_native_correctness.json",
+    "title": "fastllm_mtp2_agents1_native_correctness.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 449
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_mtp2_agents1_native_raw.json",
+    "title": "fastllm_mtp2_agents1_native_raw.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 1830
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_mtp2_agents1_native.json",
+    "title": "fastllm_mtp2_agents1_native.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 3142
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_mtp2_agents1_sm70_analysis.json",
+    "title": "fastllm_mtp2_agents1_sm70_analysis.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 2029
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_mtp2_agents1_sm70_correctness_v2.json",
+    "title": "fastllm_mtp2_agents1_sm70_correctness_v2.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 657
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_mtp2_agents1_sm70_fixed_raw.json",
+    "title": "fastllm_mtp2_agents1_sm70_fixed_raw.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 1828
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_mtp2_agents1_sm70_fixed.json",
+    "title": "fastllm_mtp2_agents1_sm70_fixed.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 3137
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_mtp2_agents1_sm70_raw.json",
+    "title": "fastllm_mtp2_agents1_sm70_raw.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 1833
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_mtp2_agents1_sm70.json",
+    "title": "fastllm_mtp2_agents1_sm70.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 3146
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_mtp2_agents1_xqa_analysis.json",
+    "title": "fastllm_mtp2_agents1_xqa_analysis.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 1337
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_mtp2_agents1_xqa_correctness_v2.json",
+    "title": "fastllm_mtp2_agents1_xqa_correctness_v2.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 496
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_mtp2_agents1_xqa_raw.json",
+    "title": "fastllm_mtp2_agents1_xqa_raw.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 1825
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_mtp2_agents1_xqa.json",
+    "title": "fastllm_mtp2_agents1_xqa.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 3141
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_32704_batch1.json",
+    "title": "fastllm_mtp2_cold_prefill_32704_batch1.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 989
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c1_32k_http_native_fp8_gateoff_newbinary.json",
+    "title": "fastllm_mtp2_cold_prefill_c1_32k_http_native_fp8_gateoff_newbinary.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 1657
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c1_32k_http_native_fp8_interleave_8k.json",
+    "title": "fastllm_mtp2_cold_prefill_c1_32k_http_native_fp8_interleave_8k.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 1444
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c1_32k_http_native_fp8_prefix_cache_off.json",
+    "title": "fastllm_mtp2_cold_prefill_c1_32k_http_native_fp8_prefix_cache_off.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 1648
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c1_32k_http_native_fp8_prefix_cache_on_paired.json",
+    "title": "fastllm_mtp2_cold_prefill_c1_32k_http_native_fp8_prefix_cache_on_paired.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 1660
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c1_32k_http_native_fp8_snapshot32.json",
+    "title": "fastllm_mtp2_cold_prefill_c1_32k_http_native_fp8_snapshot32.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 1748
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c1_32k_http_native_fp8.json",
+    "title": "fastllm_mtp2_cold_prefill_c1_32k_http_native_fp8.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 1592
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c2_32k_http_native_fp8_interleave_batch5.json",
+    "title": "fastllm_mtp2_cold_prefill_c2_32k_http_native_fp8_interleave_batch5.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 1841
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c2_32k_http_native_fp8_interleave_fixed.json",
+    "title": "fastllm_mtp2_cold_prefill_c2_32k_http_native_fp8_interleave_fixed.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 1801
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c2_32k_http_native_fp8_prefix_cache_off.json",
+    "title": "fastllm_mtp2_cold_prefill_c2_32k_http_native_fp8_prefix_cache_off.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 2226
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c2_32k_http_native_fp8_prefix_cache_on_paired.json",
+    "title": "fastllm_mtp2_cold_prefill_c2_32k_http_native_fp8_prefix_cache_on_paired.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 2254
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c2_32k_http_native_fp8.json",
+    "title": "fastllm_mtp2_cold_prefill_c2_32k_http_native_fp8.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 2163
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c4_32k_http_native_fp8_prefix_cache_off.json",
+    "title": "fastllm_mtp2_cold_prefill_c4_32k_http_native_fp8_prefix_cache_off.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 3409
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c4_32k_http_native_fp8_prefix_cache_on_paired.json",
+    "title": "fastllm_mtp2_cold_prefill_c4_32k_http_native_fp8_prefix_cache_on_paired.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 3435
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c4_32k_http_native_fp8_snapshot32.json",
+    "title": "fastllm_mtp2_cold_prefill_c4_32k_http_native_fp8_snapshot32.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 3511
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_mtp2_cold_prefill_c4_32k_http_native_fp8.json",
+    "title": "fastllm_mtp2_cold_prefill_c4_32k_http_native_fp8.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 3308
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_mtp2_fixed_correctness_request_v2.json",
+    "title": "fastllm_mtp2_fixed_correctness_request_v2.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 370
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_mtp2_fixed_correctness_request.json",
+    "title": "fastllm_mtp2_fixed_correctness_request.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 482
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_mtp2_fp8_208k_pool_c4_interleave_8k.json",
+    "title": "fastllm_mtp2_fp8_208k_pool_c4_interleave_8k.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 2317
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_mtp2_short_decode_batch_propagated_c1_c4.json",
+    "title": "fastllm_mtp2_short_decode_batch_propagated_c1_c4.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 1451
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_mtp2_sm70_fixed_correctness_v2.json",
+    "title": "fastllm_mtp2_sm70_fixed_correctness_v2.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 496
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_mtp2_sm70_fixed_tool_smoke_v2.json",
+    "title": "fastllm_mtp2_sm70_fixed_tool_smoke_v2.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 680
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_mtp3_agents1_ab_raw.json",
+    "title": "fastllm_mtp3_agents1_ab_raw.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 1831
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_mtp3_agents1_ab.json",
+    "title": "fastllm_mtp3_agents1_ab.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 3146
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_mtp9_128k_exact.json",
+    "title": "fastllm_mtp9_128k_exact.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 947
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_mtp9_128k.txt",
+    "title": "fastllm_mtp9_128k.txt",
+    "category": "benchmarks",
+    "ext": ".txt",
+    "bytes": 19222
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_mtp9_160k_exact.json",
+    "title": "fastllm_mtp9_160k_exact.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 1059
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_mtp9_256k_exact.json",
+    "title": "fastllm_mtp9_256k_exact.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 1685
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_mtp9_agents1_ab_raw.json",
+    "title": "fastllm_mtp9_agents1_ab_raw.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 1832
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_mtp9_agents1_ab.json",
+    "title": "fastllm_mtp9_agents1_ab.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 3150
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_mtp9_agents1_short_native_raw.json",
+    "title": "fastllm_mtp9_agents1_short_native_raw.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 1099
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_mtp9_agents1_short_native.json",
+    "title": "fastllm_mtp9_agents1_short_native.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 3242
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_mtp9_agents1_short_sm70_flash_raw.json",
+    "title": "fastllm_mtp9_agents1_short_sm70_flash_raw.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 1098
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_mtp9_agents1_short_sm70_flash.json",
+    "title": "fastllm_mtp9_agents1_short_sm70_flash.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 3228
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_mtp9_agents2_short_native_raw.json",
+    "title": "fastllm_mtp9_agents2_short_native_raw.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 2197
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_mtp9_agents2_short_native.json",
+    "title": "fastllm_mtp9_agents2_short_native.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 3236
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_mtp9_agents2_short_sm70_flash_raw.json",
+    "title": "fastllm_mtp9_agents2_short_sm70_flash_raw.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 2190
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_mtp9_agents2_short_sm70_flash.json",
+    "title": "fastllm_mtp9_agents2_short_sm70_flash.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 3229
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_mtp9_agents5_short_native_raw.json",
+    "title": "fastllm_mtp9_agents5_short_native_raw.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 5494
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_mtp9_agents5_short_native.json",
+    "title": "fastllm_mtp9_agents5_short_native.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 3253
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_mtp9_agents5_short_sm70_flash_raw.json",
+    "title": "fastllm_mtp9_agents5_short_sm70_flash_raw.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 5484
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_mtp9_agents5_short_sm70_flash.json",
+    "title": "fastllm_mtp9_agents5_short_sm70_flash.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 3239
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_mtp9_fp8_longctx_final.json",
+    "title": "fastllm_mtp9_fp8_longctx_final.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 2539
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_multiturn_concurrent_nonce_green.json",
+    "title": "fastllm_multiturn_concurrent_nonce_green.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 1317
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_multiturn_concurrent_nonce_stop_fixed.json",
+    "title": "fastllm_multiturn_concurrent_nonce_stop_fixed.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 1385
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_multiturn_latest_green.json",
+    "title": "fastllm_multiturn_latest_green.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 569
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_multiturn_latest_red.json",
+    "title": "fastllm_multiturn_latest_red.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 567
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_multiturn_latest_request.json",
+    "title": "fastllm_multiturn_latest_request.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 467
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_multiturn_tidal_default_stop_fixed.json",
+    "title": "fastllm_multiturn_tidal_default_stop_fixed.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 1126
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_multiturn_tidal_endoftext_stop_control.json",
+    "title": "fastllm_multiturn_tidal_endoftext_stop_control.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 1168
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_multiturn_tidal_sequential_control.json",
+    "title": "fastllm_multiturn_tidal_sequential_control.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 1192
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_natural_eos_green.json",
+    "title": "fastllm_natural_eos_green.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 575
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_persistent_prefix_cache_v100_smoke.json",
+    "title": "fastllm_persistent_prefix_cache_v100_smoke.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 4411
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_production_reasoning_smoke.json",
+    "title": "fastllm_production_reasoning_smoke.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 496
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_production_tool_smoke_request_v2.json",
+    "title": "fastllm_production_tool_smoke_request_v2.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 729
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_production_tool_smoke_request.json",
+    "title": "fastllm_production_tool_smoke_request.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 767
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_production_tool_smoke_v2.json",
+    "title": "fastllm_production_tool_smoke_v2.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 680
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_production_tool_smoke.json",
+    "title": "fastllm_production_tool_smoke.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 901
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_sm70_chunk_gdn_prefill_experiments.json",
+    "title": "fastllm_sm70_chunk_gdn_prefill_experiments.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 4470
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_sm70_iq4xs_wide_n_reliable_ab.json",
+    "title": "fastllm_sm70_iq4xs_wide_n_reliable_ab.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 7218
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_sm70_paged_xqa.json",
+    "title": "fastllm_sm70_paged_xqa.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 3051
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_subagent_fanout_batch2_20260814.json",
+    "title": "fastllm_subagent_fanout_batch2_20260814.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 964
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_turbo3_c1_c2_exact_256k.json",
+    "title": "fastllm_turbo3_c1_c2_exact_256k.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 5237
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_turbo3_mtp2_cpu_swap_l3_32k_control.json",
+    "title": "fastllm_turbo3_mtp2_cpu_swap_l3_32k_control.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 5244
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_turbo3_mtp2_cpu_swap_l3_32k_controls_abc.json",
+    "title": "fastllm_turbo3_mtp2_cpu_swap_l3_32k_controls_abc.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 3335
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_turbo3_mtp2_cpu_swap_l3_32k_controls_bc.json",
+    "title": "fastllm_turbo3_mtp2_cpu_swap_l3_32k_controls_bc.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 6567
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_turbo3_mtp2_cpu_swap_l3_3x32k_reliable.json",
+    "title": "fastllm_turbo3_mtp2_cpu_swap_l3_3x32k_reliable.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 8211
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_turbo3_mtp2_cpu_swap_l3_acceptance_controls.json",
+    "title": "fastllm_turbo3_mtp2_cpu_swap_l3_acceptance_controls.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 7872
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_turbo3_mtp2_cpu_swap_l3_acceptance.json",
+    "title": "fastllm_turbo3_mtp2_cpu_swap_l3_acceptance.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 9183
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_turbo3_mtp2_resident_batch_2x32k_reliable.json",
+    "title": "fastllm_turbo3_mtp2_resident_batch_2x32k_reliable.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 7534
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_turbo3_mtp2_resident_batch_acceptance.json",
+    "title": "fastllm_turbo3_mtp2_resident_batch_acceptance.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 8811
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_turbo3_mtp2_resident_decode_batch_fixed_hot.json",
+    "title": "fastllm_turbo3_mtp2_resident_decode_batch_fixed_hot.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 6506
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_turbo3_mtp2_resident_decode_batch_fixed.json",
+    "title": "fastllm_turbo3_mtp2_resident_decode_batch_fixed.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 6502
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_turbo3_mtp2_resident_decode_batch_smoke.json",
+    "title": "fastllm_turbo3_mtp2_resident_decode_batch_smoke.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 6488
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_turbo3_mtp2_resident_plain_batch_off_steady.json",
+    "title": "fastllm_turbo3_mtp2_resident_plain_batch_off_steady.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 6504
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_turbo3_mtp2_resident_plain_batch_off.json",
+    "title": "fastllm_turbo3_mtp2_resident_plain_batch_off.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 6503
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_turbo3_prefix_tier_16k_acceptance_pre_zstd_metrics_warmup.json",
+    "title": "fastllm_turbo3_prefix_tier_16k_acceptance_pre_zstd_metrics_warmup.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 5320
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_turbo3_prefix_tier_16k_acceptance_pre_zstd_metrics.json",
+    "title": "fastllm_turbo3_prefix_tier_16k_acceptance_pre_zstd_metrics.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 9948
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_turbo3_prefix_tier_16k_acceptance_warmup.json",
+    "title": "fastllm_turbo3_prefix_tier_16k_acceptance_warmup.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 6130
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_turbo3_prefix_tier_16k_acceptance.json",
+    "title": "fastllm_turbo3_prefix_tier_16k_acceptance.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 11273
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_turbo3_prefix_tier_16k_probe_layer_negative.json",
+    "title": "fastllm_turbo3_prefix_tier_16k_probe_layer_negative.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 10269
+  },
+  {
+    "path": "benchmarks/fastllm/results/fastllm_turbo3_prefix_tier_16k_unaligned_negative.json",
+    "title": "fastllm_turbo3_prefix_tier_16k_unaligned_negative.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 10270
+  },
+  {
+    "path": "benchmarks/fastllm/results/hermes_wechat_toolcall_fidelity_20260814_105648.json",
+    "title": "hermes_wechat_toolcall_fidelity_20260814_105648.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 704
+  },
+  {
+    "path": "benchmarks/fastllm/results/kv_recall_turbo3_100k.json",
+    "title": "kv_recall_turbo3_100k.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 2211
+  },
+  {
+    "path": "benchmarks/fastllm/results/kv_recall_turbo3-v2_100k.json",
+    "title": "kv_recall_turbo3-v2_100k.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 2306
+  },
+  {
+    "path": "benchmarks/fastllm/results/kv_recall_turbo4_100k.json",
+    "title": "kv_recall_turbo4_100k.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 2303
+  },
+  {
+    "path": "benchmarks/fastllm/results/kv_recall_turbo4_200k.json",
+    "title": "kv_recall_turbo4_200k.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 1696
+  },
+  {
+    "path": "benchmarks/fastllm/results/kv_recall_turbo4_lowwm_200k.json",
+    "title": "kv_recall_turbo4_lowwm_200k.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 1623
+  },
+  {
+    "path": "benchmarks/fastllm/results/kv_recall_udq4-turbo4-100k.json",
+    "title": "kv_recall_udq4-turbo4-100k.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 1232
+  },
+  {
+    "path": "benchmarks/fastllm/results/kv_recall_udq4-turbo4-200k.json",
+    "title": "kv_recall_udq4-turbo4-200k.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 1173
+  },
+  {
+    "path": "benchmarks/fastllm/results/thinkingcap_heretic_base_q8_fastllm_mtp0.json",
+    "title": "thinkingcap_heretic_base_q8_fastllm_mtp0.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 24496
+  },
+  {
+    "path": "benchmarks/fastllm/results/thinkingcap_heretic_q8_fastllm_mtp0.json",
+    "title": "thinkingcap_heretic_q8_fastllm_mtp0.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 27069
+  },
+  {
+    "path": "benchmarks/fastllm/results/thinkingcap_heretic_q8_fastllm_mtp2.json",
+    "title": "thinkingcap_heretic_q8_fastllm_mtp2.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 26054
+  },
+  {
+    "path": "benchmarks/fastllm/results/thinkingcap_heretic_q8_mtp0_vram.json",
+    "title": "thinkingcap_heretic_q8_mtp0_vram.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 1155
+  },
+  {
+    "path": "benchmarks/fastllm/results/thinkingcap_heretic_q8_mtp2_vram.csv",
+    "title": "thinkingcap_heretic_q8_mtp2_vram.csv",
+    "category": "benchmarks",
+    "ext": ".csv",
+    "bytes": 39799
+  },
+  {
+    "path": "benchmarks/fastllm/results/thinkingcap_heretic_q8_mtp2_vram.json",
+    "title": "thinkingcap_heretic_q8_mtp2_vram.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 1737
+  },
+  {
+    "path": "benchmarks/fastllm/results/thinkingcap_heretic_q8_replacement_recommendation.json",
+    "title": "thinkingcap_heretic_q8_replacement_recommendation.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 6195
+  },
+  {
+    "path": "benchmarks/fastllm/results/thinkingcap_heretic_raw_base_q8_negative.json",
+    "title": "thinkingcap_heretic_raw_base_q8_negative.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 1807
+  },
+  {
+    "path": "benchmarks/fastllm/results/thinkingcap_native_launcher_q4_check.json",
+    "title": "thinkingcap_native_launcher_q4_check.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 2058
+  },
+  {
+    "path": "benchmarks/fastllm/results/thinkingcap_q4_current_smoke.json",
+    "title": "thinkingcap_q4_current_smoke.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 15428
+  },
+  {
+    "path": "benchmarks/fastllm/results/thinkingcap_q4_fastllm_mtp0.json",
+    "title": "thinkingcap_q4_fastllm_mtp0.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 23020
+  },
+  {
+    "path": "benchmarks/fastllm/results/thinkingcap_q4_long_context_vision_gate.json",
+    "title": "thinkingcap_q4_long_context_vision_gate.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 4896
+  },
+  {
+    "path": "benchmarks/fastllm/results/thinkingcap_q6_current_smoke.json",
+    "title": "thinkingcap_q6_current_smoke.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 17032
+  },
+  {
+    "path": "benchmarks/fastllm/results/thinkingcap_q6_fastllm_mtp0.json",
+    "title": "thinkingcap_q6_fastllm_mtp0.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 25964
+  },
+  {
+    "path": "benchmarks/fastllm/results/thinkingcap_q8_mtp2_fastllm_v100.json",
+    "title": "thinkingcap_q8_mtp2_fastllm_v100.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 25714
+  },
+  {
+    "path": "benchmarks/fastllm/results/thinkingcap_replacement_recommendation.json",
+    "title": "thinkingcap_replacement_recommendation.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 4247
+  },
+  {
+    "path": "benchmarks/fastllm/results/thinkingcap_six_model_matrix.json",
+    "title": "thinkingcap_six_model_matrix.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 14082
+  },
+  {
+    "path": "benchmarks/fastllm/run_cache_benchmark.py",
+    "title": "run_cache_benchmark.py",
+    "category": "benchmarks",
+    "ext": ".py",
+    "bytes": 14342
+  },
+  {
+    "path": "benchmarks/llama-nospec/llama_nospec_agents1_raw.json",
+    "title": "llama_nospec_agents1_raw.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 11553
+  },
+  {
+    "path": "benchmarks/llama-nospec/llama_nospec_agents1.json",
+    "title": "llama_nospec_agents1.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 512
+  },
+  {
+    "path": "benchmarks/llama-nospec/llama_nospec_agents2_raw.json",
+    "title": "llama_nospec_agents2_raw.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 23100
+  },
+  {
+    "path": "benchmarks/llama-nospec/llama_nospec_agents2.json",
+    "title": "llama_nospec_agents2.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 513
+  },
+  {
+    "path": "benchmarks/llama-nospec/llama_nospec_agents4_raw.json",
+    "title": "llama_nospec_agents4_raw.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 46135
+  },
+  {
+    "path": "benchmarks/llama-nospec/llama_nospec_agents4.json",
+    "title": "llama_nospec_agents4.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 513
+  },
+  {
+    "path": "benchmarks/run_agent_bench.sh",
+    "title": "Serial multi-engine agent benchmark runner.",
+    "category": "benchmarks",
+    "ext": ".sh",
+    "bytes": 3073
+  },
+  {
+    "path": "benchmarks/turboquant/results/llama_tq3_140k_4slot_stress_raw.json",
+    "title": "llama_tq3_140k_4slot_stress_raw.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 35786
+  },
+  {
+    "path": "benchmarks/turboquant/results/llama_tq3_140k_4slot_stress.json",
+    "title": "llama_tq3_140k_4slot_stress.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 2955
+  },
+  {
+    "path": "benchmarks/turboquant/results/llama_tq3_iq4_256k_2slot_short_raw.json",
+    "title": "llama_tq3_iq4_256k_2slot_short_raw.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 3596
+  },
+  {
+    "path": "benchmarks/turboquant/results/llama_tq3_iq4_256k_2slot_short.json",
+    "title": "llama_tq3_iq4_256k_2slot_short.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 2948
+  },
+  {
+    "path": "benchmarks/turboquant/results/llama_tq3_longctx_agents1_raw.json",
+    "title": "llama_tq3_longctx_agents1_raw.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 14384
+  },
+  {
+    "path": "benchmarks/turboquant/results/llama_tq3_longctx_agents1.json",
+    "title": "llama_tq3_longctx_agents1.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 2966
+  },
+  {
+    "path": "benchmarks/turboquant/results/llama_tq3_longctx_agents2_raw.json",
+    "title": "llama_tq3_longctx_agents2_raw.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 28744
+  },
+  {
+    "path": "benchmarks/turboquant/results/llama_tq3_longctx_agents2.json",
+    "title": "llama_tq3_longctx_agents2.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 2974
+  },
+  {
+    "path": "benchmarks/turboquant/results/llama_tq3_longctx_agents4_raw.json",
+    "title": "llama_tq3_longctx_agents4_raw.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 57339
+  },
+  {
+    "path": "benchmarks/turboquant/results/llama_tq3_longctx_agents4.json",
+    "title": "llama_tq3_longctx_agents4.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 2962
+  },
+  {
+    "path": "benchmarks/turboquant/results/llama_tq4_256k_agents1_raw.json",
+    "title": "llama_tq4_256k_agents1_raw.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 14383
+  },
+  {
+    "path": "benchmarks/turboquant/results/llama_tq4_256k_agents1.json",
+    "title": "llama_tq4_256k_agents1.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 2965
+  },
+  {
+    "path": "benchmarks/turboquant/results/llama_tq4_256k_agents2_raw.json",
+    "title": "llama_tq4_256k_agents2_raw.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 28799
+  },
+  {
+    "path": "benchmarks/turboquant/results/llama_tq4_256k_agents2.json",
+    "title": "llama_tq4_256k_agents2.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 3058
+  },
+  {
+    "path": "benchmarks/turboquant/results/llama_tq4_256k_agents4_raw.json",
+    "title": "llama_tq4_256k_agents4_raw.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 57253
+  },
+  {
+    "path": "benchmarks/turboquant/results/llama_tq4_256k_agents4.json",
+    "title": "llama_tq4_256k_agents4.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 2961
+  },
+  {
+    "path": "benchmarks/turboquant/results/llama_tq4_256k_agents5_raw.json",
+    "title": "llama_tq4_256k_agents5_raw.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 71578
+  },
+  {
+    "path": "benchmarks/turboquant/results/llama_tq4_256k_agents5.json",
+    "title": "llama_tq4_256k_agents5.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 3037
+  },
+  {
+    "path": "benchmarks/turboquant/results/llama_tq4_baseline_agents1_raw.json",
+    "title": "llama_tq4_baseline_agents1_raw.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 14377
+  },
+  {
+    "path": "benchmarks/turboquant/results/llama_tq4_baseline_agents1.json",
+    "title": "llama_tq4_baseline_agents1.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 2962
+  },
+  {
+    "path": "benchmarks/turboquant/results/llama_tq4_baseline_agents2_raw.json",
+    "title": "llama_tq4_baseline_agents2_raw.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 28768
+  },
+  {
+    "path": "benchmarks/turboquant/results/llama_tq4_baseline_agents2.json",
+    "title": "llama_tq4_baseline_agents2.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 2967
+  },
+  {
+    "path": "benchmarks/turboquant/results/llama_tq4_baseline_agents4_raw.json",
+    "title": "llama_tq4_baseline_agents4_raw.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 57405
+  },
+  {
+    "path": "benchmarks/turboquant/results/llama_tq4_baseline_agents4.json",
+    "title": "llama_tq4_baseline_agents4.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 2960
+  },
+  {
+    "path": "benchmarks/turboquant/results/llama_tq4_iq4_mtp_65k_1slot_raw.json",
+    "title": "llama_tq4_iq4_mtp_65k_1slot_raw.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 3575
+  },
+  {
+    "path": "benchmarks/turboquant/results/llama_tq4_iq4_mtp_65k_1slot.json",
+    "title": "llama_tq4_iq4_mtp_65k_1slot.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 2949
+  },
+  {
+    "path": "benchmarks/vllm-120/v120_agents1_raw.json",
+    "title": "v120_agents1_raw.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 10600
+  },
+  {
+    "path": "benchmarks/vllm-120/v120_agents1.json",
+    "title": "v120_agents1.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 525
+  },
+  {
+    "path": "benchmarks/vllm-120/v120_agents2_raw.json",
+    "title": "v120_agents2_raw.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 21148
+  },
+  {
+    "path": "benchmarks/vllm-120/v120_agents2.json",
+    "title": "v120_agents2.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 528
+  },
+  {
+    "path": "benchmarks/vllm-120/v120_agents4_raw.json",
+    "title": "v120_agents4_raw.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 42344
+  },
+  {
+    "path": "benchmarks/vllm-120/v120_agents4.json",
+    "title": "v120_agents4.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 527
+  },
+  {
+    "path": "benchmarks/vllm-121/v121_agents1_raw.json",
+    "title": "v121_agents1_raw.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 15772
+  },
+  {
+    "path": "benchmarks/vllm-121/v121_agents1.json",
+    "title": "v121_agents1.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 527
+  },
+  {
+    "path": "benchmarks/vllm-121/v121_agents2_raw.json",
+    "title": "v121_agents2_raw.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 31511
+  },
+  {
+    "path": "benchmarks/vllm-121/v121_agents2.json",
+    "title": "v121_agents2.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 528
+  },
+  {
+    "path": "benchmarks/vllm-121/v121_agents4_raw.json",
+    "title": "v121_agents4_raw.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 63001
+  },
+  {
+    "path": "benchmarks/vllm-121/v121_agents4.json",
+    "title": "v121_agents4.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 529
+  },
+  {
+    "path": "benchmarks/vllm-121/v121_prefill_metric_attribution.json",
+    "title": "v121_prefill_metric_attribution.json",
+    "category": "benchmarks",
+    "ext": ".json",
+    "bytes": 2966
+  },
+  {
+    "path": "chat_templates/qwen3.6_gguf_original.jinja",
+    "title": "qwen3.6_gguf_original.jinja",
+    "category": "chat_templates",
+    "ext": ".jinja",
+    "bytes": 7764
+  },
+  {
+    "path": "chat_templates/qwen3.6_merged.jinja",
+    "title": "qwen3.6_merged.jinja",
+    "category": "chat_templates",
+    "ext": ".jinja",
+    "bytes": 13033
+  },
+  {
+    "path": "deployed/thinking_proxy.py",
+    "title": "所有 print 日志统一带时间戳：[YYYY-MM-DD HH:MM:SS] ...",
+    "category": "deployed",
+    "ext": ".py",
+    "bytes": 185462
+  },
+  {
+    "path": "docs/analysis/optane-l3-feasibility.md",
+    "title": "傲腾 NVMe 作为 L3/prefill-cache 盘：可行性测算（2026-08-22）",
+    "category": "docs/analysis",
+    "ext": ".md",
+    "bytes": 2683
+  },
+  {
+    "path": "docs/analysis/prefill-exact-port-investigation.md",
+    "title": "「大矩阵 exact 方案」调研与移植报告",
+    "category": "docs/analysis",
+    "ext": ".md",
+    "bytes": 26342
+  },
+  {
+    "path": "docs/analysis/shortprefill-optimization-plan.md",
+    "title": "Qwen3.8-27B 短 prefill（qLen 512–2048）优化计划",
+    "category": "docs/analysis",
+    "ext": ".md",
+    "bytes": 8651
+  },
+  {
+    "path": "docs/analysis/silent-hang-diagnosis.md",
+    "title": "后端「静默僵死」的诊断手册",
+    "category": "docs/analysis",
+    "ext": ".md",
+    "bytes": 5606
+  },
+  {
+    "path": "docs/analysis/upstream-cherry-pick-assessment.md",
+    "title": "上游 cherry-pick 评估（2026-08-22，merge-base af23441b）",
+    "category": "docs/analysis",
+    "ext": ".md",
+    "bytes": 3182
+  },
+  {
+    "path": "docs/benchmarks/fastllm-qwen36-legacy.md",
+    "title": "FastLLM 在 V100 上运行 Qwen3.6 Fable Fusion 的性能报告",
+    "category": "docs/benchmarks",
+    "ext": ".md",
+    "bytes": 34861
+  },
+  {
+    "path": "docs/benchmarks/vllm-performance.md",
+    "title": "1CatVLLM 性能分析报告",
+    "category": "docs/benchmarks",
+    "ext": ".md",
+    "bytes": 72949
+  },
+  {
+    "path": "docs/EXPERIENCE.md",
+    "title": "V100-32GB (SM70) LLM 推理经验总结",
+    "category": "docs",
+    "ext": ".md",
+    "bytes": 178862
+  },
+  {
+    "path": "docs/legacy/qwen35-q4km-sm70-design.md",
+    "title": "Qwen3.6 Q4_K_M on V100 (SM70) optimization design",
+    "category": "docs/legacy",
+    "ext": ".md",
+    "bytes": 4535
+  },
+  {
+    "path": "docs/ops/handoff-deepseek-v4.md",
+    "title": "Handoff — FastLLM 双主线：Qwen V100 服务硬化 + DeepSeek-V4 GGUF bring-up",
+    "category": "docs/ops",
+    "ext": ".md",
+    "bytes": 30135
+  },
+  {
+    "path": "docs/ops/handoff-fastllm.md",
+    "title": "Handoff — FastLLM Service on V100 for Qwen3.6 Fable Fusion",
+    "category": "docs/ops",
+    "ext": ".md",
+    "bytes": 18743
+  },
+  {
+    "path": "docs/ops/handoff-qwen38.md",
+    "title": "Qwen3.8-27B on doesworkstation V100 32G — 通宵工作报告",
+    "category": "docs/ops",
+    "ext": ".md",
+    "bytes": 6411
+  },
+  {
+    "path": "docs/qwen38-sampling.md",
+    "title": "Qwen3.8 27B 采样与模板配置",
+    "category": "docs",
+    "ext": ".md",
+    "bytes": 2580
+  },
+  {
+    "path": "docs/toolcall/constraint-architecture.md",
+    "title": "Qwen3.8-27B 工具调用故障族：架构、根因与验证方法",
+    "category": "docs/toolcall",
+    "ext": ".md",
+    "bytes": 23502
+  },
+  {
+    "path": "docs/toolcall/copy-fidelity.md",
+    "title": "Qwen3.8-27B on V100：逐字抄写破坏与工具调用失败的两个根因",
+    "category": "docs/toolcall",
+    "ext": ".md",
+    "bytes": 27219
+  },
+  {
+    "path": "fastllm_adapter.py",
+    "title": "乘法 repeat penalty 与 OpenAI additive presence/frequency penalty 是三套",
+    "category": "root",
+    "ext": ".py",
+    "bytes": 15491
+  },
+  {
+    "path": "frp/frpc.toml",
+    "title": "─── frpc.toml — 本机客户端配置 ───────────────────────────────",
+    "category": "frp",
+    "ext": ".toml",
+    "bytes": 467
+  },
+  {
+    "path": "frp/frps.toml",
+    "title": "─── frps.toml — 阿里云服务端配置 ────────────────────────────",
+    "category": "frp",
+    "ext": ".toml",
+    "bytes": 741
+  },
+  {
+    "path": "frp/setup_frpc.sh",
+    "title": "setup_frpc.sh",
+    "category": "frp",
+    "ext": ".sh",
+    "bytes": 1294
+  },
+  {
+    "path": "frp/setup_frps.sh",
+    "title": "─── 在阿里云上安装并启动 frps ────────────────────────────────",
+    "category": "frp",
+    "ext": ".sh",
+    "bytes": 1753
+  },
+  {
+    "path": "handoff/HANDOFF-2026-08-20.md",
+    "title": "交接 2026-08-20",
+    "category": "handoff",
+    "ext": ".md",
+    "bytes": 26080
+  },
+  {
+    "path": "handoff/scripts/ab_perplexity.sh",
+    "title": "在**留出集**上对比「带 imatrix」与「不带 imatrix」两版量化的困惑度。",
+    "category": "handoff",
+    "ext": ".sh",
+    "bytes": 3992
+  },
+  {
+    "path": "handoff/scripts/apply_conc_and_prefix.sh",
+    "title": "一次重启同时上两项: 并发 1->4, 以及前缀缓存的多模态路由修复。",
+    "category": "handoff",
+    "ext": ".sh",
+    "bytes": 4985
+  },
+  {
+    "path": "handoff/scripts/build_imatrix_corpus.py",
+    "title": "build_imatrix_corpus.py",
+    "category": "handoff",
+    "ext": ".py",
+    "bytes": 6479
+  },
+  {
+    "path": "handoff/scripts/chain_acceptance.py",
+    "title": "─── 协议封装 ────────────────────────────────────────────────────",
+    "category": "handoff",
+    "ext": ".py",
+    "bytes": 44083
+  },
+  {
+    "path": "handoff/scripts/copy_fidelity_http.py",
+    "title": "---------------------------------------------------------------------------",
+    "category": "handoff",
+    "ext": ".py",
+    "bytes": 7482
+  },
+  {
+    "path": "handoff/scripts/copy_fidelity_probe.sh",
+    "title": "逐字抄写保真探针 —— agent 场景里最要命的那类故障。",
+    "category": "handoff",
+    "ext": ".sh",
+    "bytes": 5035
+  },
+  {
+    "path": "handoff/scripts/copy_fidelity_vision.py",
+    "title": "---------------------------------------------------------------------------",
+    "category": "handoff",
+    "ext": ".py",
+    "bytes": 8862
+  },
+  {
+    "path": "handoff/scripts/copy_fidelity.py",
+    "title": "---------------------------------------------------------------- 针 (needles)",
+    "category": "handoff",
+    "ext": ".py",
+    "bytes": 12088
+  },
+  {
+    "path": "handoff/scripts/corruption_rate.py",
+    "title": "误报来源(实测): 编辑距离阈值 4 会把这些合法串算成\"破坏\" ——",
+    "category": "handoff",
+    "ext": ".py",
+    "bytes": 7341
+  },
+  {
+    "path": "handoff/scripts/deploy_bundle.sh",
+    "title": "一次窗口部署四项, 并把多模态前缀缓存翻成开启。",
+    "category": "handoff",
+    "ext": ".sh",
+    "bytes": 7601
+  },
+  {
+    "path": "handoff/scripts/deploy_fused_xqa.sh",
+    "title": "把融合分页注意力 kernel 部署到生产。",
+    "category": "handoff",
+    "ext": ".sh",
+    "bytes": 4154
+  },
+  {
+    "path": "handoff/scripts/deploy_mtp_attr.sh",
+    "title": "部署 MTP 归因埋点, 并把多模态前缀缓存翻成开启。",
+    "category": "handoff",
+    "ext": ".sh",
+    "bytes": 5976
+  },
+  {
+    "path": "handoff/scripts/fetch_imatrix_sources.sh",
+    "title": "下载 imatrix 量化所需的高精度源。",
+    "category": "handoff",
+    "ext": ".sh",
+    "bytes": 1749
+  },
+  {
+    "path": "handoff/scripts/follow_backend_log.sh",
+    "title": "一直跟随**当前**后端进程的 stdout 日志。",
+    "category": "handoff",
+    "ext": ".sh",
+    "bytes": 1059
+  },
+  {
+    "path": "handoff/scripts/goal_acceptance.py",
+    "title": "---------------------------------------------------------------------------",
+    "category": "handoff",
+    "ext": ".py",
+    "bytes": 12659
+  },
+  {
+    "path": "handoff/scripts/gpu_bench_window.sh",
+    "title": "给融合注意力 kernel 让出一个短的 GPU 独占窗口, 跑完自动归还生产。",
+    "category": "handoff",
+    "ext": ".sh",
+    "bytes": 1716
+  },
+  {
+    "path": "handoff/scripts/gpu_verify_window.sh",
+    "title": "一次完整的 GPU 验证窗口: 等量化 -> 停生产 -> 三方 PPL + 生成探针 -> 恢复生产。",
+    "category": "handoff",
+    "ext": ".sh",
+    "bytes": 5899
+  },
+  {
+    "path": "handoff/scripts/graft_mtp.sh",
+    "title": "把 MTP draft heads 移植进量化好的 GGUF。",
+    "category": "handoff",
+    "ext": ".sh",
+    "bytes": 1684
+  },
+  {
+    "path": "handoff/scripts/imatrix_pipeline.sh",
+    "title": "校准之后的完整流水线: 等 imatrix 产物 -> 量化(带/不带 imatrix 两版) -> 上传 HF。",
+    "category": "handoff",
+    "ext": ".sh",
+    "bytes": 1164
+  },
+  {
+    "path": "handoff/scripts/imatrix_session.sh",
+    "title": "一次完整的 imatrix 校准会话: 停生产 -> 独占 GPU 跑校准 -> 无论成败都恢复生产。",
+    "category": "handoff",
+    "ext": ".sh",
+    "bytes": 1992
+  },
+  {
+    "path": "handoff/scripts/intel_probe.py",
+    "title": "--- A. 能力题(自动判分: 答案里必须出现 expect 里的全部片段) ---",
+    "category": "handoff",
+    "ext": ".py",
+    "bytes": 8102
+  },
+  {
+    "path": "handoff/scripts/iq4xs_gate.sh",
+    "title": "IQ4_XS 上生产的准入闸门。",
+    "category": "handoff",
+    "ext": ".sh",
+    "bytes": 7178
+  },
+  {
+    "path": "handoff/scripts/make_tables.py",
+    "title": "tag 形如 q38-n5-n-q4kxl-turbo4-mtp2-cachetuned-sm70",
+    "category": "handoff",
+    "ext": ".py",
+    "bytes": 5007
+  },
+  {
+    "path": "handoff/scripts/mm_cache_experiment.py",
+    "title": "mm_cache_experiment.py",
+    "category": "handoff",
+    "ext": ".py",
+    "bytes": 8286
+  },
+  {
+    "path": "handoff/scripts/postcalib_pipeline.sh",
+    "title": "校准之后的自动流水线: 等 v2 imatrix -> 量化(IQ4_XS 优先) -> graft MTP -> 三方 PPL。",
+    "category": "handoff",
+    "ext": ".sh",
+    "bytes": 1808
+  },
+  {
+    "path": "handoff/scripts/ppl_paired.py",
+    "title": "ppl_paired.py",
+    "category": "handoff",
+    "ext": ".py",
+    "bytes": 4502
+  },
+  {
+    "path": "handoff/scripts/probe_prefix_multimodal.py",
+    "title": "---------------------------------------------------------------------------",
+    "category": "handoff",
+    "ext": ".py",
+    "bytes": 12181
+  },
+  {
+    "path": "handoff/scripts/probe_suite.sh",
+    "title": "对**当前正在服务的**模型跑一遍验收探针套件。",
+    "category": "handoff",
+    "ext": ".sh",
+    "bytes": 5473
+  },
+  {
+    "path": "handoff/scripts/quant-recipes/iq4xs-frugal-plus.txt",
+    "title": "iq4xs-frugal-plus.txt",
+    "category": "handoff",
+    "ext": ".txt",
+    "bytes": 131
+  },
+  {
+    "path": "handoff/scripts/quant-recipes/iq4xs-frugal.txt",
+    "title": "iq4xs-frugal.txt",
+    "category": "handoff",
+    "ext": ".txt",
+    "bytes": 110
+  },
+  {
+    "path": "handoff/scripts/quant-recipes/README-recipes.md",
+    "title": "IQ4_XS 升档配方",
+    "category": "handoff",
+    "ext": ".md",
+    "bytes": 5375
+  },
+  {
+    "path": "handoff/scripts/quantize_with_imatrix.sh",
+    "title": "用 imatrix 做加权量化, 并同时产出一份**不带 imatrix 的同源同档对照组**。",
+    "category": "handoff",
+    "ext": ".sh",
+    "bytes": 5514
+  },
+  {
+    "path": "handoff/scripts/quantrecipe/decide.py",
+    "title": "decide.py",
+    "category": "handoff",
+    "ext": ".py",
+    "bytes": 4109
+  },
+  {
+    "path": "handoff/scripts/quantrecipe/dump_kv.py",
+    "title": "dump_kv.py",
+    "category": "handoff",
+    "ext": ".py",
+    "bytes": 613
+  },
+  {
+    "path": "handoff/scripts/quantrecipe/dump_tensor_types.py",
+    "title": "dump_tensor_types.py",
+    "category": "handoff",
+    "ext": ".py",
+    "bytes": 726
+  },
+  {
+    "path": "handoff/scripts/quantrecipe/err_iq4xs_recheck.json",
+    "title": "err_iq4xs_recheck.json",
+    "category": "handoff",
+    "ext": ".json",
+    "bytes": 10018
+  },
+  {
+    "path": "handoff/scripts/quantrecipe/err_iq4xs.json",
+    "title": "err_iq4xs.json",
+    "category": "handoff",
+    "ext": ".json",
+    "bytes": 10016
+  },
+  {
+    "path": "handoff/scripts/quantrecipe/err_our_q5km.json",
+    "title": "err_our_q5km.json",
+    "category": "handoff",
+    "ext": ".json",
+    "bytes": 9987
+  },
+  {
+    "path": "handoff/scripts/quantrecipe/err_up_q5km.json",
+    "title": "err_up_q5km.json",
+    "category": "handoff",
+    "ext": ".json",
+    "bytes": 10654
+  },
+  {
+    "path": "handoff/scripts/quantrecipe/hash_tensor.py",
+    "title": "hash_tensor.py",
+    "category": "handoff",
+    "ext": ".py",
+    "bytes": 481
+  },
+  {
+    "path": "handoff/scripts/quantrecipe/log-q5km.txt",
+    "title": "log-q5km.txt",
+    "category": "handoff",
+    "ext": ".txt",
+    "bytes": 41
+  },
+  {
+    "path": "handoff/scripts/quantrecipe/log-recheck.txt",
+    "title": "log-recheck.txt",
+    "category": "handoff",
+    "ext": ".txt",
+    "bytes": 46
+  },
+  {
+    "path": "handoff/scripts/quantrecipe/power_ppl.py",
+    "title": "power_ppl.py",
+    "category": "handoff",
+    "ext": ".py",
+    "bytes": 1913
+  },
+  {
+    "path": "handoff/scripts/quantrecipe/probe-all.txt",
+    "title": "probe-all.txt",
+    "category": "handoff",
+    "ext": ".txt",
+    "bytes": 4588
+  },
+  {
+    "path": "handoff/scripts/quantrecipe/probe-q5q6.txt",
+    "title": "probe-q5q6.txt",
+    "category": "handoff",
+    "ext": ".txt",
+    "bytes": 3386
+  },
+  {
+    "path": "handoff/scripts/quantrecipe/probe-qkv.txt",
+    "title": "probe-qkv.txt",
+    "category": "handoff",
+    "ext": ".txt",
+    "bytes": 1202
+  },
+  {
+    "path": "handoff/scripts/quantrecipe/requant_probe.py",
+    "title": "requant_probe.py",
+    "category": "handoff",
+    "ext": ".py",
+    "bytes": 4644
+  },
+  {
+    "path": "handoff/scripts/quantrecipe/size_model.py",
+    "title": "ggml 每种类型的 (block 元素数, block 字节数)",
+    "category": "handoff",
+    "ext": ".py",
+    "bytes": 1785
+  },
+  {
+    "path": "handoff/scripts/quantrecipe/tensor_error.py",
+    "title": "tensor_error.py",
+    "category": "handoff",
+    "ext": ".py",
+    "bytes": 3325
+  },
+  {
+    "path": "handoff/scripts/quantrecipe/tsv/new_q5km.tsv",
+    "title": "new_q5km.tsv",
+    "category": "handoff",
+    "ext": ".tsv",
+    "bytes": 42113
+  },
+  {
+    "path": "handoff/scripts/quantrecipe/tsv/new_q8.tsv",
+    "title": "new_q8.tsv",
+    "category": "handoff",
+    "ext": ".tsv",
+    "bytes": 42114
+  },
+  {
+    "path": "handoff/scripts/quantrecipe/tsv/our_iq4xs.tsv",
+    "title": "our_iq4xs.tsv",
+    "category": "handoff",
+    "ext": ".tsv",
+    "bytes": 42978
+  },
+  {
+    "path": "handoff/scripts/quantrecipe/tsv/our_q5km.tsv",
+    "title": "our_q5km.tsv",
+    "category": "handoff",
+    "ext": ".tsv",
+    "bytes": 42114
+  },
+  {
+    "path": "handoff/scripts/quantrecipe/tsv/up_mtp_q8.tsv",
+    "title": "up_mtp_q8.tsv",
+    "category": "handoff",
+    "ext": ".tsv",
+    "bytes": 966
+  },
+  {
+    "path": "handoff/scripts/quantrecipe/tsv/up_q4km_plusmtp.tsv",
+    "title": "up_q4km_plusmtp.tsv",
+    "category": "handoff",
+    "ext": ".tsv",
+    "bytes": 42895
+  },
+  {
+    "path": "handoff/scripts/quantrecipe/tsv/up_q4km.tsv",
+    "title": "up_q4km.tsv",
+    "category": "handoff",
+    "ext": ".tsv",
+    "bytes": 42113
+  },
+  {
+    "path": "handoff/scripts/quantrecipe/tsv/up_q5km_plusmtp.tsv",
+    "title": "up_q5km_plusmtp.tsv",
+    "category": "handoff",
+    "ext": ".tsv",
+    "bytes": 42895
+  },
+  {
+    "path": "handoff/scripts/quantrecipe/tsv/up_q5km.tsv",
+    "title": "up_q5km.tsv",
+    "category": "handoff",
+    "ext": ".tsv",
+    "bytes": 42113
+  },
+  {
+    "path": "handoff/scripts/quantrecipe/tsv/up_q6k.tsv",
+    "title": "up_q6k.tsv",
+    "category": "handoff",
+    "ext": ".tsv",
+    "bytes": 42114
+  },
+  {
+    "path": "handoff/scripts/raise_concurrency.sh",
+    "title": "把生产并发从 1 提到 4, 并验证。",
+    "category": "handoff",
+    "ext": ".sh",
+    "bytes": 3405
+  },
+  {
+    "path": "handoff/scripts/run_copy_fidelity.sh",
+    "title": "单独跑抄写保真, 不与任何回滚逻辑耦合。",
+    "category": "handoff",
+    "ext": ".sh",
+    "bytes": 463
+  },
+  {
+    "path": "handoff/scripts/run_imatrix.sh",
+    "title": "用领域匹配语料计算 imatrix(重要性矩阵), 供 llama-quantize 做加权量化。",
+    "category": "handoff",
+    "ext": ".sh",
+    "bytes": 4406
+  },
+  {
+    "path": "handoff/scripts/run_mm_experiment.sh",
+    "title": "受控实验: 打开多模态前缀缓存, 验证命中后的输出是否仍然正确。",
+    "category": "handoff",
+    "ext": ".sh",
+    "bytes": 5346
+  },
+  {
+    "path": "handoff/scripts/run_vision_fidelity.sh",
+    "title": "run_vision_fidelity.sh",
+    "category": "handoff",
+    "ext": ".sh",
+    "bytes": 531
+  },
+  {
+    "path": "handoff/scripts/runtime_metrics.py",
+    "title": "---------------------------------------------------------------------------",
+    "category": "handoff",
+    "ext": ".py",
+    "bytes": 6774
+  },
+  {
+    "path": "handoff/scripts/silent-hang-diagnosis.md",
+    "title": "后端「静默僵死」的诊断手册",
+    "category": "handoff",
+    "ext": ".md",
+    "bytes": 5606
+  },
+  {
+    "path": "handoff/scripts/sm70-audit/bench_devprops.cu",
+    "title": "bench_devprops.cu",
+    "category": "handoff",
+    "ext": ".cu",
+    "bytes": 1945
+  },
+  {
+    "path": "handoff/scripts/sm70-audit/bench_mmq_trial.cu",
+    "title": "bench_mmq_trial.cu",
+    "category": "handoff",
+    "ext": ".cu",
+    "bytes": 3533
+  },
+  {
+    "path": "handoff/scripts/sm70-audit/build_bench.sh",
+    "title": "编译 SM70 审计用的三个小工具, 链接 build-rw 里已编好的 fastllm 目标文件",
+    "category": "handoff",
+    "ext": ".sh",
+    "bytes": 2043
+  },
+  {
+    "path": "handoff/scripts/sm70-audit/probe_routes.cu",
+    "title": "probe_routes.cu",
+    "category": "handoff",
+    "ext": ".cu",
+    "bytes": 3323
+  },
+  {
+    "path": "handoff/scripts/start_prod.sh",
+    "title": "生产重启: thinking_proxy(:8000) + 它自己拉起的 fastllm apiserver(:8002)。",
+    "category": "handoff",
+    "ext": ".sh",
+    "bytes": 2687
+  },
+  {
+    "path": "handoff/scripts/sweep_driver.sh",
+    "title": "顺序跑多个扫描档位。一块 V100 只能串行, 所以这里是整张矩阵的外层循环。",
+    "category": "handoff",
+    "ext": ".sh",
+    "bytes": 1815
+  },
+  {
+    "path": "handoff/scripts/sweep_launch.sh",
+    "title": "无头 profile 启动器 —— 给 模型 x KV量化 x MTP 的扫描实验用。",
+    "category": "handoff",
+    "ext": ".sh",
+    "bytes": 3726
+  },
+  {
+    "path": "handoff/scripts/sweep_one.sh",
+    "title": "跑完一个 sweep 档位: 起后端 → 冷启计时 → 核心验收套件 → 采显存峰值 → 汇总一行结果。",
+    "category": "handoff",
+    "ext": ".sh",
+    "bytes": 6419
+  },
+  {
+    "path": "handoff/scripts/sweep_profiles.py",
+    "title": "官方模板(与 Qwen/Qwen3.8-27B 逐字一致, md5 519239a4908bb1f805bbce5fa8c8a242)",
+    "category": "handoff",
+    "ext": ".py",
+    "bytes": 10399
+  },
+  {
+    "path": "handoff/scripts/switch_to_iq4xs.sh",
+    "title": "把生产切到 IQ4_XS+imatrix+MTP, 切完立刻验收, 不过就自动回滚到 Q5。",
+    "category": "handoff",
+    "ext": ".sh",
+    "bytes": 3009
+  },
+  {
+    "path": "handoff/scripts/toolname_probe.py",
+    "title": "---------------------------------------------------------------------------",
+    "category": "handoff",
+    "ext": ".py",
+    "bytes": 6768
+  },
+  {
+    "path": "handoff/scripts/upload_to_hf.sh",
+    "title": "把 imatrix 量化产物上传到 HuggingFace。",
+    "category": "handoff",
+    "ext": ".sh",
+    "bytes": 5469
+  },
+  {
+    "path": "handoff/scripts/verify_downloads.sh",
+    "title": "校验下载的 GGUF 是否完整 —— 按**仓库真实字节数**比对, 不看 GGUF 头。",
+    "category": "handoff",
+    "ext": ".sh",
+    "bytes": 2132
+  },
+  {
+    "path": "handoff/scripts/verify_iq4xs_cpu.sh",
+    "title": "在**纯 CPU** 上验证 IQ4_XS 量化产物, 零 GPU 占用, 不影响生产 agent。",
+    "category": "handoff",
+    "ext": ".sh",
+    "bytes": 4724
+  },
+  {
+    "path": "handoff/scripts/verify_prefix_cache.py",
+    "title": "---------------------------------------------------------------------------",
+    "category": "handoff",
+    "ext": ".py",
+    "bytes": 7577
+  },
+  {
+    "path": "handoff/start_prod.sh",
+    "title": "生产重启: thinking_proxy(:8000) + 它自己拉起的 fastllm apiserver(:8002)。",
+    "category": "handoff",
+    "ext": ".sh",
+    "bytes": 2687
+  },
+  {
+    "path": "llms.txt",
+    "title": "V100-32G FastLLM 推理知识库",
+    "category": "root",
+    "ext": ".txt",
+    "bytes": 8239
+  },
+  {
+    "path": "patches/thinking_proxy-2026-08-18-stream-timeout-anthropic-effort.patch",
+    "title": "thinking_proxy-2026-08-18-stream-timeout-anthropic-effort.patch",
+    "category": "patches",
+    "ext": ".patch",
+    "bytes": 11359
+  },
+  {
+    "path": "README.md",
+    "title": "V100 32G PCIe · FastLLM 本地推理性能与运维",
+    "category": "root",
+    "ext": ".md",
+    "bytes": 4065
+  },
+  {
+    "path": "results/legacy/deepseek_q2_split_verification.json",
+    "title": "deepseek_q2_split_verification.json",
+    "category": "results",
+    "ext": ".json",
+    "bytes": 5019
+  },
+  {
+    "path": "results/q38-sweep/MATRIX.md",
+    "title": "Qwen3.8-27B on V100 32G — 扫描矩阵结果",
+    "category": "results",
+    "ext": ".md",
+    "bytes": 1905
+  },
+  {
+    "path": "results/q38-sweep/raw/PROD-verify-matrix.json",
+    "title": "PROD-verify-matrix.json",
+    "category": "results",
+    "ext": ".json",
+    "bytes": 6744
+  },
+  {
+    "path": "results/q38-sweep/raw/q38-c1-c-q5km-turbo4-mtp2.intel.json",
+    "title": "q38-c1-c-q5km-turbo4-mtp2.intel.json",
+    "category": "results",
+    "ext": ".json",
+    "bytes": 4095
+  },
+  {
+    "path": "results/q38-sweep/raw/q38-c1-c-q5km-turbo4-mtp2.json",
+    "title": "q38-c1-c-q5km-turbo4-mtp2.json",
+    "category": "results",
+    "ext": ".json",
+    "bytes": 6129
+  },
+  {
+    "path": "results/q38-sweep/raw/q38-c6-c-q5km-turbo4-mtp2-sm70.json",
+    "title": "q38-c6-c-q5km-turbo4-mtp2-sm70.json",
+    "category": "results",
+    "ext": ".json",
+    "bytes": 6141
+  },
+  {
+    "path": "results/q38-sweep/raw/q38-n1-n-q4kxl-turbo4-mtp2.json",
+    "title": "q38-n1-n-q4kxl-turbo4-mtp2.json",
+    "category": "results",
+    "ext": ".json",
+    "bytes": 4293
+  },
+  {
+    "path": "results/q38-sweep/raw/q38-n4-n-q4kxl-turbo4-mtp0.json",
+    "title": "q38-n4-n-q4kxl-turbo4-mtp0.json",
+    "category": "results",
+    "ext": ".json",
+    "bytes": 4312
+  },
+  {
+    "path": "results/q38-sweep/raw/q38-n5-n-q4kxl-turbo4-mtp2-cachetuned.json",
+    "title": "q38-n5-n-q4kxl-turbo4-mtp2-cachetuned.json",
+    "category": "results",
+    "ext": ".json",
+    "bytes": 4310
+  },
+  {
+    "path": "results/q38-sweep/raw/q38-n6-n-q4kxl-turbo4-mtp2-sm70.json",
+    "title": "q38-n6-n-q4kxl-turbo4-mtp2-sm70.json",
+    "category": "results",
+    "ext": ".json",
+    "bytes": 6147
+  },
+  {
+    "path": "results/q38-sweep/raw/q38-n7-n-q5km-turbo4-mtp2.intel.json",
+    "title": "q38-n7-n-q5km-turbo4-mtp2.intel.json",
+    "category": "results",
+    "ext": ".json",
+    "bytes": 3790
+  },
+  {
+    "path": "results/q38-sweep/raw/q38-n7-n-q5km-turbo4-mtp2.json",
+    "title": "q38-n7-n-q5km-turbo4-mtp2.json",
+    "category": "results",
+    "ext": ".json",
+    "bytes": 4342
+  },
+  {
+    "path": "results/q38-sweep/raw/toolcall_bench_2026-08-22/claude_file_roundtrip.json",
+    "title": "claude_file_roundtrip.json",
+    "category": "results",
+    "ext": ".json",
+    "bytes": 1621
+  },
+  {
+    "path": "results/q38-sweep/raw/toolcall_bench_2026-08-22/cyber-q5_file_roundtrip.json",
+    "title": "cyber-q5_file_roundtrip.json",
+    "category": "results",
+    "ext": ".json",
+    "bytes": 1726
+  },
+  {
+    "path": "results/q38-sweep/raw/toolcall_bench_2026-08-22/iq4xs_file_roundtrip.json",
+    "title": "iq4xs_file_roundtrip.json",
+    "category": "results",
+    "ext": ".json",
+    "bytes": 1632
+  },
+  {
+    "path": "results/q38-sweep/raw/toolcall_bench_2026-08-22/SUMMARY.md",
+    "title": "Qwen3.8-27B 工具调用 bench 对比（2026-08-22）",
+    "category": "results",
+    "ext": ".md",
+    "bytes": 3410
+  },
+  {
+    "path": "results/q38-sweep/raw/toolcall_bench_2026-08-22/ud-q5_file_roundtrip.json",
+    "title": "ud-q5_file_roundtrip.json",
+    "category": "results",
+    "ext": ".json",
+    "bytes": 1623
+  },
+  {
+    "path": "scripts/chain_acceptance.py",
+    "title": "─── 协议封装 ────────────────────────────────────────────────────",
+    "category": "scripts",
+    "ext": ".py",
+    "bytes": 44083
+  },
+  {
+    "path": "scripts/context_fidelity_probe.py",
+    "title": "context_fidelity_probe.py",
+    "category": "scripts",
+    "ext": ".py",
+    "bytes": 9619
+  },
+  {
+    "path": "scripts/fastllm_native_profile.py",
+    "title": "fastllm_native_profile.py",
+    "category": "scripts",
+    "ext": ".py",
+    "bytes": 39387
+  },
+  {
+    "path": "scripts/fastllm_qwen36_iq4xs.patch",
+    "title": "fastllm_qwen36_iq4xs.patch",
+    "category": "scripts",
+    "ext": ".patch",
+    "bytes": 2813
+  },
+  {
+    "path": "scripts/graft_gguf_mtp.py",
+    "title": "graft_gguf_mtp.py",
+    "category": "scripts",
+    "ext": ".py",
+    "bytes": 8816
+  },
+  {
+    "path": "scripts/intel_probe.py",
+    "title": "--- A. 能力题(自动判分: 答案里必须出现 expect 里的全部片段) ---",
+    "category": "scripts",
+    "ext": ".py",
+    "bytes": 8102
+  },
+  {
+    "path": "scripts/launch_proxy_tmux.sh",
+    "title": "Launch the Thinking Proxy in a tmux pane, owning the FastLLM backend.",
+    "category": "scripts",
+    "ext": ".sh",
+    "bytes": 3107
+  },
+  {
+    "path": "scripts/make_tables.py",
+    "title": "tag 形如 q38-n5-n-q4kxl-turbo4-mtp2-cachetuned-sm70",
+    "category": "scripts",
+    "ext": ".py",
+    "bytes": 5007
+  },
+  {
+    "path": "scripts/merge_mtp_head.py",
+    "title": "merge_mtp_head.py",
+    "category": "scripts",
+    "ext": ".py",
+    "bytes": 7605
+  },
+  {
+    "path": "scripts/mtp_batch_acceptance.py",
+    "title": "mtp_batch_acceptance.py",
+    "category": "scripts",
+    "ext": ".py",
+    "bytes": 5321
+  },
+  {
+    "path": "scripts/run_proxy_q6_plain_turbo4_lowwm.sh",
+    "title": "Production proxy runner for tmux pane 0 (plain ThinkingCap Q6_K-MTP 262K).",
+    "category": "scripts",
+    "ext": ".sh",
+    "bytes": 601
+  },
+  {
+    "path": "scripts/run_proxy_q6_plain_turbo4.sh",
+    "title": "Production proxy runner for tmux pane 0 (plain ThinkingCap Q6_K-MTP 262K).",
+    "category": "scripts",
+    "ext": ".sh",
+    "bytes": 595
+  },
+  {
+    "path": "scripts/run_proxy_q6_plain.sh",
+    "title": "Production proxy runner for tmux pane 0 (plain ThinkingCap Q6_K-MTP 262K).",
+    "category": "scripts",
+    "ext": ".sh",
+    "bytes": 588
+  },
+  {
+    "path": "scripts/start_120.sh",
+    "title": "start_120.sh",
+    "category": "scripts",
+    "ext": ".sh",
+    "bytes": 846
+  },
+  {
+    "path": "scripts/start_121.sh",
+    "title": "Kill any existing vLLM server to avoid port conflicts",
+    "category": "scripts",
+    "ext": ".sh",
+    "bytes": 1160
+  },
+  {
+    "path": "scripts/start_llama_nospec.sh",
+    "title": "Kill any existing llama-server to avoid port conflicts",
+    "category": "scripts",
+    "ext": ".sh",
+    "bytes": 911
+  },
+  {
+    "path": "scripts/start_llama_turboquant_4x140k.sh",
+    "title": "Production-ready TurboQuant config: 4 slots × 140K context per slot on V100-32GB.",
+    "category": "scripts",
+    "ext": ".sh",
+    "bytes": 1278
+  },
+  {
+    "path": "scripts/start_llama_turboquant.sh",
+    "title": "This binary was built with the conda tsenv CUDA 12.9 toolchain,",
+    "category": "scripts",
+    "ext": ".sh",
+    "bytes": 2054
+  },
+  {
+    "path": "scripts/start_llama.sh",
+    "title": "Kill any existing llama-server to avoid port conflicts",
+    "category": "scripts",
+    "ext": ".sh",
+    "bytes": 1654
+  },
+  {
+    "path": "scripts/start_proxy.sh",
+    "title": "Launch the Thinking Proxy against whichever local backend is configured.",
+    "category": "scripts",
+    "ext": ".sh",
+    "bytes": 4475
+  },
+  {
+    "path": "scripts/start.sh",
+    "title": "start.sh",
+    "category": "scripts",
+    "ext": ".sh",
+    "bytes": 970
+  },
+  {
+    "path": "scripts/sweep_driver.sh",
+    "title": "顺序跑多个扫描档位。一块 V100 只能串行, 所以这里是整张矩阵的外层循环。",
+    "category": "scripts",
+    "ext": ".sh",
+    "bytes": 1815
+  },
+  {
+    "path": "scripts/sweep_driver2.sh",
+    "title": "顺序跑多个扫描档位。一块 V100 只能串行, 所以这里是整张矩阵的外层循环。",
+    "category": "scripts",
+    "ext": ".sh",
+    "bytes": 1816
+  },
+  {
+    "path": "scripts/sweep_launch.sh",
+    "title": "无头 profile 启动器 —— 给 模型 x KV量化 x MTP 的扫描实验用。",
+    "category": "scripts",
+    "ext": ".sh",
+    "bytes": 3726
+  },
+  {
+    "path": "scripts/sweep_one.sh",
+    "title": "跑完一个 sweep 档位: 起后端 → 冷启计时 → 核心验收套件 → 采显存峰值 → 汇总一行结果。",
+    "category": "scripts",
+    "ext": ".sh",
+    "bytes": 6419
+  },
+  {
+    "path": "scripts/sweep_one2.sh",
+    "title": "跑完一个 sweep 档位: 起后端 → 冷启计时 → 核心验收套件 → 采显存峰值 → 汇总一行结果。",
+    "category": "scripts",
+    "ext": ".sh",
+    "bytes": 6428
+  },
+  {
+    "path": "scripts/sweep_profiles.py",
+    "title": "官方模板(与 Qwen/Qwen3.8-27B 逐字一致, md5 519239a4908bb1f805bbce5fa8c8a242)",
+    "category": "scripts",
+    "ext": ".py",
+    "bytes": 10399
+  },
+  {
+    "path": "site/astro.config.mjs",
+    "title": "astro.config.mjs",
+    "category": "site",
+    "ext": ".mjs",
+    "bytes": 394
+  },
+  {
+    "path": "site/package-lock.json",
+    "title": "package-lock.json",
+    "category": "site",
+    "ext": ".json",
+    "bytes": 244247
+  },
+  {
+    "path": "site/package.json",
+    "title": "package.json",
+    "category": "site",
+    "ext": ".json",
+    "bytes": 850
+  },
+  {
+    "path": "site/README.md",
+    "title": "V100-perfs 文档站",
+    "category": "site",
+    "ext": ".md",
+    "bytes": 2943
+  },
+  {
+    "path": "site/scripts/gen-llms-txt.mjs",
+    "title": "gen-llms-txt.mjs",
+    "category": "site",
+    "ext": ".mjs",
+    "bytes": 2080
+  },
+  {
+    "path": "site/scripts/generate-repo-index.mjs",
+    "title": "generate-repo-index.mjs",
+    "category": "site",
+    "ext": ".mjs",
+    "bytes": 3413
+  },
+  {
+    "path": "site/src/components/ProtoDashboard.tsx",
+    "title": "ProtoDashboard.tsx",
+    "category": "site",
+    "ext": ".tsx",
+    "bytes": 5949
+  },
+  {
+    "path": "site/src/components/RepoExplorer.tsx",
+    "title": "RepoExplorer.tsx",
+    "category": "site",
+    "ext": ".tsx",
+    "bytes": 3925
+  },
+  {
+    "path": "site/src/components/StatusCard.tsx",
+    "title": "StatusCard.tsx",
+    "category": "site",
+    "ext": ".tsx",
+    "bytes": 3006
+  },
+  {
+    "path": "site/src/layouts/BaseLayout.astro",
+    "title": "BaseLayout.astro",
+    "category": "site",
+    "ext": ".astro",
+    "bytes": 2609
+  },
+  {
+    "path": "site/src/pages/docs/[...slug].astro",
+    "title": "[...slug].astro",
+    "category": "site",
+    "ext": ".astro",
+    "bytes": 2198
+  },
+  {
+    "path": "site/src/pages/index.astro",
+    "title": "index.astro",
+    "category": "site",
+    "ext": ".astro",
+    "bytes": 941
+  },
+  {
+    "path": "site/src/pages/read/[...path].astro",
+    "title": "[...path].astro",
+    "category": "site",
+    "ext": ".astro",
+    "bytes": 3126
+  },
+  {
+    "path": "site/src/pages/repo.astro",
+    "title": "repo.astro",
+    "category": "site",
+    "ext": ".astro",
+    "bytes": 603
+  },
+  {
+    "path": "site/src/styles/global.css",
+    "title": "global.css",
+    "category": "site",
+    "ext": ".css",
+    "bytes": 8813
+  },
+  {
+    "path": "site/tsconfig.json",
+    "title": "tsconfig.json",
+    "category": "site",
+    "ext": ".json",
+    "bytes": 192
+  },
+  {
+    "path": "tests/proxy_stream_error_invariants.py",
+    "title": "proxy_stream_error_invariants.py",
+    "category": "tests",
+    "ext": ".py",
+    "bytes": 5281
+  },
+  {
+    "path": "tests/pytorch_fastllm_token_mask_oracle.py",
+    "title": "pytorch_fastllm_token_mask_oracle.py",
+    "category": "tests",
+    "ext": ".py",
+    "bytes": 4818
+  },
+  {
+    "path": "tests/test_agent_bench.py",
+    "title": "test_agent_bench.py",
+    "category": "tests",
+    "ext": ".py",
+    "bytes": 3476
+  },
+  {
+    "path": "tests/test_fastllm_adapter.py",
+    "title": "test_fastllm_adapter.py",
+    "category": "tests",
+    "ext": ".py",
+    "bytes": 16657
+  },
+  {
+    "path": "tests/test_fastllm_cache_benchmark.py",
+    "title": "test_fastllm_cache_benchmark.py",
+    "category": "tests",
+    "ext": ".py",
+    "bytes": 8602
+  },
+  {
+    "path": "tests/test_fastllm_feature_bench.py",
+    "title": "test_fastllm_feature_bench.py",
+    "category": "tests",
+    "ext": ".py",
+    "bytes": 10583
+  },
+  {
+    "path": "tests/test_fastllm_native_profile.py",
+    "title": "test_fastllm_native_profile.py",
+    "category": "tests",
+    "ext": ".py",
+    "bytes": 5042
+  },
+  {
+    "path": "tests/test_thinking_proxy_fastllm.py",
+    "title": "test_thinking_proxy_fastllm.py",
+    "category": "tests",
+    "ext": ".py",
+    "bytes": 39308
+  },
+  {
+    "path": "tests/test_thinking_proxy_lifecycle.py",
+    "title": "test_thinking_proxy_lifecycle.py",
+    "category": "tests",
+    "ext": ".py",
+    "bytes": 17323
+  },
+  {
+    "path": "tests/tool_guidance_invariants.py",
+    "title": "tool_guidance_invariants.py",
+    "category": "tests",
+    "ext": ".py",
+    "bytes": 2877
+  },
+  {
+    "path": "tests/toolcall_grammar_invariants.py",
+    "title": "---------- 模拟 vocab(真实 Qwen 分块形态) ----------",
+    "category": "tests",
+    "ext": ".py",
+    "bytes": 16396
+  },
+  {
+    "path": "thinking_proxy.py",
+    "title": "所有 print 日志统一带时间戳：[YYYY-MM-DD HH:MM:SS] ...",
+    "category": "root",
+    "ext": ".py",
+    "bytes": 185462
+  },
+  {
+    "path": "video-gen/bench_h3.py",
+    "title": "Official H3 16:9 examples, rounded to the model's 32-pixel grid.  The 1.0",
+    "category": "video-gen",
+    "ext": ".py",
+    "bytes": 23339
+  },
+  {
+    "path": "video-gen/README.md",
+    "title": "MiniMax H3 Video Generation on Tesla V100 32GB",
+    "category": "video-gen",
+    "ext": ".md",
+    "bytes": 16522
+  },
+  {
+    "path": "video-gen/results/resolution_1step.json",
+    "title": "resolution_1step.json",
+    "category": "video-gen",
+    "ext": ".json",
+    "bytes": 20112
+  },
+  {
+    "path": "video-gen/test_bench_h3.py",
+    "title": "test_bench_h3.py",
+    "category": "video-gen",
+    "ext": ".py",
+    "bytes": 8039
+  },
+  {
+    "path": "video-gen/workflows/minimax_h3_v100_t2v_api.json",
+    "title": "minimax_h3_v100_t2v_api.json",
+    "category": "video-gen",
+    "ext": ".json",
+    "bytes": 1800
+  }
+]

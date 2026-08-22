@@ -1,22 +1,25 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import ProtoDashboard from "../components/ProtoDashboard";
 import StatusCard from "../components/StatusCard";
 ---
-<BaseLayout title="V100-32G FastLLM 推理记录">
-  <h1>Qwen3.8-27B · 单卡 V100 32G PCIe</h1>
-  <p style="color:hsl(var(--muted-foreground));margin:8px 0 20px">
-    FastLLM 引擎 + thinking_proxy 网关 · 生产架构实测与运维知识库
-  </p>
-  <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:24px">
+<BaseLayout title="V100 32G · FastLLM 推理记录">
+  <header class="home-hero">
+    <p class="home-kicker">V100 32G / FastLLM field notes</p>
+    <h1>一座仓库，完整保留推理实践。</h1>
+    <p class="home-deck">
+      从 Qwen3.5、Qwen3.6 到 Qwen3.8：性能数据、生产架构、故障定位与运维决策，
+      按原始文件结构组织成可搜索、可逐篇阅读的知识库。
+    </p>
+    <div class="home-links">
+      <a class="home-link-primary" href="/v100-perfs/repo">浏览整个仓库</a>
+      <a class="home-link-secondary" href="/v100-perfs/docs/getting-started">快速开始</a>
+    </div>
+  </header>
+
+  <ProtoDashboard client:load />
+
+  <div class="status-section">
     <StatusCard client:visible />
   </div>
-  <h2>核心结论速览</h2>
-  <ul style="line-height:2">
-    <li>UD-Q5_K_M / IQ4_XS 双 profile 生产可用, 工具调用约束修复后三模型全绿</li>
-    <li>三级前缀缓存 (GPU 页池 / RAM / 磁盘) 命中率 &gt;90%</li>
-    <li>字符级语法推进器对齐 llama.cpp 语义, 跨边界 token 不再被拒</li>
-    <li>Claude Code 归因头剥离 → KV cache 前缀稳定</li>
-    <li>傲腾 NVMe 做 L3: 轮转 TTFT 从全冷 22.5s → 亚秒</li>
-  </ul>
-  <p><a href="/v100-perfs/docs/getting-started">→ 快速开始</a></p>
 </BaseLayout>

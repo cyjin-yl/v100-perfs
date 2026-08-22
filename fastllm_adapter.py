@@ -18,13 +18,10 @@ from typing import Any
 
 from jinja2 import Environment, FileSystemLoader, StrictUndefined
 
-# repeat_penalty 与 MTP 互斥过: Qwen35MtpSupportsGenerationConfig 在
-# repeat_penalty != 1 时直接禁用投机解码, 后端日志会打印
-# "[Qwen3.5 MTP] not enabled: ... repeat_penalty=1.0500 ...". 所以这个默认值
-# 直接决定生产是否吃得到 MTP2 加速, 必须能在不改代码的情况下 A/B。
-# 1.0 = 不惩罚(纯靠 top_k/top_p/temperature 抑制循环)。
-_DEFAULT_FREQUENCY_PENALTY = float(
-    os.environ.get("FASTLLM_DEFAULT_FREQUENCY_PENALTY", "1.05"))
+# 乘法 repeat penalty 与 OpenAI additive presence/frequency penalty 是三套
+# 独立语义。生产默认需要可 A/B,但不得再借 frequency_penalty 字段冒充。
+_DEFAULT_REPEAT_PENALTY = float(
+    os.environ.get("FASTLLM_DEFAULT_REPEAT_PENALTY", "1.05"))
 
 
 
@@ -292,18 +289,26 @@ def prepare_fastllm_body(
         if marker not in merged_stops:
             merged_stops.append(marker)
     prepared["stop"] = merged_stops
-    # 采样默认:OpenAI 协议没有 top_k 字段,后端 GenerationConfig 默认
-    # top_k=1 → 纯贪婪解码,temperature 被采样 kernel 短路(top_k<=1 →
-    # argmax)。贪婪 + 超长上下文 + turbo3 有损 KV 是 proto-ui 重复循环
-    # 的主引擎。注入 Qwen3 系推荐采样档;客户端显式传参则尊重。
-    # temperature=0 仍会短路成 argmax(kernel 行为),需要严格贪婪的调用
-    # 传 temperature=0 即可,不受此默认值影响。
-    prepared.setdefault("top_k", 20)
-    prepared.setdefault("top_p", 0.8)
-    prepared.setdefault("temperature", 0.6)
-    if "frequency_penalty" not in prepared and "repeat_penalty" not in prepared:
-        # apiserver 把 frequency_penalty 直传 repeat_penalty(1.0=不惩罚)
-        prepared["frequency_penalty"] = _DEFAULT_FREQUENCY_PENALTY
+    # Qwen3.8 官方采样档按 thinking 模式分流。OpenAI 协议没有 top_k,
+    # 因而必须由 adapter 补齐;客户端显式值始终优先。temperature=0 仍保留
+    # 严格贪婪语义。FastLLM 对 presence/frequency/repeat 三种 penalty
+    # 分别实现,这里不做字段偷换。
+    model_name = str(prepared.get("model") or "").lower()
+    enable_thinking = bool(
+        (prepared.get("chat_template_kwargs") or {}).get(
+            "enable_thinking", True))
+    if "qwen3.8" in model_name:
+        prepared.setdefault("top_k", 20)
+        prepared.setdefault("top_p", 0.95 if enable_thinking else 0.8)
+        prepared.setdefault("temperature", 1.0 if enable_thinking else 0.7)
+        prepared.setdefault(
+            "presence_penalty", 0.0 if enable_thinking else 1.5)
+    else:
+        prepared.setdefault("top_k", 20)
+        prepared.setdefault("top_p", 0.8)
+        prepared.setdefault("temperature", 0.6)
+    if "repeat_penalty" not in prepared:
+        prepared["repeat_penalty"] = _DEFAULT_REPEAT_PENALTY
     return prepared
 
 

@@ -1,0 +1,13 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import RepoExplorer from "../components/RepoExplorer";
+import items from "../data/repo-index.json";
+---
+<BaseLayout title="整个仓库 · V100 FastLLM">
+  <h1>整个仓库阅读器</h1>
+  <p style="color:hsl(var(--muted-foreground));margin:8px 0 12px">
+    当前构建索引 {items.length} 个可读文件。类别直接映射仓库目录，覆盖历史 Qwen3.5/Qwen3.6、
+    Qwen3.8，以及 docs、results、benchmarks、handoff、tests、scripts、源码与 JSON 数据。
+  </p>
+  <RepoExplorer items={items} client:load />
+</BaseLayout>

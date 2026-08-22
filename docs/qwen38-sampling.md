@@ -1,0 +1,46 @@
+# Qwen3.8 27B 采样与模板配置
+
+## 推荐采样参数
+
+Qwen3.8 必须按推理模式选择采样档，不能沿用旧 Qwen3.5/3.6 的统一 `temperature=0.6` 默认值。
+
+| 模式 | `temperature` | `top_p` | `top_k` | `presence_penalty` |
+|---|---:|---:|---:|---:|
+| Thinking（默认） | 1.0 | 0.95 | 20 | 0.0 |
+| Instruct / non-thinking | 0.7 | 0.80 | 20 | 1.5 |
+
+`fastllm_adapter.prepare_fastllm_body()` 根据 `chat_template_kwargs.enable_thinking` 选择默认档。客户端显式提供的 `temperature`、`top_p`、`top_k` 或 `presence_penalty` 始终优先；`temperature=0` 仍表示确定性贪婪解码。
+
+低温不是保守的通用修复。对 Qwen3.8 thinking，过低温度会让 posterior 过早集中在局部模式，增加长段推理循环的风险。应先恢复模型推荐采样，再判断权重量化、KV 量化或 penalty 的影响。
+
+## Penalty 字段语义
+
+FastLLM 分别实现三种 penalty，不再把 OpenAI `frequency_penalty` 偷换成乘法 `repeat_penalty`：
+
+- `presence_penalty`：token 在生成历史中出现过时，logit 固定减去该值。
+- `frequency_penalty`：logit 减去“该值 × 生成历史出现次数”。
+- `repeat_penalty`：保留 FastLLM 的正负 logit 乘除语义；本机生产 profile 当前为 1.08。这是本地 A/B 参数，不是上表中的 Qwen 官方推荐字段。
+
+执行顺序为乘法 repeat penalty、加法 presence/frequency penalty、temperature/softmax、top-k/top-p。普通 CPU 采样、CUDA handoff 和 MTP exact/typical acceptance 使用同一份惩罚后分布；否则 draft 与 verify posterior 不一致，会破坏 exact acceptance。
+
+## Chat template 真源
+
+生产模板必须来自对应 Unsloth GGUF 的内嵌 `tokenizer.chat_template`，不得以手写模板或其他模型模板替代。
+
+UD-Q5_K_M 内嵌模板已导出为：
+
+```text
+models/unsloth/Qwen3.8-27B-UD-Q5_K_M.chat_template.jinja
+```
+
+模板长度为 9993 字符，SHA256 为：
+
+```text
+12827f24b742ea4e80cdc12dbcf9622227056b9f797252a3149263d4f9aaadce
+```
+
+它与此前保存的 Qwen3.8 official reference 逐字相同，但生产 profile 仍指向从当前 GGUF 导出的文件，以明确模板来源。UD-Q6_K_M 下载完成后必须从 Q6 文件自身再次提取、校验并使用对应导出路径。
+
+## 当前生产组合
+
+Q5 过渡实例：UD-Q5_K_M、turbo3 KV、MTP3、exact acceptance、repeat penalty 1.08、按模式选择上表采样档。Q6 目标实例保持相同引擎参数，只替换为 UD-Q6_K_M 权重及其自身内嵌模板。这样 Q5/Q6 对比只改变权重量化档位。

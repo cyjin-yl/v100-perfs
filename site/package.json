@@ -7,7 +7,9 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "llms-txt": "node scripts/gen-llms-txt.mjs"
+    "llms-txt": "node scripts/gen-llms-txt.mjs",
+    "predev": "node scripts/generate-repo-index.mjs && node scripts/gen-llms-txt.mjs",
+    "prebuild": "node scripts/generate-repo-index.mjs && node scripts/gen-llms-txt.mjs"
   },
   "dependencies": {
     "@astrojs/react": "^4.2.0",

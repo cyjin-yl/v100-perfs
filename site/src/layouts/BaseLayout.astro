@@ -2,15 +2,23 @@
 import "../styles/global.css";
 export interface Props { title?: string; }
 const { title = "V100-32G FastLLM Docs" } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
 const nav = [
-  { href: "/v100-perfs/", label: "首页" },
-  { href: "/v100-perfs/docs/getting-started", label: "快速开始" },
-  { href: "/v100-perfs/docs/architecture", label: "架构" },
-  { href: "/v100-perfs/docs/toolcall", label: "工具调用" },
-  { href: "/v100-perfs/docs/performance", label: "性能数据" },
-  { href: "/v100-perfs/docs/ops", label: "运维手册" },
-  { href: "/v100-perfs/llms.txt", label: "llms.txt (LLM)" },
+  { path: "/", label: "首页" },
+  { path: "/repo", label: "整个仓库" },
+  { path: "/docs/getting-started", label: "快速开始" },
+  { path: "/docs/architecture", label: "架构" },
+  { path: "/docs/toolcall", label: "工具调用" },
+  { path: "/docs/performance", label: "性能数据" },
+  { path: "/docs/ops", label: "运维手册" },
+  { path: "/llms.txt", label: "llms.txt (LLM)" },
 ];
+const currentPath = Astro.url.pathname.replace(/\/$/, "");
+function isActive(path: string) {
+  const target = `${base}${path === "/" ? "" : path}`;
+  if (path === "/repo" && currentPath.startsWith(`${base}/read/`)) return true;
+  return currentPath === target || (path !== "/" && currentPath.startsWith(`${target}/`));
+}
 ---
 <html lang="zh">
   <head>
@@ -21,10 +29,12 @@ const nav = [
   <body>
     <div class="shell">
       <aside>
-        <a class="brand" href="/v100-perfs/">V100·32G<br /><small>FastLLM 推理记录</small></a>
+        <a class="brand" href={`${base}/`}>V100·32G<br /><small>FastLLM 推理记录</small></a>
         <nav>
-          {nav.map((n) => (
-            <a href={n.href}>{n.label}</a>
+          {nav.map((item) => (
+            <a href={`${base}${item.path}`} aria-current={isActive(item.path) ? "page" : undefined}>
+              {item.label}
+            </a>
           ))}
         </nav>
         <div class="proto-note">UI: Proto-UI / shadcn</div>

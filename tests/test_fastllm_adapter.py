@@ -8,8 +8,8 @@ from unittest import mock
 import fastllm_adapter
 
 
-TEMPLATE = Path(__file__).parent / "chat_templates" / "qwen3.6_gguf_original.jinja"
-QWEN38_TEMPLATE = Path(__file__).parents[1] / "chat_templates" / "qwen3.8_merged.jinja"
+TEMPLATE = Path(__file__).parents[1] / "chat_templates" / "qwen3.6_gguf_original.jinja"
+QWEN38_TEMPLATE = Path(__file__).parents[1] / "chat_templates" / "qwen3.8_unsloth_ud.jinja"
 
 
 class FastLLMAdapterTests(unittest.TestCase):
@@ -95,6 +95,44 @@ class FastLLMAdapterTests(unittest.TestCase):
         self.assertEqual(
             actual["stop"], ["CUSTOM", "<|endoftext|>", "<|im_end|>"]
         )
+
+    def test_prepare_body_uses_qwen38_thinking_sampling_defaults(self):
+        actual = fastllm_adapter.prepare_fastllm_body({
+            "model": "qwen3.8-fastllm",
+            "messages": [{"role": "user", "content": "Think carefully."}],
+            "chat_template_kwargs": {"enable_thinking": True},
+        }, TEMPLATE)
+
+        self.assertEqual(actual["temperature"], 1.0)
+        self.assertEqual(actual["top_p"], 0.95)
+        self.assertEqual(actual["top_k"], 20)
+        self.assertEqual(actual["presence_penalty"], 0.0)
+
+    def test_prepare_body_uses_qwen38_non_thinking_sampling_defaults(self):
+        actual = fastllm_adapter.prepare_fastllm_body({
+            "model": "qwen3.8-fastllm",
+            "messages": [{"role": "user", "content": "Answer directly."}],
+            "chat_template_kwargs": {"enable_thinking": False},
+        }, TEMPLATE)
+
+        self.assertEqual(actual["temperature"], 0.7)
+        self.assertEqual(actual["top_p"], 0.8)
+        self.assertEqual(actual["top_k"], 20)
+        self.assertEqual(actual["presence_penalty"], 1.5)
+
+    def test_prepare_body_preserves_explicit_sampling_parameters(self):
+        actual = fastllm_adapter.prepare_fastllm_body({
+            "model": "qwen3.8-fastllm",
+            "messages": [{"role": "user", "content": "Use my settings."}],
+            "temperature": 0.25,
+            "top_p": 0.6,
+            "top_k": 7,
+            "chat_template_kwargs": {"enable_thinking": True},
+        }, TEMPLATE)
+
+        self.assertEqual(actual["temperature"], 0.25)
+        self.assertEqual(actual["top_p"], 0.6)
+        self.assertEqual(actual["top_k"], 7)
     def test_qwen38_reasoning_effort_reaches_the_chat_template(self):
         base = {
             "model": "qwen3.8-fastllm",
