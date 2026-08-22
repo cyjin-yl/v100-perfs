@@ -1,0 +1,271 @@
+{
+  "schema_version": 1,
+  "snapshot_id": "qwen38-production-2026-08-22T15:53:14Z",
+  "captured_at": "2026-08-22T15:53:14Z",
+  "status": "current",
+  "target": "qwen38-production",
+  "capture_policy": {
+    "read_only": true,
+    "generation_request_sent": false,
+    "state_mutated": false,
+    "process_restarted": false,
+    "allowed_sources": [
+      "proxy /health",
+      "backend /health",
+      "backend /props",
+      "backend /admin/api/state",
+      "allowlisted process environment",
+      "local SHA-256 checksums"
+    ]
+  },
+  "sources": {
+    "proxy_health": {
+      "kind": "http_get",
+      "endpoint": "http://127.0.0.1:8000/health",
+      "capture_session": "qwen38-production-2026-08-22T15:53:14Z",
+      "http_status": 200
+    },
+    "backend_health": {
+      "kind": "http_get",
+      "endpoint": "http://127.0.0.1:8002/health",
+      "capture_session": "qwen38-production-2026-08-22T15:53:14Z",
+      "http_status": 200
+    },
+    "backend_props": {
+      "kind": "http_get",
+      "endpoint": "http://127.0.0.1:8002/props",
+      "capture_session": "qwen38-production-2026-08-22T15:53:14Z",
+      "http_status": 200
+    },
+    "admin_state": {
+      "kind": "authenticated_http_get",
+      "endpoint": "http://127.0.0.1:8002/admin/api/state",
+      "capture_session": "qwen38-production-2026-08-22T15:53:14Z",
+      "http_status": 200,
+      "credential_recorded": false
+    },
+    "proxy_environment": {
+      "kind": "allowlisted_process_environment",
+      "process_id_at_capture": 1043295,
+      "capture_session": "qwen38-production-2026-08-22T15:53:14Z",
+      "allowlist": [
+        "FASTLLM_AUTO_ROUTE_ALIASES",
+        "FASTLLM_BACKEND_COMMAND",
+        "FASTLLM_BACKEND_URL",
+        "FASTLLM_CHAT_TEMPLATE",
+        "FASTLLM_DEFAULT_REPEAT_PENALTY",
+        "FASTLLM_MODEL_SLUG",
+        "FASTLLM_OWNED",
+        "FASTLLM_PUBLIC_ALIASES",
+        "FASTLLM_QWEN35_ENABLE_MTP",
+        "FASTLLM_QWEN35_MTP_EXACT_ACCEPT",
+        "FASTLLM_QWEN35_TURBO3_KV",
+        "FASTLLM_QWEN35_TURBO4_KV",
+        "FASTLLM_SKIP_WARMUP",
+        "FASTLLM_TOOLCALL_GRAMMAR"
+      ],
+      "secret_values_recorded": false
+    },
+    "local_files": {
+      "kind": "sha256sum_and_stat",
+      "capture_session": "qwen38-production-2026-08-22T15:53:14Z",
+      "algorithm": "sha256"
+    }
+  },
+  "deployment": {
+    "model_slug": {
+      "value": "qwen3.8-fastllm",
+      "provenance": [
+        "backend_health#/model",
+        "backend_props#/model",
+        "admin_state#/model",
+        "proxy_environment#FASTLLM_MODEL_SLUG",
+        "proxy_environment#FASTLLM_BACKEND_COMMAND/--model_name"
+      ]
+    },
+    "public_aliases": {
+      "value": [
+        "qwen3.8-27b",
+        "qwen3.8-27b-q4kxl",
+        "qwen3.8-27b-heretic"
+      ],
+      "provenance": [
+        "proxy_environment#FASTLLM_PUBLIC_ALIASES"
+      ]
+    },
+    "automatic_route_aliases": {
+      "value": [
+        "auto"
+      ],
+      "provenance": [
+        "proxy_environment#FASTLLM_AUTO_ROUTE_ALIASES"
+      ]
+    },
+    "active_profile": {
+      "value": "q38-PROD-unsloth-ud-q6km-mtp3.env",
+      "provenance": [
+        "admin_state#/profiles/1/name",
+        "admin_state#/profiles/1/active"
+      ]
+    },
+    "weight": {
+      "path": "/run/media/ezra/13D010B6FDBC1A06/1CatVLLM/models/unsloth/Qwen3.8-27B-UD-Q6_K_M.gguf",
+      "byte_length": 23088409504,
+      "sha256": "493301830a596b8ad56dc1329f80bbcb578c8e910da395feafdc9cd8263430bb",
+      "provenance": {
+        "path": "proxy_environment#FASTLLM_BACKEND_COMMAND/--path",
+        "byte_length": "local_files#stat",
+        "sha256": "local_files#sha256sum"
+      }
+    },
+    "multimodal_projector": {
+      "path": "/run/media/ezra/13D010B6FDBC1A06/1CatVLLM/models/unsloth/mmproj-F16.gguf",
+      "byte_length": 927607488,
+      "sha256": "cbb841a9ee0636b2ec172f5bb8df2ea8dfeb01e90fe7c6126581d662a0b4e43e",
+      "loaded": true,
+      "provenance": {
+        "path": "proxy_environment#FASTLLM_BACKEND_COMMAND/--mmproj",
+        "byte_length": "local_files#stat",
+        "sha256": "local_files#sha256sum",
+        "loaded": "backend_props#/multimodal_projector_loaded"
+      }
+    },
+    "chat_template": {
+      "path": "/run/media/ezra/13D010B6FDBC1A06/1CatVLLM/models/unsloth/Qwen3.8-27B-UD-Q6_K_M.chat_template.jinja",
+      "byte_length": 9993,
+      "sha256": "12827f24b742ea4e80cdc12dbcf9622227056b9f797252a3149263d4f9aaadce",
+      "startup_valid": true,
+      "startup_error": "",
+      "provenance": {
+        "path": "proxy_environment#FASTLLM_CHAT_TEMPLATE",
+        "byte_length": "local_files#stat",
+        "sha256": "local_files#sha256sum",
+        "startup_valid": "backend_props#/chat_template_startup_valid",
+        "startup_error": "backend_props#/chat_template_startup_error"
+      }
+    },
+    "engine": {
+      "name": "fastllm",
+      "commit": {
+        "value": null,
+        "state": "unknown",
+        "reason": "not exposed by the allowlisted runtime sources"
+      },
+      "checkout_clean": {
+        "value": null,
+        "state": "unknown",
+        "reason": "not exposed by the allowlisted runtime sources"
+      },
+      "binary_path": "/run/media/ezra/13D010B6FDBC1A06/1CatVLLM/fastllm/build-rw/apiserver",
+      "binary_byte_length": 72098344,
+      "binary_sha256": "30c0da47021c8bce860a6841e3e3b7768a3cfd751bc2262b2c620646763d04d9",
+      "provenance": {
+        "name": "backend_props#/backend",
+        "binary_path": "proxy_environment#FASTLLM_BACKEND_COMMAND/executable",
+        "binary_byte_length": "local_files#stat",
+        "binary_sha256": "local_files#sha256sum"
+      }
+    },
+    "activation_dtype": {
+      "value": "float16",
+      "provenance": [
+        "backend_props#/activation_dtype",
+        "admin_state#/atype",
+        "proxy_environment#FASTLLM_BACKEND_COMMAND/--atype"
+      ]
+    },
+    "kv_cache_dtype": {
+      "value": "turbo3",
+      "provenance": [
+        "backend_props#/kv_cache_dtype",
+        "admin_state#/kv_dtype",
+        "proxy_environment#FASTLLM_BACKEND_COMMAND/--kv_cache_dtype",
+        "proxy_environment#FASTLLM_QWEN35_TURBO3_KV",
+        "proxy_environment#FASTLLM_QWEN35_TURBO4_KV"
+      ]
+    },
+    "mtp": {
+      "drafts_per_step": 3,
+      "exact_acceptance": true,
+      "provenance": {
+        "drafts_per_step": "proxy_environment#FASTLLM_QWEN35_ENABLE_MTP",
+        "exact_acceptance": "proxy_environment#FASTLLM_QWEN35_MTP_EXACT_ACCEPT"
+      }
+    },
+    "limits": {
+      "token_pool": 262144,
+      "max_batch": 4,
+      "default_max_tokens": 65536,
+      "provenance": {
+        "token_pool": [
+          "backend_props#/token_pool",
+          "admin_state#/token_pool",
+          "proxy_environment#FASTLLM_BACKEND_COMMAND/--tokens"
+        ],
+        "max_batch": [
+          "backend_props#/max_batch",
+          "admin_state#/max_batch",
+          "proxy_environment#FASTLLM_BACKEND_COMMAND/--batch"
+        ],
+        "default_max_tokens": [
+          "backend_props#/default_max_tokens",
+          "proxy_environment#FASTLLM_BACKEND_COMMAND/--default_max_tokens"
+        ]
+      }
+    },
+    "sampling_defaults": {
+      "repeat_penalty": {
+        "value": 1.0,
+        "provenance": [
+          "proxy_environment#FASTLLM_DEFAULT_REPEAT_PENALTY"
+        ]
+      },
+      "temperature": {
+        "value": null,
+        "state": "unknown",
+        "reason": "not exposed by the allowlisted runtime sources"
+      },
+      "top_p": {
+        "value": null,
+        "state": "unknown",
+        "reason": "not exposed by the allowlisted runtime sources"
+      },
+      "top_k": {
+        "value": null,
+        "state": "unknown",
+        "reason": "not exposed by the allowlisted runtime sources"
+      },
+      "presence_penalty": {
+        "value": null,
+        "state": "unknown",
+        "reason": "not exposed by the allowlisted runtime sources"
+      }
+    },
+    "service_state": {
+      "proxy_ready": true,
+      "backend_ready": true,
+      "lifecycle_state": "READY",
+      "lifecycle_generation": 1,
+      "suspended": false,
+      "accepting": true,
+      "active_requests": 0,
+      "queued_requests": 0,
+      "provenance": {
+        "proxy_ready": "proxy_health#/ready",
+        "backend_ready": "backend_health#/ready",
+        "lifecycle_state": "proxy_health#/lifecycle/state",
+        "lifecycle_generation": "proxy_health#/lifecycle/generation",
+        "suspended": "backend_health#/suspended",
+        "accepting": "backend_health#/accepting",
+        "active_requests": "admin_state#/active_requests",
+        "queued_requests": "admin_state#/queued_requests"
+      }
+    }
+  },
+  "interpretation_limits": [
+    "This snapshot records one observation at captured_at; it is not a live-state guarantee.",
+    "Unknown sampling fields were not inferred from README files, handoffs, profiles, or historical reports.",
+    "The allowlisted runtime sources did not expose an engine commit; the binary SHA-256 is the direct executable identity.",
+    "The documentation capture did not deploy the tracked reasoning-control compatibility change."
+  ]
+}

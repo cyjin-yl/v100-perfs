@@ -1,25 +1,107 @@
 ---
-import BaseLayout from "../layouts/BaseLayout.astro";
+import snapshot from "../../../docs/_data/deployment-snapshots/2026-08-22T15-53-14Z-qwen38.json";
 import ProtoDashboard from "../components/ProtoDashboard";
 import StatusCard from "../components/StatusCard";
+import manifest from "../data/content-manifest.json";
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+function deployedRoute(route: string) {
+  return `${base}${route === "/" ? "/" : route}`;
+}
+
+const canonicalItems = manifest
+  .filter((item) => item.status === "current" && item.authority === "canonical")
+  .sort((left, right) =>
+    (left.nav_order ?? Number.MAX_SAFE_INTEGER) - (right.nav_order ?? Number.MAX_SAFE_INTEGER) ||
+    left.source_path.localeCompare(right.source_path)
+  );
+const overview = canonicalItems.find((item) => item.source_path === "docs/index.md");
+const gettingStarted = canonicalItems.find((item) => item.nav_section === "getting-started");
+const production = canonicalItems.find(
+  (item) => item.source_path === "docs/operations/current-state/production.md",
+);
+if (!overview || !gettingStarted || !production) {
+  throw new Error("Manifest is missing a canonical homepage route");
+}
+const research = manifest.find((item) => item.source_path.startsWith("docs/research/"));
+const archive = manifest.find((item) => item.source_path.startsWith("docs/archive/design-decisions/specs/"));
+const dashboardItems = canonicalItems.map((item) => ({
+  title: item.title,
+  summary: item.summary,
+  route: deployedRoute(item.canonical_route),
+  section: item.nav_section ?? "overview",
+}));
 ---
-<BaseLayout title="V100 32G · FastLLM 推理记录">
+<BaseLayout title="V100 FastLLM documentation">
   <header class="home-hero">
-    <p class="home-kicker">V100 32G / FastLLM field notes</p>
-    <h1>一座仓库，完整保留推理实践。</h1>
-    <p class="home-deck">
-      从 Qwen3.5、Qwen3.6 到 Qwen3.8：性能数据、生产架构、故障定位与运维决策，
-      按原始文件结构组织成可搜索、可逐篇阅读的知识库。
-    </p>
-    <div class="home-links">
-      <a class="home-link-primary" href="/v100-perfs/repo">浏览整个仓库</a>
-      <a class="home-link-secondary" href="/v100-perfs/docs/getting-started">快速开始</a>
+    <div>
+      <p class="home-kicker">Manifest-backed field manual</p>
+      <h1>Source before story.</h1>
+    </div>
+    <div class="home-intro">
+      <p class="home-deck">
+        Operate the V100 FastLLM stack from one canonical narrative. Current state comes from
+        an immutable deployment capture; measurements, research, and history keep their own authority.
+      </p>
+      <div class="home-links">
+        <a class="home-link-primary" href={deployedRoute(gettingStarted.canonical_route)}>Start with the system</a>
+        <a class="home-link-secondary" href={deployedRoute(production.canonical_route)}>Read current production</a>
+      </div>
     </div>
   </header>
 
-  <ProtoDashboard client:load />
+  <StatusCard
+    capturedAt={snapshot.captured_at}
+    productionHref={deployedRoute(production.canonical_route)}
+    fields={[
+      { label: "Model", value: snapshot.deployment.model_slug.value, source: "health · props · admin · allowlisted env" },
+      { label: "KV / MTP", value: `${snapshot.deployment.kv_cache_dtype.value} / ${snapshot.deployment.mtp.drafts_per_step} exact`, source: "props · admin · env" },
+      { label: "Engine binary", value: snapshot.deployment.engine.binary_sha256.slice(0, 12), source: "local executable SHA-256" },
+    ]}
+  />
 
-  <div class="status-section">
-    <StatusCard client:visible />
-  </div>
+  <ProtoDashboard items={dashboardItems} />
+
+  <section class="authority-grid" aria-labelledby="authority-title">
+    <div class="section-heading">
+      <p class="eyebrow">Authority model</p>
+      <h2 id="authority-title">Know what kind of page you are reading.</h2>
+    </div>
+    <div class="authority-cards">
+      <article>
+        <span>01 / Current</span>
+        <h3>Canonical operating contract</h3>
+        <p>Tracked guidance and one timestamped production page. Current does not mean automatically deployed.</p>
+      </article>
+      <article>
+        <span>02 / Evidence</span>
+        <h3>Captured observations</h3>
+        <p>Logs, benchmark output, counters, and checksums retain their workload and collection boundary.</p>
+      </article>
+      <article>
+        <span>03 / Historical</span>
+        <h3>Preserved context</h3>
+        <p>Chronicles and handoffs explain prior decisions without overriding the current snapshot.</p>
+      </article>
+    </div>
+  </section>
+
+  <section id="research" class="landing-route">
+    <p class="eyebrow">Research</p>
+    <div>
+      <h2>Explore a proposal without promoting it to production fact.</h2>
+      <p>Research pages remain supporting material until a bounded measurement and explicit operating decision support them.</p>
+      {research && <a class="text-link" href={deployedRoute(research.canonical_route)}>Open research material <span aria-hidden="true">→</span></a>}
+    </div>
+  </section>
+
+  <section id="archive" class="landing-route">
+    <p class="eyebrow">Archive</p>
+    <div>
+      <h2>Keep the history; remove its authority over today.</h2>
+      <p>Preserved bodies remain byte-identical. The site adds manifest-derived historical notices and routes.</p>
+      {archive && <a class="text-link" href={deployedRoute(archive.canonical_route)}>Read the archived design contract <span aria-hidden="true">→</span></a>}
+    </div>
+  </section>
 </BaseLayout>

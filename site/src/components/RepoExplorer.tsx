@@ -1,17 +1,39 @@
 import { useMemo, useState } from "react";
-import * as React from "react";
-import { createReactAdapter } from "@proto.ui/adapter-react";
-import { shadcnButton } from "@proto.ui/prototypes-shadcn/button";
 
-const ProtoButton = createReactAdapter({ React })(shadcnButton);
-type Item = { path: string; title: string; category: string; ext: string; bytes: number };
+type Item = {
+  source_path: string;
+  title: string;
+  summary: string;
+  category: string;
+  extension: string;
+  byte_length: number | null;
+  canonical_route: string;
+  repository_route: string;
+  route_kind: "docs" | "evidence" | "archive" | "repository";
+  status: string;
+  authority: string;
+};
 
-/** Full repository reader: every indexed text/document file is reachable here. */
+function deployedRoute(route: string) {
+  const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+  const encoded = route
+    .split("/")
+    .map((part, index) => index === 0 ? "" : encodeURIComponent(part))
+    .join("/");
+  return `${base}${encoded}`;
+}
+
+/** Searchable reading surface backed by final Git-index manifest rows. */
 export default function RepoExplorer({ items }: { items: Item[] }) {
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("all");
+  const [authority, setAuthority] = useState("all");
   const categories = useMemo(
     () => Array.from(new Set(items.map((item) => item.category))).sort((a, b) => a.localeCompare(b)),
+    [items],
+  );
+  const authorities = useMemo(
+    () => Array.from(new Set(items.map((item) => item.authority))).sort((a, b) => a.localeCompare(b)),
     [items],
   );
   const filtered = useMemo(() => {
@@ -19,68 +41,90 @@ export default function RepoExplorer({ items }: { items: Item[] }) {
     const compactQuery = normalizedQuery.replace(/[\s._-]+/g, "");
     return items.filter((item) => {
       const matchesCategory = category === "all" || item.category === category;
-      const searchable = `${item.path} ${item.title} ${item.category} ${item.ext}`.toLocaleLowerCase();
+      const matchesAuthority = authority === "all" || item.authority === authority;
+      const searchable = [
+        item.source_path,
+        item.title,
+        item.summary,
+        item.category,
+        item.extension,
+        item.status,
+        item.authority,
+      ].join(" ").toLocaleLowerCase();
       const matchesQuery = !normalizedQuery ||
         searchable.includes(normalizedQuery) ||
         (compactQuery.length > 0 && searchable.replace(/[\s._-]+/g, "").includes(compactQuery));
-      return matchesCategory && matchesQuery;
+      return matchesCategory && matchesAuthority && matchesQuery;
     });
-  }, [items, query, category]);
-  const base = import.meta.env.BASE_URL.replace(/\/?$/, "/");
+  }, [items, query, category, authority]);
+  const hasFilters = query || category !== "all" || authority !== "all";
 
-  return <div>
-    <div style={{display:"flex", gap:8, flexWrap:"wrap", alignItems:"center", margin:"16px 0"}}>
-      <input
-        aria-label="搜索仓库文件"
-        value={query}
-        onChange={(event) => setQuery(event.target.value)}
-        placeholder="按名称、路径、类别或扩展名搜索…"
-        style={{flex:"1 1 280px", background:"hsl(var(--card))", color:"hsl(var(--foreground))", border:"1px solid hsl(var(--border))", borderRadius:"var(--radius)", padding:"8px 10px"}}
-      />
-      <select
-        aria-label="按仓库目录筛选"
-        value={category}
-        onChange={(event) => setCategory(event.target.value)}
-        style={{background:"hsl(var(--card))", color:"hsl(var(--foreground))", border:"1px solid hsl(var(--border))", borderRadius:"var(--radius)", padding:"8px 10px"}}
-      >
-        <option value="all">全部目录类别</option>
-        {categories.map((itemCategory) => (
-          <option key={itemCategory} value={itemCategory}>{itemCategory}</option>
-        ))}
-      </select>
-      {(query || category !== "all") && (
-        <ProtoButton
-          size="sm"
-          variant="outline"
-          onClick={() => {
-            setQuery("");
-            setCategory("all");
-          }}
-        >
-          清除筛选
-        </ProtoButton>
-      )}
-    </div>
-    <div style={{color:"hsl(var(--muted-foreground))", fontSize:12, marginBottom:8}}>
-      显示 {filtered.length} / {items.length} 个可读文件 · 类别直接来自仓库目录
-    </div>
-    <div style={{display:"grid", gap:6}}>
-      {filtered.map((item) => (
-        <a
-          key={item.path}
-          href={`${base}read/${item.path.split("/").map(encodeURIComponent).join("/")}`}
-          style={{display:"block", border:"1px solid hsl(var(--border))", borderRadius:"var(--radius)", padding:"9px 11px", background:"hsl(var(--card))"}}
-        >
-          <strong>{item.title}</strong><br />
-          <code style={{fontSize:12, color:"hsl(var(--muted-foreground))"}}>{item.path}</code>
-          <span style={{display:"block", marginTop:3, fontSize:11, color:"hsl(var(--muted-foreground))"}}>
-            {item.category} · {item.ext.slice(1).toUpperCase()} · {(item.bytes / 1024).toFixed(1)} KiB
-          </span>
-        </a>
-      ))}
-      {filtered.length === 0 && (
-        <p style={{color:"hsl(var(--muted-foreground))"}}>没有匹配的仓库文件。</p>
-      )}
-    </div>
-  </div>;
+  return (
+    <section className="repo-explorer" aria-label="Repository manifest search">
+      <div className="repo-filters">
+        <label>
+          <span>Search</span>
+          <input
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            placeholder="Title, path, summary, status…"
+          />
+        </label>
+        <label>
+          <span>Directory</span>
+          <select value={category} onChange={(event) => setCategory(event.target.value)}>
+            <option value="all">All directories</option>
+            {categories.map((itemCategory) => (
+              <option key={itemCategory} value={itemCategory}>{itemCategory}</option>
+            ))}
+          </select>
+        </label>
+        <label>
+          <span>Authority</span>
+          <select value={authority} onChange={(event) => setAuthority(event.target.value)}>
+            <option value="all">All authorities</option>
+            {authorities.map((itemAuthority) => (
+              <option key={itemAuthority} value={itemAuthority}>{itemAuthority}</option>
+            ))}
+          </select>
+        </label>
+        {hasFilters && (
+          <button
+            type="button"
+            onClick={() => {
+              setQuery("");
+              setCategory("all");
+              setAuthority("all");
+            }}
+          >
+            Clear
+          </button>
+        )}
+      </div>
+      <p className="repo-count">
+        Showing {filtered.length} of {items.length} final Git-index paths
+      </p>
+      <div className="repo-results">
+        {filtered.map((item) => {
+          const readingRoute = item.route_kind === "repository"
+            ? item.repository_route
+            : item.canonical_route;
+          return (
+            <a key={item.source_path} href={deployedRoute(readingRoute)}>
+              <span className="repo-result-meta">{item.authority} / {item.status}</span>
+              <strong>{item.title}</strong>
+              <span>{item.summary}</span>
+              <code>{item.source_path}</code>
+              <small>
+                {item.route_kind} · {item.extension.slice(1).toUpperCase() || "NO EXT"} · {
+                  item.byte_length === null ? "manifest self-reference" : `${item.byte_length} bytes`
+                }
+              </small>
+            </a>
+          );
+        })}
+        {filtered.length === 0 && <p className="repo-empty">No manifest rows match these filters.</p>}
+      </div>
+    </section>
+  );
 }

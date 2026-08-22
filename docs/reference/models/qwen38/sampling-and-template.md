@@ -1,50 +1,54 @@
-# Qwen3.8 27B 采样与模板配置
+# Qwen3.8 sampling and template
 
-## 推荐采样参数
+This reference separates the model recommendation, the tracked adapter contract, and the observed deployment. Do not use a historical profile or README to collapse those three authorities into one.
 
-Qwen3.8 27B 必须按推理模式选择采样档，不能沿用旧的统一 `temperature=0.6` 默认值。
+## Model-recommended sampling
 
-| 模式 | `temperature` | `top_p` | `top_k` | `min_p` | `presence_penalty` | `repetition_penalty` |
+Qwen3.8 27B uses different recommended sampling for thinking and non-thinking modes:
+
+| Mode | `temperature` | `top_p` | `top_k` | `min_p` | `presence_penalty` | `repetition_penalty` |
 |---|---:|---:|---:|---:|---:|---:|
-| Thinking（默认） | 1.0 | 0.95 | 20 | 0.0 | 0.0 | 1.0 |
+| Thinking, default | 1.0 | 0.95 | 20 | 0.0 | 0.0 | 1.0 |
 | Instruct / non-thinking | 0.7 | 0.80 | 20 | 0.0 | 1.5 | 1.0 |
 
-来源：[Qwen/Qwen3.8-27B README](https://huggingface.co/Qwen/Qwen3.8-27B)。`min_p=0.0` 表示关闭该过滤器，因此当前官方档不需要修改采样热路径；不得把“接受一个零值字段”宣传成支持非零 min-p。
+Source: [Qwen/Qwen3.8-27B README](https://huggingface.co/Qwen/Qwen3.8-27B).
 
-仓库中的 Qwen3.6 是衍生权重，没有独立的 Qwen 官方采样档；其参数由对应 profile 或客户端显式给出，不伪称官方推荐。
+`min_p=0.0` disables min-p filtering. Accepting this zero-valued field is not evidence that a non-zero min-p implementation is supported.
 
-`fastllm_adapter.prepare_fastllm_body()` 根据 `chat_template_kwargs.enable_thinking` 选择默认档。客户端显式提供的 `temperature`、`top_p`、`top_k` 或 `presence_penalty` 始终优先；`temperature=0` 仍表示确定性贪婪解码。
+Qwen3.6 weights in this repository are derivatives without a separate official Qwen sampling recommendation. Their profiles or explicit client values are evidence for those runs, not a Qwen3.8 default.
 
-低温不是保守的通用修复。对 Qwen3.8 thinking，过低温度会让 posterior 过早集中在局部模式，增加长段推理循环的风险。应先恢复模型推荐采样，再判断权重量化、KV 量化或 penalty 的影响。
+## Tracked adapter behavior
 
-## Penalty 字段语义
+`fastllm_adapter.prepare_fastllm_body()` chooses the thinking or non-thinking default set from canonical `chat_template_kwargs.enable_thinking`. Explicit client `temperature`, `top_p`, `top_k`, and `presence_penalty` values take precedence. `temperature=0` remains deterministic greedy decoding.
 
-FastLLM 分别实现三种 penalty，不再把 OpenAI `frequency_penalty` 偷换成乘法 `repeat_penalty`：
+The gateway's public effort controls select thinking state and a template effort tier. They do not select a second sampling table for every effort tier.
 
-- `presence_penalty`：token 在生成历史中出现过时，logit 固定减去该值。
-- `frequency_penalty`：logit 减去“该值 × 生成历史出现次数”。
-- `repeat_penalty`：FastLLM 对官方 `repetition_penalty` 的内部字段名，保留正负 logit 乘除语义；Qwen3.8 生产 profile 使用官方值 1.0。
+Low temperature is not a universal safety setting for thinking. Over-concentrating the posterior can increase repetitive reasoning loops. Restore the model recommendation before attributing a problem to weight quantization, KV quantization, or penalties.
 
-执行顺序为乘法 repeat penalty、加法 presence/frequency penalty、temperature/softmax、top-k/top-p。普通 CPU 采样、CUDA handoff 和 MTP exact/typical acceptance 使用同一份惩罚后分布；否则 draft 与 verify posterior 不一致，会破坏 exact acceptance。
+## Penalty semantics
 
-## Chat template 真源
+FastLLM keeps three penalty concepts distinct:
 
-生产模板必须来自对应 Unsloth GGUF 的内嵌 `tokenizer.chat_template`，不得以手写模板或其他模型模板替代。
+- `presence_penalty` subtracts a fixed value from a token logit once the token has appeared in generated history.
+- `frequency_penalty` subtracts the value multiplied by the token's generated-history count.
+- `repeat_penalty` is FastLLM's internal name for multiplicative `repetition_penalty`, preserving the positive/negative logit multiply/divide rule.
 
-UD-Q5_K_M 内嵌模板已导出为：
+The order is multiplicative repeat penalty, additive presence/frequency penalty, temperature and softmax, then top-k/top-p. Ordinary sampling, CUDA handoff, and MTP exact/typical acceptance must use the same penalized distribution; otherwise draft and verify posteriors diverge.
 
-```text
-models/unsloth/Qwen3.8-27B-UD-Q5_K_M.chat_template.jinja
-```
+## Chat-template identity
 
-模板长度为 9993 字符，SHA256 为：
+The production template must be exported from the matching GGUF's embedded `tokenizer.chat_template`. Do not substitute a hand-written template or a template from another model.
+
+The tracked Qwen3.8 Q5 and Q6 exports are each 9,993 bytes and have SHA-256:
 
 ```text
 12827f24b742ea4e80cdc12dbcf9622227056b9f797252a3149263d4f9aaadce
 ```
 
-UD-Q5_K_M 与 UD-Q6_K_M 的内嵌模板均已分别导出并校验：二者都是 9993 字符，SHA256 相同，且与此前保存的 Qwen3.8 official reference 逐字一致。生产 profile 指向各自 GGUF 导出的文件，以明确模板来源。
+Matching hashes prove byte identity of those template files; they do not prove which file a running process selected. The immutable [current deployment snapshot](../../../operations/current-state/production.md) records the selected template path, checksum, startup validation, weight identity, and capture time.
 
-## 当前生产组合
+## Production observation boundary
 
-当前生产实例为 UD-Q6_K_M、turbo3 KV、MTP3、exact acceptance，并使用上表完整 Qwen3.8 官方采样档。Q5 保留为对照 profile；两者除权重量化档位和对应 GGUF 模板导出路径外保持相同。
+Deployment values are not maintained on this reference page. Consult the timestamped current-state page; any field that its allowlisted runtime sources did not expose remains unknown rather than being inferred from these recommendations.
+
+For client-facing effort and budget semantics, use [Reasoning controls API](../../api/reasoning-controls.md). A finite reasoning budget is a template-tier hint, not a hard sampling or token limit.
