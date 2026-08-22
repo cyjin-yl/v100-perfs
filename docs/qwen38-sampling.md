@@ -1,13 +1,24 @@
-# Qwen3.8 27B 采样与模板配置
+# Qwen3.5 / Qwen3.8 采样与模板配置
 
 ## 推荐采样参数
 
-Qwen3.8 必须按推理模式选择采样档，不能沿用旧 Qwen3.5/3.6 的统一 `temperature=0.6` 默认值。
+Qwen3.5 与 Qwen3.8 必须按模型代际和推理模式选择采样档，不能使用统一默认值。
+
+Qwen3.8 27B 官方档：
 
 | 模式 | `temperature` | `top_p` | `top_k` | `presence_penalty` |
 |---|---:|---:|---:|---:|
 | Thinking（默认） | 1.0 | 0.95 | 20 | 0.0 |
 | Instruct / non-thinking | 0.7 | 0.80 | 20 | 1.5 |
+
+Qwen3.5 官方通用文本档：
+
+| 模式 | `temperature` | `top_p` | `top_k` | `presence_penalty` | `repeat_penalty` |
+|---|---:|---:|---:|---:|---:|
+| Thinking | 0.6 | 0.95 | 20 | 0.0 | 1.0 |
+| Instruct / non-thinking | 0.7 | 0.80 | 20 | 1.5 | 1.0 |
+
+仓库中的 Qwen3.6 是衍生权重，没有独立的 Qwen 官方采样档；其参数由对应 profile 或客户端显式给出，不伪称官方推荐。
 
 `fastllm_adapter.prepare_fastllm_body()` 根据 `chat_template_kwargs.enable_thinking` 选择默认档。客户端显式提供的 `temperature`、`top_p`、`top_k` 或 `presence_penalty` 始终优先；`temperature=0` 仍表示确定性贪婪解码。
 
@@ -39,7 +50,7 @@ models/unsloth/Qwen3.8-27B-UD-Q5_K_M.chat_template.jinja
 12827f24b742ea4e80cdc12dbcf9622227056b9f797252a3149263d4f9aaadce
 ```
 
-它与此前保存的 Qwen3.8 official reference 逐字相同，但生产 profile 仍指向从当前 GGUF 导出的文件，以明确模板来源。UD-Q6_K_M 下载完成后必须从 Q6 文件自身再次提取、校验并使用对应导出路径。
+UD-Q5_K_M 与 UD-Q6_K_M 的内嵌模板均已分别导出并校验：二者都是 9993 字符，SHA256 相同，且与此前保存的 Qwen3.8 official reference 逐字一致。生产 profile 指向各自 GGUF 导出的文件，以明确模板来源。
 
 ## 当前生产组合
 

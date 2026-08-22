@@ -1575,6 +1575,13 @@
     "bytes": 13033
   },
   {
+    "path": "chat_templates/qwen3.8_unsloth_ud.jinja",
+    "title": "qwen3.8_unsloth_ud.jinja",
+    "category": "chat_templates",
+    "ext": ".jinja",
+    "bytes": 9993
+  },
+  {
     "path": "deployed/thinking_proxy.py",
     "title": "所有 print 日志统一带时间戳：[YYYY-MM-DD HH:MM:SS] ...",
     "category": "deployed",
@@ -1667,10 +1674,10 @@
   },
   {
     "path": "docs/qwen38-sampling.md",
-    "title": "Qwen3.8 27B 采样与模板配置",
+    "title": "Qwen3.5 / Qwen3.8 采样与模板配置",
     "category": "docs",
     "ext": ".md",
-    "bytes": 2580
+    "bytes": 3015
   },
   {
     "path": "docs/toolcall/constraint-architecture.md",
@@ -1691,7 +1698,7 @@
     "title": "乘法 repeat penalty 与 OpenAI additive presence/frequency penalty 是三套",
     "category": "root",
     "ext": ".py",
-    "bytes": 15491
+    "bytes": 15806
   },
   {
     "path": "frp/frpc.toml",
@@ -2769,7 +2776,7 @@
     "title": "test_fastllm_adapter.py",
     "category": "tests",
     "ext": ".py",
-    "bytes": 16657
+    "bytes": 17837
   },
   {
     "path": "tests/test_fastllm_cache_benchmark.py",
