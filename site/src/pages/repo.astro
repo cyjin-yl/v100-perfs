@@ -1,13 +1,58 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import RepoExplorer from "../components/RepoExplorer";
-import items from "../data/repo-index.json";
+import items from "../data/content-manifest.json";
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+const counts = items.reduce(
+  (result, item) => {
+    result[item.render_kind] += 1;
+    return result;
+  },
+  { markdown: 0, text: 0, metadata: 0 },
+);
+function hrefFor(route: string) {
+  const encoded = route
+    .split("/")
+    .map((part, index) => index === 0 ? "" : encodeURIComponent(part))
+    .join("/");
+  return `${base}${encoded}`;
+}
 ---
-<BaseLayout title="整个仓库 · V100 FastLLM">
-  <h1>整个仓库阅读器</h1>
-  <p style="color:hsl(var(--muted-foreground));margin:8px 0 12px">
-    当前构建索引 {items.length} 个可读文件。类别直接映射仓库目录，覆盖历史 Qwen3.5/Qwen3.6、
-    Qwen3.8，以及 docs、results、benchmarks、handoff、tests、scripts、源码与 JSON 数据。
+<BaseLayout title="Repository · V100 FastLLM">
+  <h1>Tracked repository content</h1>
+  <p class="lede">
+    This index is generated exclusively from the final Git index. It covers all {items.length}
+    tracked paths once: {counts.markdown} Markdown, {counts.text} escaped text, and
+    {counts.metadata} metadata-only items.
   </p>
-  <RepoExplorer items={items} client:load />
+  <ul class="repository-list">
+    {items.map((item) => (
+      <li>
+        <a href={hrefFor(item.repository_route)}>{item.title}</a>
+        <code>{item.source_path}</code>
+        <span>
+          {item.route_kind} · {item.render_kind} · {item.status} · {
+            item.byte_length === null ? "self-reference metadata omitted" : `${item.byte_length} bytes`
+          }
+        </span>
+      </li>
+    ))}
+  </ul>
+  <style>
+    .lede { color: hsl(var(--muted-foreground)); }
+    .repository-list { display: grid; gap: 7px; padding: 0; list-style: none; }
+    .repository-list li {
+      display: grid;
+      gap: 3px;
+      padding: 9px 11px;
+      border: 1px solid hsl(var(--border));
+      border-radius: var(--radius);
+      background: hsl(var(--card));
+    }
+    .repository-list code, .repository-list span {
+      overflow-wrap: anywhere;
+      color: hsl(var(--muted-foreground));
+      font-size: 12px;
+    }
+  </style>
 </BaseLayout>

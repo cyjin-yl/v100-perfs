@@ -1,4 +1,5 @@
 import gc
+from collections import Counter
 import hashlib
 import io
 import json
@@ -34,6 +35,29 @@ PRODUCTION_ROUTE_LEDGER = Path(
     "operations/migrations/"
     "67ef398f9da504e020db1349956e2990f2876171-legacy-routes.json"
 )
+
+
+def git_tracked_paths(repo: Path) -> list[str]:
+    completed = subprocess.run(
+        ["git", "-C", str(repo), "ls-files", "-z"],
+        check=True,
+        stdout=subprocess.PIPE,
+    )
+    return [
+        path.decode("utf-8", "surrogateescape")
+        for path in completed.stdout.split(b"\0")
+        if path
+    ]
+
+
+def load_content_manifest(path: Path) -> list[dict[str, object]]:
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(payload, list) or any(
+        not isinstance(item, dict) for item in payload
+    ):
+        raise ValueError("content manifest must be a JSON array of objects")
+    return payload
+
 
 
 class LayoutManifestTests(unittest.TestCase):
@@ -489,6 +513,122 @@ class LayoutManifestTests(unittest.TestCase):
             "docs/superpowers/specs/**": "docs/archive/design-decisions/specs/",
             "docs/superpowers/plans/**": "docs/archive/design-decisions/plans/",
         })
+
+
+class ContentManifestTests(unittest.TestCase):
+    manifest_path = Path("site/src/data/content-manifest.json")
+
+    def test_final_content_manifest_covers_final_git_index_once(self):
+        tracked = set(git_tracked_paths(Path.cwd()))
+        manifest = load_content_manifest(self.manifest_path)
+        paths = [item["source_path"] for item in manifest]
+        self.assertEqual(set(paths), tracked)
+        self.assertEqual(len(set(paths)), len(paths))
+
+    def test_baseline_destinations_join_final_manifest_once(self):
+        ledger_path = next(
+            Path("operations/migrations").glob("*-repository-layout.json")
+        )
+        ledger = load_ledger(ledger_path)
+        manifest = load_content_manifest(self.manifest_path)
+        claim_owners = {
+            str(baseline_path): str(item["source_path"])
+            for item in manifest
+            for baseline_path in item["baseline_paths"]
+        }
+        claim_counts = Counter(
+            str(baseline_path)
+            for item in manifest
+            for baseline_path in item["baseline_paths"]
+        )
+        self.assertEqual(set(claim_counts), {row.new_path for row in ledger})
+        self.assertTrue(all(count == 1 for count in claim_counts.values()))
+        for row in ledger:
+            owner = claim_owners[row.new_path]
+            if owner != row.new_path:
+                self.assertEqual(row.disposition, "proven-generated-regenerate")
+                self.assertEqual(
+                    (row.new_path, owner),
+                    (
+                        "site/src/data/repo-index.json",
+                        self.manifest_path.as_posix(),
+                    ),
+                )
+
+    def test_manifest_metadata_matches_every_git_index_blob(self):
+        manifest = load_content_manifest(self.manifest_path)
+        self_item_path = self.manifest_path.as_posix()
+        for item in manifest:
+            source_path = str(item["source_path"])
+            with self.subTest(source_path=source_path):
+                if source_path == self_item_path:
+                    self.assertEqual(
+                        item["metadata_scope"], "self-reference-omitted"
+                    )
+                    self.assertIsNone(item["git_blob_oid"])
+                    self.assertIsNone(item["byte_length"])
+                    self.assertIsNone(item["sha256"])
+                    continue
+
+                index_line = subprocess.run(
+                    [
+                        "git",
+                        "ls-files",
+                        "-s",
+                        "--",
+                        source_path,
+                    ],
+                    check=True,
+                    stdout=subprocess.PIPE,
+                    text=True,
+                ).stdout.rstrip("\n")
+                git_mode, blob_oid, stage_and_path = index_line.split(" ", 2)
+                stage, indexed_path = stage_and_path.split("\t", 1)
+                blob = subprocess.run(
+                    ["git", "cat-file", "blob", blob_oid],
+                    check=True,
+                    stdout=subprocess.PIPE,
+                ).stdout
+                self.assertEqual(stage, "0")
+                self.assertEqual(indexed_path, source_path)
+                self.assertEqual(item["metadata_scope"], "git-index-blob")
+                self.assertEqual(item["git_mode"], git_mode)
+                self.assertEqual(item["git_blob_oid"], blob_oid)
+                self.assertEqual(item["byte_length"], len(blob))
+                self.assertEqual(
+                    item["sha256"], hashlib.sha256(blob).hexdigest()
+                )
+
+    def test_manifest_routes_are_unique_and_partitioned(self):
+        manifest = load_content_manifest(self.manifest_path)
+        route_owners: dict[str, str] = {}
+        for item in manifest:
+            source_path = str(item["source_path"])
+            repository_route = str(item["repository_route"])
+            self.assertEqual(
+                repository_route, f"/repository/{source_path}"
+            )
+            routes = [repository_route]
+            canonical_route = str(item["canonical_route"])
+            if canonical_route != repository_route:
+                routes.append(canonical_route)
+            for route in routes:
+                with self.subTest(route=route):
+                    self.assertNotIn(route, route_owners)
+                    route_owners[route] = source_path
+
+        canonical_routes = {
+            str(item["canonical_route"])
+            for item in manifest
+            if item["canonical_route"] != item["repository_route"]
+        }
+        self.assertTrue(
+            all(
+                route == "/docs"
+                or route.startswith(("/docs/", "/evidence/", "/archive/"))
+                for route in canonical_routes
+            )
+        )
 
 
 class RouteManifestTests(unittest.TestCase):

@@ -1,0 +1,248 @@
+---
+import { createHash } from "node:crypto";
+import { lstatSync, readFileSync, realpathSync } from "node:fs";
+import { dirname, posix, resolve, sep } from "node:path";
+import { marked, Renderer } from "marked";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import manifest from "../../data/content-manifest.json";
+
+export function getStaticPaths() {
+  return manifest.map((item) => ({
+    params: { path: item.source_path },
+    props: { item, routeKind: "repository" },
+  }));
+}
+
+type ContentItem = (typeof manifest)[number];
+type RouteKind = "docs" | "evidence" | "repository" | "archive";
+
+const { item, routeKind = "repository" } = Astro.props as {
+  item: ContentItem;
+  routeKind?: RouteKind;
+};
+const indexedItem = manifest.find((candidate) => candidate.source_path === item?.source_path);
+if (
+  !item ||
+  !indexedItem ||
+  indexedItem.canonical_route !== item.canonical_route ||
+  indexedItem.git_blob_oid !== item.git_blob_oid ||
+  indexedItem.sha256 !== item.sha256
+) {
+  throw new Error("Refusing content that is not an exact content-manifest item");
+}
+if (
+  item.source_path.startsWith("/") ||
+  item.source_path.includes("\\") ||
+  item.source_path.split("/").some((part) => !part || part === "." || part === "..")
+) {
+  throw new Error(`Unsafe content-manifest path: ${item.source_path}`);
+}
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+const repoRoot = realpathSync(resolve(process.cwd(), ".."));
+const routeItems = new Map(manifest.map((candidate) => [candidate.canonical_route, candidate]));
+const sourceItems = new Map(manifest.map((candidate) => [candidate.source_path, candidate]));
+
+function escapeHtml(value: string) {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
+}
+
+function encodedRoute(route: string) {
+  return route.split("/").map((part, index) => index === 0 ? "" : encodeURIComponent(part)).join("/");
+}
+
+function deployedRoute(route: string) {
+  return `${base}${encodedRoute(route)}`;
+}
+
+function safeExternalUrl(value: string) {
+  const url = value.trim();
+  if (!url || /^[\\/]{2}/.test(url)) return null;
+  const normalizedForScheme = url.replace(/[\u0000-\u0020\u007f]+/g, "");
+  const scheme = normalizedForScheme.match(/^([a-z][a-z0-9+.-]*):/i)?.[1]?.toLowerCase();
+  if (!scheme || !["http", "https", "mailto"].includes(scheme)) return null;
+  return url;
+}
+
+function decodeLinkPath(value: string) {
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return null;
+  }
+}
+
+function manifestTarget(value: string) {
+  const trimmed = value.trim();
+  if (!trimmed || trimmed.startsWith("#")) return trimmed || null;
+  const external = safeExternalUrl(trimmed);
+  if (external) return external;
+  if (/^[a-z][a-z0-9+.-]*:/i.test(trimmed) || trimmed.startsWith("//")) return null;
+
+  const suffixStart = trimmed.search(/[?#]/);
+  const rawPath = suffixStart < 0 ? trimmed : trimmed.slice(0, suffixStart);
+  const suffix = suffixStart < 0 ? "" : trimmed.slice(suffixStart);
+  const decodedPath = decodeLinkPath(rawPath);
+  if (decodedPath === null || decodedPath.includes("\\")) return null;
+
+  if (decodedPath.startsWith("/")) {
+    const route = decodedPath.replace(/\/$/, "") || "/";
+    const routedItem = routeItems.get(route);
+    if (routedItem) return `${deployedRoute(routedItem.canonical_route)}${suffix}`;
+    const basePrefix = `${base}/`;
+    if (base && route.startsWith(basePrefix)) {
+      const withoutBase = route.slice(base.length).replace(/\/$/, "") || "/";
+      const baseRoutedItem = routeItems.get(withoutBase);
+      if (baseRoutedItem) return `${deployedRoute(baseRoutedItem.canonical_route)}${suffix}`;
+    }
+    const rootSource = route.slice(1);
+    const rootItem = sourceItems.get(rootSource);
+    return rootItem ? `${deployedRoute(rootItem.canonical_route)}${suffix}` : null;
+  }
+
+  const resolved = posix.normalize(posix.join(dirname(item.source_path), decodedPath));
+  if (resolved === ".." || resolved.startsWith("../") || posix.isAbsolute(resolved)) return null;
+  const candidates = [
+    resolved,
+    `${resolved}.md`,
+    posix.join(resolved, "index.md"),
+    posix.join(resolved, "README.md"),
+  ];
+  const target = candidates.map((candidate) => sourceItems.get(candidate)).find(Boolean);
+  return target ? `${deployedRoute(target.canonical_route)}${suffix}` : null;
+}
+
+let source = "";
+let html = "";
+if (item.render_kind !== "metadata") {
+  const candidatePath = resolve(repoRoot, item.source_path);
+  const sourcePath = realpathSync(candidatePath);
+  if (!sourcePath.startsWith(`${repoRoot}${sep}`) || !lstatSync(sourcePath).isFile()) {
+    throw new Error(`Refusing to read outside the repository: ${item.source_path}`);
+  }
+  const bytes = readFileSync(sourcePath);
+  if (item.metadata_scope === "git-index-blob") {
+    const sha256 = createHash("sha256").update(bytes).digest("hex");
+    if (bytes.length !== item.byte_length || sha256 !== item.sha256) {
+      throw new Error(`Working-tree content differs from manifest: ${item.source_path}`);
+    }
+  }
+  source = bytes.toString("utf8");
+}
+
+if (item.render_kind === "markdown") {
+  const renderer = new Renderer();
+  renderer.html = ({ text }) => escapeHtml(text);
+  renderer.link = function ({ href, title, tokens }) {
+    const label = this.parser.parseInline(tokens);
+    const url = manifestTarget(href);
+    if (!url) return label;
+    const titleAttribute = title ? ` title="${escapeHtml(title)}"` : "";
+    const external = /^(?:https?:|mailto:)/i.test(url);
+    const rel = external ? ' rel="noreferrer"' : "";
+    return `<a href="${escapeHtml(url)}"${titleAttribute}${rel}>${label}</a>`;
+  };
+  renderer.image = ({ href, title, text }) => {
+    const url = manifestTarget(href);
+    const label = `[Image: ${escapeHtml(text || "untitled")}]`;
+    if (!url) return label;
+    const titleAttribute = title ? ` title="${escapeHtml(title)}"` : "";
+    const external = /^(?:https?:|mailto:)/i.test(url);
+    const rel = external ? ' rel="noreferrer"' : "";
+    return `<a href="${escapeHtml(url)}"${titleAttribute}${rel}>${label}</a>`;
+  };
+  html = marked.parse(source, { renderer, async: false });
+}
+
+const isHistorical = item.status === "historical" || item.authority === "archive";
+const canonicalHref = deployedRoute(item.canonical_route);
+const repositoryHref = deployedRoute(item.repository_route);
+const downloadUrl = safeExternalUrl(item.download_url);
+if (item.render_kind === "metadata" && !downloadUrl) {
+  throw new Error(`Unsafe metadata download URL: ${item.source_path}`);
+}
+const metadata = [
+  ["Source", item.source_path],
+  ["Status", item.status],
+  ["Authority", item.authority],
+  ["Model generation", item.model_generation ?? "not model-specific"],
+  ["Git mode", item.git_mode],
+  ["Size", item.byte_length === null ? "self-reference omitted" : `${item.byte_length} bytes`],
+  ["SHA-256", item.sha256 ?? "self-reference omitted"],
+];
+---
+<BaseLayout title={`${item.title} · V100 FastLLM`}>
+  {isHistorical && (
+    <aside class="archive-banner" role="note" aria-label="Historical archive notice">
+      <strong>Historical archive</strong>
+      <span>
+        This preserved source is not current operational guidance.
+        {item.updated_at ? ` Dated ${item.updated_at.slice(0, 10)}.` : ""}
+        {item.model_generation ? ` Generation: ${item.model_generation}.` : ""}
+      </span>
+    </aside>
+  )}
+  <div class="content-context">
+    {routeKind !== "repository" && <a href={repositoryHref}>Repository metadata</a>}
+    {routeKind === "repository" && item.canonical_route !== item.repository_route && (
+      <a href={canonicalHref}>Canonical reading route</a>
+    )}
+    <span>{item.source_path}</span>
+  </div>
+
+  {item.render_kind === "markdown" ? (
+    <article set:html={html} />
+  ) : item.render_kind === "text" ? (
+    <>
+      <h1>{item.title}</h1>
+      <p>{item.summary}</p>
+      <pre class="source"><code>{source}</code></pre>
+    </>
+  ) : (
+    <>
+      <h1>{item.title}</h1>
+      <p>{item.summary}</p>
+      <p>
+        This file is not rendered inline. Its indexed metadata is shown below; downloading does not execute it.
+      </p>
+      <a href={downloadUrl} rel="noreferrer">Download the GitHub blob</a>
+    </>
+  )}
+
+  <details class="metadata" open={item.render_kind === "metadata"}>
+    <summary>Manifest metadata</summary>
+    <dl>
+      {metadata.map(([label, value]) => (
+        <>
+          <dt>{label}</dt>
+          <dd><code>{value}</code></dd>
+        </>
+      ))}
+    </dl>
+  </details>
+
+  <style>
+    .archive-banner {
+      display: grid;
+      gap: 4px;
+      margin-bottom: 18px;
+      padding: 12px 14px;
+      border: 1px solid hsl(var(--border));
+      border-left: 4px solid #d08b31;
+      border-radius: var(--radius);
+      background: hsl(var(--card));
+    }
+    .archive-banner span, .content-context { color: hsl(var(--muted-foreground)); }
+    .content-context { display: flex; flex-wrap: wrap; gap: 8px 14px; margin-bottom: 14px; font-size: 12px; }
+    .source { overflow: auto; max-height: 75vh; padding: 16px; border: 1px solid hsl(var(--border)); border-radius: var(--radius); background: hsl(var(--card)); font-size: 12px; line-height: 1.5; white-space: pre; }
+    .metadata { margin-top: 24px; padding: 12px 14px; border: 1px solid hsl(var(--border)); border-radius: var(--radius); }
+    .metadata dl { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 6px 14px; }
+    .metadata dt { color: hsl(var(--muted-foreground)); }
+    .metadata dd { min-width: 0; margin: 0; overflow-wrap: anywhere; }
+  </style>
+</BaseLayout>

@@ -1,0 +1,20 @@
+---
+import ContentPage from "../repository/[...path].astro";
+import manifest from "../../data/content-manifest.json";
+
+export function getStaticPaths() {
+  return manifest
+    .filter((item) => item.route_kind === "archive")
+    .map((item) => ({
+      params: {
+        slug: item.canonical_route === "/archive"
+          ? undefined
+          : item.canonical_route.slice("/archive/".length),
+      },
+      props: { item },
+    }));
+}
+
+const { item } = Astro.props;
+---
+<ContentPage item={item} routeKind="archive" />

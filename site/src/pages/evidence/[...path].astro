@@ -1,0 +1,20 @@
+---
+import ContentPage from "../repository/[...path].astro";
+import manifest from "../../data/content-manifest.json";
+
+export function getStaticPaths() {
+  return manifest
+    .filter((item) => item.route_kind === "evidence")
+    .map((item) => ({
+      params: {
+        path: item.canonical_route === "/evidence"
+          ? undefined
+          : item.canonical_route.slice("/evidence/".length),
+      },
+      props: { item },
+    }));
+}
+
+const { item } = Astro.props;
+---
+<ContentPage item={item} routeKind="evidence" />
