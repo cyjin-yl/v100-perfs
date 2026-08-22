@@ -25,6 +25,10 @@ Backend selection (env-driven; default is llama-server):
                         only the outbound payload model field is rewritten to
                         the slug. local-only heretic/Fable requests never
                         silently fall through to cloud providers.
+  FASTLLM_AUTO_ROUTE_ALIASES
+                        Comma-separated public model names that use fair
+                        routing across local and configured cloud backends.
+                        Default empty.
 
 When FASTLLM_BACKEND_URL is unset, behavior is unchanged from the original
 llama-server proxy. A new owned child starts a new tensor-cache epoch; only
@@ -35,6 +39,7 @@ Run:  python thinking_proxy.py
 """
 
 import asyncio
+import codecs
 import base64
 import datetime
 import hashlib
@@ -50,10 +55,23 @@ import sys
 import shlex
 import secrets
 import time
+import traceback
 import uuid
 from collections import OrderedDict
 from urllib.parse import urlparse
 from pathlib import Path
+
+# 所有 print 日志统一带时间戳：[YYYY-MM-DD HH:MM:SS] ...
+import builtins as _builtins
+
+_print_orig = _builtins.print
+
+
+def _tprint(*args, **kwargs):
+    _print_orig(f"[{datetime.datetime.now():%Y-%m-%d %H:%M:%S}]", *args, **kwargs)
+
+
+print = _tprint
 
 import httpx
 import uvicorn
@@ -81,6 +99,9 @@ MAX_RESTART_BACKOFF = int(os.environ.get("MAX_RESTART_BACKOFF", "60"))
 QUEUE_TIMEOUT = int(os.environ.get("QUEUE_TIMEOUT", "180"))
 FALLBACK_ENABLED = os.environ.get("FALLBACK_ENABLED", "1") == "1"
 BENCHMARK_MODE = os.environ.get("BENCHMARK_MODE", "0") == "1"
+# 每个 Anthropic /v1/messages 请求打一行 thinking effort 判定来源。
+# 默认开:这条日志是唯一能证明 wire 上到底收到什么档位的证据。
+ANTHROPIC_EFFORT_TRACE = os.environ.get("ANTHROPIC_EFFORT_TRACE", "1") == "1"
 
 NIM_API_KEY = os.environ.get("NIM_API_KEY", "")
 NIM_BASE_URL = os.environ.get("NIM_BASE_URL", "https://integrate.api.nvidia.com/v1")
@@ -125,6 +146,11 @@ FASTLLM_PUBLIC_ALIASES = {
         "FASTLLM_PUBLIC_ALIASES", "qwen3.6-fastllm"
     ).split(",") if s.strip()
 }
+FASTLLM_AUTO_ROUTE_ALIASES = {
+    s.strip() for s in os.environ.get(
+        "FASTLLM_AUTO_ROUTE_ALIASES", "auto"
+    ).split(",") if s.strip()
+}
 FASTLLM_ENABLED = bool(FASTLLM_BACKEND_URL)
 FASTLLM_MODE = FASTLLM_ENABLED
 FASTLLM_OWNED = os.environ.get("FASTLLM_OWNED", "0") == "1"
@@ -137,6 +163,13 @@ FASTLLM_BACKEND_LOG = os.environ.get(
 FASTLLM_START_TIMEOUT = float(os.environ.get("FASTLLM_START_TIMEOUT", "900"))
 FASTLLM_STOP_TIMEOUT = float(os.environ.get("FASTLLM_STOP_TIMEOUT", "30"))
 FASTLLM_IDLE_TIMEOUT = float(os.environ.get("FASTLLM_IDLE_TIMEOUT", "0"))
+# Owned 模式下 proxy 启动即拉起后端并保持(默认开):首个用户请求不必
+# 承受冷启动;加载+warmup 完成后 VRAM 即达稳态。idle 计时从 prewarm
+# 释放起算,FASTLLM_IDLE_TIMEOUT 无人用才卸载。设 0 恢复按需拉起。
+FASTLLM_PREWARM_ON_START = os.environ.get(
+    "FASTLLM_PREWARM_ON_START", "1").strip().lower() in {
+        "1", "true", "yes", "on",
+    }
 FASTLLM_PREFIX_CACHE_PERSIST = os.environ.get(
     "FASTLLM_PREFIX_CACHE_PERSIST", "0").strip().lower() in {
         "1", "true", "yes", "on",
@@ -187,6 +220,15 @@ LLAMA_ENABLED = os.environ.get("LLAMA_ENABLED", "1") == "1"
 if FASTLLM_MODE and QUEUE_TIMEOUT < 600:
     QUEUE_TIMEOUT = 600
 
+# httpx 的 read timeout 是"两个 chunk 之间的上限", 不是整条流的上限。长 prefill
+# 期间后端一个字节都不发: 196.9K token 实测 ~790s, 262K 更久, 所以原先硬编码的
+# 600s 会在流式下断流 -> local_failed -> 甚至 fallback 云端(非流式走 QUEUE_TIMEOUT
+# 才没暴露这个洞)。omp 永远流式, 因此默认跟随 QUEUE_TIMEOUT。
+STREAM_READ_TIMEOUT = float(os.environ.get(
+    "STREAM_READ_TIMEOUT", str(QUEUE_TIMEOUT)))
+STREAM_CONNECT_TIMEOUT = float(os.environ.get("STREAM_CONNECT_TIMEOUT", "15"))
+STREAM_WRITE_TIMEOUT = float(os.environ.get("STREAM_WRITE_TIMEOUT", "120"))
+
 if FASTLLM_MODE:
     BACKEND_URL = FASTLLM_BACKEND_URL
 else:
@@ -223,6 +265,24 @@ STOP_REASON_MAP = {
 # ─── Context helpers ────────────────────────────────────────────
 
 def _get_context_limit() -> int:
+    # 显式覆盖优先
+    env_limit = os.environ.get("CONTEXT_LIMIT", "").strip()
+    if env_limit.isdigit() and int(env_limit) > 0:
+        return int(env_limit)
+    # FastLLM 模式下 LLAMA_ARGS 是空的, 原来会退回 32768 —— 于是任何
+    # >16K 的请求都被判"超限", 在 FALLBACK_ENABLED=1 时被**静默转发到云端**,
+    # 在 FALLBACK_ENABLED=0 时直接 429。真实上下文是后端 `--tokens`(262144)。
+    cmd = os.environ.get("FASTLLM_BACKEND_COMMAND", "")
+    if cmd:
+        parts = cmd.split()
+        for i, a in enumerate(parts):
+            if a == "--tokens" and i + 1 < len(parts):
+                try:
+                    value = int(parts[i + 1])
+                except ValueError:
+                    continue
+                if value > 0:
+                    return value
     total = 32768
     slots = 1
     args = LLAMA_ARGS
@@ -258,9 +318,30 @@ def _estimate_tokens(messages: list) -> int:
     return total // 2
 
 
+# 客户端不给 max_tokens 时的输出上限。
+#
+# 原来写死 16384。对思考模型太小 —— 长任务的思考链会在中途被硬截断,
+# 表现成"想到一半就没了"、工具调用的参数写一半。
+# 但也不能简单改成一个更大的常量: _over_context 用同一个值做准入判断,
+# 常量一大, 长 prompt 就会被误判成超上下文而直接拒掉。
+# 所以按**剩余上下文**动态给: 还剩多少就用多少(留一点模板余量)。
+_OUTPUT_MARGIN = 2048
+_MIN_OUTPUT = 4096
+_MAX_OUTPUT = 131072
+
+
+def _default_max_tokens(body: dict) -> int:
+    explicit = body.get("max_tokens")
+    if isinstance(explicit, int) and explicit > 0:
+        return explicit
+    prompt_est = _estimate_tokens(body.get("messages", []))
+    remaining = _CONTEXT_LIMIT - prompt_est - _OUTPUT_MARGIN
+    return max(_MIN_OUTPUT, min(_MAX_OUTPUT, remaining))
+
+
 def _over_context(body: dict) -> bool:
     prompt_est = _estimate_tokens(body.get("messages", []))
-    max_tokens = body.get("max_tokens", 16384)
+    max_tokens = _default_max_tokens(body)
     return prompt_est + max_tokens > _CONTEXT_LIMIT
 
 def _has_images(messages: list) -> bool:
@@ -270,7 +351,7 @@ def _has_images(messages: list) -> bool:
             continue
         if isinstance(c, list):
             for block in c:
-                if isinstance(block, dict) and block.get("type") in ("image_url", "image"):
+                if isinstance(block, dict) and block.get("type") in ("image_url", "image", "video_url", "video"):
                     return True
     return False
 
@@ -381,6 +462,17 @@ class BackendMemoryPressure(BackendLifecycleError):
     pass
 
 
+class QueueOverflow(RuntimeError):
+    """排队等待者过多 —— 熔断兜底, 不是常规手段。
+
+    后端真并发 = --batch N; agent 客户端(omp/OpenCode/proto-ui/z3rm)会并行发很多
+    subagent 请求。无界排队 + 客户端各自超时重试 = 雪崩(实测出现过几十路"并发",
+    其实绝大多数在空等, 每次重试再追加一份)。
+    但**尽早拒绝也危险**: omp 之前就被 429 打到 "Retry budget exhausted" 而停摆。
+    所以阈值设得很高, 只在真正失控时才触发; 正常拥塞靠排队 + 快速周转解决。
+    """
+
+
 async def _await_callback(result):
     if inspect.isawaitable(result):
         return await result
@@ -388,15 +480,23 @@ async def _await_callback(result):
 
 
 class BackendLease:
-    def __init__(self, manager):
+    def __init__(self, manager, epoch: int = 0):
         self._manager = manager
         self._released = False
+        # 取租约时的回收纪元。reap_stale_leases 会**替**持有者把 active
+        # 归零并递增纪元;此后旧纪元的 release 必须作废,否则会把 active
+        # 减成负数并抛 BackendLifecycleError —— 那个异常发生在 _worker 的
+        # finally 里,没有任何 try 接得住,worker 协程当场死亡。
+        # 实测:4 个 worker 逐个死光后 queued 只涨不消,服务完全静默地废掉。
+        # 流式槽位早就用同样的纪元法修过(见 BackendScheduler._reap_epoch),
+        # 租约这条路当时漏了。
+        self._epoch = epoch
 
     async def release(self):
         if self._released:
             return
         self._released = True
-        await self._manager._release()
+        await self._manager._release(epoch=self._epoch)
 
     async def __aenter__(self):
         return self
@@ -457,6 +557,9 @@ class BackendLifecycleManager:
         self.state = "COLD"
         self.generation = 0
         self.active = 0
+        # 租约回收纪元:reap_stale_leases 归零 active 时递增,使已发出的
+        # 旧租约的 release 变成无害的 no-op(与 scheduler._reap_epoch 同构)
+        self._lease_epoch = 0
         self.last_idle_at = time.monotonic()
         self.last_error = None
         self.last_stop_reason = None
@@ -500,7 +603,7 @@ class BackendLifecycleManager:
                 if self.state == "READY":
                     self.active += 1
                     self._drained.clear()
-                    return BackendLease(self)
+                    return BackendLease(self, self._lease_epoch)
                 task = self._activation_task
                 if task is None or task.done():
                     # 记录来自挂起态的激活意图：_activate 用快照决定走
@@ -539,7 +642,7 @@ class BackendLifecycleManager:
                     self.last_error or f"FastLLM backend is {self.state}")
             self.active += 1
             self._drained.clear()
-            return BackendLease(self)
+            return BackendLease(self, self._lease_epoch)
 
     async def wait_for_activation(self):
         async with self._lock:
@@ -555,6 +658,14 @@ class BackendLifecycleManager:
             self.state = "FAILED"
             self.last_error = (
                 f"FastLLM backend exited with code {child.returncode}")
+            # 后端已死:压力状态必须随之后端释放的显存一起复位,
+            # 否则 observe_memory 在非 READY/DRAINING 状态下不再采样,
+            # _pressure 永远卡住 → watchdog 每 5s 空转 unload、
+            # stream 重试循环永远等不到压力解除。
+            self._pressure = False
+            self._pressure_since = None
+            self._high_samples = 0
+            self._resume_samples = 0
             return True
 
     async def _activate(self):
@@ -617,10 +728,17 @@ class BackendLifecycleManager:
                 raise
             raise BackendLifecycleError(message) from exc
 
-    async def _release(self):
+    async def _release(self, epoch: int | None = None):
         async with self._lock:
+            if epoch is not None and epoch != self._lease_epoch:
+                # 回收器已经替这个租约归零过了,这次释放作废。
+                return
             if self.active <= 0:
-                raise BackendLifecycleError("backend lease accounting underflow")
+                # 不再抛异常:这里唯一的调用点是 _worker/流式路径的 finally,
+                # 抛出去就是杀死调用者。计数异常记一笔日志即可,服务必须活着。
+                print("[lifecycle] 忽略多余的租约释放(active 已为 0)",
+                      flush=True)
+                return
             self.active -= 1
             if self.active == 0:
                 self.last_idle_at = time.monotonic()
@@ -628,6 +746,46 @@ class BackendLifecycleManager:
         # No immediate stop on pressure here: a transient VRAM peak (e.g. a
         # vision-encode burst) clears within seconds once the request ends.
         # Sustained pressure is handled by the watchdog's grace period.
+
+    async def reap_stale_leases(self, idle_seconds: float = 180.0) -> int:
+        """租约与流式槽位是同一类泄漏: 生成器没被迭代 ⇒ finally 没跑 ⇒ active 不减。
+
+        active 卡住会让空闲判定、压力判定与 drain 逻辑全部失真, 所以在"确认没有
+        任何在途请求且调度队列为空"且持续超过 idle_seconds 后强制归零。
+        """
+        if self.active <= 0 or _INFLIGHT:
+            return 0
+        if scheduler.pending() > 0:
+            return 0
+        # _INFLIGHT 只登记**流式**请求;非流式请求由 _worker 直接 httpx.post,
+        # 全程不进 _INFLIGHT。而 pending() 是队列长度,已被 worker 取走正在
+        # 处理的请求同样为 0。两个判据叠加仍然看不见"正在跑的非流式请求",
+        # 于是一个超过 idle_seconds 的长请求(长 prompt 冷 prefill 轻易过
+        # 180s)会被误判成泄漏租约并强制归零。
+        # scheduler.active 是 worker 真实在办的件数,这里必须一起看。
+        if scheduler.active > 0:
+            self._lease_idle_since = None
+            return 0
+        last = getattr(self, "_lease_idle_since", None)
+        now = time.monotonic()
+        if last is None:
+            self._lease_idle_since = now
+            return 0
+        if now - last < idle_seconds:
+            return 0
+        async with self._lock:
+            leaked = self.active
+            if leaked <= 0:
+                self._lease_idle_since = None
+                return 0
+            self.active = 0
+            self._lease_epoch += 1
+            self.last_idle_at = now
+            self._drained.set()
+        self._lease_idle_since = None
+        print(f"[lifecycle] 回收泄漏的后端租约 x{leaked}"
+              f"(无在途请求且队列为空超过 {idle_seconds:.0f}s)", flush=True)
+        return leaked
 
     async def check_idle(self, now=None):
         if not self.owned or self.idle_timeout <= 0:
@@ -890,17 +1048,32 @@ def _is_fastllm_alias(model: str) -> bool:
     return any(alias in model for alias in FASTLLM_PUBLIC_ALIASES)
 
 
+def _is_auto_route_alias(model: str) -> bool:
+    """True when the public model name opts into multi-backend fair routing."""
+    return bool(model) and model in FASTLLM_AUTO_ROUTE_ALIASES
+
+
 def _is_local_alias(model: str) -> bool:
-    """True when the caller explicitly selected the local FastLLM backend
-    (heretic suffix, public alias, or backend slug). These requests bypass
-    the fair router: rerouting an explicitly-local model to external
-    providers serves a different model and breaks multi-round tool calls."""
-    return bool(model) and (_is_heretic_model(model) or _is_fastllm_alias(model))
+    """True when the caller explicitly selected the local FastLLM backend."""
+    return bool(model) and not _is_auto_route_alias(model) and (
+        _is_heretic_model(model) or _is_fastllm_alias(model)
+    )
+
+
+def _must_route_local(model: str, messages: list[dict]) -> bool:
+    """Keep explicit local aliases local; auto-route images remain portable."""
+    return _is_local_alias(model) or (
+        FASTLLM_MODE
+        and _has_images(messages)
+        and not _is_auto_route_alias(model)
+    )
 
 def _to_backend_model(public_model: str) -> str:
-    """Rewrite a public alias to the configured FastLLM backend slug in
-    outbound payloads. Leaves other model names (incl. cloud models) intact."""
-    if FASTLLM_MODE and _is_fastllm_alias(public_model):
+    """Rewrite local and auto aliases for a possible FastLLM dispatch."""
+    if FASTLLM_MODE and (
+        _is_fastllm_alias(public_model)
+        or _is_auto_route_alias(public_model)
+    ):
         return FASTLLM_MODEL_SLUG
     return public_model
 
@@ -987,7 +1160,7 @@ def _normalize_tool_schema(body: dict) -> dict:
             props["query"] = {
                 "type": "string",
                 "description": "The search query. Use the prepared query "
-                                "from the tool description when it fits.",
+                               "from the tool description when it fits.",
             }
         required = params.get("required")
         if not isinstance(required, list):
@@ -998,13 +1171,13 @@ def _normalize_tool_schema(body: dict) -> dict:
     return body
 
 
-
-
 def _restore_public_model(oai: dict, requested_model: str) -> dict:
-    """Restore the public model name in a parsed OpenAI completion dict (used
-    before Anthropic conversion) when serving FastLLM."""
-    if (FASTLLM_MODE and isinstance(oai, dict)
-            and oai.get("model") == FASTLLM_MODEL_SLUG and requested_model):
+    """Restore a public alias after either local or fair-routed execution."""
+    if not (isinstance(oai, dict) and requested_model):
+        return oai
+    if _is_auto_route_alias(requested_model) or (
+        FASTLLM_MODE and oai.get("model") == FASTLLM_MODEL_SLUG
+    ):
         oai["model"] = requested_model
     return oai
 
@@ -1229,7 +1402,8 @@ class _QueueItem:
 
 class BackendScheduler:
     def __init__(self, max_concurrent: int = 2):
-        self.max_concurrent = max_concurrent
+        self.max_concurrent = max(
+            max_concurrent, int(os.environ.get("PROXY_STREAM_SLOTS", "2")))
         self.active = 0
         self._queue: asyncio.PriorityQueue = asyncio.PriorityQueue()
         self._workers: list[asyncio.Task] = []
@@ -1238,12 +1412,82 @@ class BackendScheduler:
         # subagent fan-out overlaps instead of serializing. Slot matches the
         # backend batch so concurrent client requests never stack VRAM
         # beyond the sized KV pool.
-        self._slot = asyncio.Semaphore(2)
+        # 单路轮转(后端 --batch 1)时后端自己会排队, proxy 不该再当瓶颈:
+        # 槽位数改成可配, 让更多请求进到后端队列里"依次处理"而不是在 proxy 前被卡住。
+        self._slot = asyncio.Semaphore(
+            max(1, int(os.environ.get("PROXY_STREAM_SLOTS", "2"))))
+        # 流式槽位泄漏自愈: StreamingResponse 的生成器如果**从未被迭代**
+        # (客户端在拿到响应头前就断了 / 被 Ctrl+C), `_local_stream` 的 finally
+        # 不会执行, 槽位就永远收不回来。实测出现过 `streams=2/2 inflight=[]`,
+        # 之后所有流式请求排队到 QUEUE_TIMEOUT —— 对 agent 负载是致命的
+        # (omp/OpenCode 被中断几次就能把服务卡死)。
+        # 回收纪元。reap_leaked_streams 会**替**持有者释放槽位, 而持有者自己
+        # 的 finally 之后还会再释放一次 —— 那就是 streams 变负数的来源
+        # (asyncio.Semaphore.release() 不设上限, _value 能超过初始值,
+        #  于是 held = max_concurrent - _value 变成负数)。
+        # 流式路径本来有守卫: release_stream 里 _stream_outstanding<=0 就返回,
+        # 而回收器会把它清零。但**非流式的 _worker 没有** —— 它是无条件
+        # self._slot.release()。回收器注释明确说它也覆盖 _worker 的槽位,
+        # 却没给 _worker 加对应守卫, 于是每回收一次就多释放一次。
+        # 纪元号解决: 持有者记下取槽位时的纪元, 释放前比对; 回收器递增纪元,
+        # 此后所有旧纪元的释放都作废。
+        self._reap_epoch = 0
+        self._stream_outstanding = 0
+        self._stream_last_change = time.monotonic()
+        # 熔断阈值(不是常规限流): 正常多 agent 场景够用, 失控时才拒绝
+        self.max_waiters = int(os.environ.get("MAX_QUEUE_WAITERS", "64"))
+        self._waiters = 0
 
     async def start_workers(self):
-        for _ in range(self.max_concurrent):
-            w = asyncio.create_task(self._worker())
+        for idx in range(self.max_concurrent):
+            w = asyncio.create_task(self._worker(), name=f"sched-worker-{idx}")
+            # asyncio.create_task 的异常不会被任何人 await —— worker 一旦
+            # 死掉就是静默的,现象是 queued 只涨不消而 streams/active 全 0
+            # (实测:proxy 起来后 reqs 恒为 0,所有请求堆在队列里)。
+            # 这里强制把死因打出来,否则只能靠挂调试器定位。
+            w.add_done_callback(self._on_worker_exit)
             self._workers.append(w)
+        print(f"[scheduler] {len(self._workers)} workers started "
+              f"(slots={self.max_concurrent})", flush=True)
+
+    @staticmethod
+    def _on_worker_exit(task: asyncio.Task) -> None:
+        name = task.get_name()
+        if task.cancelled():
+            print(f"[scheduler] worker {name} CANCELLED", flush=True)
+            return
+        exc = task.exception()
+        if exc is not None:
+            print(f"[scheduler] worker {name} DIED: "
+                  f"{type(exc).__name__}: {exc}", flush=True)
+            traceback.print_exception(type(exc), exc, exc.__traceback__)
+        else:
+            print(f"[scheduler] worker {name} exited cleanly (unexpected)",
+                  flush=True)
+
+    def respawn_dead_workers(self) -> int:
+        """worker 死亡后自愈。
+
+        上面的 finally 已经异常安全,理论上 worker 不该再死;但"调度器静默
+        全灭"的代价是整个服务变砖,所以这里再加一道自愈:发现有 worker 不在
+        了就补齐。宁可重复补,也不能出现 workers=0/4 还在硬扛的局面。
+        """
+        respawned = 0
+        for idx, worker in enumerate(self._workers):
+            if not worker.done():
+                continue
+            new_worker = asyncio.create_task(
+                self._worker(), name=f"sched-worker-{idx}r")
+            new_worker.add_done_callback(self._on_worker_exit)
+            self._workers[idx] = new_worker
+            respawned += 1
+        if respawned:
+            print(f"[scheduler] 补活 {respawned} 个已死的 worker",
+                  flush=True)
+        return respawned
+
+    def alive_workers(self) -> int:
+        return sum(1 for w in self._workers if not w.done())
 
     def pending(self) -> int:
         return self._queue.qsize()
@@ -1254,11 +1498,14 @@ class BackendScheduler:
             lease = None
             sent = False
             slot_held = False
+            slot_epoch = -1
+            req_t0 = time.monotonic()
             self.active += 1
             try:
                 await asyncio.wait_for(
                     self._slot.acquire(), timeout=QUEUE_TIMEOUT)
                 slot_held = True
+                slot_epoch = self._reap_epoch
                 if item.cancelled:
                     continue
                 lease = await backend_lifecycle.acquire(timeout=QUEUE_TIMEOUT)
@@ -1292,10 +1539,29 @@ class BackendScheduler:
                     item.error = exc
                     item.event.set()
             finally:
-                if slot_held:
-                    self._slot.release()
+                # 【上游BUMP勿回退】这整个 finally 必须是异常安全的。
+                # 实测事故:reap_stale_leases 误判长非流式请求为泄漏并把
+                # active 归零后,这里的 lease.release() 抛
+                # BackendLifecycleError("backend lease accounting underflow");
+                # finally 里抛出的异常没有任何 try 接得住,worker 协程当场
+                # 死亡且**完全静默**(create_task 的异常无人 await)。
+                # 4 个 worker 逐个死光 -> queued 只涨不消 -> 服务废掉,
+                # 现象是 workers=0/4 sched_active=4 queued=N reqs=0。
+                # 清理动作全部单独兜住:计数/回收出问题只记日志,绝不杀 worker。
+                # 纪元变了说明 reap_leaked_streams 已经替我们释放过这个槽位,
+                # 再释放一次会把信号量容量放大(实测出现过 streams=-3/4)。
+                try:
+                    if slot_held and slot_epoch == self._reap_epoch:
+                        self._slot.release()
+                except Exception as exc:                      # noqa: BLE001
+                    print(f"[scheduler] 槽位释放失败(已忽略): "
+                          f"{type(exc).__name__}: {exc}", flush=True)
                 if lease is not None:
-                    await lease.release()
+                    try:
+                        await lease.release()
+                    except Exception as exc:                  # noqa: BLE001
+                        print(f"[scheduler] 租约释放失败(已忽略): "
+                              f"{type(exc).__name__}: {exc}", flush=True)
                 self.active -= 1
                 self._queue.task_done()
                 if sent:
@@ -1305,6 +1571,13 @@ class BackendScheduler:
                         try:
                             data = item.response.json()
                             usage = data.get("usage", {})
+                            _PROXY_METRICS["reqs"] += 1
+                            _PROXY_METRICS["decode_tok"] += int(
+                                usage.get("completion_tokens") or 0)
+                            # 非流式无法分离 TTFT/decode;总时长计入吞吐分母,
+                            # 但不进 ttft_sum(避免把流式 TTFT 均值稀释)。
+                            _PROXY_METRICS["decode_s"] += (
+                                time.monotonic() - req_t0)
                             prompt_tokens = usage.get("prompt_tokens", 0)
                             evaluated = usage.get(
                                 "prompt_tokens_evaluated", prompt_tokens)
@@ -1339,15 +1612,134 @@ class BackendScheduler:
         return item.response
 
     async def acquire_stream(self, timeout: float | None = None):
-        await asyncio.wait_for(self._slot.acquire(), timeout=timeout)
+        if self._waiters >= self.max_waiters:
+            raise QueueOverflow(
+                f"{self._waiters} waiters >= MAX_QUEUE_WAITERS={self.max_waiters}")
+        self._waiters += 1
+        try:
+            await asyncio.wait_for(self._slot.acquire(), timeout=timeout)
+        finally:
+            self._waiters -= 1
+        self._stream_outstanding += 1
+        self._stream_last_change = time.monotonic()
+
+    def waiters(self) -> int:
+        return self._waiters
 
     def release_stream(self):
+        if self._stream_outstanding <= 0:
+            return                      # 重复 release 不该把容量放大
+        self._stream_outstanding -= 1
+        self._stream_last_change = time.monotonic()
         self._slot.release()
+
+    def reap_leaked_streams(self, idle_seconds: float = 90.0) -> int:
+        """槽位被占但一个在途请求都没有 ⇒ 谁的 finally 没跑, 槽位泄漏了。
+
+        不能只看 `_stream_outstanding`: 非流式的 `_worker` 是**直接**
+        `self._slot.acquire()` 的, 不经过 acquire_stream, 所以它的泄漏在那个
+        计数器里是看不见的。这里直接比对信号量真实余量, 并用
+        `_INFLIGHT`(在途流) / `active`(worker 在跑) / `pending()`(排队中)
+        三个信号确认"确实没人在用", 持续 idle_seconds 后才回收。
+        """
+        held = self.max_concurrent - self._slot._value
+        if held != getattr(self, "_last_held", None):
+            self._last_held = held
+            self._stream_last_change = time.monotonic()
+        if held <= 0:
+            return 0
+        now = time.monotonic()
+        # 关键区分: **合法的超长 prefill 本来就会"很久零 token"**
+        # (262K 冷 prefill 实测 ~800s 才吐第一个 token), 跟泄漏长得一模一样。
+        # 所以判定"僵死"必须用远高于最坏 prefill 的阈值, 而不是"有没有在途"。
+        stuck_after = float(os.environ.get("STUCK_STREAM_TIMEOUT", "1800"))
+        live = [v for v in _INFLIGHT.values()
+                if v.get("chunks", 0) > 0 or now - v.get("t0", now) < stuck_after]
+        if live or self.pending() > 0:
+            return 0
+        # 到这里: 要么没有在途记录(纯泄漏), 要么在途记录全都超过 stuck_after 且零产出。
+        # 注意不再用 self.active 做门槛 —— 它本身也会随槽位一起泄漏, 会把回收器锁死。
+        if now - self._stream_last_change < idle_seconds:
+            return 0
+        _INFLIGHT.clear()
+        for _ in range(held):
+            self._slot.release()
+        # 递增纪元, 让所有已持槽位者在自己的 finally 里认出
+        # 这个槽位已被回收, 从而跳过重复释放。
+        self._reap_epoch += 1
+        self._stream_outstanding = 0
+        self._last_held = 0
+        self._stream_last_change = time.monotonic()
+        print(f"[stream] 回收泄漏的并发槽位 x{held}"
+              f"(信号量被占但无在途请求/worker/排队超过 {idle_seconds:.0f}s)",
+              flush=True)
+        return held
 
 
 scheduler = BackendScheduler()
 
 BACKEND_READY = False
+
+# vLLM 风格滚动窗口指标(_proxy_stream / _worker 打点,_metrics_loop 打印)
+_PROXY_METRICS = {"reqs": 0, "stream_reqs": 0, "ttft_sum": 0.0,
+                  "decode_tok": 0, "decode_s": 0.0}
+_USAGE_COMPLETION_RE = re.compile(rb'"completion_tokens":(\d+)')
+# 首个真正的内容 token(跳过立即到达的 role chunk)
+_CONTENT_TOKEN_RE = re.compile(rb'"(?:content|reasoning_content)":"[^"]')
+# 进行中的流:id -> {t0, ttft, chunks};让 metrics 行能看到未完成的请求
+_INFLIGHT: dict[int, dict] = {}
+
+
+async def _metrics_loop():
+    """每 30s 打印一行队列/吞吐状态;完全静默期不刷屏。"""
+    while True:
+        await asyncio.sleep(30)
+        # 自愈放在最前面:下面有"完全空闲就 continue"的分支,放后面会让
+        # 空闲期死掉的 worker 一直补不回来,等来了请求又是死锁。
+        scheduler.respawn_dead_workers()
+        reqs = _PROXY_METRICS["reqs"]
+        stream_reqs = _PROXY_METRICS["stream_reqs"]
+        queued = scheduler._queue.qsize()
+        lifecycle_active = backend_lifecycle.active
+        state = backend_lifecycle.state
+        now = time.monotonic()
+        inflight_desc = ",".join(
+            f"{info['age']:.0f}s~{info['chunks']}tok"
+            for info in (
+                {"age": now - v["t0"], "chunks": v["chunks"]}
+                for v in _INFLIGHT.values()
+            ))
+        if (reqs == 0 and queued == 0 and lifecycle_active == 0
+                and not _INFLIGHT):
+            continue
+        _PROXY_METRICS["reqs"] = 0
+        _PROXY_METRICS["stream_reqs"] = 0
+        ttft_sum = _PROXY_METRICS["ttft_sum"]
+        decode_tok = _PROXY_METRICS["decode_tok"]
+        decode_s = _PROXY_METRICS["decode_s"]
+        _PROXY_METRICS["ttft_sum"] = 0.0
+        _PROXY_METRICS["decode_tok"] = 0
+        _PROXY_METRICS["decode_s"] = 0.0
+        scheduler.reap_leaked_streams()
+        try:
+            await backend_lifecycle.reap_stale_leases()
+        except Exception as exc:                      # noqa: BLE001
+            print(f"[lifecycle] 租约回收检查失败: {exc}", flush=True)
+        in_flight = scheduler.max_concurrent - scheduler._slot._value
+        avg_ttft = ttft_sum / stream_reqs if stream_reqs else 0.0
+        tps = decode_tok / decode_s if decode_s > 0 else 0.0
+        print(f"[metrics] streams={in_flight}/{scheduler.max_concurrent} "
+              f"waiters={scheduler.waiters()} "
+              f"workers={scheduler.alive_workers()}/{len(scheduler._workers)} "
+              f"sched_active={scheduler.active} "
+              f"inflight=[{inflight_desc}] "
+              f"queued={queued} backend={state}(active={lifecycle_active}) | "
+              f"reqs={reqs} avg_ttft={avg_ttft:.2f}s decode={decode_tok} tok "
+              f"({tps:.1f} tok/s)", flush=True)
+        # 队列有货但没人取 = 调度器已死,这是静默故障,必须显式报警
+        if queued > 0 and scheduler.alive_workers() == 0:
+            print("[scheduler] DEADLOCK: queue has "
+                  f"{queued} item(s) but 0 live workers", flush=True)
 
 
 # ─── Fair routing decision ───────────────────────────────────────
@@ -1527,7 +1919,18 @@ async def _local_fallback_stream(body: dict):
     """Last-resort stream from the local backend, tried after every external
     provider failed. Waits out an unloading backend instead of failing."""
     try:
+        await _wait_out_pressure_before_slot(min(60.0, float(QUEUE_TIMEOUT)))
         await scheduler.acquire_stream(timeout=QUEUE_TIMEOUT)
+    except QueueOverflow as exc:
+        # 这里是 async generator, 不能 return 响应对象; 用 SSE error 事件收尾
+        print(f"[stream] 熔断(fallback stream): {exc}", flush=True)
+        yield (b"data: " + json.dumps(
+            {"error": {"message": "backend saturated, retry shortly",
+                       "type": "service_unavailable",
+                       "code": "backend_saturated"}, "status": 503}).encode()
+            + b"\n\n")
+        yield b"data: [DONE]\n\n"
+        return
     except asyncio.TimeoutError:
         raise
     stream_url = f"{BACKEND_URL}/v1/chat/completions"
@@ -1642,11 +2045,99 @@ def _backend_reloading_sse():
     payload["status"] = 503
     return b"data: " + json.dumps(payload).encode() + b"\n\n"
 
+def _backend_stream_interrupted_error():
+    return {
+        "error": {
+            "message": (
+                "FastLLM stream was interrupted before completion; "
+                "retry the request."
+            ),
+            "type": "upstream_transport_error",
+            "param": None,
+            "code": "backend_stream_interrupted",
+        },
+        "status": 502,
+    }
 
-async def _open_backend_stream(url: str, body: dict, timeout: float = 600):
-    lease = await backend_lifecycle.acquire(
-        timeout=min(float(timeout), float(QUEUE_TIMEOUT)))
-    client = httpx.AsyncClient(timeout=timeout)
+
+def _backend_stream_failure_sse(exc: BaseException):
+    try:
+        lifecycle_state = backend_lifecycle.snapshot().get("state")
+    except Exception:
+        lifecycle_state = None
+    if (isinstance(exc, BackendLifecycleError) or
+            lifecycle_state not in {None, "READY"}):
+        return _backend_reloading_sse()
+    return (b"data: " +
+            json.dumps(_backend_stream_interrupted_error()).encode() +
+            b"\n\n")
+
+
+async def _wait_out_pressure_before_slot(budget: float) -> None:
+    """在**不占用并发槽位**的前提下等显存压力消退。
+
+    死锁现场(实测): streams=8/8 waiters=0 inflight=[] queued=15,
+    backend=DRAINING(active=7), 而 GPU 利用率 0%、显存 32.3/32.5GB。
+    原因是顺序反了 —— 先 acquire_stream() 拿槽位, 再进 _open_backend_stream()
+    里的 _acquire_lease_tolerating_pressure() 睡着等压力。于是槽位全被"正在
+    等压力"的请求攥着; 而压力要消退得靠后端跑完在途请求, 后端要跑完又得有
+    请求拿到槽位派发出去。互相等, 永不解开。
+
+    所以要在拿槽位**之前**把压力等掉。这里只读压力标志、不获取任何资源,
+    等待期间其它请求仍可正常进出。超时也不抛异常: 后面的
+    _acquire_lease_tolerating_pressure 还有一次机会, 那里才是最终判定点。
+    """
+    if budget <= 0:
+        return
+    deadline = time.monotonic() + budget
+    waited = 0
+    while getattr(backend_lifecycle, "pressure", False):
+        if time.monotonic() >= deadline:
+            print(f"[stream] 压力预等待超时({waited}s), 仍尝试入队", flush=True)
+            return
+        if waited == 0:
+            print("[stream] 显存压力中, 先在槽位外等待(不占并发位)", flush=True)
+        await asyncio.sleep(2.0)
+        waited += 2
+
+
+async def _acquire_lease_tolerating_pressure(budget: float):
+    """显存水位压力是**瞬时**状态, 不该直接变成客户端可见的 503。
+
+    `backend_lifecycle.acquire()` 在 `_pressure` 为真时抛 BackendMemoryPressure,
+    流式路径原本把它直接翻译成 "FastLLM backend is reloading" 返回给调用方。
+    实测: 有别的长上下文请求在跑时, 同一个请求非流式成功、流式连续 3/3 拿到 503。
+    agentic 客户端(omp/OpenCode)永远走流式, 于是"5-10 并发 subagent 无报错"
+    这条根本达不到。这里改成在预算内等待压力消退, 与队列路径的语义对齐。
+    """
+    deadline = time.monotonic() + max(budget, 1.0)
+    attempt = 0
+    while True:
+        try:
+            return await backend_lifecycle.acquire(
+                timeout=max(1.0, deadline - time.monotonic()))
+        except BackendMemoryPressure:
+            attempt += 1
+            if time.monotonic() >= deadline:
+                raise
+            if attempt == 1 or attempt % 10 == 0:
+                print(f"[stream] VRAM 压力中, 等待重试(第 {attempt} 次), "
+                      f"剩余预算 {deadline - time.monotonic():.0f}s", flush=True)
+            await asyncio.sleep(2.0)
+
+
+async def _open_backend_stream(url: str, body: dict, timeout: float = 0.0):
+    # timeout<=0 → 用 STREAM_READ_TIMEOUT(默认 = QUEUE_TIMEOUT)。connect/write 单独
+    # 收紧, 只有 read 需要覆盖整段 prefill 的静默期。
+    read_timeout = float(timeout) if timeout and timeout > 0 else STREAM_READ_TIMEOUT
+    lease = await _acquire_lease_tolerating_pressure(
+        min(read_timeout, float(QUEUE_TIMEOUT)))
+    client = httpx.AsyncClient(timeout=httpx.Timeout(
+        read_timeout,
+        connect=STREAM_CONNECT_TIMEOUT,
+        write=STREAM_WRITE_TIMEOUT,
+        pool=read_timeout,
+    ))
     try:
         request = client.build_request("POST", url, json=body)
         response = await client.send(request, stream=True)
@@ -1728,17 +2219,27 @@ async def _pick_backend(body: dict) -> str:
     active = scheduler.active
     local_busy = pending + active >= scheduler.max_concurrent
 
-    # query real llama-server slots for busy state
-    local_slots_idle = 0
-    try:
-        async with httpx.AsyncClient(timeout=2) as c:
-            r = await c.get(f"{BACKEND_URL}/slots")
-            if r.status_code == 200:
-                for s in r.json():
-                    if not s.get("is_processing", True):
-                        local_slots_idle += 1
-    except Exception:
-        pass
+    # FastLLM has no /slots endpoint; its scheduler is the source of truth.
+    # In owned mode lifecycle readiness is authoritative even if the legacy
+    # manager monitor has not refreshed BACKEND_READY yet.
+    local_ready = BACKEND_READY
+    if FASTLLM_OWNED:
+        local_ready = backend_lifecycle.snapshot()["state"] == "READY"
+    local_slots_idle = (
+        max(0, scheduler.max_concurrent - active)
+        if FASTLLM_MODE
+        else 0
+    )
+    if not FASTLLM_MODE:
+        try:
+            async with httpx.AsyncClient(timeout=2) as client:
+                response = await client.get(f"{BACKEND_URL}/slots")
+                if response.status_code == 200:
+                    for slot in response.json():
+                        if not slot.get("is_processing", True):
+                            local_slots_idle += 1
+        except Exception:
+            pass
 
     over_ctx = _over_context(body)
     scores: dict[str, float] = {}
@@ -1746,7 +2247,7 @@ async def _pick_backend(body: dict) -> str:
         s = 0.0
 
         if b == "local":
-            if not BACKEND_READY or over_ctx:
+            if not local_ready or over_ctx:
                 s = -999
                 continue
             if hits.get("local"):
@@ -2248,8 +2749,8 @@ async def _lifecycle_watchdog():
                         f"free={sample[0] / 1024 ** 3:.2f} GiB",
                         flush=True,
                     )
-                if backend_lifecycle.pressure_stale(
-                        grace_seconds=60.0):
+                if (backend_lifecycle.pressure_stale(grace_seconds=60.0)
+                        and backend_lifecycle.state in {"READY", "DRAINING"}):
                     print(
                         "[lifecycle] VRAM pressure sustained >60s, unloading",
                         flush=True,
@@ -2266,7 +2767,7 @@ async def _lifecycle_watchdog():
 
 # ─── Auth middleware ─────────────────────────────────────────────
 
-NO_AUTH_PATHS = {"/health", "/", "/favicon.ico"}
+NO_AUTH_PATHS = {"/health", "/", "/favicon.ico", "/admin"}
 
 
 class AuthMiddleware(BaseHTTPMiddleware):
@@ -2303,46 +2804,90 @@ class AuthMiddleware(BaseHTTPMiddleware):
         )
 
 
-# FastLLM's vision path is safest when every inline image is normalized to
-# an RGB PNG.  Do this even for PNG inputs: palette/alpha/EXIF variants can
-# otherwise take different decoder paths or arrive with an unexpected layout.
-def _convert_images(messages):
-    try:
-        from PIL import Image, ImageOps
-    except ImportError:
-        return
+# FastLLM C++ vision path intentionally decodes only PNG/JPEG. Normalize every
+# other Pillow-supported raster format (WebP/GIF/BMP/TIFF/ICO/PPM...) to RGB
+# PNG here. The old code only converted non-RGB images, so an RGB WebP/GIF
+# passed through untouched and deterministically failed in image_loader.cpp.
+#
+# Remote URLs need the same treatment: the backend downloads them directly,
+# but cannot decode non-PNG/JPEG bytes. Download asynchronously here and run
+# Pillow in a worker thread so image decode/encode never blocks the event loop.
+_MAX_PROXY_IMAGE_BYTES = 32 * 1024 * 1024
 
-    for msg in messages:
-        content = msg.get("content")
-        if not isinstance(content, list):
-            continue
-        for part in content:
-            if not isinstance(part, dict) or part.get("type") != "image_url":
+
+def _normalize_image_bytes(raw: bytes, source_hint: str) -> tuple[bytes, bool]:
+    """Return (bytes, converted_to_png). Runs in a worker thread."""
+    from PIL import Image, ImageOps
+
+    with Image.open(io.BytesIO(raw)) as source:
+        actual_format = (source.format or source_hint or "").upper()
+        orientation = source.getexif().get(0x0112, 1)
+        animated = bool(getattr(source, "is_animated", False))
+        keep_original = (
+            actual_format in {"PNG", "JPEG", "JPG"}
+            and orientation in (1, None)
+            and source.mode == "RGB"
+            and not animated
+        )
+        if keep_original:
+            return raw, False
+        # Animated formats are intentionally flattened to frame 0. The model
+        # consumes one RGB image, not an animation timeline.
+        if animated:
+            source.seek(0)
+        image = ImageOps.exif_transpose(source).convert("RGB")
+        buf = io.BytesIO()
+        image.save(buf, format="PNG")
+        return buf.getvalue(), True
+
+
+async def _convert_images(messages):
+    try:
+        from PIL import Image  # noqa: F401
+    except ImportError as exc:
+        raise ValueError("image conversion requires Pillow") from exc
+
+    async with httpx.AsyncClient(
+            timeout=httpx.Timeout(30.0, connect=10.0),
+            follow_redirects=True) as client:
+        for msg in messages:
+            content = msg.get("content")
+            if not isinstance(content, list):
                 continue
-            image_url = part.get("image_url") or {}
-            url = image_url.get("url", "")
-            if not url.startswith("data:"):
-                continue
-            header, _, b64 = url.partition(",")
-            fmt = ""
-            if "/" in header:
-                fmt = header.split("/", 1)[1].split(";", 1)[0].lower()
-            try:
-                raw = base64.b64decode(b64)
-                with Image.open(io.BytesIO(raw)) as source:
-                    orientation = source.getexif().get(0x0112, 1)
-                    if orientation not in (1, None) or source.mode != "RGB":
-                        # EXIF rotation applied or non-RGB: re-encode as PNG.
-                        img = ImageOps.exif_transpose(source).convert("RGB")
-                        buf = io.BytesIO()
-                        img.save(buf, format="PNG")
-                        new_b64 = base64.b64encode(buf.getvalue()).decode()
-                        image_url["url"] = f"data:image/png;base64,{new_b64}"
-                    # Otherwise keep the original bytes (JPEG/PNG as-is);
-                    # the backend decodes by magic, so re-encoding only
-                    # inflates the request body (JPEG 4K -> PNG ~2.7x).
-            except Exception as e:
-                print(f"[proxy] image convert failed ({fmt}): {e}", flush=True)
+            for part in content:
+                if not isinstance(part, dict) or part.get("type") != "image_url":
+                    continue
+                image_url = part.get("image_url") or {}
+                url = image_url.get("url", "")
+                source_hint = ""
+                try:
+                    if url.startswith("data:"):
+                        header, comma, payload = url.partition(",")
+                        if not comma or ";base64" not in header.lower():
+                            raise ValueError("image data URL must use base64 encoding")
+                        if "/" in header:
+                            source_hint = header.split("/", 1)[1].split(";", 1)[0]
+                        raw = base64.b64decode(payload, validate=True)
+                    elif url.startswith(("http://", "https://")):
+                        response = await client.get(url)
+                        response.raise_for_status()
+                        raw = response.content
+                        source_hint = response.headers.get(
+                            "content-type", "").split("/")[-1]
+                    else:
+                        raise ValueError(
+                            "image_url.url must use data:, http://, or https://")
+                    if not raw or len(raw) > _MAX_PROXY_IMAGE_BYTES:
+                        raise ValueError("image payload is empty or exceeds 32 MiB")
+                    normalized, converted = await asyncio.to_thread(
+                        _normalize_image_bytes, raw, source_hint)
+                    if converted:
+                        encoded = base64.b64encode(normalized).decode()
+                        image_url["url"] = f"data:image/png;base64,{encoded}"
+                except Exception as exc:
+                    fmt = source_hint or "unknown"
+                    raise ValueError(
+                        f"unsupported or invalid image ({fmt}): {exc}") from exc
 
 
 # ─── FastAPI app ────────────────────────────────────────────────
@@ -2353,57 +2898,52 @@ app.add_middleware(AuthMiddleware)
 
 # ─── Model listing ──────────────────────────────────────────────
 
-MODEL_LIST = {
-    "object": "list",
-    "data": [
-        {
-            "id": "qwen3.6-27b-awq",
-            "object": "model",
-            "created": int(time.time()),
-            "owned_by": "local",
-            "context_length": 262144,
-            "max_tokens": 16384,
-            "reasoning": True,
-            "capabilities": {
-                "vision": True,
-                "function_calling": True,
-                "streaming": True,
-            },
-            "supported_features": {
-                "vision": True,
-                "functionCall": True,
-                "streaming": True,
+def _build_local_model_list(
+    public_aliases: set[str],
+    auto_route_aliases: set[str] | None = None,
+) -> dict:
+    auto_route_aliases = auto_route_aliases or set()
+    model_ids = sorted(public_aliases | auto_route_aliases) or [
+        FASTLLM_MODEL_SLUG
+    ]
+    created = int(time.time())
+    return {
+        "object": "list",
+        "data": [
+            {
+                "id": model_id,
+                "object": "model",
+                "created": created,
+                "owned_by": (
+                    "router" if model_id in auto_route_aliases else "local"
+                ),
+                "context_length": 262144,
+                "max_tokens": 16384,
                 "reasoning": True,
-            },
-            "modalities": ["text", "image"],
-            "input_modalities": ["text", "image"],
-            "output_modalities": ["text"],
-        },
-        {
-            "id": "qwen3.6-27b-heretic",
-            "object": "model",
-            "created": int(time.time()),
-            "owned_by": "local",
-            "context_length": 262144,
-            "max_tokens": 16384,
-            "reasoning": True,
-            "capabilities": {
-                "vision": True,
-                "function_calling": True,
-                "streaming": True,
-            },
-            "supported_features": {
-                "vision": True,
-                "functionCall": True,
-                "streaming": True,
-                "reasoning": True,
-            },
-            "modalities": ["text", "image"],
-            "input_modalities": ["text", "image"],
-            "output_modalities": ["text"],
-        },
-    ],
-}
+                "capabilities": {
+                    "vision": True,
+                    "function_calling": True,
+                    "streaming": True,
+                },
+                "supported_features": {
+                    "vision": True,
+                    "functionCall": True,
+                    "streaming": True,
+                    "reasoning": True,
+                },
+                "modalities": ["text", "image"],
+                "input_modalities": ["text", "image"],
+                "output_modalities": ["text"],
+            }
+            for model_id in model_ids
+        ],
+    }
+
+
+MODEL_LIST = _build_local_model_list(
+    FASTLLM_PUBLIC_ALIASES,
+    FASTLLM_AUTO_ROUTE_ALIASES,
+)
 
 
 @app.get("/v1/models")
@@ -2412,25 +2952,65 @@ async def list_models():
 
 
 # ─── OpenAI endpoint ────────────────────────────────────────────
+_QWEN_REASONING_EFFORT_ALIASES = {
+    "minimal": "low",
+    "low": "low",
+    "medium": "medium",
+    "high": "high",
+    "xhigh": "xhigh",
+    "max": "xhigh",
+}
+_EFFORT_BUDGETS = {
+    "low": 2048,
+    "medium": 4096,
+    "high": 8192,
+    "xhigh": 16384,
+}
 
-@app.post("/v1/chat/completions")
-async def openai_chat(request: Request):
-    try:
-        body = await request.json()
-    except ClientDisconnect:
-        return Response(status_code=499)
+# Qwen3.8 官方 chat template 只接受三档: low / medium / xhigh。
+# 模板自身把 'high' 别名到 'xhigh',其余取值直接 raise_exception。
+# 缺省不传 reasoning_effort 时模板取默认 xhigh —— 所以"推不出来"等于
+# 静默升到最高档,必须显式覆盖全部客户端档位。
+_QWEN_TEMPLATE_EFFORT = {
+    "minimal": "low",
+    "low": "low",
+    "medium": "medium",
+    "high": "xhigh",
+    "xhigh": "xhigh",
+    "max": "xhigh",
+}
+# Anthropic 协议没有 reasoning_effort 字段,客户端只发 thinking.budget_tokens。
+# 边界按 OMP Anthropic adapter 的实际预算划分:
+#   minimal=1024, low=4096, medium=8192, high/xhigh>=16384
+# 旧实现用 proxy 自己的 _EFFORT_BUDGETS(2048/4096/8192)当阈值,导致
+#   low(4096)->medium、medium(8192)->xhigh 整体上移一档,high/xhigh 全部坍缩。
+_ANTHROPIC_BUDGET_EFFORT_TIERS = ((4096, "low"), (8192, "medium"))
 
+
+def _budget_to_template_effort(budget: int) -> str:
+    for limit, name in _ANTHROPIC_BUDGET_EFFORT_TIERS:
+        if budget <= limit:
+            return name
+    return "xhigh"
+
+
+def _normalize_openai_reasoning_controls(body: dict) -> None:
+    """Translate public reasoning controls into template and backend fields."""
     effort = body.pop("reasoning_effort", None)
     reasoning_obj = body.pop("reasoning", None)
     enable_thinking_top = body.pop("enable_thinking", None)
     thinking_budget = body.pop("thinking_budget", None)
 
+    requested_effort = effort
     enable = True
-    if effort == "none":
+    if isinstance(effort, str) and effort.lower() == "none":
         enable = False
     if isinstance(reasoning_obj, dict):
-        eff = reasoning_obj.get("effort", "")
-        if eff == "none":
+        requested_effort = reasoning_obj.get("effort") or requested_effort
+        if (
+            isinstance(reasoning_obj.get("effort"), str)
+            and reasoning_obj["effort"].lower() == "none"
+        ):
             enable = False
     elif reasoning_obj == "off":
         enable = False
@@ -2441,37 +3021,66 @@ async def openai_chat(request: Request):
 
     kwargs = body.setdefault("chat_template_kwargs", {})
     kwargs["enable_thinking"] = enable
+    if not enable:
+        kwargs.pop("reasoning_effort", None)
+        return
 
+    template_effort = requested_effort
+    if template_effort is None:
+        template_effort = kwargs.get("reasoning_effort")
+    effort_key = (
+        template_effort.strip().lower()
+        if isinstance(template_effort, str)
+        else ""
+    )
+    normalized_effort = _QWEN_REASONING_EFFORT_ALIASES.get(effort_key)
+    if normalized_effort is None:
+        kwargs.pop("reasoning_effort", None)
+    else:
+        kwargs["reasoning_effort"] = normalized_effort
+
+    if effort_key == "max":
+        return
+    budget = thinking_budget
+    if budget is None or budget <= 0:
+        budget = _EFFORT_BUDGETS.get(normalized_effort, 4096)
+    body.setdefault("reasoning", {})["budget"] = budget
+
+
+
+@app.post("/v1/chat/completions")
+async def openai_chat(request: Request):
+    try:
+        body = await request.json()
+    except ClientDisconnect:
+        return Response(status_code=499)
+
+    _normalize_openai_reasoning_controls(body)
     _normalize_tool_schema(body)
-
-    if enable:
-        _EFFORT_BUDGETS = {"low": 2048, "medium": 4096, "high": 8192, "xhigh": 16384}
-        budget = thinking_budget
-        key = (effort or "").lower()
-        if isinstance(reasoning_obj, dict):
-            key = (reasoning_obj.get("effort") or "").lower()
-        if budget is None or budget <= 0:
-            budget = _EFFORT_BUDGETS.get(key, 4096)
-        if key == "max":
-            body.pop("reasoning", None)
-        else:
-            body.setdefault("reasoning", {})["budget"] = budget
-
-    _convert_images(body.get("messages", []))
+    try:
+        await _convert_images(body.get("messages", []))
+    except ValueError as exc:
+        return JSONResponse(
+            status_code=400,
+            content={
+                "error": {
+                    "message": str(exc),
+                    "type": "invalid_request_error",
+                    "param": "messages",
+                    "code": "invalid_image_url",
+                }
+            },
+        )
     requested_model = body.get("model", "")
-    # Classify the caller's public model before rewriting aliases. Any local
-    # alias (heretic suffix, public alias, or slug) bypasses the fair router;
-    # rerouting an explicitly-local model to external providers breaks tool
-    # calls and serves a different model than the caller asked for.
-    is_heretic = _is_local_alias(requested_model)
+    # Classify the requested public ID before rewriting it for a possible
+    # local dispatch. Explicit local aliases bypass the fair router; auto
+    # aliases, including image requests, retain multi-backend failover.
+    is_heretic = _must_route_local(
+        requested_model,
+        body.get("messages", []),
+    )
     if requested_model:
         body["model"] = _to_backend_model(requested_model)
-    # FastLLM is the only backend with the loaded local vision projector. A
-    # FastLLM /slots probe is not available on this apiserver, so image calls
-    # must remain local even when they use the fair-routed AWQ alias.
-    is_heretic = is_heretic or (
-        FASTLLM_MODE and _has_images(body.get("messages", []))
-    )
     priority = 0 if is_heretic else 1
 
     if body.get("stream"):
@@ -2487,7 +3096,14 @@ async def openai_chat(request: Request):
                 )
         timeout = QUEUE_TIMEOUT * 2 if is_heretic else QUEUE_TIMEOUT
         try:
+            await _wait_out_pressure_before_slot(min(60.0, float(timeout)))
             await scheduler.acquire_stream(timeout=timeout)
+        except QueueOverflow as exc:
+            print(f"[stream] 熔断: {exc}", flush=True)
+            return JSONResponse(
+                {"error": "backend saturated, retry shortly",
+                 "type": "service_unavailable"},
+                status_code=503, headers={"Retry-After": "10"})
         except asyncio.TimeoutError:
             if is_heretic:
                 return JSONResponse({"error": "queue timeout"}, status_code=503)
@@ -2519,11 +3135,15 @@ async def openai_chat(request: Request):
 
     if not is_heretic and FALLBACK_ENABLED and not BENCHMARK_MODE and _over_context(body):
         try:
-            return JSONResponse(await _nim_chat(body))
+            return JSONResponse(_restore_public_model(
+                await _nim_chat(body), requested_model
+            ))
         except (RuntimeError, httpx.TimeoutException, httpx.RequestError):
             if ZEN_API_KEY:
                 try:
-                    return JSONResponse(await _zen_chat(body))
+                    return JSONResponse(_restore_public_model(
+                        await _zen_chat(body), requested_model
+                    ))
                 except Exception:
                     pass
             return JSONResponse({"error": "context exceeds limit, fallback failed"}, status_code=429)
@@ -2574,9 +3194,10 @@ async def openai_chat(request: Request):
                     f"[route] routing to {external_backend}",
                     flush=True,
                 )
-                return JSONResponse(
-                    await _external_chat(external_backend, body)
-                )
+                return JSONResponse(_restore_public_model(
+                    await _external_chat(external_backend, body),
+                    requested_model,
+                ))
             except (
                 RuntimeError,
                 httpx.TimeoutException,
@@ -2639,17 +3260,27 @@ async def anthropic_messages(request: Request):
     stream = body.get("stream", False)
     openai_body = _anthropic_to_openai(body)
     _normalize_tool_schema(openai_body)
-    _convert_images(openai_body.get("messages", []))
+    try:
+        await _convert_images(openai_body.get("messages", []))
+    except ValueError as exc:
+        return JSONResponse(
+            status_code=400,
+            content={
+                "type": "error",
+                "error": {
+                    "type": "invalid_request_error",
+                    "message": str(exc),
+                },
+            },
+        )
     requested_model = openai_body.get("model", "")
-    # Preserve public-ID routing semantics before the backend slug rewrite.
-    # Local aliases bypass the fair router (see _is_local_alias).
-    is_heretic = _is_local_alias(requested_model)
+    # Preserve public routing semantics before the backend slug rewrite.
+    is_heretic = _must_route_local(
+        requested_model,
+        openai_body.get("messages", []),
+    )
     if requested_model:
         openai_body["model"] = _to_backend_model(requested_model)
-    # Keep Anthropic/mobile image requests on the local FastLLM projector too.
-    is_heretic = is_heretic or (
-        FASTLLM_MODE and _has_images(openai_body.get("messages", []))
-    )
     priority = 0 if is_heretic else 1
     if stream:
         if not is_heretic and FALLBACK_ENABLED and not BENCHMARK_MODE and _over_context(openai_body):
@@ -2677,13 +3308,15 @@ async def anthropic_messages(request: Request):
 
     if not is_heretic and FALLBACK_ENABLED and not BENCHMARK_MODE and _over_context(openai_body):
         try:
-            nim_data = await _nim_chat(openai_body)
-            return JSONResponse(_openai_to_anthropic(nim_data))
+            return JSONResponse(_openai_to_anthropic(
+                _restore_public_model(nim_data, requested_model)
+            ))
         except Exception:
             if ZEN_API_KEY:
                 try:
-                    zen_data = await _zen_chat(openai_body)
-                    return JSONResponse(_openai_to_anthropic(zen_data))
+                    return JSONResponse(_openai_to_anthropic(
+                        _restore_public_model(zen_data, requested_model)
+                    ))
                 except Exception:
                     pass
             return JSONResponse({"error": "context exceeds limit, fallback failed"}, status_code=429)
@@ -2734,7 +3367,9 @@ async def anthropic_messages(request: Request):
                 external_data = await _external_chat(
                     external_backend, openai_body
                 )
-                return JSONResponse(_openai_to_anthropic(external_data))
+                return JSONResponse(_openai_to_anthropic(
+                    _restore_public_model(external_data, requested_model)
+                ))
             except (
                 RuntimeError,
                 httpx.TimeoutException,
@@ -2755,7 +3390,9 @@ async def anthropic_messages(request: Request):
             resp = await scheduler.submit(openai_body, priority, timeout=QUEUE_TIMEOUT * 2)
             _log_backend_status("anthropic_chat_local_fallback", resp.status_code)
             if resp.status_code == 200:
-                local_data = json.loads(resp.content)
+                local_data = _restore_public_model(
+                    json.loads(resp.content), requested_model
+                )
                 return JSONResponse(_openai_to_anthropic(local_data))
             last_err = f"local_fallback_{resp.status_code}"
         except (asyncio.TimeoutError, httpx.TransportError, BackendLifecycleError) as exc:
@@ -2811,17 +3448,63 @@ def _image_source_to_url(source: dict) -> str:
     return f"data:{media};base64,{source.get('data', '')}"
 
 
+# Claude Code 每次请求都会往 system prompt 最前面塞一行**每请求都变**的
+# 归因头, 形如:
+#     x-anthropic-billing-header: cc_version=1.0.x; cch=abcd1234;
+# 它落在 prompt 前缀的第 0 个位置, 于是整段前缀每轮都不同 -> 前缀缓存
+# (KV cache) 全量失效, 本地模型每轮重新 prefill, 实测慢 ~90%。
+# 这里在渲染/转发**之前**把这行剥掉, 让真正稳定的系统提示成为缓存前缀。
+# 只剥**开头**、且匹配归因头特征的行, 绝不动正文中间的内容。
+_CC_ATTR_LINE_RE = re.compile(
+    r'^\s*x-anthropic-billing[-\w]*\s*:[^\n]*\n?',
+    re.IGNORECASE)
+# 归因头被剥除的次数(观测用; 非 0 说明有 Claude Code 流量且正在被保护)
+_CC_ATTR_STRIPPED = 0
+
+
+def _strip_claude_code_attribution(text):
+    """剥掉开头的 Claude Code 归因头行, 返回 (净化文本, 剥除行数)。
+
+    支持连续多行归因头; 只吃开头, 正文不受影响。空/非字符串原样返回。
+    """
+    global _CC_ATTR_STRIPPED
+    if not isinstance(text, str) or not text:
+        return text, 0
+    stripped = 0
+    s = text
+    while True:
+        m = _CC_ATTR_LINE_RE.match(s)
+        if not m:
+            break
+        s = s[m.end():]
+        stripped += 1
+    if stripped:
+        # 归因行后常残留空行; 去掉前导换行让稳定前缀从真正内容开始。
+        # 只吃 '\n'(不动空格/制表符, 保留正文可能的缩进)。
+        s = s.lstrip("\n")
+        _CC_ATTR_STRIPPED += stripped
+    return s, stripped
+
+
 def _anthropic_to_openai(body: dict) -> dict:
     messages = []
 
     system = body.get("system")
     if system:
         if isinstance(system, str):
-            messages.append({"role": "system", "content": system})
+            # 纯字符串 system: 归因头可能被前置在内容最前面, 一样要剥。
+            cleaned, _ = _strip_claude_code_attribution(system)
+            if cleaned.strip():
+                messages.append({"role": "system", "content": cleaned})
         elif isinstance(system, list):
-            parts = [b.get("text", "") for b in system
-                     if isinstance(b, dict) and b.get("type") == "text"
-                     and not b.get("text", "").startswith("x-anthropic-billing")]
+            parts = []
+            for b in system:
+                if not (isinstance(b, dict) and b.get("type") == "text"):
+                    continue
+                # 逐块剥: 归因头可能单独成块, 也可能前置在首个文本块里。
+                cleaned, _ = _strip_claude_code_attribution(b.get("text", ""))
+                if cleaned.strip():
+                    parts.append(cleaned)
             if parts:
                 messages.append({"role": "system", "content": " ".join(parts)})
 
@@ -2894,21 +3577,53 @@ def _anthropic_to_openai(body: dict) -> dict:
     enable = thinking_param.get("type") != "disabled"
 
     output_config = body.get("output_config") or {}
-    if output_config.get("effort") and output_config["effort"] != "none":
-        enable = True
+    requested_effort = output_config.get("effort")
+    if requested_effort:
+        enable = str(requested_effort).lower() != "none"
 
     result = {
         "model": body.get("model", "qwen3.6-27b-awq"),
         "messages": messages,
-        "max_tokens": body.get("max_tokens", 16384),
-        "temperature": body.get("temperature", 1.0),
-        "top_p": body.get("top_p", 1.0),
+        "max_tokens": _default_max_tokens(body),
         "stream": body.get("stream", False),
         "chat_template_kwargs": {"enable_thinking": enable},
     }
+    # 采样参数只在客户端显式给出时才透传:否则交给 prepare_fastllm_body 注入
+    # Qwen3 推荐档(temp 0.6 / top_p 0.8 / top_k 20)。原先硬写 1.0/1.0 会让
+    # Anthropic 侧的尾部概率质量显著高于 OpenAI 侧,量化模型更容易漂移/循环。
+    for key in ("temperature", "top_p"):
+        if body.get(key) is not None:
+            result[key] = body[key]
 
     if enable:
-        if body.get("thinking", {}).get("type") == "max":
+        # Anthropic 协议没有 reasoning_effort 字段,effort 只能从
+        # output_config.effort / thinking.type / thinking.budget_tokens 推。
+        # 不推的话模板恒取默认 xhigh —— Anthropic 侧 thinking effort 等于不可控。
+        effort = None
+        source = "none"
+        if requested_effort:
+            effort = _QWEN_TEMPLATE_EFFORT.get(str(requested_effort).lower())
+            if effort:
+                source = "output_config.effort"
+        if effort is None and thinking_param.get("type") == "max":
+            effort, source = "xhigh", "thinking.type=max"
+        if effort is None:
+            budget_hint = thinking_param.get("budget_tokens")
+            if isinstance(budget_hint, int) and budget_hint > 0:
+                effort = _budget_to_template_effort(budget_hint)
+                source = f"budget_tokens={budget_hint}"
+        if effort:
+            result["chat_template_kwargs"]["reasoning_effort"] = effort
+        if ANTHROPIC_EFFORT_TRACE:
+            print(
+                f"[proxy] anthropic effort: {effort or 'UNSET(template default xhigh)'} "
+                f"via {source} "
+                f"(output_config.effort={requested_effort!r} "
+                f"thinking.type={thinking_param.get('type')!r} "
+                f"budget_tokens={thinking_param.get('budget_tokens')!r})",
+                flush=True)
+
+        if thinking_param.get("type") == "max":
             result.pop("reasoning", None)
         else:
             budget = thinking_param.get("budget_tokens") or 4096
@@ -3016,6 +3731,28 @@ def _openai_to_anthropic(oai: dict) -> dict:
 
 # ─── Streaming ──────────────────────────────────────────────────
 
+async def _abort_when_client_gone(request, opened_stream, tag: str = ""):
+    """客户端断开时**立刻**中止上游请求。
+
+    原来的断开检测写在"收到 chunk 之后"的循环里, 而长 prefill 期间一个 chunk 都不来
+    (262K 冷 prefill 实测 ~800s 无输出), 所以那个检查根本不会执行:
+    客户端早就走了, 后端还在替它算, 请求堆在后端队列里(实测 running=1 pending=5)。
+    这里用独立任务轮询 is_disconnected, 一断开就关掉上游流, 让后端尽早释放。
+    """
+    try:
+        while True:
+            await asyncio.sleep(2)
+            if await request.is_disconnected():
+                print(f"[stream] 客户端已断开, 中止上游请求 {tag}", flush=True)
+                try:
+                    await _close_backend_stream(opened_stream)
+                except Exception:                          # noqa: BLE001
+                    pass
+                return
+    except asyncio.CancelledError:
+        return
+
+
 async def _local_stream(
     url: str,
     body: dict,
@@ -3029,10 +3766,17 @@ async def _local_stream(
         body = prepare_fastllm_body(body, FASTLLM_CHAT_TEMPLATE)
     prefix_tracker.reserve(body.get("messages", []))
     local_failed = False
+    local_error = None
+    client_disconnected = False
+    yielded_local_event = False
+    disconnect_watch = None
     pending = b""
     try:
         stream = (_proxy_stream(url, body, opened_stream=opened_stream)
                   if opened_stream is not None else _proxy_stream(url, body))
+        if opened_stream is not None:
+            disconnect_watch = asyncio.create_task(
+                _abort_when_client_gone(request, opened_stream, public_model))
         async for chunk in stream:
             if FASTLLM_MODE:
                 pending += chunk
@@ -3048,6 +3792,7 @@ async def _local_stream(
                                  else b"\n\n")
                     event_end = end + len(separator)
                     event, pending = pending[:event_end], pending[event_end:]
+                    yielded_local_event = True
                     yield _rewrite_stream_model(event, public_model)
                     data_lines = [
                         line[5:].lstrip()
@@ -3057,25 +3802,72 @@ async def _local_stream(
                     if b"\n".join(data_lines) == b"[DONE]":
                         return
             else:
+                yielded_local_event = True
                 yield chunk
             if await request.is_disconnected():
+                client_disconnected = True
                 return
         if pending:
+            yielded_local_event = True
             yield _rewrite_stream_model(pending, public_model)
-    except Exception:
-        local_failed = True
+    except Exception as exc:
+        try:
+            client_disconnected = await request.is_disconnected()
+        except Exception:
+            client_disconnected = False
+        if not client_disconnected:
+            local_failed = True
+            local_error = exc
+            _log_backend_failure(
+                f"local_stream yielded={int(yielded_local_event)} "
+                f"pending_bytes={len(pending)}", exc)
     finally:
+        if disconnect_watch is not None:
+            disconnect_watch.cancel()
         prefix_tracker.record(body.get("messages", []), "local")
         scheduler.release_stream()
         if local_failed:
             backend_penalty.record_failure("local")
             service_history.record("local", False)
-        else:
+        elif not client_disconnected:
             backend_penalty.record_success("local")
             service_history.record("local", True)
 
+    if client_disconnected:
+        return
     if local_failed:
-        if allow_fallback and FALLBACK_ENABLED and not BENCHMARK_MODE:
+        # 【上游BUMP勿回退】确定性后端错误(404/400)必须原样透传, 不能走 fallback
+        # 也不能伪装成 transport error。实测: 客户端用不存在的模型别名打流式请求,
+        # 后端回 404, 这里先试 NIM 再试 OR/ZEN(全失败), 最后发一个
+        # finish_reason=error 的 SSE —— 客户端只看到空回答 + HTTP 200,
+        # 于是每 2 秒重试一次永不停止。
+        m = (re.search(r"backend returned (\d{3}): (.*)", str(local_error),
+                       re.DOTALL)
+             if isinstance(local_error, RuntimeError) else None)
+        if m and int(m.group(1)) < 500:
+            status = int(m.group(1))
+            detail = m.group(2).strip()
+            try:
+                payload = json.loads(detail)
+            except Exception:                          # noqa: BLE001
+                payload = {"error": {"message": detail}}
+            err_msg = (payload.get("error", {}).get("message")
+                       if isinstance(payload.get("error"), dict)
+                       else str(payload)[:300]) or detail[:300]
+            yield (b"data: " + json.dumps({
+                "choices": [{"index": 0, "delta": {}, "finish_reason": "stop"}],
+                "error": {
+                    "message": err_msg,
+                    "type": "invalid_request_error",
+                    "code": f"upstream_{status}",
+                },
+            }).encode() + b"\n\n")
+            yield b"data: [DONE]\n\n"
+            return
+        # Never concatenate a second provider's answer after local tokens
+        # have already reached the client.
+        if (not yielded_local_event and allow_fallback and
+                FALLBACK_ENABLED and not BENCHMARK_MODE):
             try:
                 async for chunk in _nim_stream(body):
                     yield chunk
@@ -3101,7 +3893,7 @@ async def _local_stream(
                         return
                     except Exception:
                         pass
-        yield _backend_reloading_sse()
+        yield _backend_stream_failure_sse(local_error)
         yield b"data: [DONE]\n\n"
 
 
@@ -3217,22 +4009,51 @@ async def _anthropic_external_stream(
     openai_body: dict,
     request: Request,
     preferred_backend: str = "",
+    public_model: str = "",
 ):
+    providers = {
+        "nim": _nim_stream,
+        "or": _or_stream,
+        "zen": _zen_stream,
+    }
     for external_backend in _external_backend_order(preferred_backend):
+        payloads = _iter_sse_byte_payloads(
+            providers[external_backend](openai_body)
+        )
         try:
-            external_data = await _external_chat(
-                external_backend, openai_body
-            )
+            first_payload = await anext(payloads)
         except (
+            StopAsyncIteration,
             RuntimeError,
             httpx.TimeoutException,
             httpx.RequestError,
         ):
             continue
 
-        anthro = _openai_to_anthropic(external_data)
-        async for chunk in _completed_anthropic_stream(anthro, request):
-            yield chunk
+        async def replay_payloads():
+            yield first_payload
+            async for payload in payloads:
+                yield payload
+
+        try:
+            async for chunk in _anthropic_events_from_payloads(
+                replay_payloads(),
+                openai_body,
+                public_model,
+            ):
+                yield chunk
+                if await request.is_disconnected():
+                    return
+        except (
+            RuntimeError,
+            httpx.TimeoutException,
+            httpx.RequestError,
+        ) as exc:
+            yield _sse("error", {
+                "error": {
+                    "message": f"{external_backend} stream failed: {exc}",
+                },
+            })
         return
 
     yield _sse("error", {"error": {"message": "all backends failed"}})
@@ -3244,53 +4065,59 @@ async def _anthropic_stream_limited(
     public_model: str = "",
 ):
     requested_model = public_model or openai_body.get("model", "")
-    is_heretic = _is_local_alias(requested_model) or (
-        FASTLLM_MODE and _has_images(openai_body.get("messages", []))
+    is_heretic = _must_route_local(
+        requested_model,
+        openai_body.get("messages", []),
     )
     if not is_heretic and FALLBACK_ENABLED and not BENCHMARK_MODE:
         backend = await _pick_backend(openai_body)
         if backend != "local":
             async for chunk in _anthropic_external_stream(
-                openai_body, request, backend
+                openai_body,
+                request,
+                backend,
+                public_model,
             ):
                 yield chunk
             return
     timeout = QUEUE_TIMEOUT * 2 if is_heretic else QUEUE_TIMEOUT
     try:
+        await _wait_out_pressure_before_slot(min(60.0, float(timeout)))
         await scheduler.acquire_stream(timeout=timeout)
+    except QueueOverflow as exc:
+        # async generator: 不能 return 响应对象, 用 SSE error 事件收尾
+        print(f"[stream] 熔断(anthropic stream): {exc}", flush=True)
+        yield (b"data: " + json.dumps(
+            {"error": {"message": "backend saturated, retry shortly",
+                       "type": "service_unavailable",
+                       "code": "backend_saturated"}, "status": 503}).encode()
+            + b"\n\n")
+        yield b"data: [DONE]\n\n"
+        return
     except asyncio.TimeoutError:
-        if is_heretic:
-            yield _sse("error", {"error": {"message": "queue timeout"}})
-            return
-        if FALLBACK_ENABLED and not BENCHMARK_MODE:
-            nim_data = None
-            try:
-                nim_data = await _nim_chat(openai_body)
-            except Exception:
-                if OR_API_KEY:
-                    try:
-                        nim_data = await _or_chat(openai_body)
-                    except Exception:
-                        pass
-                if nim_data is None and ZEN_API_KEY:
-                    try:
-                        nim_data = await _zen_chat(openai_body)
-                    except Exception:
-                        pass
-            if nim_data is None:
-                yield _sse("error", {"error": {"message": "fallback failed"}})
-                return
-            anthro = _openai_to_anthropic(nim_data)
-            async for chunk in _completed_anthropic_stream(anthro, request):
+        if not is_heretic and FALLBACK_ENABLED and not BENCHMARK_MODE:
+            async for chunk in _anthropic_external_stream(
+                openai_body,
+                request,
+                public_model=public_model,
+            ):
                 yield chunk
-            return
-        yield _sse("error", {"error": {"message": "queue timeout"}})
+        else:
+            yield _sse("error", {"error": {"message": "queue timeout"}})
         return
     try:
         lease = await backend_lifecycle.acquire(timeout=timeout)
     except (asyncio.TimeoutError, BackendLifecycleError) as exc:
         scheduler.release_stream()
-        yield _sse("error", {"error": {"message": str(exc)}})
+        if not is_heretic and FALLBACK_ENABLED and not BENCHMARK_MODE:
+            async for chunk in _anthropic_external_stream(
+                openai_body,
+                request,
+                public_model=public_model,
+            ):
+                yield chunk
+        else:
+            yield _sse("error", {"error": {"message": str(exc)}})
         return
     prefix_tracker.reserve(openai_body.get("messages", []))
     local_failed = False
@@ -3309,29 +4136,42 @@ async def _anthropic_stream_limited(
         await lease.release()
 
     if local_failed:
+        # 【上游BUMP勿回退】后端错误必须原样暴露, 不能一律说成 "reloading"。
+        # 实测事故: 客户端拿旧别名(如 qwen3.8-27b 不在当前 aliases)打流式请求,
+        # 后端回 404 Model not exist, 这里却把它包装成 reloading error 的 SSE,
+        # HTTP 层仍是 200 —— 客户端看到的是"空回答", 于是每 2 秒无限重试,
+        # 既烧上游配额又占满本地并发槽位。404/400 这类**确定性**客户端错误
+        # 重试永远不会好, 必须把状态码和原始报文透传出去。
+        if isinstance(local_error, RuntimeError) and (
+                m := re.search(r"backend returned (\d{3}): (.*)",
+                               str(local_error), re.DOTALL)):
+            status = int(m.group(1))
+            detail = m.group(2).strip()
+            try:
+                payload = json.loads(detail)
+            except Exception:                          # noqa: BLE001
+                payload = {"error": {"message": detail}}
+            yield _sse("error", {
+                "type": "error",
+                "error": {
+                    "type": ("invalid_request_error"
+                             if status < 500 else "api_error"),
+                    "message": (payload.get("error") or {}).get(
+                        "message", detail)[:300] if isinstance(
+                        payload.get("error"), dict) else str(payload)[:300],
+                    "upstream_status": status,
+                },
+            })
+            return
         if yielded_local_event:
             yield _sse("error", _backend_reloading_error())
             return
         if not is_heretic and FALLBACK_ENABLED and not BENCHMARK_MODE:
-            nim_data = None
-            try:
-                nim_data = await _nim_chat(openai_body)
-            except Exception:
-                if OR_API_KEY:
-                    try:
-                        nim_data = await _or_chat(openai_body)
-                    except Exception:
-                        pass
-                if nim_data is None and ZEN_API_KEY:
-                    try:
-                        nim_data = await _zen_chat(openai_body)
-                    except Exception:
-                        pass
-            if nim_data is None:
-                yield _sse("error", {"error": {"message": "all backends failed"}})
-                return
-            anthro = _openai_to_anthropic(nim_data)
-            async for chunk in _completed_anthropic_stream(anthro, request):
+            async for chunk in _anthropic_external_stream(
+                openai_body,
+                request,
+                public_model=public_model,
+            ):
                 yield chunk
             return
         yield _sse("error", _backend_reloading_error())
@@ -3352,6 +4192,30 @@ async def _iter_sse_payloads(lines):
         yield "\n".join(data_lines)
 
 
+async def _iter_sse_byte_payloads(chunks):
+    """Parse arbitrarily chunked UTF-8 OpenAI SSE bytes into data payloads."""
+    pending = b""
+    data_lines = []
+    async for chunk in chunks:
+        pending += chunk
+        while b"\n" in pending:
+            raw_line, pending = pending.split(b"\n", 1)
+            line = raw_line.rstrip(b"\r").decode("utf-8")
+            if line:
+                if line.startswith("data:"):
+                    data_lines.append(line[5:].lstrip())
+                continue
+            if data_lines:
+                yield "\n".join(data_lines)
+                data_lines.clear()
+    if pending:
+        line = pending.rstrip(b"\r").decode("utf-8")
+        if line.startswith("data:"):
+            data_lines.append(line[5:].lstrip())
+    if data_lines:
+        yield "\n".join(data_lines)
+
+
 async def _proxy_stream(url: str, body: dict, opened_stream=None):
     if opened_stream is None:
         opened_stream = await _open_backend_stream(url, body)
@@ -3361,13 +4225,71 @@ async def _proxy_stream(url: str, body: dict, opened_stream=None):
             err_body = await resp.aread()
             raise RuntimeError(
                 f"backend returned {resp.status_code}: {err_body.decode()[:200]}")
-        async for chunk in resp.aiter_bytes():
-            yield chunk
+        # 网络分块可能切开 UTF-8，多字节尾部必须由 incremental decoder
+        # 跨 chunk 保留。FastLLM 的 byte-level tokenizer 还可能产生无法组成
+        # UTF-8 的低频 token 字节；这类信息不可恢复，但不能把已经完成的整条
+        # SSE 流升级成 transport failure。surrogateescape 精确标出坏字节，
+        # 转发前仅把这些字节替换成 U+FFFD。
+        dec = codecs.getincrementaldecoder("utf-8")("surrogateescape")
+        invalid_utf8_bytes = 0
+
+        def sanitize_utf8(text: str) -> str:
+            nonlocal invalid_utf8_bytes
+            bad = sum(0xDC80 <= ord(char) <= 0xDCFF for char in text)
+            if bad == 0:
+                return text
+            invalid_utf8_bytes += bad
+            return "".join(
+                "\ufffd" if 0xDC80 <= ord(char) <= 0xDCFF else char
+                for char in text
+            )
+
+        t0 = time.monotonic()
+        ttft = None
+        comp_tokens = 0
+        req_id = id(resp)
+        _INFLIGHT[req_id] = {"t0": t0, "ttft": None, "chunks": 0}
+        try:
+            async for chunk in resp.aiter_bytes():
+                text = sanitize_utf8(dec.decode(chunk, final=False))
+                if text:
+                    if _CONTENT_TOKEN_RE.search(chunk):
+                        _INFLIGHT[req_id]["chunks"] += 1
+                        if ttft is None:
+                            ttft = time.monotonic() - t0
+                            _INFLIGHT[req_id]["ttft"] = ttft
+                    m = _USAGE_COMPLETION_RE.search(chunk)
+                    if m:
+                        comp_tokens = int(m.group(1))
+                    yield text.encode("utf-8")
+            tail = sanitize_utf8(dec.decode(b"", final=True))
+            if tail:
+                yield tail.encode("utf-8")
+        finally:
+            _INFLIGHT.pop(req_id, None)
+            if invalid_utf8_bytes:
+                print(
+                    f"[stream] backend invalid UTF-8 bytes replaced: "
+                    f"count={invalid_utf8_bytes} req={req_id}",
+                    flush=True,
+                )
+        # 窗口累计:TTFT / decode 吞吐
+        total = time.monotonic() - t0
+        _PROXY_METRICS["reqs"] += 1
+        _PROXY_METRICS["stream_reqs"] += 1
+        _PROXY_METRICS["ttft_sum"] += ttft if ttft is not None else total
+        _PROXY_METRICS["decode_tok"] += comp_tokens
+        if ttft is not None and total > ttft:
+            _PROXY_METRICS["decode_s"] += total - ttft
     finally:
         await _close_backend_stream(opened_stream)
 
 
-async def _anthropic_stream(openai_body: dict, public_model: str = ""):
+async def _anthropic_events_from_payloads(
+    payloads,
+    openai_body: dict,
+    public_model: str = "",
+):
     msg_id = f"msg_{uuid.uuid4().hex[:24]}"
 
     yield _sse("message_start", {
@@ -3387,103 +4309,104 @@ async def _anthropic_stream(openai_body: dict, public_model: str = ""):
     out_tokens = 0
     saw_json_event = False
 
-    stream_body = openai_body
-    if FASTLLM_MODE:
-        stream_body = prepare_fastllm_body(openai_body, FASTLLM_CHAT_TEMPLATE)
-    async with httpx.AsyncClient(timeout=600) as client:
-        async with client.stream(
-            "POST", f"{BACKEND_URL}/v1/chat/completions", json=stream_body
-        ) as resp:
-            if resp.status_code != 200:
-                err_body = await resp.aread()
-                raise RuntimeError(
-                    f"backend returned {resp.status_code}: {err_body.decode()[:200]}")
-            async for data in _iter_sse_payloads(resp.aiter_lines()):
-                if data == "[DONE]":
-                    break
-                try:
-                    ev = json.loads(data)
-                except json.JSONDecodeError as exc:
-                    raise RuntimeError("malformed backend SSE event") from exc
-                saw_json_event = True
+    async for data in payloads:
+        if data == "[DONE]":
+            break
+        try:
+            ev = json.loads(data)
+        except json.JSONDecodeError as exc:
+            raise RuntimeError("malformed backend SSE event") from exc
+        saw_json_event = True
 
-                choices = ev.get("choices", [])
-                if not choices:
-                    u = ev.get("usage")
-                    if u:
-                        in_tokens = u.get("prompt_tokens", in_tokens)
-                        out_tokens = u.get("completion_tokens", out_tokens)
-                    continue
+        choices = ev.get("choices", [])
+        if not choices:
+            usage = ev.get("usage")
+            if usage:
+                in_tokens = usage.get("prompt_tokens", in_tokens)
+                out_tokens = usage.get("completion_tokens", out_tokens)
+            continue
 
-                delta = choices[0].get("delta", {})
-                if choices[0].get("finish_reason"):
-                    finish_reason = choices[0]["finish_reason"]
+        delta = choices[0].get("delta", {})
+        if choices[0].get("finish_reason"):
+            finish_reason = choices[0]["finish_reason"]
 
-                rc = delta.get("reasoning_content")
-                if rc:
-                    if cur_type != "thinking":
-                        if cur_type is not None:
-                            yield _sse("content_block_stop", {
-                                "type": "content_block_stop", "index": block_idx})
-                            block_idx += 1
-                        yield _sse("content_block_start", {
-                            "type": "content_block_start", "index": block_idx,
-                            "content_block": {"type": "thinking", "thinking": ""},
-                        })
-                        cur_type = "thinking"
-                    yield _sse("content_block_delta", {
-                        "type": "content_block_delta", "index": block_idx,
-                        "delta": {"type": "thinking_delta", "thinking": rc},
+        reasoning_content = delta.get("reasoning_content")
+        if reasoning_content:
+            if cur_type != "thinking":
+                if cur_type is not None:
+                    yield _sse("content_block_stop", {
+                        "type": "content_block_stop", "index": block_idx})
+                    block_idx += 1
+                yield _sse("content_block_start", {
+                    "type": "content_block_start", "index": block_idx,
+                    "content_block": {"type": "thinking", "thinking": ""},
+                })
+                cur_type = "thinking"
+            yield _sse("content_block_delta", {
+                "type": "content_block_delta", "index": block_idx,
+                "delta": {
+                    "type": "thinking_delta",
+                    "thinking": reasoning_content,
+                },
+            })
+
+        text_content = delta.get("content")
+        if text_content:
+            if cur_type != "text":
+                if cur_type is not None:
+                    yield _sse("content_block_stop", {
+                        "type": "content_block_stop", "index": block_idx})
+                    block_idx += 1
+                yield _sse("content_block_start", {
+                    "type": "content_block_start", "index": block_idx,
+                    "content_block": {"type": "text", "text": ""},
+                })
+                cur_type = "text"
+            yield _sse("content_block_delta", {
+                "type": "content_block_delta", "index": block_idx,
+                "delta": {"type": "text_delta", "text": text_content},
+            })
+
+        # Convert OpenAI tool_calls deltas to Anthropic tool_use blocks.
+        tool_calls = delta.get("tool_calls")
+        if tool_calls:
+            for tool_call in tool_calls:
+                tool_id = tool_call.get(
+                    "id", f"toolu_{uuid.uuid4().hex[:24]}"
+                )
+                function = tool_call.get("function", {})
+                function_name = function.get("name", "")
+                function_args = function.get("arguments", "")
+                if function_name:
+                    if cur_type is not None:
+                        yield _sse("content_block_stop", {
+                            "type": "content_block_stop", "index": block_idx})
+                        block_idx += 1
+                    yield _sse("content_block_start", {
+                        "type": "content_block_start",
+                        "index": block_idx,
+                        "content_block": {
+                            "type": "tool_use",
+                            "id": tool_id,
+                            "name": function_name,
+                            "input": {},
+                        },
                     })
-
-                tc = delta.get("content")
-                if tc:
-                    if cur_type != "text":
-                        if cur_type is not None:
-                            yield _sse("content_block_stop", {
-                                "type": "content_block_stop", "index": block_idx})
-                            block_idx += 1
-                        yield _sse("content_block_start", {
-                            "type": "content_block_start", "index": block_idx,
-                            "content_block": {"type": "text", "text": ""},
-                        })
-                        cur_type = "text"
+                    cur_type = "tool_use"
+                if function_args and cur_type == "tool_use":
                     yield _sse("content_block_delta", {
-                        "type": "content_block_delta", "index": block_idx,
-                        "delta": {"type": "text_delta", "text": tc},
+                        "type": "content_block_delta",
+                        "index": block_idx,
+                        "delta": {
+                            "type": "input_json_delta",
+                            "partial_json": function_args,
+                        },
                     })
+        usage = ev.get("usage")
+        if usage:
+            in_tokens = usage.get("prompt_tokens", in_tokens)
+            out_tokens = usage.get("completion_tokens", out_tokens)
 
-
-                # Convert OpenAI tool_calls deltas to Anthropic tool_use blocks.
-                tcs = delta.get("tool_calls")
-                if tcs:
-                    for tc in tcs:
-                        tc_id = tc.get("id", f"toolu_{uuid.uuid4().hex[:24]}")
-                        fn = tc.get("function", {})
-                        fn_name = fn.get("name", "")
-                        fn_args = fn.get("arguments", "")
-                        if fn_name:
-                            if cur_type is not None:
-                                yield _sse("content_block_stop", {
-                                    "type": "content_block_stop", "index": block_idx})
-                                block_idx += 1
-                            yield _sse("content_block_start", {
-                                "type": "content_block_start", "index": block_idx,
-                                "content_block": {
-                                    "type": "tool_use", "id": tc_id,
-                                    "name": fn_name, "input": {},
-                                },
-                            })
-                            cur_type = "tool_use"
-                        if fn_args and cur_type == "tool_use":
-                            yield _sse("content_block_delta", {
-                                "type": "content_block_delta", "index": block_idx,
-                                "delta": {"type": "input_json_delta", "partial_json": fn_args},
-                            })
-                u = ev.get("usage")
-                if u:
-                    in_tokens = u.get("prompt_tokens", in_tokens)
-                    out_tokens = u.get("completion_tokens", out_tokens)
     if not saw_json_event or finish_reason is None:
         raise RuntimeError("backend stream ended without a terminal event")
 
@@ -3500,6 +4423,34 @@ async def _anthropic_stream(openai_body: dict, public_model: str = ""):
         "usage": {"input_tokens": in_tokens, "output_tokens": out_tokens},
     })
     yield _sse("message_stop", {"type": "message_stop"})
+
+
+async def _anthropic_stream(openai_body: dict, public_model: str = ""):
+    stream_body = openai_body
+    if FASTLLM_MODE:
+        stream_body = prepare_fastllm_body(
+            openai_body,
+            FASTLLM_CHAT_TEMPLATE,
+        )
+    async with httpx.AsyncClient(timeout=600) as client:
+        async with client.stream(
+            "POST",
+            f"{BACKEND_URL}/v1/chat/completions",
+            json=stream_body,
+        ) as resp:
+            if resp.status_code != 200:
+                err_body = await resp.aread()
+                raise RuntimeError(
+                    f"backend returned {resp.status_code}: "
+                    f"{err_body.decode()[:200]}"
+                )
+            payloads = _iter_sse_payloads(resp.aiter_lines())
+            async for chunk in _anthropic_events_from_payloads(
+                payloads,
+                openai_body,
+                public_model,
+            ):
+                yield chunk
 
 
 def _sse(event: str, data: dict) -> str:
@@ -3536,6 +4487,9 @@ async def health(request: Request):
         "backend_url": BACKEND_URL,
         "ready": ready,
         "lifecycle": lifecycle,
+        # Claude Code 归因头剥除计数; 非 0 说明有 Claude Code 流量且前缀
+        # 缓存正被保护(每请求都变的归因行没有进入缓存前缀)。
+        "cc_attribution_stripped": _CC_ATTR_STRIPPED,
     })
 
 
@@ -3552,6 +4506,14 @@ async def passthrough(path: str, request: Request):
         k: v for k, v in request.headers.items()
         if k.lower() not in ("host", "authorization", "x-api-key")
     }
+    # 【上游BUMP勿回退】/admin* 是 apiserver 内嵌管理面的入口, 它的 API
+    # 自带 Bearer AUTH_TOKEN 校验(与 proxy 同一把钥匙)。这里若照旧剥掉
+    # authorization, 后端只会看到 401 —— 管理页永远登录不进去。
+    # 仅对 admin 路径放行该头; 其余路径行为不变(不把用户 token 漏给后端)。
+    if path == "admin" or path.startswith("admin/"):
+        for header in ("authorization", "x-api-key"):
+            if header in request.headers:
+                headers[header] = request.headers[header]
     try:
         lease = await backend_lifecycle.acquire(timeout=QUEUE_TIMEOUT)
     except (asyncio.TimeoutError, BackendLifecycleError):
@@ -3581,11 +4543,30 @@ async def passthrough(path: str, request: Request):
 async def _startup():
     global lifecycle_watchdog_task
     asyncio.create_task(manager.start())
-    asyncio.create_task(scheduler.start_workers())
+    # 直接 await:start_workers 只是创建 task 不会阻塞,但用 create_task 包一层
+    # 会让它自身的异常静默丢失,导致"没有任何 worker"却毫无痕迹。
+    await scheduler.start_workers()
+    asyncio.create_task(_metrics_loop())
     if FASTLLM_OWNED:
         lifecycle_watchdog_task = asyncio.create_task(
             _lifecycle_watchdog())
+        if FASTLLM_PREWARM_ON_START:
+            asyncio.create_task(_prewarm_backend())
     print("[proxy] starting in background, backend not ready yet", flush=True)
+
+
+async def _prewarm_backend():
+    """启动即拉起后端:acquire 触发冷启动(含 warmup),立即 release 让
+    idle 计时起算;后端保持常驻,直到 idle/显存压力才卸载。"""
+    try:
+        lease = await backend_lifecycle.acquire(
+            timeout=FASTLLM_START_TIMEOUT + 120)
+        await lease.release()
+        print("[proxy] prewarm complete: backend READY, idle timer started",
+              flush=True)
+    except Exception as exc:
+        print(f"[proxy] prewarm failed: {type(exc).__name__}: {exc}",
+              flush=True)
 
 
 @app.on_event("shutdown")
@@ -3608,7 +4589,7 @@ if __name__ == "__main__":
     print(f"[proxy] starting on {PROXY_HOST}:{PROXY_PORT}, "
           f"backend on port {BACKEND_PORT}", flush=True)
     if FASTLLM_MODE:
-        print(f"[proxy] FastLLM backend: {BACKEND_URL} (slug {FASTLLM_MODEL_SLUG}, "
+        print(f"[proxy] VastLLM backend: {BACKEND_URL} (slug {FASTLLM_MODEL_SLUG}, "
               f"aliases {FASTLLM_PUBLIC_ALIASES}); llama-server spawn disabled", flush=True)
     else:
         print(f"[proxy] local backend: llama-server", flush=True)
@@ -3626,4 +4607,31 @@ if __name__ == "__main__":
         port=PROXY_PORT,
         log_level="info",
         timeout_keep_alive=300,
+        log_config={
+            "version": 1,
+            "disable_existing_loggers": False,
+            "formatters": {
+                "default": {
+                    "()": "uvicorn.logging.DefaultFormatter",
+                    "fmt": "[%(asctime)s] %(levelprefix)s %(message)s",
+                    "datefmt": "%Y-%m-%d %H:%M:%S",
+                    "use_colors": False,
+                },
+                "access": {
+                    "()": "uvicorn.logging.AccessFormatter",
+                    "fmt": "[%(asctime)s] %(levelprefix)s %(client_addr)s - \"%(request_line)s\" %(status_code)s",
+                    "datefmt": "%Y-%m-%d %H:%M:%S",
+                    "use_colors": False,
+                },
+            },
+            "handlers": {
+                "default": {"formatter": "default", "class": "logging.StreamHandler", "stream": "ext://sys.stderr"},
+                "access": {"formatter": "access", "class": "logging.StreamHandler", "stream": "ext://sys.stdout"},
+            },
+            "loggers": {
+                "uvicorn": {"handlers": ["default"], "level": "INFO", "propagate": False},
+                "uvicorn.error": {"handlers": ["default"], "level": "INFO", "propagate": False},
+                "uvicorn.access": {"handlers": ["access"], "level": "INFO", "propagate": False},
+            },
+        },
     )

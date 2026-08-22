@@ -2767,7 +2767,7 @@ async def _lifecycle_watchdog():
 
 # ─── Auth middleware ─────────────────────────────────────────────
 
-NO_AUTH_PATHS = {"/health", "/", "/favicon.ico"}
+NO_AUTH_PATHS = {"/health", "/", "/favicon.ico", "/admin"}
 
 
 class AuthMiddleware(BaseHTTPMiddleware):
@@ -2804,46 +2804,90 @@ class AuthMiddleware(BaseHTTPMiddleware):
         )
 
 
-# FastLLM's vision path is safest when every inline image is normalized to
-# an RGB PNG.  Do this even for PNG inputs: palette/alpha/EXIF variants can
-# otherwise take different decoder paths or arrive with an unexpected layout.
-def _convert_images(messages):
-    try:
-        from PIL import Image, ImageOps
-    except ImportError:
-        return
+# FastLLM C++ vision path intentionally decodes only PNG/JPEG. Normalize every
+# other Pillow-supported raster format (WebP/GIF/BMP/TIFF/ICO/PPM...) to RGB
+# PNG here. The old code only converted non-RGB images, so an RGB WebP/GIF
+# passed through untouched and deterministically failed in image_loader.cpp.
+#
+# Remote URLs need the same treatment: the backend downloads them directly,
+# but cannot decode non-PNG/JPEG bytes. Download asynchronously here and run
+# Pillow in a worker thread so image decode/encode never blocks the event loop.
+_MAX_PROXY_IMAGE_BYTES = 32 * 1024 * 1024
 
-    for msg in messages:
-        content = msg.get("content")
-        if not isinstance(content, list):
-            continue
-        for part in content:
-            if not isinstance(part, dict) or part.get("type") != "image_url":
+
+def _normalize_image_bytes(raw: bytes, source_hint: str) -> tuple[bytes, bool]:
+    """Return (bytes, converted_to_png). Runs in a worker thread."""
+    from PIL import Image, ImageOps
+
+    with Image.open(io.BytesIO(raw)) as source:
+        actual_format = (source.format or source_hint or "").upper()
+        orientation = source.getexif().get(0x0112, 1)
+        animated = bool(getattr(source, "is_animated", False))
+        keep_original = (
+            actual_format in {"PNG", "JPEG", "JPG"}
+            and orientation in (1, None)
+            and source.mode == "RGB"
+            and not animated
+        )
+        if keep_original:
+            return raw, False
+        # Animated formats are intentionally flattened to frame 0. The model
+        # consumes one RGB image, not an animation timeline.
+        if animated:
+            source.seek(0)
+        image = ImageOps.exif_transpose(source).convert("RGB")
+        buf = io.BytesIO()
+        image.save(buf, format="PNG")
+        return buf.getvalue(), True
+
+
+async def _convert_images(messages):
+    try:
+        from PIL import Image  # noqa: F401
+    except ImportError as exc:
+        raise ValueError("image conversion requires Pillow") from exc
+
+    async with httpx.AsyncClient(
+            timeout=httpx.Timeout(30.0, connect=10.0),
+            follow_redirects=True) as client:
+        for msg in messages:
+            content = msg.get("content")
+            if not isinstance(content, list):
                 continue
-            image_url = part.get("image_url") or {}
-            url = image_url.get("url", "")
-            if not url.startswith("data:"):
-                continue
-            header, _, b64 = url.partition(",")
-            fmt = ""
-            if "/" in header:
-                fmt = header.split("/", 1)[1].split(";", 1)[0].lower()
-            try:
-                raw = base64.b64decode(b64)
-                with Image.open(io.BytesIO(raw)) as source:
-                    orientation = source.getexif().get(0x0112, 1)
-                    if orientation not in (1, None) or source.mode != "RGB":
-                        # EXIF rotation applied or non-RGB: re-encode as PNG.
-                        img = ImageOps.exif_transpose(source).convert("RGB")
-                        buf = io.BytesIO()
-                        img.save(buf, format="PNG")
-                        new_b64 = base64.b64encode(buf.getvalue()).decode()
-                        image_url["url"] = f"data:image/png;base64,{new_b64}"
-                    # Otherwise keep the original bytes (JPEG/PNG as-is);
-                    # the backend decodes by magic, so re-encoding only
-                    # inflates the request body (JPEG 4K -> PNG ~2.7x).
-            except Exception as e:
-                print(f"[proxy] image convert failed ({fmt}): {e}", flush=True)
+            for part in content:
+                if not isinstance(part, dict) or part.get("type") != "image_url":
+                    continue
+                image_url = part.get("image_url") or {}
+                url = image_url.get("url", "")
+                source_hint = ""
+                try:
+                    if url.startswith("data:"):
+                        header, comma, payload = url.partition(",")
+                        if not comma or ";base64" not in header.lower():
+                            raise ValueError("image data URL must use base64 encoding")
+                        if "/" in header:
+                            source_hint = header.split("/", 1)[1].split(";", 1)[0]
+                        raw = base64.b64decode(payload, validate=True)
+                    elif url.startswith(("http://", "https://")):
+                        response = await client.get(url)
+                        response.raise_for_status()
+                        raw = response.content
+                        source_hint = response.headers.get(
+                            "content-type", "").split("/")[-1]
+                    else:
+                        raise ValueError(
+                            "image_url.url must use data:, http://, or https://")
+                    if not raw or len(raw) > _MAX_PROXY_IMAGE_BYTES:
+                        raise ValueError("image payload is empty or exceeds 32 MiB")
+                    normalized, converted = await asyncio.to_thread(
+                        _normalize_image_bytes, raw, source_hint)
+                    if converted:
+                        encoded = base64.b64encode(normalized).decode()
+                        image_url["url"] = f"data:image/png;base64,{encoded}"
+                except Exception as exc:
+                    fmt = source_hint or "unknown"
+                    raise ValueError(
+                        f"unsupported or invalid image ({fmt}): {exc}") from exc
 
 
 # ─── FastAPI app ────────────────────────────────────────────────
@@ -3012,10 +3056,21 @@ async def openai_chat(request: Request):
         return Response(status_code=499)
 
     _normalize_openai_reasoning_controls(body)
-
     _normalize_tool_schema(body)
-
-    _convert_images(body.get("messages", []))
+    try:
+        await _convert_images(body.get("messages", []))
+    except ValueError as exc:
+        return JSONResponse(
+            status_code=400,
+            content={
+                "error": {
+                    "message": str(exc),
+                    "type": "invalid_request_error",
+                    "param": "messages",
+                    "code": "invalid_image_url",
+                }
+            },
+        )
     requested_model = body.get("model", "")
     # Classify the requested public ID before rewriting it for a possible
     # local dispatch. Explicit local aliases bypass the fair router; auto
@@ -3205,7 +3260,19 @@ async def anthropic_messages(request: Request):
     stream = body.get("stream", False)
     openai_body = _anthropic_to_openai(body)
     _normalize_tool_schema(openai_body)
-    _convert_images(openai_body.get("messages", []))
+    try:
+        await _convert_images(openai_body.get("messages", []))
+    except ValueError as exc:
+        return JSONResponse(
+            status_code=400,
+            content={
+                "type": "error",
+                "error": {
+                    "type": "invalid_request_error",
+                    "message": str(exc),
+                },
+            },
+        )
     requested_model = openai_body.get("model", "")
     # Preserve public routing semantics before the backend slug rewrite.
     is_heretic = _must_route_local(
@@ -3769,6 +3836,34 @@ async def _local_stream(
     if client_disconnected:
         return
     if local_failed:
+        # 【上游BUMP勿回退】确定性后端错误(404/400)必须原样透传, 不能走 fallback
+        # 也不能伪装成 transport error。实测: 客户端用不存在的模型别名打流式请求,
+        # 后端回 404, 这里先试 NIM 再试 OR/ZEN(全失败), 最后发一个
+        # finish_reason=error 的 SSE —— 客户端只看到空回答 + HTTP 200,
+        # 于是每 2 秒重试一次永不停止。
+        m = (re.search(r"backend returned (\d{3}): (.*)", str(local_error),
+                       re.DOTALL)
+             if isinstance(local_error, RuntimeError) else None)
+        if m and int(m.group(1)) < 500:
+            status = int(m.group(1))
+            detail = m.group(2).strip()
+            try:
+                payload = json.loads(detail)
+            except Exception:                          # noqa: BLE001
+                payload = {"error": {"message": detail}}
+            err_msg = (payload.get("error", {}).get("message")
+                       if isinstance(payload.get("error"), dict)
+                       else str(payload)[:300]) or detail[:300]
+            yield (b"data: " + json.dumps({
+                "choices": [{"index": 0, "delta": {}, "finish_reason": "stop"}],
+                "error": {
+                    "message": err_msg,
+                    "type": "invalid_request_error",
+                    "code": f"upstream_{status}",
+                },
+            }).encode() + b"\n\n")
+            yield b"data: [DONE]\n\n"
+            return
         # Never concatenate a second provider's answer after local tokens
         # have already reached the client.
         if (not yielded_local_event and allow_fallback and
@@ -4041,6 +4136,33 @@ async def _anthropic_stream_limited(
         await lease.release()
 
     if local_failed:
+        # 【上游BUMP勿回退】后端错误必须原样暴露, 不能一律说成 "reloading"。
+        # 实测事故: 客户端拿旧别名(如 qwen3.8-27b 不在当前 aliases)打流式请求,
+        # 后端回 404 Model not exist, 这里却把它包装成 reloading error 的 SSE,
+        # HTTP 层仍是 200 —— 客户端看到的是"空回答", 于是每 2 秒无限重试,
+        # 既烧上游配额又占满本地并发槽位。404/400 这类**确定性**客户端错误
+        # 重试永远不会好, 必须把状态码和原始报文透传出去。
+        if isinstance(local_error, RuntimeError) and (
+                m := re.search(r"backend returned (\d{3}): (.*)",
+                               str(local_error), re.DOTALL)):
+            status = int(m.group(1))
+            detail = m.group(2).strip()
+            try:
+                payload = json.loads(detail)
+            except Exception:                          # noqa: BLE001
+                payload = {"error": {"message": detail}}
+            yield _sse("error", {
+                "type": "error",
+                "error": {
+                    "type": ("invalid_request_error"
+                             if status < 500 else "api_error"),
+                    "message": (payload.get("error") or {}).get(
+                        "message", detail)[:300] if isinstance(
+                        payload.get("error"), dict) else str(payload)[:300],
+                    "upstream_status": status,
+                },
+            })
+            return
         if yielded_local_event:
             yield _sse("error", _backend_reloading_error())
             return
@@ -4384,6 +4506,14 @@ async def passthrough(path: str, request: Request):
         k: v for k, v in request.headers.items()
         if k.lower() not in ("host", "authorization", "x-api-key")
     }
+    # 【上游BUMP勿回退】/admin* 是 apiserver 内嵌管理面的入口, 它的 API
+    # 自带 Bearer AUTH_TOKEN 校验(与 proxy 同一把钥匙)。这里若照旧剥掉
+    # authorization, 后端只会看到 401 —— 管理页永远登录不进去。
+    # 仅对 admin 路径放行该头; 其余路径行为不变(不把用户 token 漏给后端)。
+    if path == "admin" or path.startswith("admin/"):
+        for header in ("authorization", "x-api-key"):
+            if header in request.headers:
+                headers[header] = request.headers[header]
     try:
         lease = await backend_lifecycle.acquire(timeout=QUEUE_TIMEOUT)
     except (asyncio.TimeoutError, BackendLifecycleError):
