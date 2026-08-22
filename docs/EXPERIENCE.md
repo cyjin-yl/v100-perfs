@@ -2783,3 +2783,45 @@ claude 流量下该计数 0->6。注意用户真实 `~/.claude/settings.json` �
 proxy 退回 llama 模式(日志 `starting llama-server on port 8001` + llama-server 二进制
 缺失的 FileNotFoundError), 8002 的 FastLLM 后端永远起不来。调用 launcher 或写切换模型
 的脚本时, profile 一律用绝对路径。
+
+### 15.60 Cyber thinking 退化、图片格式穿透与 C++ 管理面（2026-08-22）
+
+#### A. Cyber IQ4_XS 的长周期 thinking 退化
+
+OpenWebUI 现场：模型在设计 SVG 的鹈鹕嘴袋路径时，将
+`OK final pouch: ... Let me just write: M478 239 ... C577?`
+整段约 100B 的思考片段重复 30 次以上。它发生在 thinking 段，不在工具参数值
+S4；现有 `ToolCallValueLoopPeriod` 只管 S4 且最大周期 96B，不能也不该靠工具
+grammar 修模型内部思考。生产已切回 Unsloth UD-Q5_K_M；Cyber 保留作按需 profile。
+
+#### B. `unsupported image format` 的真根因
+
+后端 `image_loader.cpp` 只解 PNG/JPEG。proxy 原本虽然用 Pillow 归一化图片，
+但只有「非 RGB 或 EXIF 需要旋转」时才转 PNG；RGB WebP/GIF 会原样穿透，
+于是后端确定性 400，客户端又将流式 400 当空回答重试。
+
+修复：
+- data URL 与 HTTP(S) 图片统一在 proxy 异步读取；
+- 实际格式为 PNG/JPEG、RGB、无旋转、非动画时保留原字节；
+- 其余 Pillow 可解格式（WebP/GIF/BMP/TIFF/ICO/PPM 等）统一转 RGB PNG；
+- GIF 取首帧；>32MiB/不可解格式在 proxy 直接明确 400；
+- Pillow 解码/编码走 `asyncio.to_thread`，不阻塞 FastAPI 事件循环。
+
+单测：WebP/GIF/BMP 均转 PNG；RGB PNG/JPEG 保留原字节。AVIF/SVG 栅格器本机
+未安装，仍返回明确错误，不静默穿透。
+
+#### C. TUI 删除，改为 FastLLM C++ 内嵌管理 WebUI
+
+删除 `fastllm/tools/apiserver_tui.py`，新增 C++ 管理面：
+- `GET /admin`：无外部依赖的单页；
+- Bearer `AUTH_TOKEN` 双层认证（proxy + apiserver，后端 fail-closed）；
+- 引擎内直接读取 VRAM 对账、物理页池/L1 trie、L2 RAM、L3 磁盘、
+  命中/逐出、工具 grammar 指标；
+- 展示 backend + thinking_proxy 日志尾部；
+- 列出 24 个 profile，在线切换/停止；
+- profile 编辑：`0/1/true/false/yes/no/on/off` 自动渲染 checkbox，其余文本框；
+  原子写回并保留原注释；profile 名严格白名单防目录穿越。
+
+验证：C++ 增量编译通过；浏览器实际登录后可见 ud-q5 READY、262K/batch4、
+页池/显存/cache 数据与日志；无 token 为 401；profile 读取 56 个键、
+其中 21 个 checkbox；临时 profile 原子修改两项并校验成功。
