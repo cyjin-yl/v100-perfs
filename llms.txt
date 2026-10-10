@@ -321,6 +321,8 @@
 - https://cyjin-yl.github.io/v100-perfs/evidence/results/1cat-v100-2026-10-09/2026-10-10-mixed-prefill-growth-cpu-proof.json/
 - https://cyjin-yl.github.io/v100-perfs/evidence/results/1cat-v100-2026-10-09/2026-10-10-responses-multipart-continuation-repair.json/
 - https://cyjin-yl.github.io/v100-perfs/evidence/results/1cat-v100-2026-10-09/2026-10-10-upstream-refetch-173958.json/
+- https://cyjin-yl.github.io/v100-perfs/evidence/results/1cat-v100-2026-10-09/2026-10-11-current-main-c39-admission.json/
+- https://cyjin-yl.github.io/v100-perfs/evidence/results/1cat-v100-2026-10-09/2026-10-11-post-c39-main-refresh.json/
 - https://cyjin-yl.github.io/v100-perfs/evidence/results/1cat-v100-2026-10-09/historical-decisions.json/
 - https://cyjin-yl.github.io/v100-perfs/evidence/results/1cat-v100-2026-10-09/historical-provenance.json/
 - https://cyjin-yl.github.io/v100-perfs/evidence/results/legacy/deepseek_q2_split_verification.json/
@@ -445,6 +447,7 @@
 - https://cyjin-yl.github.io/v100-perfs/repository/operations/network/frp/setup_frpc.sh/
 - https://cyjin-yl.github.io/v100-perfs/repository/operations/network/frp/setup_frps.sh/
 - https://cyjin-yl.github.io/v100-perfs/repository/operations/patches/1cat-vllm-7ab8b447-responses-multipart-continuation.patch/
+- https://cyjin-yl.github.io/v100-perfs/repository/operations/patches/1cat-vllm-c39f53ab-local-repairs.patch/
 - https://cyjin-yl.github.io/v100-perfs/repository/operations/patches/thinking_proxy-2026-08-18-stream-timeout-anthropic-effort.patch/
 - https://cyjin-yl.github.io/v100-perfs/repository/operations/snapshots/deployed/thinking_proxy.py/
 - https://cyjin-yl.github.io/v100-perfs/repository/site/.gitignore/

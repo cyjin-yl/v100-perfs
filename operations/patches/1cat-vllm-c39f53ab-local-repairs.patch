@@ -1,0 +1,671 @@
+diff --git a/tests/config/test_sm70_loaded_routes.py b/tests/config/test_sm70_loaded_routes.py
+index 4d0a7ef39..e7a3d89ae 100644
+--- a/tests/config/test_sm70_loaded_routes.py
++++ b/tests/config/test_sm70_loaded_routes.py
+@@ -2,12 +2,14 @@
+ # SPDX-FileCopyrightText: Copyright contributors to the vLLM project
+ 
+ import asyncio
++import json
+ from types import SimpleNamespace as NS
+ 
+ import pytest
+ 
+ from vllm import envs
+ from vllm.config import set_current_vllm_config
++from vllm.config.diagnostic_dump import TensorDiagnosticsConfig, TensorDumpConfig
+ from vllm.config.kernel import KernelConfig
+ from vllm.model_executor.kernels import linear
+ from vllm.platforms import PlatformEnum
+@@ -60,32 +62,17 @@ def test_real_selector_records_reasons_without_extra_probes(shape, monkeypatch):
+     assert not KernelConfig().linear_kernel_selections
+ 
+ 
+-def test_policies_are_discovered_from_existing_configuration():
+-    policies = linear_policy_report(KernelConfig())
+-    assert set(policies) == {
+-        "sm70_nvfp4",
+-        "sm70_awq",
+-        "sm70_fp8",
+-        "sm70_marlin",
+-        "sm70_gguf",
+-        "sm70_ring",
+-        "sm70_sparse",
+-        "sm70_moe",
+-        "sm70_mxfp4",
+-        "sm70_runtime",
+-    }
+-    assert all(row["status"] == "runtime_guarded" for row in policies.values())
+-
+-
+ @pytest.mark.parametrize("family", ["awq", "fp8"])
+ def test_policy_report_serializes_resolved_moe_diagnostic_filters(family):
+     """Loading resolves MoE dump policies whose parsed filters are frozensets."""
+     config = KernelConfig()
+-    getattr(config.sm70_moe, family).resolve(family)
+-    policies = linear_policy_report(config)
+-    resolved = policies["sm70_moe"]["configuration"][family]
+-    compare = resolved["diagnostics"]["compare_policy"]
+-    assert compare is not None and compare["filters"]
++    selected = TensorDumpConfig(layers="2,4")
++    dumps = TensorDiagnosticsConfig(**{f"{family}_compare": selected})
++    getattr(config.sm70_moe, family).diagnostics.bind(family, dumps)
++    policies = json.loads(json.dumps(linear_policy_report(config)))
++    reported = policies["sm70_moe"]["configuration"][family]["diagnostics"]
++    assert set(reported["compare_policy"]["filters"]["layers"]) == {2, 4}
++    assert selected.filters["layers"] == frozenset({2, 4})
+ 
+ 
+ def test_loaded_reports_collected_once_and_cached_for_http():
+diff --git a/tests/entrypoints/openai/responses/test_responses_utils.py b/tests/entrypoints/openai/responses/test_responses_utils.py
+index 3f6cc50c1..c7511916e 100644
+--- a/tests/entrypoints/openai/responses/test_responses_utils.py
++++ b/tests/entrypoints/openai/responses/test_responses_utils.py
+@@ -1,8 +1,6 @@
+ # SPDX-License-Identifier: Apache-2.0
+ # SPDX-FileCopyrightText: Copyright contributors to the vLLM project
+ 
+-from unittest.mock import patch
+-
+ import pytest
+ from openai.types.responses.response_function_tool_call import ResponseFunctionToolCall
+ from openai.types.responses.response_function_tool_call_output_item import (
+@@ -16,6 +14,7 @@ from openai.types.responses.response_reasoning_item import (
+     Summary,
+ )
+ 
++from vllm.entrypoints.openai.responses.protocol import ResponsesRequest
+ from vllm.entrypoints.openai.responses.utils import (
+     _construct_message_from_response_item,
+     construct_chat_messages_with_tool_call,
+@@ -333,8 +332,7 @@ class TestReasoningItemContentPriority:
+         formatted = _single_chat_message(item)
+         assert formatted["reasoning"] == "Content without summary"
+ 
+-    @patch("vllm.entrypoints.openai.responses.utils.logger")
+-    def test_summary_fallback_when_no_content(self, mock_logger):
++    def test_summary_fallback_when_no_content(self):
+         """When content is absent, summary is used as fallback with warning."""
+         item = ResponseReasoningItem(
+             id="reasoning_3",
+@@ -351,13 +349,8 @@ class TestReasoningItemContentPriority:
+         )
+         formatted = _single_chat_message(item)
+         assert formatted["reasoning"] == "Fallback summary text"
+-        mock_logger.warning.assert_called_once()
+-        assert (
+-            "summary text as reasoning content" in mock_logger.warning.call_args[0][0]
+-        )
+ 
+-    @patch("vllm.entrypoints.openai.responses.utils.logger")
+-    def test_summary_fallback_when_content_empty(self, mock_logger):
++    def test_summary_fallback_when_content_empty(self):
+         """When content is an empty list, summary is used as fallback."""
+         item = ResponseReasoningItem(
+             id="reasoning_4",
+@@ -374,10 +367,6 @@ class TestReasoningItemContentPriority:
+         )
+         formatted = _single_chat_message(item)
+         assert formatted["reasoning"] == "Summary when content empty"
+-        mock_logger.warning.assert_called_once()
+-        assert (
+-            "summary text as reasoning content" in mock_logger.warning.call_args[0][0]
+-        )
+ 
+     def test_neither_content_nor_summary(self):
+         """When neither content nor summary is present, reasoning is empty."""
+@@ -415,56 +404,48 @@ class TestReasoningItemContentPriority:
+         with pytest.raises(ValueError):
+             construct_chat_messages_with_tool_call([item])
+ 
+-    @patch("vllm.entrypoints.openai.responses.utils.logger")
+-    def test_summary_with_multiple_entries_uses_first(self, mock_logger):
+-        """When multiple summary entries exist, the first one is used."""
+-        item = ResponseReasoningItem(
+-            id="reasoning_7",
+-            summary=[
+-                Summary(
+-                    text="First summary",
+-                    type="summary_text",
+-                ),
+-                Summary(
+-                    text="Second summary",
+-                    type="summary_text",
+-                ),
+-            ],
+-            type="reasoning",
+-            content=None,
+-            encrypted_content=None,
+-            status=None,
+-        )
+-        formatted = _single_chat_message(item)
+-        assert formatted["reasoning"] == "First summary"
+-        mock_logger.warning.assert_called_once()
+-        assert (
+-            "summary text as reasoning content" in mock_logger.warning.call_args[0][0]
+-        )
+ 
+-    @patch("vllm.entrypoints.openai.responses.utils.logger")
+-    def test_no_warning_when_content_used(self, mock_logger):
+-        """No warning should be emitted when content is available."""
+-        item = ResponseReasoningItem(
+-            id="reasoning_8",
+-            summary=[
+-                Summary(
+-                    text="Summary text",
+-                    type="summary_text",
+-                )
+-            ],
+-            type="reasoning",
+-            content=[
+-                Content(
+-                    text="Content text",
+-                    type="reasoning_text",
+-                )
+-            ],
+-            encrypted_content=None,
+-            status=None,
+-        )
+-        construct_chat_messages_with_tool_call([item])
+-        mock_logger.warning.assert_not_called()
++
++class TestMultipartContinuation:
++    @pytest.mark.parametrize("kind", ["message", "reasoning_content", "reasoning_summary"])
++    def test_multipart_partial_continuation_preserves_prefix(self, kind):
++        prefix_parts = ["PUBLIC_ALPHA ", "PUBLIC_OMEGA"]
++        if kind == "message":
++            item = {
++                "type": "message",
++                "role": "assistant",
++                "status": "incomplete",
++                "content": [
++                    {"type": "output_text", "text": text}
++                    for text in prefix_parts
++                ],
++            }
++            field = "content"
++        else:
++            item = {
++                "type": "reasoning",
++                "status": "incomplete",
++                "content": [
++                    {"type": "reasoning_text", "text": text}
++                    for text in prefix_parts
++                ] if kind == "reasoning_content" else [],
++                "summary": [
++                    {"type": "summary_text", "text": text}
++                    for text in prefix_parts
++                ] if kind == "reasoning_summary" else [
++                    {"type": "summary_text", "text": "DO_NOT_OVERRIDE_CONTENT"}
++                ],
++            }
++            field = "reasoning"
++        request = ResponsesRequest.model_validate({
++            "input": [
++                {"role": "user", "content": "Continue the supplied prefix."},
++                item,
++            ]
++        })
++        messages = construct_input_messages(request_input=request.input)
++        assert messages[-1][field] == "PUBLIC_ALPHA PUBLIC_OMEGA"
++        assert should_continue_final_message(request.input)
+ 
+ 
+ class TestShouldContinueFinalMessage:
+diff --git a/tests/kernels/core/test_dflash_compact_aux.py b/tests/kernels/core/test_dflash_compact_aux.py
+index fef88f583..c9cc4155c 100644
+--- a/tests/kernels/core/test_dflash_compact_aux.py
++++ b/tests/kernels/core/test_dflash_compact_aux.py
+@@ -7,9 +7,12 @@ from types import SimpleNamespace
+ import pytest
+ import torch
+ 
+-from vllm import envs
+ from vllm.model_executor.models.interfaces import EagleModelMixin
+-from vllm.model_executor.models.qwen3_dflash import DFlashQwen3ForCausalLM
++from vllm.model_executor.models.qwen3_dflash import (
++    DFlashQwen3ForCausalLM,
++    DFlashQwen3Model,
++    _configure_dflash_fp8_quant_config,
++)
+ 
+ 
+ class Projection:
+@@ -21,6 +24,7 @@ class Projection:
+         fc = torch.nn.Linear(160, 32, bias=False, device=device, dtype=dtype)
+         fc.input_size = 160
+         self.model = SimpleNamespace(use_aux_hidden_state=True, fc=fc)
++        self._sampling_policy = SimpleNamespace(compact_aux_hidden=False)
+ 
+ 
+ @pytest.mark.parametrize("source_dtype", [torch.float32, torch.float16])
+@@ -29,11 +33,10 @@ class Projection:
+ @pytest.mark.parametrize("device", ["cpu", "cuda"])
+ @torch.inference_mode()
+ def test_projection_matches_cat_then_cast(
+-    monkeypatch, source_dtype, projection_dtype, rows, device
++    source_dtype, projection_dtype, rows, device
+ ):
+     if device == "cuda" and not torch.cuda.is_available():
+         pytest.skip("requires CUDA")
+-    envs.disable_envs_cache()
+     torch.manual_seed(17)
+     model = Projection(device, projection_dtype)
+     # Non-contiguous states exercise the copy path used by strided inputs too.
+@@ -42,9 +45,9 @@ def test_projection_matches_cat_then_cast(
+         for _ in range(5)
+     ]
+     originals = [x.clone() for x in aux]
+-    monkeypatch.setenv("VLLM_DFLASH_COMPACT_AUX_HIDDEN", "0")
++    model._sampling_policy.compact_aux_hidden = False
+     expected = model.combine_aux_hidden_states(aux)
+-    monkeypatch.setenv("VLLM_DFLASH_COMPACT_AUX_HIDDEN", "1")
++    model._sampling_policy.compact_aux_hidden = True
+     actual = model.combine_aux_hidden_states(aux)
+     torch.testing.assert_close(actual, expected, rtol=0, atol=0)
+     if device == "cuda":
+@@ -58,6 +61,132 @@ def test_projection_matches_cat_then_cast(
+         torch.testing.assert_close(original, hidden, rtol=0, atol=0)
+ 
+ 
++@pytest.mark.parametrize("storage_dtype", [torch.uint8, torch.float8_e4m3fn])
++@pytest.mark.parametrize("compact", [False, True])
++@torch.inference_mode()
++def test_packed_projection_keeps_activation_precision(storage_dtype, compact):
++    class PackedProjection(torch.nn.Module):
++        def __init__(self):
++            super().__init__()
++            self.input_size = 160
++            self.params_dtype = torch.float16
++            self.quant_method = SimpleNamespace()
++            self.weight = torch.nn.Parameter(
++                torch.empty(0, dtype=storage_dtype), requires_grad=False
++            )
++            self.register_buffer(
++                "codes", torch.arange(32 * 160).reshape(32, 160).remainder(17).to(torch.int8) - 8
++            )
++
++        def forward(self, inputs):
++            decoded = (self.codes.float() / 32).half()
++            return torch.nn.functional.linear(inputs, decoded)
++
++    model = Projection("cpu", torch.float16)
++    model.model.fc = PackedProjection()
++    model._sampling_policy.compact_aux_hidden = compact
++    aux = [torch.arange(8 * 64, dtype=torch.float32).reshape(8, 64)[:, ::2] / 128
++           for _ in range(5)]
++    expected = model.model.fc(torch.cat(aux, dim=-1).half())
++    actual = model.combine_aux_hidden_states(aux)
++    torch.testing.assert_close(actual, expected, rtol=0, atol=0)
++
++
++@pytest.mark.skipif(not torch.cuda.is_available(), reason="requires CUDA preparation")
++@torch.inference_mode()
++def test_checkpoint_exclusions_preserve_projection_precision(
++    default_vllm_config, dist_init
++):
++    from vllm.model_executor.layers.linear import QKVParallelLinear, ReplicatedLinear
++    from vllm.model_executor.layers.quantization.fp8 import Fp8Config
++
++    default_vllm_config.model_config = SimpleNamespace(dtype=torch.float16)
++    quant = Fp8Config(
++        is_checkpoint_fp8_serialized=True,
++        weight_block_size=[128, 128],
++        ignored_layers=[
++            "encoder.fc",
++            "layers.0.self_attn.q_proj",
++            "layers.0.self_attn.k_proj",
++            "layers.0.self_attn.v_proj",
++        ],
++    )
++    _configure_dflash_fp8_quant_config(
++        quant, DFlashQwen3Model.hf_to_vllm_mapper, 64, 5
++    )
++    with torch.device("cuda"):
++        fc = ReplicatedLinear(
++            256, 128, bias=False, params_dtype=torch.float16,
++            quant_config=quant, prefix="probe.model.fc", return_bias=False,
++        )
++        qkv = QKVParallelLinear(
++            256, 128, 2, 1, bias=False, params_dtype=torch.float16,
++            quant_config=quant, prefix="probe.model.layers.64.self_attn.qkv_proj",
++        )
++        other = QKVParallelLinear(
++            256, 128, 2, 1, bias=False, params_dtype=torch.float16,
++            quant_config=quant, prefix="probe.model.layers.65.self_attn.qkv_proj",
++        )
++        boundary = ReplicatedLinear(
++            256, 128, bias=False, params_dtype=torch.float16,
++            quant_config=quant, prefix="probe.model.scalar_fc",
++        )
++        checkpoint = (torch.arange(128 * 256).reshape(128, 256) % 23 / 1024).bfloat16()
++        fc.weight.weight_loader(fc.weight, checkpoint)
++        inputs = torch.arange(2 * 256, dtype=torch.float16).reshape(2, 256) / 256
++        expected = torch.nn.functional.linear(inputs, checkpoint.half())
++        fc.quant_method.process_weights_after_loading(fc)
++        torch.testing.assert_close(fc(inputs), expected, rtol=1e-3, atol=1e-3)
++    assert qkv.weight.dtype == torch.float16
++    assert other.weight.dtype == boundary.weight.dtype == torch.float8_e4m3fn
++
++
++@pytest.mark.skipif(not torch.cuda.is_available(), reason="requires CUDA preparation")
++def test_layer_offset_exclusions_do_not_cascade(default_vllm_config, dist_init):
++    from vllm.model_executor.layers.linear import QKVParallelLinear
++    from vllm.model_executor.layers.quantization.fp8 import Fp8Config
++
++    default_vllm_config.model_config = SimpleNamespace(dtype=torch.float16)
++    quant = Fp8Config(
++        is_checkpoint_fp8_serialized=True,
++        weight_block_size=[128, 128],
++        ignored_layers=[f"layers.{layer}.self_attn.{proj}_proj"
++                        for layer in (0, 1) for proj in ("q", "k", "v")],
++    )
++    _configure_dflash_fp8_quant_config(
++        quant, DFlashQwen3Model.hf_to_vllm_mapper, 1, 3
++    )
++    with torch.device("cuda"):
++        layers = [QKVParallelLinear(
++            256, 128, 2, 1, bias=False, params_dtype=torch.float16,
++            quant_config=quant, prefix=f"model.layers.{layer}.self_attn.qkv_proj",
++        ) for layer in (1, 2, 3)]
++    assert [layer.weight.dtype for layer in layers] == [
++        torch.float16, torch.float16, torch.float8_e4m3fn,
++    ]
++
++
++@pytest.mark.skipif(not torch.cuda.is_available(), reason="requires CUDA preparation")
++def test_partial_qkv_exclusion_rejects_mixed_precision(default_vllm_config, dist_init):
++    from vllm.model_executor.layers.linear import QKVParallelLinear
++    from vllm.model_executor.layers.quantization.fp8 import Fp8Config
++
++    default_vllm_config.model_config = SimpleNamespace(dtype=torch.float16)
++    quant = Fp8Config(
++        is_checkpoint_fp8_serialized=True,
++        weight_block_size=[128, 128],
++        ignored_layers=["layers.0.self_attn.q_proj"],
++    )
++    _configure_dflash_fp8_quant_config(
++        quant, DFlashQwen3Model.hf_to_vllm_mapper, 64, 5
++    )
++    with torch.device("cuda"), pytest.raises(ValueError):
++        QKVParallelLinear(
++            256, 128, 2, 1, bias=False, params_dtype=torch.float16,
++            quant_config=quant, prefix="model.layers.64.self_attn.qkv_proj",
++        )
++
++
+ @pytest.mark.parametrize("residual_dtype", [None, torch.float16, torch.float32])
+ @pytest.mark.parametrize("snapshot_dtype", [None, torch.float16, torch.float32])
+ @torch.inference_mode()
+diff --git a/tests/kernels/quantization/test_sm70_packed_gemm_lifecycle.py b/tests/kernels/quantization/test_sm70_packed_gemm_lifecycle.py
+index 783bafbe8..57255b682 100644
+--- a/tests/kernels/quantization/test_sm70_packed_gemm_lifecycle.py
++++ b/tests/kernels/quantization/test_sm70_packed_gemm_lifecycle.py
+@@ -102,7 +102,7 @@ def test_dense_dynamic_rows_output_stride_and_replay(
+             assert all(torch.all(buffer[:, width:] == 42) for buffer in buffers)
+             digest.update(actual.contiguous().view(torch.uint8).cpu().numpy().tobytes())
+         graph.reset()
+-    with pytest.raises(RuntimeError, match="input must be float16"):
++    with pytest.raises(RuntimeError):
+         operation(actual, x.float(), weight, scales, group, k_ld, q_ld, gated)
+     record_property("output_sha256", digest.hexdigest())
+     release_runtime_resources(config)
+diff --git a/tests/quantization/test_modelopt.py b/tests/quantization/test_modelopt.py
+index 2655295c8..93d0ecb87 100644
+--- a/tests/quantization/test_modelopt.py
++++ b/tests/quantization/test_modelopt.py
+@@ -113,6 +113,25 @@ def test_modelopt_nvfp4_leaves_excluded_parallel_lm_head_unquantized():
+     assert isinstance(method, UnquantizedLinearMethod)
+ 
+ 
++@pytest.mark.skipif(not torch.cuda.is_available(), reason="requires CUDA preparation")
++def test_excluded_lm_head_prepares_and_computes_logits(default_vllm_config, dist_init):
++    config = ModelOptNvFp4Config(
++        is_checkpoint_nvfp4_serialized=True,
++        kv_cache_quant_algo=None,
++        exclude_modules=["lm_head"],
++    )
++    with torch.device("cuda"):
++        layer = ParallelLMHead(64, 32, params_dtype=torch.float16,
++                               quant_config=config, prefix="lm_head")
++        with torch.no_grad():
++            layer.weight.copy_(torch.arange(64 * 32).reshape(64, 32).remainder(17) / 32)
++        inputs = torch.arange(8 * 32, dtype=torch.float16).reshape(8, 32) / 128
++        expected = torch.nn.functional.linear(inputs, layer.weight)
++        layer.quant_method.process_weights_after_loading(layer)
++        actual = layer.quant_method.apply(layer, inputs)
++    torch.testing.assert_close(actual, expected, rtol=1e-3, atol=1e-3)
++
++
+ def test_modelopt_mixed_precision_quantizes_parallel_lm_head():
+     config = _mixed_precision_config(
+         {"lm_head": {"quant_algo": "NVFP4", "group_size": 16}}
+diff --git a/tests/v1/core/test_mixed_prefill_budget.py b/tests/v1/core/test_mixed_prefill_budget.py
+index baa17c4ce..213a1226d 100644
+--- a/tests/v1/core/test_mixed_prefill_budget.py
++++ b/tests/v1/core/test_mixed_prefill_budget.py
+@@ -172,3 +172,63 @@ def test_mixed_step_uses_the_budget_floor():
+     assert step.num_scheduled_tokens[resident.request_id] == 1
+     assert step.num_scheduled_tokens["long"] == 768
+     assert step.mixed_prefill_budget == 768
++
++
++def test_mixed_prefill_recovers_without_interrupting_resident_decode():
++    scheduler = create_scheduler(
++        max_num_batched_tokens=8192, long_prefill_token_threshold=256
++    )
++    scheduler.mixed_prefill_enabled = True
++    resident = create_requests(
++        num_requests=1, num_tokens=32, max_tokens=64, req_ids=["resident"]
++    )[0]
++    prefills = create_requests(
++        num_requests=2, num_tokens=1536, req_ids=["long-a", "long-b"]
++    )
++    requests = [resident, *prefills]
++    for request in requests:
++        scheduler.add_request(request)
++
++    def complete(step, elapsed_ms=None):
++        ids = list(step.num_scheduled_tokens)
++        scheduler.update_from_output(
++            step,
++            ModelRunnerOutput(
++                req_ids=ids,
++                req_id_to_index={req_id: i for i, req_id in enumerate(ids)},
++                sampled_token_ids=[
++                    [42] if req_id == resident.request_id else [] for req_id in ids
++                ],
++                mixed_prefill_timing=(
++                    None
++                    if elapsed_ms is None
++                    else MixedPrefillTiming(
++                        step.mixed_prefill_tokens,
++                        step.mixed_decode_tokens,
++                        step.mixed_prefill_budget,
++                        elapsed_ms,
++                    )
++                ),
++            ),
++        )
++
++    complete(scheduler.schedule())
++    assert all(0 < r.num_computed_tokens < r.num_prompt_tokens for r in prefills)
++    target_ms = scheduler.scheduler_config.mixed_prefill_step_latency_ms
++    slow = scheduler.schedule()
++    # Synthetic full-budget feedback forces the 16-token floor.
++    complete(slow, 2 * target_ms * slow.mixed_prefill_tokens / 16)
++    grants = []
++    for _ in range(16):
++        step = scheduler.schedule()
++        grant = sum(step.num_scheduled_tokens.get(r.request_id, 0) for r in prefills)
++        assert step.num_scheduled_tokens.get(resident.request_id, 0) > 0
++        assert all(r.num_preemptions == 0 for r in requests)
++        assert all(r.num_computed_tokens < r.num_prompt_tokens for r in prefills)
++        grants.append(grant)
++        complete(step, target_ms / 4)
++        if grant > 16:
++            break
++
++    assert grants[0] == 16
++    assert max(grants) > 16
+diff --git a/vllm/entrypoints/openai/responses/utils.py b/vllm/entrypoints/openai/responses/utils.py
+index 79eecb7ce..907f2129b 100644
+--- a/vllm/entrypoints/openai/responses/utils.py
++++ b/vllm/entrypoints/openai/responses/utils.py
+@@ -114,13 +114,12 @@ def construct_input_messages(
+         for output_item in prev_response_output:
+             # NOTE: We skip the reasoning output.
+             if isinstance(output_item, ResponseOutputMessage):
+-                for content in output_item.content:
+-                    messages.append(
+-                        {
+-                            "role": "assistant",
+-                            "content": content.text,
+-                        }
++                messages.append(
++                    cast(
++                        ChatCompletionMessageParam,
++                        _construct_message_from_response_item(output_item),
+                     )
++                )
+ 
+     # Append the new input.
+     # Responses API supports simple text inputs without chat format.
+@@ -201,9 +200,9 @@ def _construct_message_from_response_item(
+         if item.encrypted_content:
+             raise ValueError("Encrypted content is not supported.")
+         elif item.content and len(item.content) >= 1:
+-            reasoning = item.content[0].text
++            reasoning = "".join(part.text for part in item.content)
+         elif len(item.summary) >= 1:
+-            reasoning = item.summary[0].text
++            reasoning = "".join(part.text for part in item.summary)
+             logger.warning(
+                 "Using summary text as reasoning content for item %s. "
+                 "Please use content instead of summary for "
+@@ -221,7 +220,10 @@ def _construct_message_from_response_item(
+             "reasoning": reasoning,
+         }
+     elif isinstance(item, ResponseOutputMessage):
+-        output_text = item.content[0].text
++        output_text = "".join(
++            part.text if part.type == "output_text" else part.refusal
++            for part in item.content
++        )
+         if prev_assistant_msg:
+             previous_content = prev_assistant_msg.get("content")
+             if previous_content is None:
+diff --git a/vllm/model_executor/layers/vocab_parallel_embedding.py b/vllm/model_executor/layers/vocab_parallel_embedding.py
+index b9efe64d0..2568589e0 100644
+--- a/vllm/model_executor/layers/vocab_parallel_embedding.py
++++ b/vllm/model_executor/layers/vocab_parallel_embedding.py
+@@ -358,6 +358,8 @@ class VocabParallelEmbedding(PluggableLayer):
+         quant_method: QuantizeMethodBase | None = None,
+     ):
+         super().__init__()
++        self._layer_execution_policy = layer_policy()
++        self._layer_trace = capture_runtime_trace()
+         self._sm70_dflash2_policy = capture_sm70_dflash2_config()
+         self.prefix = prefix
+ 
+diff --git a/vllm/model_executor/models/qwen3_dflash.py b/vllm/model_executor/models/qwen3_dflash.py
+index 33ce9c770..ad76f670b 100644
+--- a/vllm/model_executor/models/qwen3_dflash.py
++++ b/vllm/model_executor/models/qwen3_dflash.py
+@@ -5,6 +5,7 @@ import io
+ from collections.abc import Iterable
+ from pathlib import Path
+ 
++import regex as re
+ import torch
+ import torch.nn.functional as F
+ from torch import nn
+@@ -29,6 +30,7 @@ from vllm.model_executor.layers.linear import (
+ )
+ from vllm.model_executor.layers.logits_processor import LogitsProcessor
+ from vllm.model_executor.layers.quantization.base_config import QuantizationConfig
++from vllm.model_executor.layers.quantization.fp8 import Fp8Config
+ from vllm.model_executor.layers.rotary_embedding import get_rope
+ from vllm.model_executor.layers.vocab_parallel_embedding import (
+     ParallelLMHead,
+@@ -64,13 +66,46 @@ logger = init_logger(__name__)
+ _SLIDING_ATTENTION = "sliding_attention"
+ 
+ 
++def _configure_dflash_fp8_quant_config(
++    quant_config: QuantizationConfig | None,
++    hf_to_vllm_mapper: WeightsMapper,
++    start_layer_id: int,
++    num_hidden_layers: int,
++) -> None:
++    if not isinstance(quant_config, Fp8Config):
++        return
++
++    # Exclusions use checkpoint aliases and local layer IDs. Attention owners
++    # use offset IDs so that target and draft caches occupy distinct namespaces.
++    layer_mapper = WeightsMapper(
++        orig_to_new_regex={
++            re.compile(rf"(^|\.)layers\.{idx}(?=\.|$)"): rf"\1layers.{idx + start_layer_id}"
++            for idx in reversed(range(num_hidden_layers))
++        }
++    )
++    names = hf_to_vllm_mapper.apply_list(
++        [f"{name}.weight" for name in quant_config.ignored_layers]
++    )
++    quant_config.ignored_layers = [
++        name.removesuffix(".weight") for name in layer_mapper.apply_list(names)
++    ]
++    # This fresh draft config has module-name selectors; keep the global FP8
++    # default exact and use the existing component-boundary suffix matcher here.
++    quant_config.ignored_layers_match_mode = "suffix"
++    quant_config.packed_modules_mapping.update(Qwen3ForCausalLM.packed_modules_mapping)
++
++
+ def _dflash_context_projection_dtype(projection: nn.Module) -> torch.dtype | None:
+     weight = getattr(projection, "weight", None)
+-    if weight is not None and weight.is_floating_point():
++    if weight is not None and weight.dtype in (
++        torch.float16, torch.bfloat16, torch.float32
++    ):
+         return weight.dtype
+-    # Packed weights have no floating weight parameter. Their quantization
+-    # method declares the projection operand dtype independently of storage.
+-    dtype = getattr(getattr(projection, "quant_method", None), "params_dtype", None)
++    # FP8/packed storage is not the activation dtype. LinearBase retains the
++    # declared parameter dtype after the quantizer replaces the weight storage.
++    dtype = getattr(projection, "params_dtype", None)
++    if dtype is None:
++        dtype = getattr(getattr(projection, "quant_method", None), "params_dtype", None)
+     return dtype if dtype in (torch.float16, torch.bfloat16, torch.float32) else None
+ 
+ 
+@@ -459,6 +494,12 @@ class DFlashQwen3Model(nn.Module):
+         self.config = vllm_config.speculative_config.draft_model_config.hf_config
+         self.vocab_size = self.config.vocab_size
+         self.quant_config = get_draft_quant_config(vllm_config)
++        _configure_dflash_fp8_quant_config(
++            self.quant_config,
++            self.hf_to_vllm_mapper,
++            start_layer_id,
++            self.config.num_hidden_layers,
++        )
+ 
+         drafter_config = getattr(self.config, "eagle_config", {})
+         drafter_config.update(getattr(self.config, "dflash_config", {}))
+diff --git a/vllm/v1/core/sched/mixed_prefill.py b/vllm/v1/core/sched/mixed_prefill.py
+index c686c0ff9..c02725c63 100644
+--- a/vllm/v1/core/sched/mixed_prefill.py
++++ b/vllm/v1/core/sched/mixed_prefill.py
+@@ -46,9 +46,10 @@ class MixedPrefillBudget:
+             cost if self.ms_per_token is None else 0.5 * self.ms_per_token + 0.5 * cost
+         )
+         desired = self.target_ms / self.ms_per_token
+-        # Grow slowly on fast devices; react promptly to a long-context stall.
+-        desired = min(desired, self.tokens * 1.25)
+         quantum = min(16, self.max_tokens)
++        # Grow slowly on fast devices; react promptly to a long-context stall.
++        # Let small budgets reach the next quantum when the estimate supports it.
++        desired = min(desired, max(self.tokens * 1.25, self.tokens + quantum))
+         self.tokens = max(
+             quantum,
+             self.min_tokens,

@@ -1,0 +1,226 @@
+{
+  "schema_version": 1,
+  "scope": "Source-only post-c39 upstream refresh and dependency boundary review; no new model or native runtime admission",
+  "tested_runtime_revision": "c39f53abae51df6bf8ef122e34975a9f3596a93c",
+  "new_upstream_revision": "8d4fd9401ce0fd713821be0f045dc1f1f718b57b",
+  "new_isolated_source_root": "/tank/hot/1cat-deploy/repetition-native-20261009/upstream-main-8d4fd940-20261011T0001/source",
+  "fetch": {
+    "data": {
+      "checked_at": "2026-10-10T22:23:20.156091+00:00",
+      "tested_revision": "c39f53abae51df6bf8ef122e34975a9f3596a93c",
+      "requested_ref": "refs/heads/main",
+      "remote": "https://github.com/1CatAI/1Cat-vLLM.git",
+      "local_ref": "refs/remotes/after-c39-20261010T222320156091Z/main",
+      "fetched": true,
+      "isolated": true,
+      "tested_worktree_preserved": true,
+      "runtime_admitted": false,
+      "proxy_credentials_exported": false,
+      "previous_failed_receipts_preserved": true,
+      "stage": "completed",
+      "origin_configured": false,
+      "proxy_authentication": "router_runtime_in_memory",
+      "fetch_exit": 0,
+      "fetched_revision": "8d4fd9401ce0fd713821be0f045dc1f1f718b57b",
+      "isolated_source_root": "/tank/hot/1cat-deploy/repetition-native-20261009/upstream-main-8d4fd940-20261011T0001/source",
+      "changed_paths": [
+        {
+          "status": "M",
+          "paths": [
+            "csrc/qsa_lexicographic_topk.cuh"
+          ]
+        },
+        {
+          "status": "M",
+          "paths": [
+            "docs/design/flashnext_qsa_router_structure.md"
+          ]
+        },
+        {
+          "status": "M",
+          "paths": [
+            "docs/design/grouped_cpu_offload.md"
+          ]
+        },
+        {
+          "status": "M",
+          "paths": [
+            "tests/models/qwen4_exp/test_qsa_batch_topk.py"
+          ]
+        },
+        {
+          "status": "M",
+          "paths": [
+            "tests/models/qwen4_exp/test_qsa_ops.py"
+          ]
+        },
+        {
+          "status": "M",
+          "paths": [
+            "tests/v1/kv_offload/test_fs_tier.py"
+          ]
+        },
+        {
+          "status": "M",
+          "paths": [
+            "vllm/models/qwen4_exp/nvidia/ops/qsa.py"
+          ]
+        },
+        {
+          "status": "M",
+          "paths": [
+            "vllm/v1/kv_offload/tiering/fs/io.py"
+          ]
+        }
+      ]
+    },
+    "receipt": {
+      "path": "/tank/hot/1cat-deploy/repetition-native-20261009/upstream-fetches/after-c39-20261010T222320156091Z.json",
+      "bytes": 1674,
+      "sha256": "93eb9df2d4e83134b31b85fa48a453de653fd14d8ce033fbeb94aa77426bbb5a"
+    }
+  },
+  "delta_source": {
+    "bytes": 19428,
+    "sha256": "17876a63b8f99910e59d8fd34598cf98f4366e43ac26e0e74221a89b84151db4",
+    "hash_scope": "Six changed native/runtime/test files; the two documentation files are excluded from this diff checksum",
+    "hashed_paths": [
+      "csrc/qsa_lexicographic_topk.cuh",
+      "vllm/models/qwen4_exp/nvidia/ops/qsa.py",
+      "vllm/v1/kv_offload/tiering/fs/io.py",
+      "tests/models/qwen4_exp/test_qsa_batch_topk.py",
+      "tests/models/qwen4_exp/test_qsa_ops.py",
+      "tests/v1/kv_offload/test_fs_tier.py"
+    ],
+    "paths": [
+      {
+        "status": "M",
+        "paths": [
+          "csrc/qsa_lexicographic_topk.cuh"
+        ]
+      },
+      {
+        "status": "M",
+        "paths": [
+          "docs/design/flashnext_qsa_router_structure.md"
+        ]
+      },
+      {
+        "status": "M",
+        "paths": [
+          "docs/design/grouped_cpu_offload.md"
+        ]
+      },
+      {
+        "status": "M",
+        "paths": [
+          "tests/models/qwen4_exp/test_qsa_batch_topk.py"
+        ]
+      },
+      {
+        "status": "M",
+        "paths": [
+          "tests/models/qwen4_exp/test_qsa_ops.py"
+        ]
+      },
+      {
+        "status": "M",
+        "paths": [
+          "tests/v1/kv_offload/test_fs_tier.py"
+        ]
+      },
+      {
+        "status": "M",
+        "paths": [
+          "vllm/models/qwen4_exp/nvidia/ops/qsa.py"
+        ]
+      },
+      {
+        "status": "M",
+        "paths": [
+          "vllm/v1/kv_offload/tiering/fs/io.py"
+        ]
+      }
+    ]
+  },
+  "findings": {
+    "qsa_native": {
+      "header": "csrc/qsa_lexicographic_topk.cuh",
+      "including_translation_unit": "csrc/libtorch_stable/topk.cu",
+      "affected_artifact": "vllm/_C_stable_libtorch.abi3.so",
+      "build_authority": "CMakeLists.txt:873-889,1292-1315",
+      "opcode": "qsa_lexicographic_topk",
+      "eligible_topk": 512,
+      "changed_compact_gate": "rows<=32 and columns>=32768; each row uses actual device length; clustered/NaN/ambiguous-cutoff cases retain exact fallback",
+      "python_consumer": "vllm/models/qwen4_exp/nvidia/ops/qsa.py",
+      "source_limit": "Source eligibility and fallback logic only; not executed hits, numerical proof, Qwen3.8 sampler repair or permission to relabel c39 libraries"
+    },
+    "qsa_python": "Reuse exact selector decision per call and avoid the persistent-topk workspace allocation when that selector is eligible",
+    "filesystem_offload": {
+      "file": "vllm/v1/kv_offload/tiering/fs/io.py",
+      "change": "Validate opened-file byte size equals complete block size before writing the destination; malformed/truncated/oversized pages use existing failed-load/recompute path",
+      "limit": "Original resolved private failure parameters remain unknown; snapshot flag absence is not causal exclusion or real failure verification"
+    },
+    "runtime_eligibility": {
+      "production_snapshot_configured_optional_flags": {
+        "--kv-transfer-config": false,
+        "--kv-offloading-backend": false,
+        "--kv-offloading-size": false,
+        "--kv-offloading-size-gb": false,
+        "--cpu-offload-gb": false
+      },
+      "c39_candidate_configured_optional_flags": {
+        "--kv-transfer-config": false,
+        "--kv-offloading-backend": false,
+        "--kv-offloading-size": false,
+        "--kv-offloading-size-gb": false,
+        "--cpu-offload-gb": false
+      },
+      "upstream_changed_runtime_paths": [
+        "vllm/models/qwen4_exp/nvidia/ops/qsa.py",
+        "vllm/v1/kv_offload/tiering/fs/io.py"
+      ],
+      "original_failure_replayed": false,
+      "new_revision_runtime_admitted": false
+    },
+    "known_repair_paths_changed_upstream": false,
+    "no_dflash_sampler_or_mixed_prefill_source_delta": true
+  },
+  "native_admission": {
+    "new_build_performed": false,
+    "new_runtime_admitted": false,
+    "old_artifacts_relabelled": false,
+    "matching_affected_native_build_required": true,
+    "policy_abi_integer_alone_insufficient": true
+  },
+  "negative_source_fetches": {
+    "original_receipts_preserved": [
+      "/tank/hot/1cat-deploy/repetition-native-20261009/upstream-checks/after-c39-main-fetch-20261011T0001.json",
+      "/tank/hot/1cat-deploy/repetition-native-20261009/upstream-checks/after-c39-main-fetch-remote-20261011T0001.json",
+      "/tank/hot/1cat-deploy/repetition-native-20261009/upstream-checks/after-c39-main-fetch-resolved-20261011T0001.json"
+    ],
+    "origin_assumption_invalid": true,
+    "empty_per_worktree_fetch_ref_observed": {
+      "source_head": "c39f53abae51df6bf8ef122e34975a9f3596a93c",
+      "fetch_ref_path": "/tank/hot/1cat-deploy/repetition-native-20261009/router-main-refresh-20261010T033712Z/source/.git/worktrees/fastpath-main-c39f53ab/FETCH_HEAD",
+      "fetch_ref_exists": true,
+      "fetch_ref_bytes": 0,
+      "fetch_ref_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bound_ref_hashes": [],
+      "fetch_ref_parse_exit": 128,
+      "fetch_ref_parse_class": "empty_ref",
+      "source_uid": 1000,
+      "git_metadata_uid": 1000
+    },
+    "successful_pattern": "Existing explicit public URL, shallow update and fresh named ref; no remote/credential/router configuration changes",
+    "these_are_generation_failures": false
+  },
+  "limits": {
+    "original_private_failure_closed": false,
+    "numerical_quality_admitted": false,
+    "semantic_quality_admitted": false,
+    "maximum_capacity_established": false,
+    "production_resumed": false,
+    "life_resumed": false
+  }
+}
