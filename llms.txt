@@ -310,10 +310,13 @@
 - https://cyjin-yl.github.io/v100-perfs/evidence/results/1cat-v100-2026-10-09/2026-10-10-c4-fastpath-route-diagnosis.json/
 - https://cyjin-yl.github.io/v100-perfs/evidence/results/1cat-v100-2026-10-09/2026-10-10-c73-build-and-startup-regression.json/
 - https://cyjin-yl.github.io/v100-perfs/evidence/results/1cat-v100-2026-10-09/2026-10-10-dflash-128k-diagnostic-failure.json/
+- https://cyjin-yl.github.io/v100-perfs/evidence/results/1cat-v100-2026-10-09/2026-10-10-dflash-128k-growthfix-revalidation.json/
 - https://cyjin-yl.github.io/v100-perfs/evidence/results/1cat-v100-2026-10-09/2026-10-10-dflash-128k-unprofiled-failure.json/
 - https://cyjin-yl.github.io/v100-perfs/evidence/results/1cat-v100-2026-10-09/2026-10-10-dflash-fp8-namespace-repair.json/
+- https://cyjin-yl.github.io/v100-perfs/evidence/results/1cat-v100-2026-10-09/2026-10-10-dflash-min512-four-window-proof.json/
 - https://cyjin-yl.github.io/v100-perfs/evidence/results/1cat-v100-2026-10-09/2026-10-10-diagnostic-scope-correction.json/
 - https://cyjin-yl.github.io/v100-perfs/evidence/results/1cat-v100-2026-10-09/2026-10-10-ec535-dflash2-startup-and-eager-control.json/
+- https://cyjin-yl.github.io/v100-perfs/evidence/results/1cat-v100-2026-10-09/2026-10-10-mixed-prefill-growth-cpu-proof.json/
 - https://cyjin-yl.github.io/v100-perfs/evidence/results/1cat-v100-2026-10-09/historical-decisions.json/
 - https://cyjin-yl.github.io/v100-perfs/evidence/results/1cat-v100-2026-10-09/historical-provenance.json/
 - https://cyjin-yl.github.io/v100-perfs/evidence/results/legacy/deepseek_q2_split_verification.json/
