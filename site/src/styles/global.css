@@ -365,7 +365,7 @@ article h3 { margin: 2rem 0 0.6rem; font-size: 1.15rem; }
 article p, article ul, article ol, article table, article pre, article blockquote { margin: 0.9rem 0; }
 article li + li { margin-top: 0.3rem; }
 article pre { overflow-x: auto; padding: 1rem; border: 1px solid hsl(var(--border)); background: hsl(var(--background)); font-size: 0.78rem; }
-article :not(pre) > code { padding: 0.1rem 0.28rem; background: hsl(var(--muted)); color: hsl(var(--foreground)); font-size: 0.88em; }
+article :not(pre) > code { padding: 0.1rem 0.28rem; background: hsl(var(--muted)); color: hsl(var(--foreground)); font-size: 0.88em; overflow-wrap: anywhere; }
 article table { display: block; width: max-content; max-width: 100%; overflow-x: auto; border-collapse: collapse; font-size: 0.84rem; }
 article th, article td { padding: 0.5rem 0.65rem; border: 1px solid hsl(var(--border)); text-align: left; vertical-align: top; }
 article th { background: hsl(var(--card)); }
