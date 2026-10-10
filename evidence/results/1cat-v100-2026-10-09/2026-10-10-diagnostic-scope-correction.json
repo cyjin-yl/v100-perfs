@@ -1,0 +1,155 @@
+{
+  "kind": "diagnostic scope correction; original numerical receipts retained",
+  "date": "2026-10-10",
+  "superseded_record": {
+    "path": "2026-10-10-ec535-dflash2-startup-and-eager-control.json",
+    "sha256": "07e0cc6cdca91c1db504d67a671c1ec198f30ac1cd40232af79d46f3026b5b5a",
+    "only_interpretation_superseded": true
+  },
+  "corrected_interpretation": [
+    "A pass at four8192 input plus512 output is one workload observation, not a verified <=8K region or a fast-path boundary.",
+    "An empty common-decode intersection at a fixed512 output budget does not prove a KV capacity maximum, scheduler deadlock, or an irreparable configuration.",
+    "No deployment option is selected. The user directs diagnosis and repair using life historical parity methodology."
+  ],
+  "policy_schema_correction": {
+    "kind": "offline replay of actual acceleration response schema",
+    "helper_sha256": "bc241f026d2f16155145fa5e8bf304e24dd359e23827e8b85be98f16e798c142",
+    "bug": "capture helper required nonexistent runtime_policies instead of linear_kernel_policies",
+    "results": [
+      {
+        "capture": "ec535-w4a16-eager-fp8-qpn8dtype",
+        "source_sha256": "34b59f1ed57b63347b0cc420b17c8772ed02c1a035fc3e91d4ce40dd0dc438c7",
+        "original_gate_passed": false,
+        "corrected": {
+          "sm70": true,
+          "scope": "configured_capabilities",
+          "worker_report_count": 2,
+          "worker_modes": [
+            {
+              "rank": 0,
+              "scope": "loaded_layer_selection",
+              "compilation_mode": "NONE",
+              "cudagraph_mode": "NONE",
+              "decode_cudagraph_mode": "NONE",
+              "mixed_cudagraph_mode": "NONE",
+              "captured_full_decode_tokens": []
+            },
+            {
+              "rank": 1,
+              "scope": "loaded_layer_selection",
+              "compilation_mode": "NONE",
+              "cudagraph_mode": "NONE",
+              "decode_cudagraph_mode": "NONE",
+              "mixed_cudagraph_mode": "NONE",
+              "captured_full_decode_tokens": []
+            }
+          ],
+          "linear_kernel_policies_present": true,
+          "worker_report_unavailable": false,
+          "executed_kernel_hits_proven": false,
+          "passed": true
+        }
+      },
+      {
+        "capture": "ec535-w4a16-graph-fp8-qpn8dtype",
+        "source_sha256": "2cb8b151288551e5e5eb8d3f3c3b461124ca1876d827b89c2ea2ab2099098403",
+        "original_gate_passed": false,
+        "corrected": {
+          "sm70": true,
+          "scope": "configured_capabilities",
+          "worker_report_count": 2,
+          "worker_modes": [
+            {
+              "rank": 0,
+              "scope": "loaded_layer_selection",
+              "compilation_mode": "VLLM_COMPILE",
+              "cudagraph_mode": "FULL_AND_PIECEWISE",
+              "decode_cudagraph_mode": "FULL",
+              "mixed_cudagraph_mode": "PIECEWISE",
+              "captured_full_decode_tokens": [
+                8,
+                16,
+                24,
+                32
+              ]
+            },
+            {
+              "rank": 1,
+              "scope": "loaded_layer_selection",
+              "compilation_mode": "VLLM_COMPILE",
+              "cudagraph_mode": "FULL_AND_PIECEWISE",
+              "decode_cudagraph_mode": "FULL",
+              "mixed_cudagraph_mode": "PIECEWISE",
+              "captured_full_decode_tokens": [
+                8,
+                16,
+                24,
+                32
+              ]
+            }
+          ],
+          "linear_kernel_policies_present": true,
+          "worker_report_unavailable": false,
+          "executed_kernel_hits_proven": false,
+          "passed": true
+        }
+      },
+      {
+        "capture": "ec535-w4a16-graph-fp8-qpn8dtype-fair2048",
+        "source_sha256": "2cb8b151288551e5e5eb8d3f3c3b461124ca1876d827b89c2ea2ab2099098403",
+        "original_gate_passed": false,
+        "corrected": {
+          "sm70": true,
+          "scope": "configured_capabilities",
+          "worker_report_count": 2,
+          "worker_modes": [
+            {
+              "rank": 0,
+              "scope": "loaded_layer_selection",
+              "compilation_mode": "VLLM_COMPILE",
+              "cudagraph_mode": "FULL_AND_PIECEWISE",
+              "decode_cudagraph_mode": "FULL",
+              "mixed_cudagraph_mode": "PIECEWISE",
+              "captured_full_decode_tokens": [
+                8,
+                16,
+                24,
+                32
+              ]
+            },
+            {
+              "rank": 1,
+              "scope": "loaded_layer_selection",
+              "compilation_mode": "VLLM_COMPILE",
+              "cudagraph_mode": "FULL_AND_PIECEWISE",
+              "decode_cudagraph_mode": "FULL",
+              "mixed_cudagraph_mode": "PIECEWISE",
+              "captured_full_decode_tokens": [
+                8,
+                16,
+                24,
+                32
+              ]
+            }
+          ],
+          "linear_kernel_policies_present": true,
+          "worker_report_unavailable": false,
+          "executed_kernel_hits_proven": false,
+          "passed": true
+        }
+      }
+    ],
+    "duplicate_rank_rejected": true,
+    "missing_policy_rejected": true,
+    "executed_kernel_hits_proven": false,
+    "old_receipts_modified": false
+  },
+  "latest_upstream": {
+    "revision": "7ab8b4477adb4137a1172de0e66c6806e997a49c",
+    "tree": "9e688cebb895abefa631139f3e058294b74ac25c",
+    "transport": "authenticated doesrouter HTTP CONNECT via port7893",
+    "runtime_admitted": false,
+    "source_path": "/tank/hot/1cat-deploy/repetition-native-20261009/router-main-refresh-20261010T033712Z/source"
+  },
+  "private_material_exported": false
+}

@@ -1,0 +1,284 @@
+# 1Cat / V100 chronological evidence ledger — 2026-10-09
+
+This ledger is the historical companion to the [engine/quantization comparison](engine-quantization-comparison-2026-10-09.md). It backfills completed experiments and preserves failed/interrupted observations without rerunning them. It is not current-production guidance. At this publication checkpoint production8000 is stopped, life is paused, and candidate selection is unfinished.
+
+The October10 additions close the public12K DFlash FP8 checkpoint-namespace diagnosis and matched repair on tested7ab, not the original private quality incident. Diagnostic8001 must not become the gateway target. The ongoing public4×130560+512 diagnostic has no completed result recorded at this checkpoint.
+
+## Evidence contract and coverage
+
+The public evidence base is `evidence/results/1cat-v100-2026-10-09/`. Each source record includes its original path, SHA-256 and byte count. The original backfill includes **54 historical benchmark report records**, **16 October candidate report records**, plus the failed image-probe receipt and decision/provenance/primitive/admission summaries. The1554 checkpoint adds **seven completed report records and one run-conditions receipt**, then **two W4A16 baseline reports completed after the service capture**, explicitly authorized as supplemental records. These are artifact counts, not independent repetitions or successful experiments. Some records are warmups, interrupted runs or known quality failures.
+
+Original reports remain in place. We publish field-allowlisted metrics, status, usage, input/output hashes where present, sampling, timing and bounded verdicts; **not generated text, reasoning, prompts, private request/response trees, launch snapshots, credentials, signed URLs or raw engine logs**. Error presence is retained without raw error strings from generation requests. Missing metadata remains unknown. A SHA binds a source, not the truth of its conclusions; historical claims still need their exclusions.
+
+| Capture family | Public evidence | Coverage |
+| --- | --- | --- |
+| September20 TP2 | [11 report summaries](../../../evidence/results/1cat-v100-2026-10-09/2026-09-20-benchmarks.json) | One older160K report plus10 cold160K/256K C1–C5 records |
+| September21 serving tune | [14 report summaries](../../../evidence/results/1cat-v100-2026-10-09/2026-09-21-benchmarks.json) | No-MTP/MTP4 comparisons, long contexts, image/video, failed TQ and interrupted run |
+| September21 decisions / September28 numerics | [Historical decisions](../../../evidence/results/1cat-v100-2026-10-09/historical-decisions.json) | Matched rates, capacity caveats, TQ rejection, TP4 operator exclusions and final numerical lesson with retractions |
+| September28 Swift1.5 sweep | [27 report summaries](../../../evidence/results/1cat-v100-2026-10-09/2026-09-28-benchmarks.json) | INT4, NVFP4, AWQ, AutoRound, earlier Swift baseline; compare/long/mm/context workloads |
+| September30 model switch | [Two aggregate evaluations](../../../evidence/results/1cat-v100-2026-10-09/2026-09-30-benchmarks.json) | Baseline versus uncensored candidate; score denominators retained, generated answers omitted |
+| October9 earlier DFlash2 | [Eight report summaries](../../../evidence/results/1cat-v100-2026-10-09/2026-10-09-dflash2.json) | Seven pressure windows plus synthetic Responses A/B |
+| October9 matching natives | [Seven report summaries](../../../evidence/results/1cat-v100-2026-10-09/2026-10-09-matching-native.json) | Two smoke, four saved-branch pairs and one independent4×8K512 baseline |
+| October9 follow-up | [Image pair and independence metadata](../../../evidence/results/1cat-v100-2026-10-09/2026-10-09-followup-smoke.json) | One successful two-image report, prior HTTP400 probe failure and supplemental independent-baseline queue/construction fields |
+| October9 primitives/build | [Native provenance](../../../evidence/results/1cat-v100-2026-10-09/2026-10-09-native-provenance.json) | Failed integer routes, bounded replacement backend, NaN diagnostic and matching native identities |
+| October9 package gates | [Artifact/header admission](../../../evidence/results/1cat-v100-2026-10-09/2026-10-09-package-admission.json) | W4A16 admission; NInfer V2/V3/Q6 blockers, not native execution |
+| October9 final V2 admission / compatibility | [Complete source binding and blockers](../../../evidence/results/1cat-v100-2026-10-09/2026-10-09-v2-compatibility-blockers.json) | Three conversion-input files fully admitted; bounded resources match complete source; ten extra DFlash tensors and incompatible template prevent completion-only repack |
+| October9 source compatibility / native build | [Detailed compatibility analysis](../../../evidence/results/1cat-v100-2026-10-09/2026-10-09-ninfer-compatibility-analysis.json), [native build receipt](../../../evidence/results/1cat-v100-2026-10-09/2026-10-09-ninfer-native-build.json) | Existing reports retained unchanged; successful CUDA12.9 SM70 build is distinct from failed model admission |
+| October9 15:54:53 service checkpoint and completed observations | [1554 safe records](../../../evidence/results/1cat-v100-2026-10-09/2026-10-09-checkpoint-1554.json) | Mixed single8K; failed four128K residency gate and CPU-build conditions; W4 smoke/image/profile/replay; actual NInfer exit1; subsequent W4 one/four8K supplement is not a new service capture |
+| Author results | [Pinned author-card summary](../../../evidence/results/1cat-v100-2026-10-09/2026-10-09-author-reported.json) | Blackwell/SGLang, original NInfer and llama.cpp protocols; not V100 reproduction |
+|Author protocol details|[Existing detailed protocol report](../../../evidence/results/1cat-v100-2026-10-09/2026-10-09-author-protocol-details.json)|Evaluator/source bindings, code-case timeouts, inherited Q6 claims, long tails, missing accuracy runtime pins and noncomparable speed protocols|
+|October10 ec535 eager control|[Control and DFlash2 status receipt](../../../evidence/results/1cat-v100-2026-10-09/2026-10-10-ec535-dflash2-startup-and-eager-control.json)|Eager no-draft smoke/image/replay and one/four8192+512 control; config.replace backport CPU proof; DFlash2 retests: v4 startup failure, eager v5 failed4x8K512 residency, graph v6 passed four8192+512; the overlap gate was unmet at the sampled12288–130560 points, not a capacity ceiling, graph v7 fair2048 failed4×130560 residency|
+| October10 c73 native and startup evidence | [Retained build/startup regression record](../../../evidence/results/1cat-v100-2026-10-09/2026-10-10-c73-build-and-startup-regression.json) | Source-bound c73 native/artifact admission and separately retained startup-regression observations; not a7ab or latest-main performance result |
+| October10 matching7ab native and acceptance diagnosis | [Closed pre-namespace baseline](../../../evidence/results/1cat-v100-2026-10-09/2026-10-10-7ab-native-and-acceptance-diagnosis.json) | 21 matching native artifacts; real-head policy, projection operand dtype and policy-JSON repairs; failed attempts retained; B4 accepted15/14203, matched B1 accepted2/3563; earlier7ab→4e5357b5 documentation/tool/CI-only delta |
+| October10 checkpoint-namespace repair | [Closed matched public repair](../../../evidence/results/1cat-v100-2026-10-09/2026-10-10-dflash-fp8-namespace-repair.json) | Actual IDs/marker/manifest hashes match for four12288-token inputs, new salts,512 outputs each; B4 accepted1403/4564 after repair; loaded FC/first QKV half/no scales, O FP8 finite positive scales;3 namespace regressions pass; initial admission skew retained; later4e5357b5→16628e2f serializer-only delta, not tested runtime |
+| October10 repaired128K overlap failures | [Observed failure](../../../evidence/results/1cat-v100-2026-10-09/2026-10-10-dflash-128k-diagnostic-failure.json), [unprofiled control](../../../evidence/results/1cat-v100-2026-10-09/2026-10-10-dflash-128k-unprofiled-failure.json) | Both complete four130560+512 outputs/markers but fail common decode; acceptance27.0221%/27.5714%; same actual input hashes, new salts; fresh seed512 versus inherited144 is not a single-variable timing A/B |
+| October10 original-source C4 route attribution | [Bounded native-route diagnosis](../../../evidence/results/1cat-v100-2026-10-09/2026-10-10-c4-fastpath-route-diagnosis.json) | ec535 mixed/W4A16, exact four8192+512 public inputs, initial/common windows on both ranks; ModelOpt packed FP4/FP8 with half activation, graph/GDN/XQA/compact filter actually observed;44276e97 fetched into isolated worktree, not runtime-admitted |
+
+## 2026-09-20: early TP2 context sweep
+
+Source roots: `/tank/hot/1cat-deploy/benchmarks/2026-09-20-tp2/` and `2026-09-20-tp2-cold/`. The cold records contain C1–C5 at target160000 and256000. All30 requested cold requests are recorded successful, each generating32 tokens; actual input per request is159960 or255960, **not the target label**.
+
+| Target / concurrency | Actual aggregate input | Actual output | Wall seconds | Mean TTFT seconds |
+| --- | ---: | ---: | ---: | ---: |
+| 160000 / C1 | 159960 | 32 | 151.432 | 150.187 |
+| 160000 / C2 | 319920 | 64 | 305.469 | 302.709 |
+| 160000 / C3 | 479880 | 96 | 464.833 | 457.323 |
+| 160000 / C4 | 639840 | 128 | 634.371 | 628.543 |
+| 160000 / C5 | 799800 | 160 | 939.460 | 689.317 |
+| 256000 / C1 | 255960 | 32 | 304.564 | 302.789 |
+| 256000 / C2 | 511920 | 64 | 614.584 | 602.830 |
+| 256000 / C3 | 767880 | 96 | 924.416 | 907.962 |
+| 256000 / C4 | 1023840 | 128 | 1249.341 | 1228.361 |
+| 256000 / C5 | 1279800 | 160 | 1583.285 | 1296.808 |
+
+The original `prefill_throughput_tok_s` and `decode_throughput_tok_s` names are retained in evidence, but those values equal aggregate input/output divided by **whole run duration**. They are not isolated prefill/decode kernel rates. These short-output completions alone do not establish simultaneous independent resident capacity, long-generation quality or maximum capacity. Engine and checkpoint commit hashes absent from these older reports are not invented; they are not directly comparable to October Merkyor.
+
+## 2026-09-21: serving tune, MTP4, rejected TQ/operator routes
+
+Hardware was two V100 PCIe32GB, TP2; model `swift-qwen3.8-27b-nvfp4`. The recorded wheel was1Cat1.5.0, not the later1.5.1-dev or October matching-main build. [Historical provenance](../../../evidence/results/1cat-v100-2026-10-09/historical-provenance.json) retains the wheel/config hashes and bounded October narrative attribution. The matched protocol was FP16 activations, Flash-V100, FP8 E5M2 KV, context262144, four sequences, batched prefill4096, utilization.92, thinking enabled, T=.6/top_p=.95/top_k20/seed20260921, natural EOS and1024 output budget. One warmup is excluded from speed summaries but included in acceptance counters.
+
+| Matched arm | Weighted per-request decode, single | Weighted per-request decode, C4 | C4 aggregate output / wall | C4 mean TTFT |
+| --- | ---: | ---: | ---: | ---: |
+| No MTP | 39.558 tok/s | 36.322 tok/s | 102.283 tok/s | 0.585s |
+| MTP4 | 61.977 tok/s | 48.869 tok/s | 109.660 tok/s | 2.340s |
+| Separate final warm MTP4 capture | 60.244 tok/s | 46.900 tok/s | 128.122 tok/s | 0.355s |
+
+Stream-derived per-request decode uses `(completion_tokens−1)/(last_content−first_content)`, not a GPU timer; MTP bursts and short completions affect granularity. Some1024-budget code/Chinese outputs truncated, including one Chinese response still in reasoning. They are not complete-answer successes. Matched prompt hashes agree; the separate final warm capture is not substituted for the colder matched MTP latency.
+
+### Long and multimodal observations
+
+- Four independently salted196000-token prompts with3072 output budgets generated2168/2046/2517/2290 tokens and stopped naturally. Checksum checks passed; maximum running4, peak KV fraction.90562249; longest elapsed1971.428s. The historical summary estimates about245s of four-way output overlap, but lacks independent start-skew capture. This is an older-model bounded residency observation, **not October four128K/max-capacity proof**.
+- The short-output four196K run generated11 tokens each and observed maximum running3, not4. The two runs must not be merged into one residency claim.
+- One256000-input request completed11 output tokens, TTFT317.733s. No four262144 full windows or131072 generated outputs were demonstrated.
+- The bounded image task identified a256×256 red square; the video task identified an eight-frame128×128 red-to-blue change. Those historical results do not certify the current candidate's vision path.
+- `.94/8192` long-prefill trial was deliberately interrupted with only11MiB external free per GPU at peak. Its `nomtp-context-160000-4.json` status explicitly says incomplete and not proof of deadlock or completed capacity. Accepted-profile observations were `.92/4096`.
+
+### Rejections retained
+
+TQ default32 splits could not cover the graph token capacity; explicit512 splits started, but **all eight measured matched prompts lacked a final answer**, including premature2–8-token garbage outputs and long repetitive reasoning. HTTP200 and an engine-reported2,100,001-token estimate did not rescue it. Apparent premature-EOS speed received no credit. This rejection is bounded to that installed full-graph profile, not every TQ backend.
+
+TP4 QPN4 operator probes on TP2 were not promoted: M1 down improved59.2707→40.4710µs, but M4 regressed56.2067→369.5350µs and M8 regressed56.1085→372.4659µs. Other M1 shapes were rejected; workspace/layout constraints and lack of end-to-end proof remained. Successful changed-input graph probes are primitive evidence only. No blanket TP4 gate broadening or production kernel promotion followed.
+
+## 2026-09-28: Swift1.5 candidate sweep
+
+Source root: `/tank/hot/1cat-deploy/benchmarks/2026-09-28-swift15-candidates/`. The27 safe records retain each request's status, actual usage, sampling, finish reason and available stream timing for:
+
+- `dryrun-prod-compare` and the earlier Swift NVFP4 compare/long/mm/context160000-C1/context160000-C4/context256000-C1;
+- Swift1.5 INT4 and NVFP4, each with the same compare/long/mm/three-context report families;
+- Swift1.5 W4A16-AWQ with those six report families;
+- Swift1.5 W4A16-AutoRound compare only;
+- the one-request `swift-qwen3.json` capture.
+
+This is an inventory, not a clean league table. The AutoRound report records nine HTTP200 requests, **all length-terminated**, with no measured decode rate; that is not accepted quality or a speed result. Other compare arms also include length-truncated1024-token outputs. Absent common engine/asset hashes and quality review are explicit coverage gaps. The Quark FP8 startup log is not copied or treated as a completed benchmark: there is no safe completed result report in this family. Older W4A16-AWQ/AutoRound results are **not** the newly admitted Merkyor NVFP4 W4A16 package.
+
+## 2026-09-28: numerical investigation and retractions
+
+The source narrative is life `areas/technology/home-lab/2026-09-28-v100-sm70-jit-aot-quality-drift.md`; its path and SHA are in [historical decisions](../../../evidence/results/1cat-v100-2026-10-09/historical-decisions.json). It is a historical narrative, not a new recovery of original tensor dumps. Read its final corrections rather than freezing an intermediate “root cause”.
+
+1. **First-token compile drift:** TQ eager was clean while compile/graph modes degenerated. Compile without graph also failed in that first investigation. Cache-disable and individual RMSNorm changes did not cure it. The tested final parity trigger was `VLLM_SM70_FLASH_V100_0DOT3_COMPILE_GRAPH=1`; AOT itself was excluded by JIT parity controls. This is evidence for the captured build, not a universal guarantee for every later revision.
+2. **MTP4 verify failure:** early diagnosis blamed small-M GEMM/inductor, then a Python slicing pointer, then captured launch heuristics. Those intermediate conclusions were superseded. `q` cosine−.07 was a probe aliasing artifact; dirtyH/I/J `core_out≈.42` comparisons were warmup-contaminated. A stale `.venv` threshold patch also made an attempted fix dead code. Preserve these errors rather than citing them as valid tensor evidence.
+3. **Final capture-branch explanation:** capture metadata had `max_query_len == max_seq_len` and selected first-chunk self-attention, while real verify required continuation with cached history. The final fix made capture metadata represent continuation (`max_query_len+1`) and derived synthetic lengths graph-safely. Earlier continuation-only changes could not fix a graph that never captured that branch. `NEVER` was diagnostic isolation, not the final required fallback.
+4. **Final bounded verification:** dirtyO with graph enabled recorded core-output cosines `[.9999,1,1,.9999,1]`, qkv/q_rot1.0, coherent text, three concurrent requests, mean acceptance length2.53, positional acceptance.78/.41/.25/.09 and approximately58tok/s for128 output tokens. This is not universal zero-drift or maximum performance proof.
+
+Upstream trail: [issue728](https://github.com/1CatAI/1Cat-vLLM/issues/728), [PR729](https://github.com/1CatAI/1Cat-vLLM/pull/729), commit prefix `138259478` based on `357d07bcb`,23 additions/6 deletions in the historical record. No new upstream merge/deployment status is inferred. The recorded1,469,090-equivalent-token TQ pool and “200K concurrency4→5” note were not independently revalidated here and do not establish current capacity.
+
+## 2026-09-30: uncensored-switch aggregate evaluation
+
+Evidence preserves the two160-question local evaluation summaries, not their questions or generated answers. This small local subset is not the model author's full GPQA/MMLU/LCB protocol and is not a current Merkyor evaluation.
+
+| Local subset | Baseline | Candidate Ajgazin |
+| --- | ---: | ---: |
+| MMLU | 50/60 | 49/60 |
+| GSM8K | 18/20 | 18/20 |
+| Ethics | 53/60 | 52/60 |
+| Compliance | 9/20 | 19/20 |
+| Recorded run elapsed | 108.7s | 205.4s |
+
+All category error counts were zero, but scores differ and are preserved. “Compliance” is the old harness category, not a quality/safety certification. No normalized throughput ranking follows from unequal complete run durations without a matched generation-token denominator.
+
+## 2026-10-09: earlier DFlash2 candidate
+
+Source root: `/tank/hot/1cat-deploy/merkyor-deploy-20261009/results/`. Runtime Python `c4f6245...`, donor native build `1.5.1.dev878+g357d07bcb.cu129`, target mixed package `a9d09ee...`; TP2, target E4M3 KV, q7 DFlash2, utilization.90. Source/donor identity differs from the later freshly built native baseline.
+
+Report tags: `fp8-c3`, `fp8-c4`, `fp8-c4-warm`, `bf16-c4`, `bf16-c4-warm`, `fp8-c4-256k`, `fp8-c4-soak`, `public-responses-sampling-20261009`. The [comparison report](engine-quantization-comparison-2026-10-09.md#historical-fp8bf16-dflash2-completed-but-confounded) gives their measured rates and denominators.
+
+Additional bounded observations and exclusions:
+
+- Single65536-input retrieval: TTFT50.850s,9 output tokens. Single131072-input retrieval: TTFT113.286s,9 output tokens. Input/TTFT≈1289/1157tok/s includes scheduling/first-token work; it is not a kernel prefill measurement.
+- FP8 cold C4 had success delta25 for24 controlled requests and a103s tail overlapping JIT. BF16 warm had delta24 for17, while FP8 warm had no recorded external requests. Comparing their warm rates as a fair FP8/BF16 ranking is withdrawn; “BF16 unstable” is not supported.
+- The four identical120000-token requests completed and retrieved their marker, but shared prefix cache. Whole-window local compute136445, cache hits344064, success delta13=controlled13. **Withdrawn:** pure-prefill3600tok/s,3× acceleration and four independent128K resident claims.
+- Dense/schema smoke was four requests: two top_k=-1, one top_k20 control and one JSON-schema case. The historical narrative reports printable fraction1.0, independent-word ratio.72–.81 and valid `title/steps` JSON. No standalone safe report was located for this wave; it remains narrative-level evidence, not a reproduced route/numerical proof. A mixed batch's top_k20 member is not automatically compact.
+- The real private life Responses failure generated32768 repeated exclamation tokens. It remains a counterexample despite all earlier successful HTTP/needle/synthetic requests. Source prompts and outputs remain private; exact historical wire is unavailable.
+- Synthetic penalty1.0/1.05 A/B passed its four bounded quality checks, but success delta5>4 shows external traffic and the98471-token long input is reconstructed public material, not the private failure. Neither penalty is a root-cause cure.
+
+The narrative's prior “user resumed life” and “current FP8 service” statements are capture history, not current-state authority. They do not supersede the later authorized stop and pause.
+
+## 2026-10-09: native primitives, rebuild and isolated mixed baseline
+
+The [native receipt](../../../evidence/results/1cat-v100-2026-10-09/2026-10-09-native-provenance.json) retains the integer-mm M1/4/16 failures, Triton PassManager failure, alternative INT8 backend successes and diagnostic row-map tests. None is whole-model INT8 acceptance; no Inf-safety or original-failure cure is claimed.
+
+Fresh matching source/native identity is `ec535b1e69b6d1b2e6e4e75ce5bd24fc7302972a`; target is `c5fd6ddaec921a7d596b178d91299976abe73011`. The two eager/graph smoke reports each passed three tiny requests. Four replay reports cover cold/warm pairs at256 and32768 budgets. Actual reconstructed input68730 differs from original83870;32K-budget runs naturally stopped at331 eager /383 graph, not32768 actual generated tokens. These are saved-branch successes, not exact failure replay or semantic certification.
+
+The independent graph baseline is exactly4×8192 input +512 actual output, zero prefix hits/preemptions, success delta4,46.138s batch wall and44.388tok/s end-to-end output rate. Maximum running4 and waiting2 were observed; the common-decode interval separately had17 samples and maximum waiting0. Pairwise shared prefixes were three template tokens, not a shared2048-token cache block. Thinking was disabled and EOS ignored. No numerical counter/finite-logit instrumentation was admitted. It is neither four128K nor maximum-capacity proof. See the [full comparison table](engine-quantization-comparison-2026-10-09.md).
+
+The later graph image-pair report passed2/2 swapped red/blue position checks (actual130 input/2 output tokens each, cached0, success delta2, preemptions0). The first attempt's HTTP400 failure is retained as our missing `detail:auto` probe-field error, not a model quality failure. Concurrent build activity excludes a cold/warm speed comparison; these simple images do not establish general vision quality.
+
+## 2026-10-09: 1554 checkpoint and subsequently completed baselines
+
+The service observation at15:54:53 UTC was bounded and read-only: production8000 not listening, candidate8001 listening and health200, W4A16 graph/no-draft, TP2, four sequence slots, utilization.90, context ceiling262144 and long-prefill threshold0. No generation request or state mutation accompanied the capture; no promotion, winner or life resume was authorized. The [new receipt](../../../evidence/results/1cat-v100-2026-10-09/2026-10-09-checkpoint-1554.json) carries original paths, byte counts and SHA-256 for the following completed observations. Source reports, prior checkpoints and excluded private artifacts remain unchanged.
+
+### Mixed single8K and rejected four128K residency claim
+
+- `main-mixed-graph-none-baseline1x8k512`: actual8192 input/512 output, TTFT5.799979s, wall20.409082s, aggregate end-to-end25.086871tokens/s; success1, prefix hits0, preemptions0. `run_passed=true` but `capacity_pass=false` is retained, not silently converted into four-way capacity admission.
+- `main-mixed-graph-none-capacity4x128k`: all four independent130560-input/512-output requests completed, retrieved their markers and exhausted the forced output budget. Success4, cache hits0, preemptions0. Nevertheless **run and capacity gates failed**, with two harness failures, maximum running3, peak KV.252983294 and **no common-decode interval/samples**. No simultaneous four128K residency was established. A zero waiting count over an empty common window is not queue-free residency evidence.
+- That run's TTFTs116.044/316.265/492.863/660.939s, wall687.598s and2048/wall=2.978484tokens/s are preserved, not used in a speed ranking. Its separate source-bound conditions report records overlapping two-job NInfer CPU compilation and no other GPU inference owner. This neither proves OOM nor determines maximum capacity, nor repairs/diagnoses the original quality failure. Whole-window `max_running` is not a phase-bound residency certificate.
+
+### W4A16 runtime, native paths and saved branch
+
+W4A16 artifact revision `3e644f233eb7ebb294a5128d75ca79143987f661` now has actual matching-main1Cat runtime evidence, replacing its earlier artifact-only checkpoint status:
+
+- Ordinary top20/dense top-k-disabled/schema smoke passed3/3, inputs26/26/28, outputs3/3/12, success3 and preemptions0.
+- The swapped image pair passed2/2, each130 input/2 output, cached0, success2 and preemptions0. The earlier mixed-image HTTP400 remains preserved separately.
+- The eight-iteration native profile captured14773 CUDA kernel events **per rank**, with packed FP4/half SM70 HMMA variants256/1792 events, GDN decode336 and flash decode partition/reduce112/112 per rank. Request usage8192/128, success1/preemptions0. Only selected names/counts and report-provided trace identities are exported; no raw trace was opened. Path execution is not universal numerical/semantic quality or profiler-free throughput.
+- Cold/warm reconstructed saved branch completed68730 input/**1334 actual output** each under32768 budget. TTFT55.367532/5.338717s; wall108.603534/58.643114s; cache0/65536, success2/preemptions0. Both declared-tool/JSON-object checks passed, no tools executed and no all-bang/corruption flags detected. The saved-branch budget gate passed; exact-wire, length-matched32K and semantic admission remain false. Mixed graph generated383 tokens, W4A16 generated1334: do not rank their replay timings as equal-work speed. The historical32768-bang output is not erased.
+
+### Saved tool arguments checked without execution
+
+The [schema-validation receipt](../../../evidence/results/1cat-v100-2026-10-09/2026-10-09-tool-schema-validation.json) records a CPU-only check of the retained full-budget mixed eager, mixed graph and W4A16 graph cold/warm responses. Each response contains one declared function call; all six argument objects pass the exact JSON Schema declared in their corresponding request. No inference was repeated, no tool was executed and external schema retrieval was disabled. The checker and source-file hashes are retained; tool names, arguments and generated text are excluded. This strengthens the structural tool-call evidence, not semantic task correctness or root-cause admission.
+
+### W4A16 one/four-stream supplement after the service capture
+
+Main subsequently admitted two completed reports with the exact mixed public8192-token fixture, unchanged input IDs and regenerated unique cache salts. They are in `supplemental_records`, not retrospectively attributed to the15:54:53 service capture. Main records no concurrent CPU build or other GPU inference for these W4 runs; no2048-prefill-threshold result is included.
+
+| W4A16 graph/no-draft | Actual aggregate input/output | Wall seconds | Output / wall tokens/s | Bounded admission |
+| --- | ---: | ---: | ---: | --- |
+| One stream | 8192 /512 | 19.785796 | 25.877149 | Run passed; capacity flag false; success1, cache hits/preemptions0 |
+| Four streams | 32768 /2048 | 47.312547 | 43.286615 | Run and measured-length capacity passed; success4, cache hits/preemptions0 |
+
+Four-stream TTFTs5.488/11.466/19.289/27.661s; whole-window maximum running4 and waiting2 after first output; **18 common-decode samples**, maximum waiting0 in that interval. Peak KV fraction.068669528. Single-stream TTFT5.446451s and peak KV.017167382. Inputs share only three template tokens, thinking disabled, EOS ignored, T1/top_p.95/top_k20. These forced-output baselines are not natural-response or numerical certification, four128K evidence, maximum capacity or a repeated-run ranking. The comparison document places them beside the mixed single/four8K measurements without using unequal private replay lengths.
+
+### NInfer successful build followed by real native admission failure
+
+The linked native-build receipt records source `b37d0dd3`, CUTLASS `da5e086d`, CUDA12.9/SM70 and successful binaries after resolving an initial missing-NVTX-header prerequisite with the existing include. CPU CLI help exited0. The actual one-shot against the admitted original V2 model then **exited1 after0.424668s** at mandatory `frontend/preprocessor_config.json`, before serving; no GPU owner remained. The1554 receipt binds the exact binary/model SHA-256 and stdout/stderr hashes without reading or exporting the raw streams.
+
+This is failed native execution, not an unrun build/probe and not successful generation. Later DFlash unconsumed-object and template/tokenizer incompatibilities remain independently source-backed; the fail-fast run does not itself test every blocker. No repacker, source bypass or semantics-preserving completion was implemented. Source acquisition and build success did not produce a runnable NInfer comparison candidate.
+
+### Author accuracy remains a separate evidence layer
+
+The detailed protocol report links publisher scores and exact evaluator sources, not local V100 execution. NVFP4 mixed/W4A16 use SGLang/DFlash2/C8; NInfer mixed's carried-forward2026-10-05 scores use original NInfer/no speculation/C8; Q6's full triple is **GGUF llama.cpp/C4 only**, with unknown accuracy speculation/sampling. All use the published100K context/94208 output-cap policy. Q6 converted NInfer was not independently evaluated on the full triad; later vision and draft additions are not new accuracy runs.
+
+GPQA198 dataset/runner hashes match between the NVFP4 arms, MMLU is500 questions/5-shot, and LCB100 has fixed IDs and literal evaluator `case_timeout=8`, `max_private_cases=30`, one timeout_case in each NVFP4 summary. “No generation timeout” must not erase code-case limits. Exact historical engine/draft pins, some effort/sampling settings and repeated-run uncertainty remain unknown. Long tails/truncations/empty answers remain; Q6 LCB reasoning percentiles are unavailable, not zero. Its MTP formats differ between GGUF and NInfer, and neither Q6 package includes DFlash2. The detailed report preserves publisher percentile recount discrepancies and separates short speed tables from the accuracy protocol. No author score establishes V100 quality or engine compatibility.
+
+## 2026-10-09: fair-prefill residency, phase accounting and upstream refresh
+
+The [fair-prefill receipt](../../../evidence/results/1cat-v100-2026-10-09/2026-10-09-fair-prefill-and-refresh.json) adds two completed `ec535b1e` W4A16/TP2/graph/no-draft runs with `long_prefill_token_threshold=2048`, C4, utilization0.90 and maxlen262144. Startup recorded10.23GiB weights,14.61GiB available KV and0.40GiB graph allocation per rank;913591 equivalent tokens is an estimate, not the admission criterion.
+
+- Four8192+512: all outputs exhausted, all markers retrieved, success4, prefix hits/preemptions0;16 common-decode samples, no observed queue, peak KV6.87%, wall48.667700s. It is a distinct scheduling profile, not a replacement for the earlier threshold0 record.
+- **Four130560+512:** all outputs exhausted and markers retrieved, success4, prefix hits/preemptions0; **36 common-decode samples across35.476188s, all four running, no observed queue**, peak KV57.51% and GPU29954MiB per card. Both run and residency gates passed. TTFT481.046/481.092/485.663/502.232s and wall540.248056s retain the large cold-prefill cost. The exact earlier independent long-input fixture was reused with new cache salts. No native compilation or other GPU inference overlapped; a bounded CPU-only saved-tool-schema check did.
+
+This is a measured no-draft lower bound at four131072-token total windows with the130560-input/512-output split. It is not a maximum, a four32768-output run, numerical/semantic certification, or DFlash2 capacity. The earlier mixed default-threshold failure is retained; the two changed variables prevent claiming a causal scheduler-only fix.
+
+The [stream-phase receipt](../../../evidence/results/1cat-v100-2026-10-09/2026-10-09-stream-phases.json) analyzes existing token-ID-bound SSE chunks without new generation or exported text. In the common interval `(latest first output, earliest last output]`, original mixed/W4 four8K baselines yielded1783/16.723705 =106.615128 and1777/17.451971 =101.822309tokens/s, respectively. Their44.388337/43.286615 end-to-end rates also include cold prefill and scheduling. The fair-profile long run yielded1847/35.476188 =52.063091tokens/s during common output versus3.790851 across the whole batch. The earlier failed mixed long run has no common output interval, so its common-phase rate is **null**, not zero. These are client-observed output intervals, not summed per-stream rates or GPU-kernel measurements, and not yet matched to a historical200+ DFlash2 claim.
+
+The next W4A16/FP8-DFlash2 startup on `ec535b1e` exited1 before readiness because `config.replace` attempted to pass runtime-only `_gdn_prefill_profiler` as a configuration field. No generation occurred or GPU inference owner remained. A standalone call to the actual old clone function reproduced the attachment-rejection mechanism; no local runtime patch was applied. This startup failure is separate from the original private repetition incident.
+
+The user requested another main refresh and an upstream check after every completed experiment. The16:42:18 UTC one-shot ref receipt binds old tested commit `ec535b1e` and new upstream `c73eb2d1d1009e1ab8b980f9c1dea265ba877015`. The latter includes config-copy fix `020f4173`, plus native binding, GDN ownership and prepared-layer changes. A new worktree and fresh native build were started; old worktrees, binaries and receipts remain preserved. Runtime admission was pending at that refresh; the later completed7ab matching build, startup and bounded repair are appended below, without replacing this capture. DFlash2 long-window capacity remains a separate gate. No-draft controls do not authorize a no-draft final configuration or a production handoff.
+
+## 2026-10-10: ec535 eager no-draft control and config.replace backport
+
+The [ec535 control receipt](../../../evidence/results/1cat-v100-2026-10-09/2026-10-10-ec535-dflash2-startup-and-eager-control.json) binds launch verification, public launch identity (argv hashed, not copied), clean stop, the clone-fix proof and all five run reports by SHA-256.
+
+The W4A16 eager no-draft control on `ec535b1e` became ready after296.19s and served: public smoke3/3, paired image smoke2/2, saved-branch32K replay cold/warm (cold TTFT53.63s /231.53s /7.19tokens/s; warm TTFT4.10s /186.05s /8.95tokens/s with65536 cached tokens; success delta2, preemption delta0), and independent8192+512 runs at one and four streams (`run_passed=true` both; `capacity_pass` false at one stream, true at four; four-stream wall86.23s at23.75tokens/s aggregate; maximum KV fraction0.0221/0.0643; peak30420MiB per rank; preemptions0; no sustained decode queueing). Capacity applies only to these observed lengths. The post-run upstream check failed at TLS transport, so it does not prove no newer main exists.
+
+Separately, the c73 config-copy fix was backported onto the `ec535b1e` `config.replace`, and the CPU-only proof (`config-clone-ec535b1e-fixed.json`) passed against the real patched function. The first fixed-clone eager FP8-DFlash2 retest (`ec535-w4a16-eager-fp8-fixedclone-c4-u90-v4`) failed startup per its launch-verification receipt (`ready=false`, exit code1, traceback not yet read — failure class unknown, not assumed to be the same `config.replace` defect). The follow-up eager retest (`ec535-w4a16-eager-fp8-qpn8dtype-c4-u90-v5`) reached readiness after331.15s and completed bounded public generation: smoke3/3, image smoke2/2, replay32k cold/warm passed (cold TTFT55.21s /171.98s /4.94tokens/s; warm TTFT4.22s /122.22s /6.95tokens/s with65536 cached tokens; success delta2, preemption delta0), and1x8K512 passed (TTFT6.04s, decode7.32tokens/s, max KV0.0823,30830MiB per rank). The4x8K512 run generated all four512-token outputs with success delta4 and zero preemptions (TTFT5.97/21.85/107.76/218.68s, max KV0.2961,31310MiB per rank) but **failed the residency gate** (`run_passed=false`, `capacity_pass=false`, `common_decode_samples=0`, all four streams never observed running together during decode). Eager DFlash2 does not satisfy the four-stream common-decode/residency criterion at8K+512 — a bounded negative result, not a deployable victory. The engine was stopped cleanly after the v5 runs (five owned processes signalled, none remaining).
+
+The graph-mode retests then completed. Threshold0 v6 (`ec535-w4a16-graph-fp8-fixedclone-qpn8dtype-c4-u90-v6`) became ready after446.60s and passed smoke3/3, image smoke2/2, replay32k cold/warm (output736; cold TTFT56.52s /85.80s /8.58tokens/s; warm TTFT4.39s /33.46s /22.00tokens/s with65536 cached tokens; preemption delta0),1x8K512 (decode28.76tokens/s,23.90s wall, max KV0.0905) and4x8K512 (`capacity_pass=true`,26 common-decode samples with all four running and zero waiting, TTFT5.58/12.75/25.88/37.47s, decode8.48–15.13tokens/s,71.25s wall,28.75tokens/s aggregate, max KV0.3392, preemptions0). Strict four-stream common decode failed at every longer input (4×12288/16384/32768/65536/130560: `run_passed=false`, `common_decode_samples=0`, `max_running=3`; all512-token outputs still completed with correct markers and zero preemptions). Fair-2048 v7 (`ec535-w4a16-graph-fp8-qpn8dtype-fair2048-c4-u90-v7`, ready after432.09s, smoke3/3) still failed4×130560 residency: `run_passed=false`, `capacity_pass=false`, `common_decode_samples=0`, despite four complete512-token outputs, success delta4, preemptions0, `max_running=4`, max KV0.9757,30708MiB per rank, TTFT467.14/652.44/1050.01/1394.63s,1420.75s wall at1.44tokens/s aggregate. **DFlash2 graph passed the observed four8192-input/512-output point; the longer fixed512-output trials did not establish four-way common decode, which is not a measured KV-capacity ceiling or a general fast-path boundary; no-draft fair2048 remains the only passed four-way130560 common-decode lower bound.** Not production-deployable; production8000 stays stopped. Both graph engines were stopped cleanly; policy captures remain diagnostic-only (`runtime_policies_present=false`); both post-run upstream checks failed at TLS transport.
+
+
+**Diagnostic correction (2026-10-10):** the previous <=8K fast-path/deployment conclusion is withdrawn. Fixed512-output overlap is a workload observation, not a capacity maximum. The capture helper also checked a nonexistent `runtime_policies` key; saved responses contain `linear_kernel_policies` and both worker reports (graph decode FULL, mixed PIECEWISE). Its earlier `passed=false` does not prove missing runtime policies. See the [source-bound correction](../../../evidence/results/1cat-v100-2026-10-09/2026-10-10-diagnostic-scope-correction.json). Diagnosis follows the life capture/runtime-parity lessons; no deployment choice is requested.
+
+## 2026-10-10: completed7ab matching build and initial diagnostic repairs
+
+The [closed pre-namespace diagnosis](../../../evidence/results/1cat-v100-2026-10-09/2026-10-10-7ab-native-and-acceptance-diagnosis.json) binds source `7ab8b4477adb4137a1172de0e66c6806e997a49c`,21 matching native artifacts,8723.27649974823s build time, architecture7.0, PyTorch2.10.0+cu128 and verified artifact hashes. `_C`/`_moe_C` each have policy ABI67. These are new identities, not a relabeling of the ec535 or c4f measurements above.
+
+Three initial repairs were required: real LM-head owners capture execution policy/trace (`vocab_parallel_embedding.py`); DFlash context projection uses legal floating operand/parameter dtype instead of packed uint8/float8 weight storage (`qwen3_dflash.py`); policy reporting uses Pydantic JSON serialization of typed policy/diagnostic filters rather than failing on `frozenset` (`sm70_profiles/acceleration.py`). The repaired diagnostic reached readiness on loopback8001 in396.665703s, with both ranks reporting FULL decode/PIECEWISE mixed graphs and full-decode captures8/16/24/32.
+
+The first failed launch, initial head-test fixture failure and reproduced serialization failure remain retained. The real-head regression passed1/1; the report regression first failed1/1, then passed8/8. The public projection regression is **30 tests with one failure**, not a clean all-pass claim. An older fixture revision was rejected before sending any request; a separate empty-cohort correction supersedes its original `diagnostic_collected=true`. It is neither acceptance-collapse evidence nor successful generation. These failures are distinct from the earlier policy-key correction and withdrawn <=8K fast-path/deployment conclusion.
+
+### Pre-namespace B4/B1 collapse was not concurrency-only
+
+The public B4 cohort used4×12288 input and four actual512 outputs; all markers were found, success delta4, cache hits0, preemptions0 and allocation rejections0. Six initial scheduler assignments each gave2048 tokens to every request, with no initial progress divergence. Yet **2029 drafts /14203 drafted tokens /15 accepted tokens =0.10561149053016969% acceptance**. The matched B1 control retained the first request's actual input IDs and regenerated its cache salt;12288 input/512 actual output completed with success1/cache hits0/preemptions0, but **509 drafts /3563 drafted tokens /2 accepted =0.05613247263541959%**. Near-zero acceptance therefore occurred at both batch sizes, not merely because of concurrent scheduling. Counters and polling support controlled attribution/no observed foreign traffic; exclusive ownership remains an operator prerequisite.
+
+## 2026-10-10: closed matched checkpoint-namespace repair
+
+The [sealed repair record](../../../evidence/results/1cat-v100-2026-10-09/2026-10-10-dflash-fp8-namespace-repair.json) closes the **public checkpoint-namespace defect**, not the private incident. Header-only evidence declares FC and first QKV BF16 without FP8 scales. Checkpoint exclusions named `fc` and `layers.0..4`, whereas runtime owners were `model.fc` and `model.layers.64..68`; the exclusions failed to preserve the intended half-precision runtime contract. A fresh DFlash `Fp8Config` now applies component-boundary suffix exclusions, descending local-to-offset layer mapping and the existing packed-module mapping before constructing layers. No checkpoint tensor bodies were read for this header diagnosis, no checkpoint/model-config bytes changed, and no native ABI rebuild was required.
+
+The pair remains on tested7ab with fingerprinted local source: only `qwen3_dflash.py` changed among the three runtime repair files (before SHA-256 `32255a3a2aacebcc3a3b23a4c002424ec5baa38cbf2a8807c01ce3f13e7e7c54`, after `3b24b5c6f68283076593a32d5d945c011217ea28072072faa73cca34f481aa5e`); the observer metadata helper also changed. Three permanent CUDA precision/namespace regressions passed,3 tests/0 failures/0 errors. This does not retroactively turn the earlier30-test projection run into an all-pass result.
+
+| Matched B4 observation | Before namespace repair | After namespace repair |
+| --- | ---: | ---: |
+| Actual input/output per request | 12288 /512, four requests | 12288 /512, four requests |
+| Aggregate input/output | 49152 /2048 | 49152 /2048 |
+| Success / cache hits / preemptions | 4 /0 /0 | 4 /0 /0 |
+| Drafts / drafted tokens / accepted tokens | 2029 /14203 /15 | 652 /4564 /1403 |
+| Accepted / drafted | 0.10561149053016969% | 30.740578439964942% |
+| Peak KV fraction | 0.4054054054054054 | 0.3929539295392954 |
+| Common-decode samples, all four running / observed waiting | 42 /0 | 17 /0 |
+
+Main's paired proof checks the actual input IDs plus marker and used-manifest hashes for all four12288-token inputs. IDs are identical, all salts regenerated, all markers found and all four actual512 outputs verified on both sides. Both reports pass their run and measured-length capacity gates. **Initial admission is not matched:** the repaired trace admitted only three requests in the first two steps; the fourth joined step2 approximately8.935s later. Initial4K skew is admission timing, not equal-start four-way prefill. Later four-way common decode does not erase it.
+
+### Actual loaded precision/scale/ownership contract
+
+Both ranks' FC and first QKV use `UnquantizedLinearMethod` with `torch.float16` weights/parameters and no scales; local shapes are5120×25600 and3072×5120. First O remains `Fp8LinearMethod`, packed QPN8 with half operands: all640 FP32 inverse scales and2560 packed half scales per rank are finite and positive, with zero FP32 sentinels. Auxiliary boundaries6/20/34/48/62, shared target embedding/head, no draft-owned embedding/head and no draft-ID mapping are recorded. The fresh two-row pure-FC synthetic check has10240/10240 finite elements and zero maximum absolute value on the zero-input row on both ranks. Loaded metadata/small scale reductions and pure FC are not hybrid-model parity or semantic certification.
+
+Both cohorts are profiler/observer-perturbed; **no clean speed comparison or performance winner** follows from the acceptance increase. Numerical/semantic quality, original private exclamation-loop replay/closure, full32K generation/reasoning, full128K and maximum capacity all remain unadmitted. The subsequent observed4×130560+512 cohort completed all outputs but failed common decode; its separate record follows below. Production8000 remains stopped, life paused, and diagnostic8001 is not a gateway target. Private requests, responses, raw logs and argv remain excluded.
+
+### Two successive upstream deltas, neither a cohort revision change
+
+The pre-repair check found `4e5357b59294edd31c46e66ae8219503a843b2bd`: the7ab→4e5357b5 delta covered18 documentation/tool/CI files with **no runtime/native changes**. The later repair receipt checks `16628e2f0a70761ba6525bf46e5e844c04b3e66f` against4e5357b5: two commits, only `vllm/sm70_profiles/acceleration.py` plus `tests/config/test_sm70_loaded_routes.py`, an upstream policy-report `frozenset` serializer fix. Unlike the earlier documentation/tool/CI-only delta, this is **serialization-only runtime code**, with no sampler, model, capture, native or namespace change. The tested7ab tree was not updated mid-cohort; the upstream check is not generation or namespace-repair admission on16628e2f.
+
+## Open evidence gaps, not successful measurements
+
+### Completed repaired7ab four-window diagnostic, rejected residency claim
+
+The [separate failure receipt](../../../evidence/results/1cat-v100-2026-10-09/2026-10-10-dflash-128k-diagnostic-failure.json) seals `main7ab-w4-fp8-4x130560-diag-quantfix`. All four independent130560-input/512-actual-output requests completed and found their markers; success4, cache hits0, preemptions0,522240 input/2048 output. Exact speculation deltas were710 drafts/4970 drafted tokens/1343 accepted,27.022132796780685%. Both run/capacity gates nevertheless failed because no common-decode interval was observed. The first request finished before the last began output; maximum running4 elsewhere does not override this failure.
+
+No allocation was rejected in627 recorded schedule events. At mixed step251, ordinal4 decoded8 tokens while ordinal5 received the entire144-token prefill budget; ordinals6/7 remained incomplete and unscheduled. Their prompt deficits were5632/7680/7680. The controller later reached16 tokens; first outputs occurred at steps251/416/513/609. Peak KV was0.975609756097561; actual unique live cache storage11.546875GiB per rank,739 configured blocks, GPU maximum30788MiB/card. These facts do not establish an OOM, allocator capacity ceiling or four fully populated-window admission.
+
+Both CPU observer buffers dropped events (2399/520), so no timing ranking follows. Main stopped only the identity-verified observed engine and started a fresh unprofiled same-input control, with new salts and controller seed512 rather than the inherited144. The [closed control](../../../evidence/results/1cat-v100-2026-10-09/2026-10-10-dflash-128k-unprofiled-failure.json) completed four512 outputs and markers, success4/hits0/preemptions0, but failed the same two overlap gates with zero common-decode samples. Acceptance1351/4900 =27.57142857%, wall742.081s and peak KV0.9769647696476965 are retained, not a timing ranking. Actual process admission excludes custom scheduler/worker, Torch/periodic profiling and route summaries. The failure is not solely an observer artifact; this is still not a one-variable warm-state comparison. The observed receipt remains immutable.
+
+### Original-source C4 fast paths: measured, not inferred from throughput
+
+The [new route record](../../../evidence/results/1cat-v100-2026-10-09/2026-10-10-c4-fastpath-route-diagnosis.json) uses `ec535b1e`, the exact original public four8192-token fixture and fresh salts. Both quantizations complete initial and common-decode captures with four512 actual outputs, success4/hits0/preemptions0 and unchanged residency gates. Common windows on each rank contain eight actual graph replays,384 native GDN kernels,384 Flash-V100 XQA partition/reduction kernels,1032 NCCL all-reduces and8 all-gathers; compact clear/scatter each occur8 times.
+
+W4A16 records2048 packed-FP4/half HMMA GEMMs per rank; mixed records1024 FP4 and1024 FP8 packed-weight/half HMMA GEMMs. ModelOpt adapters select ordinary TurboMind, not CT QPN providers or native W4A4/W8A8 activation arithmetic. QPN4 singleton/M1, TP4-specific, greedy and classic-singleton head/sampler gates do not match MRv2/TP2/C4/T1. Forward graphs are real but do not encompass all head/filter/output/IPC work:784 direct launches and56 scalar reads remain observed in each common window. Duration sums overlap and are profiler-perturbed; no new unprofiled speed ranking, exact tensor-M capture or per-layer correlation is asserted. The publication corrects the helper's initial FP4/FP8 family-label error without overwriting its original receipts.
+
+Each completed capture checked main. After8216c055 startup-policy closure,44276e97 added GDN preparation/warmup/stage ownership in two commits/13 files. It was actually fetched through authenticated router7893 and checked out separately; the tested sources/owned repairs were preserved. No native reuse/performance admission follows. The no-draft engines were identity-safely stopped and repaired7ab DFlash2 restored only on isolated8001, with production8000/life still stopped/paused.
+
+- W4A16 is size/SHA admitted and bounded runtime/smoke/replay/profile/short-baseline observations are now complete; broader certification is still absent. The final V2 conversion-input acquisition also completed: three files /24,399,194,346 bytes, including the23,477,696,516-byte main artifact and genuine vision sidecar. NInfer native build succeeded but actual original-V2 admission failed; there is no directly compatible requested artifact or successful generation result.
+- Source-backed NInfer V3 framing rejection, missing embedded V2 vision/resources, ten unsupported original DFlash tensors, incompatible original template/tokenizer_config contract and Q6 missing codecs remain blockers. The actual native probe covered original V2 and failed at its first missing frontend resource. All851 shared tensor descriptors match, and genuine sidecar inputs are available; adding vision alone is nevertheless insufficient. No repacker or semantics-preserving completion path was implemented. The earlier bounded-range receipt and later complete-source binding are both preserved. Two single-GPU instances cannot provide one combined KV pool.
+- Original private failure wire and historic tensor dumps were not published/reconstructed. September source identity is incomplete where report metadata is absent. The earlier DFlash2 dense/schema wave is narrative-only; the later matching-native mixed/W4 short smoke reports are separately source-bound.
+- Earlier benchmark startup logs, raw generated text and private request trees are deliberately not copied. No conclusions are invented for missing reports (including Quark FP8 startup-only artifacts).
+- Broader vision/fastpath testing, repeated equal-protocol engine/quantization comparison, DFlash2-enabled independent full-window residency, maximum useful capacity and original-failure root cause remain pending. The W4A16 no-draft2048-threshold four128K-window result above is not those broader admissions; the closed7ab public12K namespace repair does not extend to those lengths or quality gates. Current mixed/W4 image evidence consists only of bounded two-position smoke pairs. Fetched upstream44276e97 is not a newly tested runtime; completed7ab build/startup/repair, both rejected observed/unprofiled128K gates and the original-source C4 route captures remain separate evidence states.
+
+Future results must be appended as new source-bound records, not used to erase these failures or turn an unrun candidate into a historical success.

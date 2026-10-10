@@ -1,0 +1,81 @@
+{
+  "kind": "field-allowlisted public summary; not raw report",
+  "published_on": "2026-10-09",
+  "excluded": "Generated text/reasoning, prompts, private request/response and launch files, raw engine logs, credentials, endpoints, raw error strings, token histograms and tool-call arguments are not copied. Original source files remain unchanged. Missing fields are unknown, not zero. Report pass flags are harness verdicts, not semantic or numerical certification.",
+  "records": [
+    {
+      "source_path": "/tank/hot/1cat-deploy/benchmarks/2026-09-30-uncensored-switch/baseline-prod.json",
+      "source_sha256": "deb20e34eea7756878c1680b56e01cba203f2442a6ad2176df0fdd6da7a1f165",
+      "source_bytes": 30833,
+      "observations": {
+        "tag": "baseline-prod",
+        "model": "swift-qwen3.8-27b-nvfp4",
+        "secs": 108.7,
+        "summary": {
+          "mmlu": {
+            "n": 60,
+            "ok": 50,
+            "err": 0,
+            "acc": 0.8333
+          },
+          "gsm8k": {
+            "n": 20,
+            "ok": 18,
+            "err": 0,
+            "acc": 0.9
+          },
+          "ethics": {
+            "n": 60,
+            "ok": 53,
+            "err": 0,
+            "acc": 0.8833
+          },
+          "compliance": {
+            "n": 20,
+            "ok": 9,
+            "err": 0,
+            "acc": 0.45
+          }
+        }
+      },
+      "provenance_limit": "Historical capture, not current deployment; engine/asset revisions not inferred when absent from the report. Raw response text omitted; HTTP 200 is not quality acceptance."
+    },
+    {
+      "source_path": "/tank/hot/1cat-deploy/benchmarks/2026-09-30-uncensored-switch/candidate-ajgazin.json",
+      "source_sha256": "fe939843f859c4008faa66ddec65c66721322ad61fb2165141dfce969905faf7",
+      "source_bytes": 29517,
+      "observations": {
+        "tag": "candidate-ajgazin",
+        "model": "candidate-ajgazin",
+        "secs": 205.4,
+        "summary": {
+          "mmlu": {
+            "n": 60,
+            "ok": 49,
+            "err": 0,
+            "acc": 0.8167
+          },
+          "gsm8k": {
+            "n": 20,
+            "ok": 18,
+            "err": 0,
+            "acc": 0.9
+          },
+          "ethics": {
+            "n": 60,
+            "ok": 52,
+            "err": 0,
+            "acc": 0.8667
+          },
+          "compliance": {
+            "n": 20,
+            "ok": 19,
+            "err": 0,
+            "acc": 0.95
+          }
+        }
+      },
+      "provenance_limit": "Historical capture, not current deployment; engine/asset revisions not inferred when absent from the report. Raw response text omitted; HTTP 200 is not quality acceptance."
+    }
+  ]
+}

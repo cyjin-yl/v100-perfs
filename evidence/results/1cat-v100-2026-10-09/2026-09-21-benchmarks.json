@@ -1,0 +1,1476 @@
+{
+  "kind": "field-allowlisted public summary; not raw report",
+  "published_on": "2026-10-09",
+  "excluded": "Generated text/reasoning, prompts, private request/response and launch files, raw engine logs, credentials, endpoints, raw error strings, token histograms and tool-call arguments are not copied. Original source files remain unchanged. Missing fields are unknown, not zero. Report pass flags are harness verdicts, not semantic or numerical certification.",
+  "records": [
+    {
+      "source_path": "/tank/hot/1cat-deploy/benchmarks/2026-09-21-serving-tune/final-compare.json",
+      "source_sha256": "eaa648093ac93b5a95dcd0fe13858e34af2f85aa8c4a77a7e08fde62ac780a09",
+      "source_bytes": 106639,
+      "observations": {
+        "sampling": {
+          "temperature": 0.6,
+          "top_p": 0.95,
+          "top_k": 20,
+          "seed": 20260921,
+          "ignore_eos": false
+        },
+        "results": [
+          {
+            "label": "warmup",
+            "status": 200,
+            "output_budget": 128,
+            "prompt_sha256": "0d43febf68bbb1fa4dac27b84bb66e5af838f2e72b8e7dc5f329d6d634f3d360",
+            "ttft_s": 0.285523145001207,
+            "elapsed_s": 0.7179648300007102,
+            "decode_s": 0.43213549999927636,
+            "decode_tokens_per_s": 78.67902544469717,
+            "usage": {
+              "prompt_tokens": 63,
+              "total_tokens": 98,
+              "completion_tokens": 35
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          },
+          {
+            "label": "single-0",
+            "status": 200,
+            "output_budget": 1024,
+            "prompt_sha256": "392401aeb51fe372697671ad30121790909ea14f131b2210aba12b003179db21",
+            "ttft_s": 0.2759675840061391,
+            "elapsed_s": 14.659068365006533,
+            "decode_s": 14.382821527993656,
+            "decode_tokens_per_s": 55.0656905850156,
+            "usage": {
+              "prompt_tokens": 89,
+              "total_tokens": 882,
+              "completion_tokens": 793
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          },
+          {
+            "label": "single-1",
+            "status": 200,
+            "output_budget": 1024,
+            "prompt_sha256": "b47f72c9ba34240d76c5d1562dc9e0c4fb25444cd53d695ccb7d76fec7661564",
+            "ttft_s": 0.17532664199825376,
+            "elapsed_s": 1.8008005909941858,
+            "decode_s": 1.6250614390010014,
+            "decode_tokens_per_s": 78.15089137680397,
+            "usage": {
+              "prompt_tokens": 109,
+              "total_tokens": 237,
+              "completion_tokens": 128
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          },
+          {
+            "label": "single-2",
+            "status": 200,
+            "output_budget": 1024,
+            "prompt_sha256": "67b95e2e0cfccb0a918aa130d953e9dbd6bd68946a8f5a1a77e272c68f44eb84",
+            "ttft_s": 0.1739496579975821,
+            "elapsed_s": 14.663972417001787,
+            "decode_s": 14.489772827000706,
+            "decode_tokens_per_s": 70.6015209633728,
+            "usage": {
+              "prompt_tokens": 92,
+              "total_tokens": 1116,
+              "completion_tokens": 1024
+            },
+            "finish_reason": "length",
+            "error_present": false
+          },
+          {
+            "label": "single-3",
+            "status": 200,
+            "output_budget": 1024,
+            "prompt_sha256": "c8d1f4ce367676c049be58487583e2aeb5eca9e8d0598c24a5ef590061938d08",
+            "ttft_s": 0.17605067900149152,
+            "elapsed_s": 18.895528895998723,
+            "decode_s": 18.719175371996243,
+            "decode_tokens_per_s": 54.649843258074334,
+            "usage": {
+              "prompt_tokens": 91,
+              "total_tokens": 1115,
+              "completion_tokens": 1024
+            },
+            "finish_reason": "length",
+            "error_present": false
+          },
+          {
+            "label": "concurrent-0",
+            "status": 200,
+            "output_budget": 1024,
+            "prompt_sha256": "392401aeb51fe372697671ad30121790909ea14f131b2210aba12b003179db21",
+            "ttft_s": 0.3557432709931163,
+            "elapsed_s": 19.820897183999477,
+            "decode_s": 19.46454280400212,
+            "decode_tokens_per_s": 45.724166704650585,
+            "usage": {
+              "prompt_tokens": 89,
+              "total_tokens": 980,
+              "completion_tokens": 891
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          },
+          {
+            "label": "concurrent-1",
+            "status": 200,
+            "output_budget": 1024,
+            "prompt_sha256": "b47f72c9ba34240d76c5d1562dc9e0c4fb25444cd53d695ccb7d76fec7661564",
+            "ttft_s": 0.35556685300252866,
+            "elapsed_s": 2.5937419480032986,
+            "decode_s": 2.2379265029958333,
+            "decode_tokens_per_s": 56.74895928440437,
+            "usage": {
+              "prompt_tokens": 109,
+              "total_tokens": 237,
+              "completion_tokens": 128
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          },
+          {
+            "label": "concurrent-2",
+            "status": 200,
+            "output_budget": 1024,
+            "prompt_sha256": "67b95e2e0cfccb0a918aa130d953e9dbd6bd68946a8f5a1a77e272c68f44eb84",
+            "ttft_s": 0.3552731579984538,
+            "elapsed_s": 20.37880702199618,
+            "decode_s": 20.023228528996697,
+            "decode_tokens_per_s": 51.09066195386721,
+            "usage": {
+              "prompt_tokens": 92,
+              "total_tokens": 1116,
+              "completion_tokens": 1024
+            },
+            "finish_reason": "length",
+            "error_present": false
+          },
+          {
+            "label": "concurrent-3",
+            "status": 200,
+            "output_budget": 1024,
+            "prompt_sha256": "c8d1f4ce367676c049be58487583e2aeb5eca9e8d0598c24a5ef590061938d08",
+            "ttft_s": 0.3548341470013838,
+            "elapsed_s": 23.93815287200414,
+            "decode_s": 23.58289931499894,
+            "decode_tokens_per_s": 43.37889020072111,
+            "usage": {
+              "prompt_tokens": 91,
+              "total_tokens": 1115,
+              "completion_tokens": 1024
+            },
+            "finish_reason": "length",
+            "error_present": false
+          }
+        ],
+        "speculation_metric_deltas": {
+          "vllm:spec_decode_num_drafts_total{": 2445.0,
+          "vllm:spec_decode_num_draft_tokens_total{": 9780.0,
+          "vllm:spec_decode_num_accepted_tokens_total{": 4403.0
+        },
+        "sample_count": 37,
+        "max_waiting": 0,
+        "profile": "final",
+        "mode": "compare"
+      },
+      "provenance_limit": "Historical capture, not current deployment; engine/asset revisions not inferred when absent from the report. Raw response text omitted; HTTP 200 is not quality acceptance."
+    },
+    {
+      "source_path": "/tank/hot/1cat-deploy/benchmarks/2026-09-21-serving-tune/final-mm.json",
+      "source_sha256": "d6e3947fd53d7f7a12893a8df3752f7109dca1af9cd71155d6d40a3970de8302",
+      "source_bytes": 5499,
+      "observations": {
+        "sampling": {
+          "temperature": 0.6,
+          "top_p": 0.95,
+          "top_k": 20,
+          "seed": 20260921,
+          "ignore_eos": false
+        },
+        "results": [
+          {
+            "label": "image-red-square",
+            "status": 200,
+            "output_budget": 512,
+            "prompt_sha256": "3d55724e0b2639af30d4e119ad149a06ea6b50b5051c10465bbaf90fe8830800",
+            "ttft_s": 0.21489741600089474,
+            "elapsed_s": 0.9845057220009039,
+            "decode_s": 0.7692704299988691,
+            "decode_tokens_per_s": 76.69604562869618,
+            "usage": {
+              "prompt_tokens": 130,
+              "total_tokens": 190,
+              "completion_tokens": 60
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          },
+          {
+            "label": "video-color-change",
+            "status": 200,
+            "output_budget": 512,
+            "prompt_sha256": "d5c24d8bf15f66c89dfbc0a9523bdddf312af1693f9dcaa13c4e85cde05e647f",
+            "ttft_s": 0.23795056600647513,
+            "elapsed_s": 1.4001586020021932,
+            "decode_s": 1.161908501999278,
+            "decode_tokens_per_s": 92.08986750323864,
+            "usage": {
+              "prompt_tokens": 165,
+              "total_tokens": 273,
+              "completion_tokens": 108
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          },
+          {
+            "label": "131072-output-allowance",
+            "status": 200,
+            "output_budget": 131072,
+            "prompt_sha256": "0a8c2a546f906f9f2d7947e3647c5ba862df5753f391caf9a75e93141d93a61d",
+            "ttft_s": 0.1406237070041243,
+            "elapsed_s": 0.18492463900474831,
+            "decode_s": 0.0,
+            "decode_tokens_per_s": null,
+            "usage": {
+              "prompt_tokens": 19,
+              "total_tokens": 21,
+              "completion_tokens": 2
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          }
+        ],
+        "speculation_metric_deltas": {
+          "vllm:spec_decode_num_drafts_total{": 44.0,
+          "vllm:spec_decode_num_draft_tokens_total{": 176.0,
+          "vllm:spec_decode_num_accepted_tokens_total{": 130.0
+        },
+        "sample_count": 2,
+        "max_waiting": 0,
+        "profile": "final",
+        "mode": "mm"
+      },
+      "provenance_limit": "Historical capture, not current deployment; engine/asset revisions not inferred when absent from the report. Raw response text omitted; HTTP 200 is not quality acceptance."
+    },
+    {
+      "source_path": "/tank/hot/1cat-deploy/benchmarks/2026-09-21-serving-tune/mtp4-compare.json",
+      "source_sha256": "98c6398ed2aeaa5701d35ed9f6f444c160f2fc437c3f22158445bb8bcf21c7a4",
+      "source_bytes": 94437,
+      "observations": {
+        "sampling": {
+          "temperature": 0.6,
+          "top_p": 0.95,
+          "top_k": 20,
+          "seed": 20260921,
+          "ignore_eos": false
+        },
+        "results": [
+          {
+            "label": "warmup",
+            "status": 200,
+            "output_budget": 128,
+            "prompt_sha256": "0d43febf68bbb1fa4dac27b84bb66e5af838f2e72b8e7dc5f329d6d634f3d360",
+            "ttft_s": 2.1633174039961887,
+            "elapsed_s": 2.4373606859953725,
+            "decode_s": 0.27374255299946526,
+            "decode_tokens_per_s": 94.97975274618992,
+            "usage": {
+              "prompt_tokens": 63,
+              "total_tokens": 90,
+              "completion_tokens": 27
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          },
+          {
+            "label": "single-0",
+            "status": 200,
+            "output_budget": 1024,
+            "prompt_sha256": "392401aeb51fe372697671ad30121790909ea14f131b2210aba12b003179db21",
+            "ttft_s": 0.2661911559989676,
+            "elapsed_s": 9.757378092996078,
+            "decode_s": 9.490897281997604,
+            "decode_tokens_per_s": 59.63608952691886,
+            "usage": {
+              "prompt_tokens": 89,
+              "total_tokens": 656,
+              "completion_tokens": 567
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          },
+          {
+            "label": "single-1",
+            "status": 200,
+            "output_budget": 1024,
+            "prompt_sha256": "b47f72c9ba34240d76c5d1562dc9e0c4fb25444cd53d695ccb7d76fec7661564",
+            "ttft_s": 0.18446130600204924,
+            "elapsed_s": 1.7994320430007065,
+            "decode_s": 1.614700691003236,
+            "decode_tokens_per_s": 78.65234758838997,
+            "usage": {
+              "prompt_tokens": 109,
+              "total_tokens": 237,
+              "completion_tokens": 128
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          },
+          {
+            "label": "single-2",
+            "status": 200,
+            "output_budget": 1024,
+            "prompt_sha256": "67b95e2e0cfccb0a918aa130d953e9dbd6bd68946a8f5a1a77e272c68f44eb84",
+            "ttft_s": 0.17549363800208084,
+            "elapsed_s": 14.672265117005736,
+            "decode_s": 14.496461905000615,
+            "decode_tokens_per_s": 70.56894342247138,
+            "usage": {
+              "prompt_tokens": 92,
+              "total_tokens": 1116,
+              "completion_tokens": 1024
+            },
+            "finish_reason": "length",
+            "error_present": false
+          },
+          {
+            "label": "single-3",
+            "status": 200,
+            "output_budget": 1024,
+            "prompt_sha256": "c8d1f4ce367676c049be58487583e2aeb5eca9e8d0598c24a5ef590061938d08",
+            "ttft_s": 0.1941745899966918,
+            "elapsed_s": 18.786516577994917,
+            "decode_s": 18.592046851001214,
+            "decode_tokens_per_s": 55.02352743613647,
+            "usage": {
+              "prompt_tokens": 91,
+              "total_tokens": 1115,
+              "completion_tokens": 1024
+            },
+            "finish_reason": "length",
+            "error_present": false
+          },
+          {
+            "label": "concurrent-0",
+            "status": 200,
+            "output_budget": 1024,
+            "prompt_sha256": "392401aeb51fe372697671ad30121790909ea14f131b2210aba12b003179db21",
+            "ttft_s": 2.07672252899647,
+            "elapsed_s": 18.00054013099725,
+            "decode_s": 15.923404864006443,
+            "decode_tokens_per_s": 45.970067724311036,
+            "usage": {
+              "prompt_tokens": 89,
+              "total_tokens": 822,
+              "completion_tokens": 733
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          },
+          {
+            "label": "concurrent-1",
+            "status": 200,
+            "output_budget": 1024,
+            "prompt_sha256": "b47f72c9ba34240d76c5d1562dc9e0c4fb25444cd53d695ccb7d76fec7661564",
+            "ttft_s": 2.076241899994784,
+            "elapsed_s": 4.700132651996682,
+            "decode_s": 2.6230419900020934,
+            "decode_tokens_per_s": 48.41706708625684,
+            "usage": {
+              "prompt_tokens": 109,
+              "total_tokens": 237,
+              "completion_tokens": 128
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          },
+          {
+            "label": "concurrent-2",
+            "status": 200,
+            "output_budget": 1024,
+            "prompt_sha256": "67b95e2e0cfccb0a918aa130d953e9dbd6bd68946a8f5a1a77e272c68f44eb84",
+            "ttft_s": 2.60267996499897,
+            "elapsed_s": 17.73876260299585,
+            "decode_s": 15.135789797997859,
+            "decode_tokens_per_s": 56.88503946545901,
+            "usage": {
+              "prompt_tokens": 92,
+              "total_tokens": 954,
+              "completion_tokens": 862
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          },
+          {
+            "label": "concurrent-3",
+            "status": 200,
+            "output_budget": 1024,
+            "prompt_sha256": "c8d1f4ce367676c049be58487583e2aeb5eca9e8d0598c24a5ef590061938d08",
+            "ttft_s": 2.602440629998455,
+            "elapsed_s": 25.050219330994878,
+            "decode_s": 22.44744674699905,
+            "decode_tokens_per_s": 45.573111789952804,
+            "usage": {
+              "prompt_tokens": 91,
+              "total_tokens": 1115,
+              "completion_tokens": 1024
+            },
+            "finish_reason": "length",
+            "error_present": false
+          }
+        ],
+        "speculation_metric_deltas": {
+          "vllm:spec_decode_num_drafts_total{": 1892.0,
+          "vllm:spec_decode_num_draft_tokens_total{": 7568.0,
+          "vllm:spec_decode_num_accepted_tokens_total{": 3635.0
+        },
+        "sample_count": 36,
+        "max_waiting": 0,
+        "profile": "mtp4",
+        "mode": "compare"
+      },
+      "provenance_limit": "Historical capture, not current deployment; engine/asset revisions not inferred when absent from the report. Raw response text omitted; HTTP 200 is not quality acceptance."
+    },
+    {
+      "source_path": "/tank/hot/1cat-deploy/benchmarks/2026-09-21-serving-tune/mtp4-context-196000-4-natural3072.json",
+      "source_sha256": "2ae130e5d80be651a3f5138e2021fb2a84040438bb11f476d8f5bb0849919c57",
+      "source_bytes": 502324,
+      "observations": {
+        "sampling": {
+          "temperature": 0.6,
+          "top_p": 0.95,
+          "top_k": 20,
+          "seed": 20260921,
+          "ignore_eos": false
+        },
+        "results": [
+          {
+            "label": "context-196000-0",
+            "status": 200,
+            "output_budget": 3072,
+            "prompt_sha256": "b4284730878be30eaa4326931c3d2214fc429507e91c1a80f5924ae45f8fba14",
+            "ttft_s": 422.85757217000355,
+            "elapsed_s": 1902.8461617050052,
+            "decode_s": 1479.987948144997,
+            "decode_tokens_per_s": 1.4642011123915553,
+            "usage": {
+              "prompt_tokens": 196000,
+              "total_tokens": 198168,
+              "completion_tokens": 2168
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          },
+          {
+            "label": "context-196000-1",
+            "status": 200,
+            "output_budget": 3072,
+            "prompt_sha256": "c569deb786ab9e49db68acb1d490d8fcff9cff8ad304560320232e0a915d6772",
+            "ttft_s": 428.24018347099627,
+            "elapsed_s": 1901.9714983569938,
+            "decode_s": 1473.7310373130022,
+            "decode_tokens_per_s": 1.3876344788996036,
+            "usage": {
+              "prompt_tokens": 196000,
+              "total_tokens": 198046,
+              "completion_tokens": 2046
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          },
+          {
+            "label": "context-196000-2",
+            "status": 200,
+            "output_budget": 3072,
+            "prompt_sha256": "45c3439dede34f026732a718f5b0b6b2e86c5d0566deb78a10bc9d8b3dbea625",
+            "ttft_s": 963.9595499770003,
+            "elapsed_s": 1967.323750222,
+            "decode_s": 1003.3635519439995,
+            "decode_tokens_per_s": 2.5075656726071958,
+            "usage": {
+              "prompt_tokens": 196000,
+              "total_tokens": 198517,
+              "completion_tokens": 2517
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          },
+          {
+            "label": "context-196000-3",
+            "status": 200,
+            "output_budget": 3072,
+            "prompt_sha256": "99ae7ca15f043ee53cfd94091a65d72fb172bf1f4712d9178785988c6d542c6b",
+            "ttft_s": 1657.0043275040007,
+            "elapsed_s": 1971.428118792006,
+            "decode_s": 314.4234627920014,
+            "decode_tokens_per_s": 7.279991065788332,
+            "usage": {
+              "prompt_tokens": 196000,
+              "total_tokens": 198290,
+              "completion_tokens": 2290
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          }
+        ],
+        "speculation_metric_deltas": {
+          "vllm:spec_decode_num_drafts_total{": 3018.0,
+          "vllm:spec_decode_num_draft_tokens_total{": 12072.0,
+          "vllm:spec_decode_num_accepted_tokens_total{": 5999.0
+        },
+        "sample_count": 967,
+        "max_waiting": 2.0,
+        "profile": "mtp4",
+        "mode": "context"
+      },
+      "provenance_limit": "Historical capture, not current deployment; engine/asset revisions not inferred when absent from the report. Raw response text omitted; HTTP 200 is not quality acceptance."
+    },
+    {
+      "source_path": "/tank/hot/1cat-deploy/benchmarks/2026-09-21-serving-tune/mtp4-context-196000-4.json",
+      "source_sha256": "2a7a58b28db630ef828463d6be46f8e4af86d19c3bca0868affa5a5830bcacfd",
+      "source_bytes": 170430,
+      "observations": {
+        "sampling": {
+          "temperature": 0,
+          "top_p": 0.95,
+          "top_k": 20,
+          "seed": 20260921,
+          "ignore_eos": false
+        },
+        "results": [
+          {
+            "label": "context-196000-0",
+            "status": 200,
+            "output_budget": 32,
+            "prompt_sha256": "3c2405145e3126729f0b3bf2249bc492fa9c4ec37ce3c01524766988562469da",
+            "ttft_s": 419.8929826800013,
+            "elapsed_s": 430.25096103300166,
+            "decode_s": 10.357560368996928,
+            "decode_tokens_per_s": 0.9654783215102268,
+            "usage": {
+              "prompt_tokens": 196000,
+              "total_tokens": 196011,
+              "completion_tokens": 11
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          },
+          {
+            "label": "context-196000-1",
+            "status": 200,
+            "output_budget": 32,
+            "prompt_sha256": "77df380539305869506f1d8ec15df9006c60cfb5b2aa810fd5917fca14098741",
+            "ttft_s": 425.40225184299925,
+            "elapsed_s": 434.946039825998,
+            "decode_s": 9.543562008999288,
+            "decode_tokens_per_s": 1.0478267957572136,
+            "usage": {
+              "prompt_tokens": 196000,
+              "total_tokens": 196011,
+              "completion_tokens": 11
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          },
+          {
+            "label": "context-196000-2",
+            "status": 200,
+            "output_budget": 32,
+            "prompt_sha256": "39eeb43b18bbf90dd82df496237e1c5fcd0609654fd97588afc0368303508ccc",
+            "ttft_s": 848.6707750429996,
+            "elapsed_s": 858.4291481200053,
+            "decode_s": 9.757950270002766,
+            "decode_tokens_per_s": 1.0248053867154179,
+            "usage": {
+              "prompt_tokens": 196000,
+              "total_tokens": 196011,
+              "completion_tokens": 11
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          },
+          {
+            "label": "context-196000-3",
+            "status": 200,
+            "output_budget": 32,
+            "prompt_sha256": "640bfcb9d1a68c9bcd4390140ce9e079131364f79a28f38f030f09a60dffe819",
+            "ttft_s": 865.8997718690007,
+            "elapsed_s": 866.1253470180018,
+            "decode_s": 0.2252335990051506,
+            "decode_tokens_per_s": 44.39834928789342,
+            "usage": {
+              "prompt_tokens": 196000,
+              "total_tokens": 196011,
+              "completion_tokens": 11
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          }
+        ],
+        "speculation_metric_deltas": {
+          "vllm:spec_decode_num_drafts_total{": 8.0,
+          "vllm:spec_decode_num_draft_tokens_total{": 32.0,
+          "vllm:spec_decode_num_accepted_tokens_total{": 32.0
+        },
+        "sample_count": 425,
+        "max_waiting": 2.0,
+        "profile": "mtp4",
+        "mode": "context"
+      },
+      "provenance_limit": "Historical capture, not current deployment; engine/asset revisions not inferred when absent from the report. Raw response text omitted; HTTP 200 is not quality acceptance."
+    },
+    {
+      "source_path": "/tank/hot/1cat-deploy/benchmarks/2026-09-21-serving-tune/mtp4-context-256000-1.json",
+      "source_sha256": "4e2c26997ccc89c501a471612685f967205bfe5f0240a1e2de42176dab1dd160",
+      "source_bytes": 62385,
+      "observations": {
+        "sampling": {
+          "temperature": 0,
+          "top_p": 0.95,
+          "top_k": 20,
+          "seed": 20260921,
+          "ignore_eos": false
+        },
+        "results": [
+          {
+            "label": "context-256000-0",
+            "status": 200,
+            "output_budget": 32,
+            "prompt_sha256": "9b30a6caa11f12e9e5755fbc11354ff139e2a5434f468463fc3a64cbc9bf82f0",
+            "ttft_s": 317.73348271200666,
+            "elapsed_s": 317.952799221006,
+            "decode_s": 0.2188607489952119,
+            "decode_tokens_per_s": 45.69115314605258,
+            "usage": {
+              "prompt_tokens": 256000,
+              "total_tokens": 256011,
+              "completion_tokens": 11
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          }
+        ],
+        "speculation_metric_deltas": {
+          "vllm:spec_decode_num_drafts_total{": 2.0,
+          "vllm:spec_decode_num_draft_tokens_total{": 8.0,
+          "vllm:spec_decode_num_accepted_tokens_total{": 8.0
+        },
+        "sample_count": 156,
+        "max_waiting": 0,
+        "profile": "mtp4",
+        "mode": "context"
+      },
+      "provenance_limit": "Historical capture, not current deployment; engine/asset revisions not inferred when absent from the report. Raw response text omitted; HTTP 200 is not quality acceptance."
+    },
+    {
+      "source_path": "/tank/hot/1cat-deploy/benchmarks/2026-09-21-serving-tune/mtp4-long.json",
+      "source_sha256": "a7d993473b4f81d85e6891191290233511a7d8bcdaf86f392c7e85b059e9483f",
+      "source_bytes": 42091,
+      "observations": {
+        "sampling": {
+          "temperature": 0.6,
+          "top_p": 0.95,
+          "top_k": 20,
+          "seed": 20260921,
+          "ignore_eos": false
+        },
+        "results": [
+          {
+            "label": "long-natural",
+            "status": 200,
+            "output_budget": 3072,
+            "prompt_sha256": "b38345e9e9a8217cdfce137c19fb5f18d9b7b11d1054e27b3be5d0da6ef24874",
+            "ttft_s": 0.15528446400276152,
+            "elapsed_s": 39.95673968800111,
+            "decode_s": 39.8011572309988,
+            "decode_tokens_per_s": 60.073630174194776,
+            "usage": {
+              "prompt_tokens": 64,
+              "total_tokens": 2456,
+              "completion_tokens": 2392
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          }
+        ],
+        "speculation_metric_deltas": {
+          "vllm:spec_decode_num_drafts_total{": 833.0,
+          "vllm:spec_decode_num_draft_tokens_total{": 3332.0,
+          "vllm:spec_decode_num_accepted_tokens_total{": 1560.0
+        },
+        "sample_count": 20,
+        "max_waiting": 0,
+        "profile": "mtp4",
+        "mode": "long"
+      },
+      "provenance_limit": "Historical capture, not current deployment; engine/asset revisions not inferred when absent from the report. Raw response text omitted; HTTP 200 is not quality acceptance."
+    },
+    {
+      "source_path": "/tank/hot/1cat-deploy/benchmarks/2026-09-21-serving-tune/mtp4-mm.json",
+      "source_sha256": "cf9a204bb219d378b781551f70037a886c7851d5f2dbfee24992b14993623c46",
+      "source_bytes": 6777,
+      "observations": {
+        "sampling": {
+          "temperature": 0.6,
+          "top_p": 0.95,
+          "top_k": 20,
+          "seed": 20260921,
+          "ignore_eos": false
+        },
+        "results": [
+          {
+            "label": "image-red-square",
+            "status": 200,
+            "output_budget": 512,
+            "prompt_sha256": "3d55724e0b2639af30d4e119ad149a06ea6b50b5051c10465bbaf90fe8830800",
+            "ttft_s": 5.402600436005741,
+            "elapsed_s": 6.172364955004014,
+            "decode_s": 0.7695231420002528,
+            "decode_tokens_per_s": 76.67085858735696,
+            "usage": {
+              "prompt_tokens": 130,
+              "total_tokens": 190,
+              "completion_tokens": 60
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          },
+          {
+            "label": "video-color-change",
+            "status": 200,
+            "output_budget": 512,
+            "prompt_sha256": "d5c24d8bf15f66c89dfbc0a9523bdddf312af1693f9dcaa13c4e85cde05e647f",
+            "ttft_s": 5.358059887999843,
+            "elapsed_s": 6.536844249996648,
+            "decode_s": 1.1784292759984965,
+            "decode_tokens_per_s": 90.79883042564238,
+            "usage": {
+              "prompt_tokens": 165,
+              "total_tokens": 273,
+              "completion_tokens": 108
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          },
+          {
+            "label": "131072-output-allowance",
+            "status": 200,
+            "output_budget": 131072,
+            "prompt_sha256": "0a8c2a546f906f9f2d7947e3647c5ba862df5753f391caf9a75e93141d93a61d",
+            "ttft_s": 0.14241111699811881,
+            "elapsed_s": 0.18645079799898667,
+            "decode_s": 0.0,
+            "decode_tokens_per_s": null,
+            "usage": {
+              "prompt_tokens": 19,
+              "total_tokens": 21,
+              "completion_tokens": 2
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          }
+        ],
+        "speculation_metric_deltas": {
+          "vllm:spec_decode_num_drafts_total{": 44.0,
+          "vllm:spec_decode_num_draft_tokens_total{": 176.0,
+          "vllm:spec_decode_num_accepted_tokens_total{": 130.0
+        },
+        "sample_count": 7,
+        "max_waiting": 0,
+        "profile": "mtp4",
+        "mode": "mm"
+      },
+      "provenance_limit": "Historical capture, not current deployment; engine/asset revisions not inferred when absent from the report. Raw response text omitted; HTTP 200 is not quality acceptance."
+    },
+    {
+      "source_path": "/tank/hot/1cat-deploy/benchmarks/2026-09-21-serving-tune/nomtp-compare.json",
+      "source_sha256": "65fd800c630e07915de34c6668d0c976b2f4589f0059853d66680c120570bf65",
+      "source_bytes": 210621,
+      "observations": {
+        "sampling": {
+          "temperature": 0.6,
+          "top_p": 0.95,
+          "top_k": 20,
+          "seed": 20260921,
+          "ignore_eos": false
+        },
+        "results": [
+          {
+            "label": "warmup",
+            "status": 200,
+            "output_budget": 128,
+            "prompt_sha256": "0d43febf68bbb1fa4dac27b84bb66e5af838f2e72b8e7dc5f329d6d634f3d360",
+            "ttft_s": 10.456596396004898,
+            "elapsed_s": 11.171301146998303,
+            "decode_s": 0.6891357059939764,
+            "decode_tokens_per_s": 29.02186002850187,
+            "usage": {
+              "prompt_tokens": 63,
+              "total_tokens": 84,
+              "completion_tokens": 21
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          },
+          {
+            "label": "single-0",
+            "status": 200,
+            "output_budget": 1024,
+            "prompt_sha256": "392401aeb51fe372697671ad30121790909ea14f131b2210aba12b003179db21",
+            "ttft_s": 0.2356517879961757,
+            "elapsed_s": 20.231255198996223,
+            "decode_s": 19.969866566003475,
+            "decode_tokens_per_s": 39.5596033348009,
+            "usage": {
+              "prompt_tokens": 89,
+              "total_tokens": 880,
+              "completion_tokens": 791
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          },
+          {
+            "label": "single-1",
+            "status": 200,
+            "output_budget": 1024,
+            "prompt_sha256": "b47f72c9ba34240d76c5d1562dc9e0c4fb25444cd53d695ccb7d76fec7661564",
+            "ttft_s": 0.15187750100449193,
+            "elapsed_s": 3.186705792999419,
+            "decode_s": 3.008678083999257,
+            "decode_tokens_per_s": 40.216997838187424,
+            "usage": {
+              "prompt_tokens": 109,
+              "total_tokens": 231,
+              "completion_tokens": 122
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          },
+          {
+            "label": "single-2",
+            "status": 200,
+            "output_budget": 1024,
+            "prompt_sha256": "67b95e2e0cfccb0a918aa130d953e9dbd6bd68946a8f5a1a77e272c68f44eb84",
+            "ttft_s": 0.14773959800368175,
+            "elapsed_s": 26.081334512004105,
+            "decode_s": 25.93319701300061,
+            "decode_tokens_per_s": 39.44750812972108,
+            "usage": {
+              "prompt_tokens": 92,
+              "total_tokens": 1116,
+              "completion_tokens": 1024
+            },
+            "finish_reason": "length",
+            "error_present": false
+          },
+          {
+            "label": "single-3",
+            "status": 200,
+            "output_budget": 1024,
+            "prompt_sha256": "c8d1f4ce367676c049be58487583e2aeb5eca9e8d0598c24a5ef590061938d08",
+            "ttft_s": 0.1737009999997099,
+            "elapsed_s": 26.10820254200371,
+            "decode_s": 25.934098289006215,
+            "decode_tokens_per_s": 39.44613722828614,
+            "usage": {
+              "prompt_tokens": 91,
+              "total_tokens": 1115,
+              "completion_tokens": 1024
+            },
+            "finish_reason": "length",
+            "error_present": false
+          },
+          {
+            "label": "concurrent-0",
+            "status": 200,
+            "output_budget": 1024,
+            "prompt_sha256": "392401aeb51fe372697671ad30121790909ea14f131b2210aba12b003179db21",
+            "ttft_s": 0.32366543800162617,
+            "elapsed_s": 18.314902648999123,
+            "decode_s": 17.9624942800001,
+            "decode_tokens_per_s": 35.6297956187851,
+            "usage": {
+              "prompt_tokens": 89,
+              "total_tokens": 730,
+              "completion_tokens": 641
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          },
+          {
+            "label": "concurrent-1",
+            "status": 200,
+            "output_budget": 1024,
+            "prompt_sha256": "b47f72c9ba34240d76c5d1562dc9e0c4fb25444cd53d695ccb7d76fec7661564",
+            "ttft_s": 0.3233362809987739,
+            "elapsed_s": 3.951450147003925,
+            "decode_s": 3.599231708001753,
+            "decode_tokens_per_s": 33.61828573886888,
+            "usage": {
+              "prompt_tokens": 109,
+              "total_tokens": 231,
+              "completion_tokens": 122
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          },
+          {
+            "label": "concurrent-2",
+            "status": 200,
+            "output_budget": 1024,
+            "prompt_sha256": "67b95e2e0cfccb0a918aa130d953e9dbd6bd68946a8f5a1a77e272c68f44eb84",
+            "ttft_s": 0.5514172549956129,
+            "elapsed_s": 28.544937203994778,
+            "decode_s": 27.993246983998688,
+            "decode_tokens_per_s": 36.54452806367051,
+            "usage": {
+              "prompt_tokens": 92,
+              "total_tokens": 1116,
+              "completion_tokens": 1024
+            },
+            "finish_reason": "length",
+            "error_present": false
+          },
+          {
+            "label": "concurrent-3",
+            "status": 200,
+            "output_budget": 1024,
+            "prompt_sha256": "c8d1f4ce367676c049be58487583e2aeb5eca9e8d0598c24a5ef590061938d08",
+            "ttft_s": 0.6586758630000986,
+            "elapsed_s": 28.569323366995377,
+            "decode_s": 27.910432501994364,
+            "decode_tokens_per_s": 36.652961215377104,
+            "usage": {
+              "prompt_tokens": 91,
+              "total_tokens": 1115,
+              "completion_tokens": 1024
+            },
+            "finish_reason": "length",
+            "error_present": false
+          }
+        ],
+        "speculation_metric_deltas": {
+          "vllm:spec_decode_num_drafts_total{": 0,
+          "vllm:spec_decode_num_draft_tokens_total{": 0,
+          "vllm:spec_decode_num_accepted_tokens_total{": 0
+        },
+        "sample_count": 57,
+        "max_waiting": 0,
+        "profile": "nomtp",
+        "mode": "compare"
+      },
+      "provenance_limit": "Historical capture, not current deployment; engine/asset revisions not inferred when absent from the report. Raw response text omitted; HTTP 200 is not quality acceptance."
+    },
+    {
+      "source_path": "/tank/hot/1cat-deploy/benchmarks/2026-09-21-serving-tune/nomtp-context-160000-4.json",
+      "source_sha256": "626bdba6abe981e90aafb939de1a675df781080c9ad5cb19c6d6c570dfcbfbab",
+      "source_bytes": 65944,
+      "observations": {
+        "sampling": {
+          "temperature": 0,
+          "top_p": 0.95,
+          "top_k": 20,
+          "seed": 20260921,
+          "ignore_eos": false
+        },
+        "results": [],
+        "speculation_metric_deltas": {
+          "vllm:spec_decode_num_drafts_total{": 0,
+          "vllm:spec_decode_num_draft_tokens_total{": 0,
+          "vllm:spec_decode_num_accepted_tokens_total{": 0
+        },
+        "sample_count": 167,
+        "max_waiting": 0,
+        "profile": "nomtp",
+        "mode": "context",
+        "status": "Deliberately interrupted before completion; not evidence of completed long-context capacity or deadlock."
+      },
+      "provenance_limit": "Historical capture, not current deployment; engine/asset revisions not inferred when absent from the report. Raw response text omitted; HTTP 200 is not quality acceptance."
+    },
+    {
+      "source_path": "/tank/hot/1cat-deploy/benchmarks/2026-09-21-serving-tune/nomtp-long.json",
+      "source_sha256": "1f570056f0b09a5f7d959fcaf7be219c7d33c06aa0207e5b6fef0416d9479903",
+      "source_bytes": 103071,
+      "observations": {
+        "sampling": {
+          "temperature": 0.6,
+          "top_p": 0.95,
+          "top_k": 20,
+          "seed": 20260921,
+          "ignore_eos": false
+        },
+        "results": [
+          {
+            "label": "long-natural",
+            "status": 200,
+            "output_budget": 3072,
+            "prompt_sha256": "b38345e9e9a8217cdfce137c19fb5f18d9b7b11d1054e27b3be5d0da6ef24874",
+            "ttft_s": 0.1309713209993788,
+            "elapsed_s": 71.4378726960058,
+            "decode_s": 71.28193813700636,
+            "decode_tokens_per_s": 39.30869548769085,
+            "usage": {
+              "prompt_tokens": 64,
+              "total_tokens": 2867,
+              "completion_tokens": 2803
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          }
+        ],
+        "speculation_metric_deltas": {
+          "vllm:spec_decode_num_drafts_total{": 0,
+          "vllm:spec_decode_num_draft_tokens_total{": 0,
+          "vllm:spec_decode_num_accepted_tokens_total{": 0
+        },
+        "sample_count": 36,
+        "max_waiting": 0,
+        "profile": "nomtp",
+        "mode": "long"
+      },
+      "provenance_limit": "Historical capture, not current deployment; engine/asset revisions not inferred when absent from the report. Raw response text omitted; HTTP 200 is not quality acceptance."
+    },
+    {
+      "source_path": "/tank/hot/1cat-deploy/benchmarks/2026-09-21-serving-tune/nomtp-mm.json",
+      "source_sha256": "02ac82376b4583791e92d36df4f56d6f03bafd2317004d578f29ee98db81e4e5",
+      "source_bytes": 9408,
+      "observations": {
+        "sampling": {
+          "temperature": 0.6,
+          "top_p": 0.95,
+          "top_k": 20,
+          "seed": 20260921,
+          "ignore_eos": false
+        },
+        "results": [
+          {
+            "label": "image-red-square",
+            "status": 200,
+            "output_budget": 512,
+            "prompt_sha256": "3d55724e0b2639af30d4e119ad149a06ea6b50b5051c10465bbaf90fe8830800",
+            "ttft_s": 0.2087907820023247,
+            "elapsed_s": 1.6396529110061238,
+            "decode_s": 1.4052310249971924,
+            "decode_tokens_per_s": 40.5627252644197,
+            "usage": {
+              "prompt_tokens": 130,
+              "total_tokens": 188,
+              "completion_tokens": 58
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          },
+          {
+            "label": "video-color-change",
+            "status": 200,
+            "output_budget": 512,
+            "prompt_sha256": "d5c24d8bf15f66c89dfbc0a9523bdddf312af1693f9dcaa13c4e85cde05e647f",
+            "ttft_s": 0.5245868100028019,
+            "elapsed_s": 3.9052664280025056,
+            "decode_s": 3.354583560001629,
+            "decode_tokens_per_s": 39.94534570482869,
+            "usage": {
+              "prompt_tokens": 165,
+              "total_tokens": 300,
+              "completion_tokens": 135
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          },
+          {
+            "label": "131072-output-allowance",
+            "status": 200,
+            "output_budget": 131072,
+            "prompt_sha256": "0a8c2a546f906f9f2d7947e3647c5ba862df5753f391caf9a75e93141d93a61d",
+            "ttft_s": 0.12221903500176268,
+            "elapsed_s": 0.1494941179989837,
+            "decode_s": 0.0,
+            "decode_tokens_per_s": null,
+            "usage": {
+              "prompt_tokens": 19,
+              "total_tokens": 21,
+              "completion_tokens": 2
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          }
+        ],
+        "speculation_metric_deltas": {
+          "vllm:spec_decode_num_drafts_total{": 0,
+          "vllm:spec_decode_num_draft_tokens_total{": 0,
+          "vllm:spec_decode_num_accepted_tokens_total{": 0
+        },
+        "sample_count": 3,
+        "max_waiting": 0,
+        "profile": "nomtp",
+        "mode": "mm"
+      },
+      "provenance_limit": "Historical capture, not current deployment; engine/asset revisions not inferred when absent from the report. Raw response text omitted; HTTP 200 is not quality acceptance."
+    },
+    {
+      "source_path": "/tank/hot/1cat-deploy/benchmarks/2026-09-21-serving-tune/nomtp092-compare.json",
+      "source_sha256": "8fe2a5608a0ec92c3987a74b8f7e26146a0bae823d5656d1e318d131333dda11",
+      "source_bytes": 210479,
+      "observations": {
+        "sampling": {
+          "temperature": 0.6,
+          "top_p": 0.95,
+          "top_k": 20,
+          "seed": 20260921,
+          "ignore_eos": false
+        },
+        "results": [
+          {
+            "label": "warmup",
+            "status": 200,
+            "output_budget": 128,
+            "prompt_sha256": "0d43febf68bbb1fa4dac27b84bb66e5af838f2e72b8e7dc5f329d6d634f3d360",
+            "ttft_s": 0.2813331029974506,
+            "elapsed_s": 6.233398771997599,
+            "decode_s": 5.92649173099926,
+            "decode_tokens_per_s": 3.374677787094089,
+            "usage": {
+              "prompt_tokens": 63,
+              "total_tokens": 84,
+              "completion_tokens": 21
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          },
+          {
+            "label": "single-0",
+            "status": 200,
+            "output_budget": 1024,
+            "prompt_sha256": "392401aeb51fe372697671ad30121790909ea14f131b2210aba12b003179db21",
+            "ttft_s": 0.2660389170050621,
+            "elapsed_s": 18.287065053002152,
+            "decode_s": 17.995610318001127,
+            "decode_tokens_per_s": 39.620773477562,
+            "usage": {
+              "prompt_tokens": 89,
+              "total_tokens": 803,
+              "completion_tokens": 714
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          },
+          {
+            "label": "single-1",
+            "status": 200,
+            "output_budget": 1024,
+            "prompt_sha256": "b47f72c9ba34240d76c5d1562dc9e0c4fb25444cd53d695ccb7d76fec7661564",
+            "ttft_s": 0.1597863920032978,
+            "elapsed_s": 3.1892856400008895,
+            "decode_s": 3.00370924899471,
+            "decode_tokens_per_s": 40.283526123740714,
+            "usage": {
+              "prompt_tokens": 109,
+              "total_tokens": 231,
+              "completion_tokens": 122
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          },
+          {
+            "label": "single-2",
+            "status": 200,
+            "output_budget": 1024,
+            "prompt_sha256": "67b95e2e0cfccb0a918aa130d953e9dbd6bd68946a8f5a1a77e272c68f44eb84",
+            "ttft_s": 0.1581405020042439,
+            "elapsed_s": 26.066444736003177,
+            "decode_s": 25.90802329899452,
+            "decode_tokens_per_s": 39.485837579886,
+            "usage": {
+              "prompt_tokens": 92,
+              "total_tokens": 1116,
+              "completion_tokens": 1024
+            },
+            "finish_reason": "length",
+            "error_present": false
+          },
+          {
+            "label": "single-3",
+            "status": 200,
+            "output_budget": 1024,
+            "prompt_sha256": "c8d1f4ce367676c049be58487583e2aeb5eca9e8d0598c24a5ef590061938d08",
+            "ttft_s": 0.1727058370015584,
+            "elapsed_s": 26.070655685005477,
+            "decode_s": 25.897642912001174,
+            "decode_tokens_per_s": 39.501664436261635,
+            "usage": {
+              "prompt_tokens": 91,
+              "total_tokens": 1115,
+              "completion_tokens": 1024
+            },
+            "finish_reason": "length",
+            "error_present": false
+          },
+          {
+            "label": "concurrent-0",
+            "status": 200,
+            "output_budget": 1024,
+            "prompt_sha256": "392401aeb51fe372697671ad30121790909ea14f131b2210aba12b003179db21",
+            "ttft_s": 0.5435677060013404,
+            "elapsed_s": 21.754917794001813,
+            "decode_s": 21.182999678996566,
+            "decode_tokens_per_s": 36.066657771681115,
+            "usage": {
+              "prompt_tokens": 89,
+              "total_tokens": 854,
+              "completion_tokens": 765
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          },
+          {
+            "label": "concurrent-1",
+            "status": 200,
+            "output_budget": 1024,
+            "prompt_sha256": "b47f72c9ba34240d76c5d1562dc9e0c4fb25444cd53d695ccb7d76fec7661564",
+            "ttft_s": 0.5431006310027442,
+            "elapsed_s": 3.9974749969987897,
+            "decode_s": 3.4254933769989293,
+            "decode_tokens_per_s": 35.32337876128313,
+            "usage": {
+              "prompt_tokens": 109,
+              "total_tokens": 231,
+              "completion_tokens": 122
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          },
+          {
+            "label": "concurrent-2",
+            "status": 200,
+            "output_budget": 1024,
+            "prompt_sha256": "67b95e2e0cfccb0a918aa130d953e9dbd6bd68946a8f5a1a77e272c68f44eb84",
+            "ttft_s": 0.542720969999209,
+            "elapsed_s": 28.644956329000706,
+            "decode_s": 28.101918951004336,
+            "decode_tokens_per_s": 36.4032079725089,
+            "usage": {
+              "prompt_tokens": 92,
+              "total_tokens": 1116,
+              "completion_tokens": 1024
+            },
+            "finish_reason": "length",
+            "error_present": false
+          },
+          {
+            "label": "concurrent-3",
+            "status": 200,
+            "output_budget": 1024,
+            "prompt_sha256": "c8d1f4ce367676c049be58487583e2aeb5eca9e8d0598c24a5ef590061938d08",
+            "ttft_s": 0.7110402390026138,
+            "elapsed_s": 28.694847866005148,
+            "decode_s": 27.983609656002955,
+            "decode_tokens_per_s": 36.55711370246866,
+            "usage": {
+              "prompt_tokens": 91,
+              "total_tokens": 1115,
+              "completion_tokens": 1024
+            },
+            "finish_reason": "length",
+            "error_present": false
+          }
+        ],
+        "speculation_metric_deltas": {
+          "vllm:spec_decode_num_drafts_total{": 0,
+          "vllm:spec_decode_num_draft_tokens_total{": 0,
+          "vllm:spec_decode_num_accepted_tokens_total{": 0
+        },
+        "sample_count": 54,
+        "max_waiting": 0,
+        "profile": "nomtp092",
+        "mode": "compare"
+      },
+      "provenance_limit": "Historical capture, not current deployment; engine/asset revisions not inferred when absent from the report. Raw response text omitted; HTTP 200 is not quality acceptance."
+    },
+    {
+      "source_path": "/tank/hot/1cat-deploy/benchmarks/2026-09-21-serving-tune/tq4s512-compare.json",
+      "source_sha256": "3ed8cf0fe7eae2ae17c8b6bf6de2f5c69332c0bb7bb0c3256133f477c352df33",
+      "source_bytes": 102770,
+      "observations": {
+        "sampling": {
+          "temperature": 0.6,
+          "top_p": 0.95,
+          "top_k": 20,
+          "seed": 20260921,
+          "ignore_eos": false
+        },
+        "results": [
+          {
+            "label": "warmup",
+            "status": 200,
+            "output_budget": 128,
+            "prompt_sha256": "0d43febf68bbb1fa4dac27b84bb66e5af838f2e72b8e7dc5f329d6d634f3d360",
+            "ttft_s": 0.7400859800036415,
+            "elapsed_s": 6.148758344999806,
+            "decode_s": 0.0,
+            "decode_tokens_per_s": null,
+            "usage": {
+              "prompt_tokens": 63,
+              "total_tokens": 65,
+              "completion_tokens": 2
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          },
+          {
+            "label": "single-0",
+            "status": 200,
+            "output_budget": 1024,
+            "prompt_sha256": "392401aeb51fe372697671ad30121790909ea14f131b2210aba12b003179db21",
+            "ttft_s": 0.2782792910002172,
+            "elapsed_s": 0.46700169399991864,
+            "decode_s": 0.16140603800158715,
+            "decode_tokens_per_s": 43.3688856170992,
+            "usage": {
+              "prompt_tokens": 89,
+              "total_tokens": 97,
+              "completion_tokens": 8
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          },
+          {
+            "label": "single-1",
+            "status": 200,
+            "output_budget": 1024,
+            "prompt_sha256": "b47f72c9ba34240d76c5d1562dc9e0c4fb25444cd53d695ccb7d76fec7661564",
+            "ttft_s": 0.1623900720005622,
+            "elapsed_s": 0.18889271200168878,
+            "decode_s": 0.0,
+            "decode_tokens_per_s": null,
+            "usage": {
+              "prompt_tokens": 109,
+              "total_tokens": 111,
+              "completion_tokens": 2
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          },
+          {
+            "label": "single-2",
+            "status": 200,
+            "output_budget": 1024,
+            "prompt_sha256": "67b95e2e0cfccb0a918aa130d953e9dbd6bd68946a8f5a1a77e272c68f44eb84",
+            "ttft_s": 0.16659478200017475,
+            "elapsed_s": 0.19565884199982975,
+            "decode_s": 0.0,
+            "decode_tokens_per_s": null,
+            "usage": {
+              "prompt_tokens": 92,
+              "total_tokens": 94,
+              "completion_tokens": 2
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          },
+          {
+            "label": "single-3",
+            "status": 200,
+            "output_budget": 1024,
+            "prompt_sha256": "c8d1f4ce367676c049be58487583e2aeb5eca9e8d0598c24a5ef590061938d08",
+            "ttft_s": 0.18005629900289932,
+            "elapsed_s": 0.23570457300229464,
+            "decode_s": 0.02970928499416914,
+            "decode_tokens_per_s": 67.31902165913881,
+            "usage": {
+              "prompt_tokens": 91,
+              "total_tokens": 94,
+              "completion_tokens": 3
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          },
+          {
+            "label": "concurrent-0",
+            "status": 200,
+            "output_budget": 1024,
+            "prompt_sha256": "392401aeb51fe372697671ad30121790909ea14f131b2210aba12b003179db21",
+            "ttft_s": 0.35612508800113574,
+            "elapsed_s": 0.7279317249995074,
+            "decode_s": 0.33985568899515783,
+            "decode_tokens_per_s": 20.596977560377795,
+            "usage": {
+              "prompt_tokens": 89,
+              "total_tokens": 97,
+              "completion_tokens": 8
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          },
+          {
+            "label": "concurrent-1",
+            "status": 200,
+            "output_budget": 1024,
+            "prompt_sha256": "b47f72c9ba34240d76c5d1562dc9e0c4fb25444cd53d695ccb7d76fec7661564",
+            "ttft_s": 0.35556729800009634,
+            "elapsed_s": 34.35686608799733,
+            "decode_s": 34.000819123997644,
+            "decode_tokens_per_s": 30.087510429358176,
+            "usage": {
+              "prompt_tokens": 109,
+              "total_tokens": 1133,
+              "completion_tokens": 1024
+            },
+            "finish_reason": "length",
+            "error_present": false
+          },
+          {
+            "label": "concurrent-2",
+            "status": 200,
+            "output_budget": 1024,
+            "prompt_sha256": "67b95e2e0cfccb0a918aa130d953e9dbd6bd68946a8f5a1a77e272c68f44eb84",
+            "ttft_s": 0.5390965879996656,
+            "elapsed_s": 34.38764972199715,
+            "decode_s": 33.84810872899834,
+            "decode_tokens_per_s": 30.223254368229316,
+            "usage": {
+              "prompt_tokens": 92,
+              "total_tokens": 1116,
+              "completion_tokens": 1024
+            },
+            "finish_reason": "length",
+            "error_present": false
+          },
+          {
+            "label": "concurrent-3",
+            "status": 200,
+            "output_budget": 1024,
+            "prompt_sha256": "c8d1f4ce367676c049be58487583e2aeb5eca9e8d0598c24a5ef590061938d08",
+            "ttft_s": 0.5393374010018306,
+            "elapsed_s": 34.387586749006005,
+            "decode_s": 33.84789516800083,
+            "decode_tokens_per_s": 30.223445059801683,
+            "usage": {
+              "prompt_tokens": 91,
+              "total_tokens": 1115,
+              "completion_tokens": 1024
+            },
+            "finish_reason": "length",
+            "error_present": false
+          }
+        ],
+        "speculation_metric_deltas": {
+          "vllm:spec_decode_num_drafts_total{": 0,
+          "vllm:spec_decode_num_draft_tokens_total{": 0,
+          "vllm:spec_decode_num_accepted_tokens_total{": 0
+        },
+        "sample_count": 21,
+        "max_waiting": 0,
+        "profile": "tq4s512",
+        "mode": "compare"
+      },
+      "provenance_limit": "Historical capture, not current deployment; engine/asset revisions not inferred when absent from the report. Raw response text omitted; HTTP 200 is not quality acceptance."
+    }
+  ]
+}

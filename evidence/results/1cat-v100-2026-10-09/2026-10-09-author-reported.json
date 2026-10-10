@@ -1,0 +1,77 @@
+{
+  "kind": "author-reported model-card results; not our V100 measurement",
+  "published_on": "2026-10-09",
+  "sources": [
+    {
+      "source_path": "/tank/hot/models/.ninfer-acquisition-20261009/metadata/primary/README.md",
+      "source_sha256": "776b6c0823b64c23cfd7940bc5c612cf8f6943d99e494c1dce93c603c8d05a33",
+      "source_bytes": 154822,
+      "revision": "3e644f233eb7ebb294a5128d75ca79143987f661",
+      "ranges": [
+        "95-105",
+        "155-168"
+      ]
+    },
+    {
+      "source_path": "/tank/hot/models/.ninfer-acquisition-20261009/metadata/q6/README.md",
+      "source_sha256": "03c62c193df5d9574e7966d585bf4084ba42752ec74a07a3915179501d90d671",
+      "source_bytes": 88289,
+      "revision": "08748898ab265b471b59263d654925df2de25005",
+      "ranges": [
+        "102-126"
+      ]
+    }
+  ],
+  "common_protocol": {
+    "hardware": "single RTX PRO 6000 Blackwell",
+    "context": "100K",
+    "output_cap": 94208,
+    "client_timeout": "none",
+    "denominators": {
+      "GPQA": 198,
+      "MMLU": 500,
+      "LCB": 100
+    },
+    "scoring": "Empty answer wrong; truncated but correct answer counts correct; failures retained in denominator."
+  },
+  "results": [
+    {
+      "variant": "NVFP4 W4A16",
+      "GPQA": 170,
+      "MMLU": 439,
+      "LCB": 91,
+      "engine": "SGLang",
+      "concurrency": 8,
+      "speculation": "DFlash2"
+    },
+    {
+      "variant": "NVFP4 mixed W4A4-W8A8",
+      "GPQA": 172,
+      "MMLU": 442,
+      "LCB": 88,
+      "engine": "SGLang",
+      "concurrency": 8,
+      "speculation": "DFlash2"
+    },
+    {
+      "variant": "NInfer mixed W4A4-W8A8",
+      "GPQA": 177,
+      "MMLU": 444,
+      "LCB": 92,
+      "engine": "Neroued/ninfer, not geoffwatts/ninfer-v100",
+      "concurrency": 8,
+      "speculation": "none",
+      "limitation": "2026-10-05 text-path scores reused; new bundled MTP/DFlash2/proposal-head package not rerun in full."
+    },
+    {
+      "variant": "GGUF Q6_K",
+      "GPQA": 174,
+      "MMLU": 448,
+      "LCB": 91,
+      "engine": "llama.cpp llama-server",
+      "concurrency": 4,
+      "thinking": "xhigh",
+      "limitation": "Full scores measured only on GGUF, not the converted .ninfer package; do not assume speculation setting from the separate speed table."
+    }
+  ]
+}

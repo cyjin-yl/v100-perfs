@@ -1,0 +1,266 @@
+{
+  "kind": "field-allowlisted public summary; not raw report",
+  "published_on": "2026-10-09",
+  "excluded": "Generated text/reasoning, prompts, private request/response and launch files, raw engine logs, credentials, endpoints, raw error strings, token histograms and tool-call arguments are not copied. Original source files remain unchanged. Missing fields are unknown, not zero. Report pass flags are harness verdicts, not semantic or numerical certification.",
+  "records": [
+    {
+      "source_path": "/tank/hot/1cat-deploy/benchmarks/2026-09-20-tp2/ctx160000-c1.json",
+      "source_sha256": "a6f16475bd6bbf147d3ec91e85b218e828324acaec70ef96039468fb8464d627",
+      "source_bytes": 2418,
+      "observations": {
+        "date": "20260920-170342",
+        "model_id": "swift-qwen3.8-27b-nvfp4",
+        "tokenizer_id": "/tank/hot/models/Swift-Qwen3.8-27B-NVFP4",
+        "num_prompts": 1,
+        "max_concurrency": 1,
+        "duration": 153.92866675299956,
+        "completed": 1,
+        "failed": 0,
+        "total_input_tokens": 160014,
+        "total_output_tokens": 64,
+        "output_throughput": 0.415777004699827,
+        "total_token_throughput": 1039.9492399740454,
+        "input_lens": [
+          160014
+        ],
+        "output_lens": [
+          64
+        ],
+        "mean_ttft_ms": 152061.65949299975,
+        "p99_ttft_ms": 152061.65949299975,
+        "mean_tpot_ms": 29.626653666676408
+      },
+      "provenance_limit": "Historical capture, not current deployment; engine/asset revisions not inferred when absent from the report. Raw response text omitted; HTTP 200 is not quality acceptance."
+    },
+    {
+      "source_path": "/tank/hot/1cat-deploy/benchmarks/2026-09-20-tp2-cold/ctx160000-c1.json",
+      "source_sha256": "a2f0b6b8c78f238bd5518df5512243e22692858fb9aea62812abc8a53157b55e",
+      "source_bytes": 690,
+      "observations": {
+        "context_target": 160000,
+        "concurrency": 1,
+        "requested": 1,
+        "successful": 1,
+        "duration_s": 151.4316814820013,
+        "input_tokens": 159960,
+        "output_tokens": 32,
+        "prefill_throughput_tok_s": 1056.317927890224,
+        "decode_throughput_tok_s": 0.21131641468171522,
+        "mean_ttft_s": 150.18710705400008,
+        "p50_ttft_s": 150.18710705400008,
+        "p99_ttft_s": 150.18710705400008,
+        "mean_tpot_s": 0.04014756219358758,
+        "p99_tpot_s": 0.04014756219358758,
+        "error_count": 0
+      },
+      "provenance_limit": "Historical capture, not current deployment; engine/asset revisions not inferred when absent from the report. Raw response text omitted; HTTP 200 is not quality acceptance."
+    },
+    {
+      "source_path": "/tank/hot/1cat-deploy/benchmarks/2026-09-20-tp2-cold/ctx160000-c2.json",
+      "source_sha256": "8b611466ce9e7e83df7bfd816823bfcc6aa76bc26fa885b73ba5c2537d3e5b49",
+      "source_bytes": 887,
+      "observations": {
+        "context_target": 160000,
+        "concurrency": 2,
+        "requested": 2,
+        "successful": 2,
+        "duration_s": 305.4691479619978,
+        "input_tokens": 319920,
+        "output_tokens": 64,
+        "prefill_throughput_tok_s": 1047.3070754752619,
+        "decode_throughput_tok_s": 0.20951379354343824,
+        "mean_ttft_s": 302.7091664110012,
+        "p50_ttft_s": 301.7054950370002,
+        "p99_ttft_s": 303.7128377850022,
+        "mean_tpot_s": 0.08832057941928666,
+        "p99_tpot_s": 0.12011966419348967,
+        "error_count": 0
+      },
+      "provenance_limit": "Historical capture, not current deployment; engine/asset revisions not inferred when absent from the report. Raw response text omitted; HTTP 200 is not quality acceptance."
+    },
+    {
+      "source_path": "/tank/hot/1cat-deploy/benchmarks/2026-09-20-tp2-cold/ctx160000-c3.json",
+      "source_sha256": "24672aa1d40041411f78fe75a946c0241064da21715b84a95e37faf54ed82454",
+      "source_bytes": 1086,
+      "observations": {
+        "context_target": 160000,
+        "concurrency": 3,
+        "requested": 3,
+        "successful": 3,
+        "duration_s": 464.83341384600135,
+        "input_tokens": 479880,
+        "output_tokens": 96,
+        "prefill_throughput_tok_s": 1032.369846284294,
+        "decode_throughput_tok_s": 0.20652560065702305,
+        "mean_ttft_s": 457.3225324699997,
+        "p50_ttft_s": 462.67531804999817,
+        "p99_ttft_s": 462.68037010400076,
+        "mean_tpot_s": 0.2402500591397843,
+        "p99_tpot_s": 0.5821243414516615,
+        "error_count": 0
+      },
+      "provenance_limit": "Historical capture, not current deployment; engine/asset revisions not inferred when absent from the report. Raw response text omitted; HTTP 200 is not quality acceptance."
+    },
+    {
+      "source_path": "/tank/hot/1cat-deploy/benchmarks/2026-09-20-tp2-cold/ctx160000-c4.json",
+      "source_sha256": "f841ab41d7803652515b4e132eeb6580ea3a78f50566b13204cd12913a8db13f",
+      "source_bytes": 1285,
+      "observations": {
+        "context_target": 160000,
+        "concurrency": 4,
+        "requested": 4,
+        "successful": 4,
+        "duration_s": 634.3711020560004,
+        "input_tokens": 639840,
+        "output_tokens": 128,
+        "prefill_throughput_tok_s": 1008.6209758393389,
+        "decode_throughput_tok_s": 0.20177463882757468,
+        "mean_ttft_s": 628.5431569132488,
+        "p50_ttft_s": 631.7835556389982,
+        "p99_ttft_s": 631.7909691649984,
+        "mean_tpot_s": 0.18656095657259417,
+        "p99_tpot_s": 0.49698259667744543,
+        "error_count": 0
+      },
+      "provenance_limit": "Historical capture, not current deployment; engine/asset revisions not inferred when absent from the report. Raw response text omitted; HTTP 200 is not quality acceptance."
+    },
+    {
+      "source_path": "/tank/hot/1cat-deploy/benchmarks/2026-09-20-tp2-cold/ctx160000-c5.json",
+      "source_sha256": "ed8a2f5f590c2e8dd22d531c358009946837d046e0d76c80c90d1dda9f806a75",
+      "source_bytes": 1477,
+      "observations": {
+        "context_target": 160000,
+        "concurrency": 5,
+        "requested": 5,
+        "successful": 5,
+        "duration_s": 939.4596281739978,
+        "input_tokens": 799800,
+        "output_tokens": 160,
+        "prefill_throughput_tok_s": 851.3404685143837,
+        "decode_throughput_tok_s": 0.17031067137071942,
+        "mean_ttft_s": 689.3170771712,
+        "p50_ttft_s": 629.6473575259988,
+        "p99_ttft_s": 938.1968192370005,
+        "mean_tpot_s": 5.295212386561287,
+        "p99_tpot_s": 6.735893812129014,
+        "error_count": 0
+      },
+      "provenance_limit": "Historical capture, not current deployment; engine/asset revisions not inferred when absent from the report. Raw response text omitted; HTTP 200 is not quality acceptance."
+    },
+    {
+      "source_path": "/tank/hot/1cat-deploy/benchmarks/2026-09-20-tp2-cold/ctx256000-c1.json",
+      "source_sha256": "a404965c564d28b1d994c7b0f00469709dcb46bb523c41ac1b294c80f7919074",
+      "source_bytes": 690,
+      "observations": {
+        "context_target": 256000,
+        "concurrency": 1,
+        "requested": 1,
+        "successful": 1,
+        "duration_s": 304.56396991899965,
+        "input_tokens": 255960,
+        "output_tokens": 32,
+        "prefill_throughput_tok_s": 840.4145771677256,
+        "decode_throughput_tok_s": 0.10506823905831857,
+        "mean_ttft_s": 302.7890048150002,
+        "p50_ttft_s": 302.7890048150002,
+        "p99_ttft_s": 302.7890048150002,
+        "mean_tpot_s": 0.057256938838690985,
+        "p99_tpot_s": 0.057256938838690985,
+        "error_count": 0
+      },
+      "provenance_limit": "Historical capture, not current deployment; engine/asset revisions not inferred when absent from the report. Raw response text omitted; HTTP 200 is not quality acceptance."
+    },
+    {
+      "source_path": "/tank/hot/1cat-deploy/benchmarks/2026-09-20-tp2-cold/ctx256000-c2.json",
+      "source_sha256": "ff68043a224ad0992271686837ea671c25f178f544e37c9e903c898f0cff38e7",
+      "source_bytes": 884,
+      "observations": {
+        "context_target": 256000,
+        "concurrency": 2,
+        "requested": 2,
+        "successful": 2,
+        "duration_s": 614.5843321900029,
+        "input_tokens": 511920,
+        "output_tokens": 64,
+        "prefill_throughput_tok_s": 832.9532225070399,
+        "decode_throughput_tok_s": 0.10413542397337583,
+        "mean_ttft_s": 602.8304722299999,
+        "p50_ttft_s": 593.3595247890007,
+        "p99_ttft_s": 612.3014196709992,
+        "mean_tpot_s": 0.3765399068387553,
+        "p99_tpot_s": 0.6796804930000367,
+        "error_count": 0
+      },
+      "provenance_limit": "Historical capture, not current deployment; engine/asset revisions not inferred when absent from the report. Raw response text omitted; HTTP 200 is not quality acceptance."
+    },
+    {
+      "source_path": "/tank/hot/1cat-deploy/benchmarks/2026-09-20-tp2-cold/ctx256000-c3.json",
+      "source_sha256": "e1ef01bc598ff3998d753a0e3ab33f419b64165f6359aab4b00c53c49a5fbf79",
+      "source_bytes": 1080,
+      "observations": {
+        "context_target": 256000,
+        "concurrency": 3,
+        "requested": 3,
+        "successful": 3,
+        "duration_s": 924.4156753089992,
+        "input_tokens": 767880,
+        "output_tokens": 96,
+        "prefill_throughput_tok_s": 830.6652737615306,
+        "decode_throughput_tok_s": 0.10384938568670488,
+        "mean_ttft_s": 907.962045781666,
+        "p50_ttft_s": 921.4816477530003,
+        "p99_ttft_s": 921.4881855939966,
+        "mean_tpot_s": 0.5271710173440635,
+        "p99_tpot_s": 1.3930632451290055,
+        "error_count": 0
+      },
+      "provenance_limit": "Historical capture, not current deployment; engine/asset revisions not inferred when absent from the report. Raw response text omitted; HTTP 200 is not quality acceptance."
+    },
+    {
+      "source_path": "/tank/hot/1cat-deploy/benchmarks/2026-09-20-tp2-cold/ctx256000-c4.json",
+      "source_sha256": "0103a2f288ed20c976ddedcae60cb877f317480fb424bccc9915e7dc7a7dafb6",
+      "source_bytes": 1284,
+      "observations": {
+        "context_target": 256000,
+        "concurrency": 4,
+        "requested": 4,
+        "successful": 4,
+        "duration_s": 1249.3411043090018,
+        "input_tokens": 1023840,
+        "output_tokens": 128,
+        "prefill_throughput_tok_s": 819.5039741098375,
+        "decode_throughput_tok_s": 0.10245400520204251,
+        "mean_ttft_s": 1228.3611666372499,
+        "p50_ttft_s": 1245.778091496999,
+        "p99_ttft_s": 1245.7906444649998,
+        "mean_tpot_s": 0.6722185982903137,
+        "p99_tpot_s": 2.345913180419302,
+        "error_count": 0
+      },
+      "provenance_limit": "Historical capture, not current deployment; engine/asset revisions not inferred when absent from the report. Raw response text omitted; HTTP 200 is not quality acceptance."
+    },
+    {
+      "source_path": "/tank/hot/1cat-deploy/benchmarks/2026-09-20-tp2-cold/ctx256000-c5.json",
+      "source_sha256": "cb3edc3bdd10de9d229181e27801be7925efa19e2c88147c0458680b4f58e2ae",
+      "source_bytes": 1481,
+      "observations": {
+        "context_target": 256000,
+        "concurrency": 5,
+        "requested": 5,
+        "successful": 5,
+        "duration_s": 1583.28541529,
+        "input_tokens": 1279800,
+        "output_tokens": 160,
+        "prefill_throughput_tok_s": 808.3191998364915,
+        "decode_throughput_tok_s": 0.10105568993111318,
+        "mean_ttft_s": 1296.8084628926008,
+        "p50_ttft_s": 1246.1928787130018,
+        "p99_ttft_s": 1581.5890863809982,
+        "mean_tpot_s": 1.339833502270959,
+        "p99_tpot_s": 2.7481790208386823,
+        "error_count": 0
+      },
+      "provenance_limit": "Historical capture, not current deployment; engine/asset revisions not inferred when absent from the report. Raw response text omitted; HTTP 200 is not quality acceptance."
+    }
+  ]
+}

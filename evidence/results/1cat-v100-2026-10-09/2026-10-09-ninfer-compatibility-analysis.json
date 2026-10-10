@@ -1,0 +1,131 @@
+{
+  "outcome": "conclusive_source_backed_blocker",
+  "implementation_created": false,
+  "summary": "A vision/resource-only repack cannot make this exact V2 artifact compatible with pinned ninfer-v100 b37d0dd3 while preserving every original text/MTP/DFlash object and template semantics. Two independent incompatibilities remain after adding the missing vision tensors and processor resources: ten unsupported DFlash2 tensor objects, and an unadmitted embedded chat template whose tokenizer_config lacks the required matching chat_template field.",
+  "source_revision": "b37d0dd3e1163b9d802d8bccfa89918bf68d793e",
+  "artifact": {
+    "repository": "Merkyor/Qwen3.8-27B-Coder390-EfficientThink-Opus5.5-GPT6Astra-Grok4.7-DSV4Pro-K3-SFT-RLOO-NVFP4-NInfer",
+    "revision": "3e644f233eb7ebb294a5128d75ca79143987f661",
+    "path": "NVFP4-NInfer/W4A4-W8A8/Qwen3.8-27B-Coder390-W4A4-W8A8-MTP-DFlash2-NInferV2-NOT-FOR-V3.ninfer",
+    "expected_bytes": 23477696516,
+    "expected_sha256": "099b2d00fa3982d601218d6587dc25222cc21ef708de7dab8b2e2c0bee60da74",
+    "evidence_scope": "Complete cached directory plus exact pinned HTTP206 frontend-resource ranges. Full-artifact SHA admission was still pending when the resource receipt was captured; no incomplete weight payload was read."
+  },
+  "complete_descriptor_analysis": {
+    "actual_counts": {
+      "frontend": 4,
+      "text": 773,
+      "mtp": 12,
+      "dflash2": 76
+    },
+    "pinned_required_counts": {
+      "frontend": 6,
+      "text": 773,
+      "mtp": 12,
+      "vision": 333,
+      "dflash2": 66
+    },
+    "shared_tensor_count": 851,
+    "shared_shape_format_layout_mismatches": 0,
+    "duplicate_names": 0,
+    "schema_encoded_size_alignment_or_overlap_discrepancies": 0,
+    "payload_offset": 139264,
+    "last_object_end": 23477557252,
+    "payload_offset_plus_last_object_end": 23477696516,
+    "missing_objects": "333 vision tensors plus frontend/preprocessor_config.json and frontend/video_preprocessor_config.json.",
+    "unsupported_original_objects": {
+      "pattern": "dflash2/layers/{0,1,2,3,4}/attention/{context_key,context_value}",
+      "count": 10,
+      "shape": [
+        1024,
+        5120
+      ],
+      "format": "W8G32_F16S",
+      "layout": "row-split-k128-v1",
+      "bytes_each": 5570560,
+      "bytes_total": 55705600,
+      "blocker": "Pinned bind_dflash2 does not bind these objects. Binder::finish rejects every unconsumed object, including when speculation is disabled. Dropping their descriptors, hiding their payloads in an unreferenced trailer, or marking them arbitrarily consumed is not an allowed preservation/completion path."
+    }
+  },
+  "frontend_blocker": {
+    "embedded_template": {
+      "bytes": 9712,
+      "sha256": "a497db9e663941e6f7a05307c2bafa8374c12e142ad1fbea6229888d41f1ab16"
+    },
+    "allowed_template_sha256": [
+      "e84f32a23fdda27689f868aa4a1a5621f41133e51a48d7f3efcbea2839574259",
+      "c3cf9e34abf4f9e36c2d72165aa9c132d3e2a725b6c2586aaa3a8af9d7a81041"
+    ],
+    "embedded_tokenizer_config": {
+      "bytes": 5538,
+      "sha256": "cbe2c8cbd6ef4a0b867187b41ed8c3c8321241455668c0a3276994d661e0703e",
+      "contains_chat_template": false
+    },
+    "semantic_difference_evidence": "Diff against the admitted 8952-byte c3cf9e34 template is not only formatting: original V2 template adds developer/positional-system handling, final-assistant continuation, and tool-result histories without an original user turn. Replacing it with the admitted template changes declared template behavior. Exact existing-template admission fails independently of any possible overlap with native rendering behavior.",
+    "tokenizer_substitution_not_admitted": "Original embedded tokenizer.json is 11071114 bytes; admitted W4A16 tokenizer.json is 19989325 bytes. No byte-equality claim is possible, and no alternate tokenizer was substituted.",
+    "bounded_resource_receipt": "/tank/hot/models/.ninfer-acquisition-20261009/v2-bounded-resources/range-receipt.json",
+    "template_range": "11215916-11225627/23477696516",
+    "tokenizer_config_range": "11210378-11215915/23477696516"
+  },
+  "vision_feasibility": {
+    "sidecar": "/tank/hot/models/Merkyor-Coder390-NVFP4-W4A16-3e644f23/vision-bf16.safetensors",
+    "admission_receipt": "/tank/hot/models/.ninfer-acquisition-20261009/w4a16/admission-receipt.json",
+    "bytes": 921497224,
+    "header_bytes": 37024,
+    "source_tensor_count": 333,
+    "source_dtype": "BF16",
+    "source_name_shape_dtype_mismatches": 0,
+    "unexpected_source_tensors": 0,
+    "source_allocation_discrepancies": 0,
+    "largest_source_tensor_bytes": 47185920,
+    "processor_resources": "Admitted preprocessor_config.json SHA27225450ac9c6529872ee1924fcb0962ff5634834f817040f444118116f4e516 and video_preprocessor_config.json SHA7768af27c1fafa9cc9011c1dc20067e03f8915e03b63504550e11d5066986d13 equal the real Qwen3.8 converter's official resource hashes.",
+    "conclusion": "The genuine sidecar contains exactly the BF16 inputs required by build_vision_recipes(5120); these are not the blocker. Existing recipe/inventory describes the needed quantized vision objects without requiring BF16 base-text acquisition. This does not overcome DFlash/template incompatibility.",
+    "sidecar_sha256": "d7defc90994f7bbc58a8feb8d3c4144895babb434a9be9f47e88ae3646e1df33"
+  },
+  "source_evidence": [
+    {
+      "path": "src/targets/qwen3_6_27b/impl/load/bindings.cpp:386-465",
+      "claim": "Pinned Qwen3.8 NVFP4 text and DFlash2 binding contracts; DFlash2 uses 66 objects and no context_key/context_value descriptors."
+    },
+    {
+      "path": "src/targets/qwen3_6_27b/impl/load/bindings.cpp:551-574",
+      "claim": "Vision remains mandatory under ValidateOnly; present DFlash2 bundle is bound even when disabled."
+    },
+    {
+      "path": "src/artifact/binder.cpp:130-145",
+      "claim": "finish rejects unconsumed objects and objects lacking materialization placement."
+    },
+    {
+      "path": "src/targets/qwen3_6/impl/frontend/chat_template.cpp:20-28,414-423",
+      "claim": "Only the two enumerated template SHA256 values are admitted."
+    },
+    {
+      "path": "src/targets/qwen3_6/impl/frontend/frontend.cpp:203-230",
+      "claim": "tokenizer_config.chat_template must exist as a string equal to embedded template before template resolution."
+    },
+    {
+      "path": "tools/convert/qwen3_8_27b/inventory_nvfp4.py:1-196",
+      "claim": "Exact target persistent-object inventory used for complete cached descriptor comparison."
+    },
+    {
+      "path": "tools/convert/qwen3_8_27b/dflash2_inventory.py:1-88",
+      "claim": "Exact 66-object DFlash2 inventory."
+    },
+    {
+      "path": "tools/convert/qwen3_6/common/recipe.py:209-273",
+      "claim": "Genuine 333-tensor vision source names, shapes and patch-embedding reshape."
+    },
+    {
+      "path": "tools/convert/qwen3_8_27b/convert.py:35-113",
+      "claim": "Real converter requires official frontend hashes; admitted processor-resource hashes match but original V2 template does not."
+    },
+    {
+      "path": "src/artifact/storage_layouts.cpp:110-223",
+      "claim": "Source-backed encoded-size and allocation geometry used for directory-only analysis."
+    }
+  ],
+  "exact_missing_prerequisite": "A genuine runtime/source contract that natively admits the exact original V2 template and all ten original DFlash2 context projections, with semantics preserved, is required; alternatively a publisher-supplied, fully hash-admitted artifact already compatible with the pinned target. Runtime/template-contract changes or substituting a different artifact are outside this assigned completion-only path. Finishing full-file SHA admission alone does not resolve these source-level blockers.",
+  "execution_limits": "No converter implementation or stub, no source/build/model writes, no conversion, no GPU work, no package installation, no tests/builds/linters/formatters. Only bounded metadata/resource inspection, passive inventory comparison, native-source geometry analysis, and public-template diff were performed.",
+  "publication_note": "Source analysis only. Corrected agent field label: d7defc... is the sidecar SHA-256, not the admission-receipt SHA-256. Full artifact acquisition subsequently completed; native load remains unverified.",
+  "completed_acquisition_outcome": "/tank/hot/models/.ninfer-acquisition-20261009/acquisition-outcome.json"
+}

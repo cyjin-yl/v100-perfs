@@ -1,0 +1,474 @@
+{
+  "kind": "field-allowlisted fair-prefill capacity and upstream refresh checkpoint",
+  "tested_source_revision": "ec535b1e69b6d1b2e6e4e75ce5bd24fc7302972a",
+  "profile": {
+    "model": "W4A16",
+    "TP": 2,
+    "graph": true,
+    "draft": "none",
+    "long_prefill_token_threshold": 2048,
+    "utilization": 0.9,
+    "context_ceiling": 262144
+  },
+  "records": [
+    {
+      "source_path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-independent/main-w4a16-graph-none-fair2048-4x8k512/report.json",
+      "source_bytes": 52477,
+      "source_sha256": "41a78a9ce1c174b112c2b5620faa2883eca6a4302aadeae66311a0aeb674be1f",
+      "observations": {
+        "tag": "main-w4a16-graph-none-fair2048-4x8k512",
+        "streams": 4,
+        "input_tokens_per_request": 8192,
+        "output_budget_per_request": 512,
+        "sampling": {
+          "temperature": 1,
+          "top_p": 0.95,
+          "top_k": 20,
+          "ignore_eos": true
+        },
+        "run_passed": true,
+        "capacity_pass": true,
+        "failures": [],
+        "metric_deltas": {
+          "success": 4,
+          "preemptions": 0,
+          "corrupted": null,
+          "prompt_count": 4,
+          "prompt_sum": 32768,
+          "generation_count": 4,
+          "generation_sum": 2048,
+          "cache_queries": 32768,
+          "cache_hits": 0
+        },
+        "queue_observation": {
+          "poll_interval_s": 1,
+          "common_decode_window_monotonic_s": [
+            712970.015621652,
+            712985.561877715
+          ],
+          "common_decode_samples": 16,
+          "max_sample_gap_s": 1.0063768130494282,
+          "all_requested_streams_running_during_decode": true,
+          "all_four_running_observed": true,
+          "max_waiting_before_first_output": 0,
+          "max_waiting_after_first_output": 0,
+          "max_waiting_common_decode": 0,
+          "longest_observed_queue_span_common_decode_s": 0,
+          "sustained_queue_common_decode": false,
+          "sustained_definition": "positive waiting on consecutive polls spanning >=0.8 seconds inside common decode",
+          "admission_waiting_is_not_sustained_decode_queueing": true
+        },
+        "max_running": 4,
+        "max_kv_usage_fraction": 0.06866952789699576,
+        "max_gpu_used_mib": {
+          "0": 29546,
+          "1": 29546
+        },
+        "batch": {
+          "wall_s": 48.667700093006715,
+          "actual_output_tokens": 2048,
+          "aggregate_end_to_end_tokens_per_s": 42.08129819338404,
+          "aggregate_input_tokens": 32768
+        },
+        "capacity_extent": {
+          "input_tokens_per_stream": 8192,
+          "requested_output_budget_per_stream": 512,
+          "actual_output_tokens_per_stream": [
+            512,
+            512,
+            512,
+            512
+          ],
+          "every_output_budget_exhausted": true,
+          "natural_eos_may_finish_below_budget": false,
+          "applies_only_to_observed_lengths": true
+        },
+        "marker_quality": {
+          "all_markers_found": true,
+          "separate_from_capacity_gate": true,
+          "natural_quality_evidence": false,
+          "requires_manual_semantic_review": true
+        },
+        "nan_counter_observed": false,
+        "finite_logits_observed": false,
+        "numerical_quality_admitted": false,
+        "attribution": {
+          "controlled_requests": 4,
+          "success_delta": 4,
+          "no_foreign_traffic_observed": true,
+          "limit": "Counters and polling support attribution; exclusive engine ownership is an operator prerequisite."
+        },
+        "requests": [
+          {
+            "index": 0,
+            "http_status": 200,
+            "ttft_s": 8.329849484958686,
+            "elapsed_s": 46.24178084090818,
+            "decode_s": 37.90803269704338,
+            "decode_tokens_per_s": 13.479992593755867,
+            "end_to_end_tokens_per_s": 11.07223793481273,
+            "prompt_tokens": 8192,
+            "completion_tokens": 512,
+            "finish_reason": "length",
+            "generated_token_count": 512,
+            "generated_token_ids_sha256": "95739c85b06aff5ff2227c310c7cea4c280931d26d7fe13aa42b0852cf111117",
+            "output_sha256": "87bef1f00ccede894c598e69f7fbe4667fed2b4ec268a16f2f91108a6ef00f35",
+            "retrieval_marker_found": true,
+            "full_output_budget_generated": true
+          },
+          {
+            "index": 1,
+            "http_status": 200,
+            "ttft_s": 18.24168896698393,
+            "elapsed_s": 47.10287402605172,
+            "decode_s": 28.85800863802433,
+            "decode_tokens_per_s": 17.707389529528673,
+            "end_to_end_tokens_per_s": 10.869825049673665,
+            "prompt_tokens": 8192,
+            "completion_tokens": 512,
+            "finish_reason": "length",
+            "generated_token_count": 512,
+            "generated_token_ids_sha256": "6df5394288bc33f6787cc593b8130388456e96e454a5930baf6688c388ba50f6",
+            "output_sha256": "d46a41a375eae673da759f009a1b16a576fc625eba864e2785a5896a4681c8da",
+            "retrieval_marker_found": true,
+            "full_output_budget_generated": true
+          },
+          {
+            "index": 2,
+            "http_status": 200,
+            "ttft_s": 24.335790271055885,
+            "elapsed_s": 47.93875005701557,
+            "decode_s": 23.5876158910105,
+            "decode_tokens_per_s": 21.66391051817779,
+            "end_to_end_tokens_per_s": 10.68029515561121,
+            "prompt_tokens": 8192,
+            "completion_tokens": 512,
+            "finish_reason": "length",
+            "generated_token_count": 512,
+            "generated_token_ids_sha256": "aac6260de342ca6183c17b971635d27d0efd8535650dfa09cd8a00a8a87d74d9",
+            "output_sha256": "bbb6d12e4a88049c0408075c8b68c0b3512e6b2c9b6ed7aa2c2f39229c852c7e",
+            "retrieval_marker_found": true,
+            "full_output_budget_generated": true
+          },
+          {
+            "index": 3,
+            "http_status": 200,
+            "ttft_s": 30.640643539023586,
+            "elapsed_s": 48.61671751306858,
+            "decode_s": 17.97269568196498,
+            "decode_tokens_per_s": 28.432017602833618,
+            "end_to_end_tokens_per_s": 10.531356829312266,
+            "prompt_tokens": 8192,
+            "completion_tokens": 512,
+            "finish_reason": "length",
+            "generated_token_count": 512,
+            "generated_token_ids_sha256": "f8a2b8a4117fb668e2a195c970886f118d0d6bdbc066e8becda31dc761e8408e",
+            "output_sha256": "9ed362fe84005b437d7014a2d7009f07154c8685af9f7a8981312bebafe54cd9",
+            "retrieval_marker_found": true,
+            "full_output_budget_generated": true
+          }
+        ],
+        "fixture": {
+          "source_revision": "ec535b1e69b6d1b2e6e4e75ce5bd24fc7302972a",
+          "pairwise_common_prefix_tokens": [
+            {
+              "left": 0,
+              "right": 1,
+              "tokens": 3
+            },
+            {
+              "left": 0,
+              "right": 2,
+              "tokens": 3
+            },
+            {
+              "left": 0,
+              "right": 3,
+              "tokens": 3
+            },
+            {
+              "left": 1,
+              "right": 2,
+              "tokens": 3
+            },
+            {
+              "left": 1,
+              "right": 3,
+              "tokens": 3
+            },
+            {
+              "left": 2,
+              "right": 3,
+              "tokens": 3
+            }
+          ],
+          "reused_from": "/tank/hot/1cat-deploy/repetition-native-20261009/results-independent/main-mixed-graph-none-baseline4x8k512",
+          "source_report_sha256": "cdd1549c7bb01eec305d22decbc313d0f9316dae1c0648d76707f5b3515949fc",
+          "input_ids_unchanged": true,
+          "cache_salts_regenerated": true
+        }
+      }
+    },
+    {
+      "source_path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-independent/main-w4a16-graph-none-fair2048-4x128k/report.json",
+      "source_bytes": 436344,
+      "source_sha256": "d16885a7b03386b0cb6971b69f6b09f79f10f959174ecd1f772fc8fbd0fbec78",
+      "observations": {
+        "tag": "main-w4a16-graph-none-fair2048-4x128k",
+        "streams": 4,
+        "input_tokens_per_request": 130560,
+        "output_budget_per_request": 512,
+        "sampling": {
+          "temperature": 1,
+          "top_p": 0.95,
+          "top_k": 20,
+          "ignore_eos": true
+        },
+        "run_passed": true,
+        "capacity_pass": true,
+        "failures": [],
+        "metric_deltas": {
+          "success": 4,
+          "preemptions": 0,
+          "corrupted": null,
+          "prompt_count": 4,
+          "prompt_sum": 522240,
+          "generation_count": 4,
+          "generation_sum": 2048,
+          "cache_queries": 522240,
+          "cache_hits": 0
+        },
+        "queue_observation": {
+          "poll_interval_s": 1,
+          "common_decode_window_monotonic_s": [
+            713507.338953651,
+            713542.815141812
+          ],
+          "common_decode_samples": 36,
+          "max_sample_gap_s": 1.0116321359528229,
+          "all_requested_streams_running_during_decode": true,
+          "all_four_running_observed": true,
+          "max_waiting_before_first_output": 0,
+          "max_waiting_after_first_output": 0,
+          "max_waiting_common_decode": 0,
+          "longest_observed_queue_span_common_decode_s": 0,
+          "sustained_queue_common_decode": false,
+          "sustained_definition": "positive waiting on consecutive polls spanning >=0.8 seconds inside common decode",
+          "admission_waiting_is_not_sustained_decode_queueing": true
+        },
+        "max_running": 4,
+        "max_kv_usage_fraction": 0.5751072961373391,
+        "max_gpu_used_mib": {
+          "0": 29954,
+          "1": 29954
+        },
+        "batch": {
+          "wall_s": 540.2480557700619,
+          "actual_output_tokens": 2048,
+          "aggregate_end_to_end_tokens_per_s": 3.79085121755933,
+          "aggregate_input_tokens": 522240
+        },
+        "capacity_extent": {
+          "input_tokens_per_stream": 130560,
+          "requested_output_budget_per_stream": 512,
+          "actual_output_tokens_per_stream": [
+            512,
+            512,
+            512,
+            512
+          ],
+          "every_output_budget_exhausted": true,
+          "natural_eos_may_finish_below_budget": false,
+          "applies_only_to_observed_lengths": true
+        },
+        "marker_quality": {
+          "all_markers_found": true,
+          "separate_from_capacity_gate": true,
+          "natural_quality_evidence": false,
+          "requires_manual_semantic_review": true
+        },
+        "nan_counter_observed": false,
+        "finite_logits_observed": false,
+        "numerical_quality_admitted": false,
+        "attribution": {
+          "controlled_requests": 4,
+          "success_delta": 4,
+          "no_foreign_traffic_observed": true,
+          "limit": "Counters and polling support attribution; exclusive engine ownership is an operator prerequisite."
+        },
+        "requests": [
+          {
+            "index": 0,
+            "http_status": 200,
+            "ttft_s": 481.0459815179929,
+            "elapsed_s": 537.751109801,
+            "decode_s": 56.69402771699242,
+            "decode_tokens_per_s": 9.013295060827762,
+            "end_to_end_tokens_per_s": 0.9521133302532292,
+            "prompt_tokens": 130560,
+            "completion_tokens": 512,
+            "finish_reason": "length",
+            "generated_token_count": 512,
+            "generated_token_ids_sha256": "28e92830a5f15006e09ec3e499751a291e0bfcd62e353903feefdcd77b3ab5bd",
+            "output_sha256": "074f920062b6a1eb07eee673cbc456d4cf7de6f38e6ce32eceaaf3fbaaffc840",
+            "retrieval_marker_found": true,
+            "full_output_budget_generated": true
+          },
+          {
+            "index": 1,
+            "http_status": 200,
+            "ttft_s": 481.0921201360179,
+            "elapsed_s": 537.7466849030461,
+            "decode_s": 56.63778932602145,
+            "decode_tokens_per_s": 9.022244795935707,
+            "end_to_end_tokens_per_s": 0.952121164805157,
+            "prompt_tokens": 130560,
+            "completion_tokens": 512,
+            "finish_reason": "length",
+            "generated_token_count": 512,
+            "generated_token_ids_sha256": "158c5ca82dcdb317b8fe8fd39d9826204e069f12a0ae423711d20ef4901491f4",
+            "output_sha256": "f0b4613f3d02ae1157288c1071710565b9a62dbc950272ff0f4cd954b5b5de7c",
+            "retrieval_marker_found": true,
+            "full_output_budget_generated": true
+          },
+          {
+            "index": 2,
+            "http_status": 200,
+            "ttft_s": 485.66256515705027,
+            "elapsed_s": 537.783664440969,
+            "decode_s": 52.11528062191792,
+            "decode_tokens_per_s": 9.805185617384755,
+            "end_to_end_tokens_per_s": 0.9520556942394831,
+            "prompt_tokens": 130560,
+            "completion_tokens": 512,
+            "finish_reason": "length",
+            "generated_token_count": 512,
+            "generated_token_ids_sha256": "9a242fc075806fca61a1f1f448dc15503337b38e17fcbe2070698f0db7da64f6",
+            "output_sha256": "143a3e2d1c2c8d488848c0a89767f074a13aa4b384b9ce42e8fc66efcbbefe56",
+            "retrieval_marker_found": true,
+            "full_output_budget_generated": true
+          },
+          {
+            "index": 3,
+            "http_status": 200,
+            "ttft_s": 502.23199257301167,
+            "elapsed_s": 540.216227269033,
+            "decode_s": 37.97687029000372,
+            "decode_tokens_per_s": 13.45555850436958,
+            "end_to_end_tokens_per_s": 0.947768641805384,
+            "prompt_tokens": 130560,
+            "completion_tokens": 512,
+            "finish_reason": "length",
+            "generated_token_count": 512,
+            "generated_token_ids_sha256": "f5ab32372da1780439b1b78fd86f10824f7a3f36d8a97cdf3c920163a6c734b6",
+            "output_sha256": "4fbce21cc78d9a02c7f457367f5013805d9cf4b4c9f98ecfee13c5963a111c73",
+            "retrieval_marker_found": true,
+            "full_output_budget_generated": true
+          }
+        ],
+        "fixture": {
+          "source_revision": "ec535b1e69b6d1b2e6e4e75ce5bd24fc7302972a",
+          "pairwise_common_prefix_tokens": [
+            {
+              "left": 0,
+              "right": 1,
+              "tokens": 3
+            },
+            {
+              "left": 0,
+              "right": 2,
+              "tokens": 3
+            },
+            {
+              "left": 0,
+              "right": 3,
+              "tokens": 3
+            },
+            {
+              "left": 1,
+              "right": 2,
+              "tokens": 3
+            },
+            {
+              "left": 1,
+              "right": 3,
+              "tokens": 3
+            },
+            {
+              "left": 2,
+              "right": 3,
+              "tokens": 3
+            }
+          ],
+          "reused_from": "/tank/hot/1cat-deploy/repetition-native-20261009/results-independent/main-mixed-graph-none-capacity4x128k",
+          "source_report_sha256": "7fb9b2adee2b49fdfb917affdc1f53b8ebd8f8ce478907764b8547ea968b4513",
+          "input_ids_unchanged": true,
+          "cache_salts_regenerated": true
+        }
+      }
+    },
+    {
+      "source_path": "/tank/hot/1cat-deploy/repetition-native-20261009/config-clone-ec535b1e.json",
+      "source_bytes": 475,
+      "source_sha256": "6bd2d5c9f93bfff3531a1b76b4bdf0265dde0968fbb8cfcbfa9c51b0a7a84d55",
+      "observations": {
+        "source_path": "/tank/hot/1cat-deploy/repetition-main-20261009-ec5f5b7e/vllm/config/utils.py",
+        "source_sha256": "15ef68450155cad0657f12022b70e4278598685a817efc12de8f409a41f814ff",
+        "expected": "failure",
+        "clone_succeeded": false,
+        "scope": "real config.replace with runtime attachment, cached property and Pydantic non-init field; no model loading",
+        "error_class": "ValueError",
+        "runtime_attachment_field_rejected": true,
+        "expected_behavior_observed": true
+      }
+    },
+    {
+      "source_path": "/tank/hot/1cat-deploy/repetition-native-20261009/upstream-checks/ec535-fair-prefill-and-dflash-admission.json",
+      "source_bytes": 475,
+      "source_sha256": "0dacada54144ff11ec482d77938ae6f1ce14c6c36666846c7db3c718c5dfd08f",
+      "observations": {
+        "checked_at": "2026-10-09T16:42:18.535194+00:00",
+        "after_experiment": "ec535-fair-prefill-and-dflash-admission",
+        "tested_revision": "ec535b1e69b6d1b2e6e4e75ce5bd24fc7302972a",
+        "remote": "https://github.com/1CatAI/1Cat-vLLM.git",
+        "ref": "refs/heads/main",
+        "transport_proxy": "http://10.20.0.1:7893",
+        "upstream_revision": "c73eb2d1d1009e1ab8b980f9c1dea265ba877015",
+        "update_available": true,
+        "worktree_changed": false,
+        "checked": true,
+        "exit_code": 0
+      }
+    }
+  ],
+  "exclusions": "No private prompt, response, generated text, launch argv/env or raw engine log. Forced512 outputs are not full32K-output quality. Capacity applies to measured profile, not DFlash2. No numerical instrument or exact original-wire repair claim.",
+  "run_conditions": {
+    "no_other_GPU_inference": true,
+    "no_native_compilation_overlap": true,
+    "bounded_CPU_saved_tool_schema_check_overlapped": true
+  },
+  "startup_observation": {
+    "source": "Main supervised process qwen-main-w4a16-fair-none startup allowlist",
+    "weight_gib_per_rank": 10.23,
+    "available_kv_gib_per_rank": 14.61,
+    "log_equivalent_kv_tokens": 913591,
+    "cuda_graph_gib_per_rank": 0.4
+  },
+  "subsequent_dflash_admission": {
+    "source": "Main supervised qwen-main-w4a16-fair-dflash actual initialization traceback",
+    "launch_tag": "main-w4a16-graph-fp8-fair2048-c4-u90",
+    "exit_code": 1,
+    "ready": false,
+    "observed_error": "ValueError: Field _gdn_prefill_profiler not found in VllmConfig",
+    "gpu_owners_after": [],
+    "generation_exercised": false,
+    "original_repetition_root_cause_proved": false
+  },
+  "upstream_refresh": {
+    "revision": "c73eb2d1d1009e1ab8b980f9c1dea265ba877015",
+    "config_clone_fix_commit": "020f4173e622c7105ed33f11b8eb6e2f2fff749e",
+    "source_files_changed": 133,
+    "new_native_build": "in progress at this capture",
+    "old_native_binaries_reused": false
+  }
+}

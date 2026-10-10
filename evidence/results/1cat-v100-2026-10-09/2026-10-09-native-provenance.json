@@ -1,0 +1,450 @@
+{
+  "kind": "field-allowlisted public summary; not raw report",
+  "published_on": "2026-10-09",
+  "excluded": "Generated text/reasoning, prompts, private request/response and launch files, raw engine logs, credentials, endpoints, raw error strings, token histograms and tool-call arguments are not copied. Original source files remain unchanged. Missing fields are unknown, not zero. Report pass flags are harness verdicts, not semantic or numerical certification.",
+  "records": [
+    {
+      "source_path": "/tank/hot/1cat-deploy/repetition-native-20261009/gpu-primitives.json",
+      "source_sha256": "4b6d8fd47ef3438dce8de4b873bdb3d42bf71394a78277b9f4de2af35392883d",
+      "source_bytes": 2158,
+      "observations": {
+        "gpu": "Tesla V100-PCIE-32GB",
+        "capability": [
+          7,
+          0
+        ],
+        "torch": "2.10.0+cu128",
+        "nan_counter_cases": [
+          {
+            "case": "last_speculative_row_first_request",
+            "expected": [
+              1,
+              0
+            ],
+            "observed": [
+              1,
+              0
+            ],
+            "passed": true
+          },
+          {
+            "case": "last_speculative_row_second_request",
+            "expected": [
+              0,
+              1
+            ],
+            "observed": [
+              0,
+              1
+            ],
+            "passed": true
+          },
+          {
+            "case": "unequal_intervals_multiple_nans",
+            "expected": [
+              2,
+              1
+            ],
+            "observed": [
+              2,
+              1
+            ],
+            "passed": true
+          },
+          {
+            "case": "ordinary_one_row_requests",
+            "expected": [
+              1,
+              0,
+              1,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              1
+            ],
+            "observed": [
+              1,
+              0,
+              1,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              1
+            ],
+            "passed": true
+          },
+          {
+            "case": "capture_replay_live_logits_and_offsets",
+            "observed": [
+              [
+                1,
+                0
+              ],
+              [
+                0,
+                1
+              ]
+            ],
+            "passed": true
+          }
+        ],
+        "integer_mm_cases": [
+          {
+            "m": 1,
+            "k": 128,
+            "n": 128,
+            "passed": false,
+            "error_type": "RuntimeError",
+            "detail": "self.size(0) needs to be greater than 16, but got 1"
+          },
+          {
+            "m": 4,
+            "k": 128,
+            "n": 128,
+            "passed": false,
+            "error_type": "RuntimeError",
+            "detail": "self.size(0) needs to be greater than 16, but got 4"
+          },
+          {
+            "m": 16,
+            "k": 128,
+            "n": 128,
+            "passed": false,
+            "error_type": "RuntimeError",
+            "detail": "self.size(0) needs to be greater than 16, but got 16"
+          },
+          {
+            "m": 32,
+            "k": 5120,
+            "n": 4608,
+            "passed": true,
+            "output_dtype": "torch.int32",
+            "max_integer_error": 0
+          }
+        ],
+        "peak_allocated_bytes": 33409024
+      }
+    },
+    {
+      "source_path": "/tank/hot/1cat-deploy/repetition-native-20261009/int8-kernel-probe.json",
+      "source_sha256": "2132eb941c1449e6ba717fd6537d9159cf807d2432704497635d91651ed0c395",
+      "source_bytes": 248,
+      "observations": {
+        "gpu": "Tesla V100-PCIE-32GB",
+        "capability": [
+          7,
+          0
+        ],
+        "cases": [
+          {
+            "m": 1,
+            "k": 256,
+            "n": 128,
+            "passed": false,
+            "error_type": "RuntimeError",
+            "detail": "PassManager::run failed"
+          }
+        ]
+      }
+    },
+    {
+      "source_path": "/tank/hot/1cat-deploy/repetition-native-20261009/smoke-int8-backend.json",
+      "source_sha256": "67bc19be506633ece497295b77a90d3200e0abad09993c132ccca725bc64ea96",
+      "source_bytes": 658,
+      "observations": {
+        "scope": "new Python backend, installed native scaled_int8_quant; not full engine admission",
+        "gpu": "Tesla V100-PCIE-32GB",
+        "torch": "2.10.0+cu128",
+        "results": [
+          {
+            "case": "small_m_scale_bias",
+            "m": 1,
+            "passed": true
+          },
+          {
+            "case": "small_m_scale_bias",
+            "m": 16,
+            "passed": true
+          },
+          {
+            "case": "small_m_scale_bias",
+            "m": 32,
+            "passed": true
+          },
+          {
+            "case": "small_m_scale_bias",
+            "m": 33,
+            "passed": true
+          },
+          {
+            "case": "fullgraph_symbolic_m_and_live_replay",
+            "passed": true
+          }
+        ],
+        "passed": true,
+        "peak_allocated_bytes": 25642496
+      }
+    },
+    {
+      "source_path": "/tank/hot/1cat-deploy/repetition-native-20261009/upstream-int8-provenance.json",
+      "source_sha256": "682a3836c97faf130baa25a52287fec9d81005fe1828a7dc06d645f320d4cd8b",
+      "source_bytes": 2643,
+      "observations": {
+        "revision": "ec5f5b7eac702bfc93fa29368c0de16cd5581764",
+        "all_reported_native_candidates_are_committed_upstream": true,
+        "files": [
+          {
+            "path": "csrc/quantization/marlin/sm70_marlin_dispatch.cu",
+            "upstream_sha256": "976b92eb1606dc8e8364636cb07430b448c88f92e25500c2e43940f51559f623",
+            "working_matches_head": true
+          },
+          {
+            "path": "csrc/quantization/marlin/sm70_marlin_u8b128_gemm.cu",
+            "upstream_sha256": "1f3bc3858498f87f09cd320a0736c20bcc239fdbc3c05e6a4f930c5d8cf0695a",
+            "working_matches_head": true
+          },
+          {
+            "path": "csrc/sm70_turbomind/ops/h3_w8a16.cu",
+            "upstream_sha256": "52c4ed4c47ea478d5086197537bb0fa7828084ac31ec54db89f2516f7d94136d",
+            "working_matches_head": true
+          },
+          {
+            "path": "csrc/sm70_turbomind/ops/gguf_dp4a_sm70.cu",
+            "upstream_sha256": "dd2c06c2806b667fe4b930d347526e0c0331eed596219057801cb8cd36317143",
+            "working_matches_head": true
+          },
+          {
+            "path": "csrc/sm70_turbomind/ops/gguf_dp4a.cuh",
+            "upstream_sha256": "093e9e62558ecb6f72afee7adb9ab7f61fdf6caaf3537840807aaabac1bf75af",
+            "working_matches_head": true
+          },
+          {
+            "path": "csrc/libtorch_stable/quantization/gguf_upstream/runtime_dense.cu",
+            "upstream_sha256": "e30d0c58c5ab813f2f4313e1f4aa38d59e48f3b957fa4a9583c4517c390c425c",
+            "working_matches_head": true
+          },
+          {
+            "path": "csrc/sm70_turbomind/ops/fp8_qpn8_sm70.cu",
+            "upstream_sha256": "4e99691f5bfcbedea69c389ea576d4c43b6b44c8d8cfa991fa720918c3f9569e",
+            "working_matches_head": true
+          },
+          {
+            "path": "csrc/libtorch_stable/quantization/w8a8/cutlass/scaled_mm_entry.cu",
+            "upstream_sha256": "54978d93e017ad72c163ae73aafffe8fe8be543cb9c46e056e7eb7719d8acb15",
+            "working_matches_head": true
+          },
+          {
+            "path": "CMakeLists.txt",
+            "upstream_sha256": "3fb8bbc0e3a9eea985ee0095089da7a95980ddef9051d83961d04fdfa4d3cfb1",
+            "working_matches_head": true
+          },
+          {
+            "path": "vllm/model_executor/layers/quantization/compressed_tensors/compressed_tensors.py",
+            "upstream_sha256": "53201a737b6df3c80545a6ed9dd03c210ab6199bedfdc0af1c2818834ea29359",
+            "working_matches_head": true
+          },
+          {
+            "path": "vllm/model_executor/layers/quantization/compressed_tensors/triton_scaled_mm.py",
+            "upstream_sha256": "4e4414e7a556b902fd9b3bec9140e7eb9c2a086a368c30df1e5dcef964a788af",
+            "working_matches_head": true
+          }
+        ],
+        "upstream_int8_min_capability": 75,
+        "upstream_cuda_int8_candidates": [
+          "CutlassInt8ScaledMMLinearKernel",
+          "TritonInt8ScaledMMLinearKernel"
+        ],
+        "local_fallback_absent_from_head": true
+      }
+    },
+    {
+      "source_path": "/tank/hot/1cat-deploy/repetition-native-20261009/matching-main-build.json",
+      "source_sha256": "7675faf54ab0d2303e6153a5a66f44db9ed6587ef18568e3e76a3cecc431e520",
+      "source_bytes": 6119,
+      "observations": {
+        "source": "/tank/hot/1cat-deploy/repetition-main-20261009-ec5f5b7e",
+        "revision": "ec535b1e69b6d1b2e6e4e75ce5bd24fc7302972a",
+        "compiler": "/usr/local/cuda-12.9/bin/nvcc",
+        "torch": "2.10.0+cu128",
+        "cuda_minor_difference": "CUDA toolkit12.9; PyTorch CUDA12.8; runtime checks still required",
+        "architecture": "7.0",
+        "max_jobs": 2,
+        "nvcc_threads": 1,
+        "elapsed_seconds": 655.4278700351715,
+        "native_artifacts": [
+          {
+            "path": "/tank/hot/1cat-deploy/repetition-main-20261009-ec5f5b7e/vllm/_C.abi3.so",
+            "bytes": 100052928,
+            "sha256": "8502bb20ca8d6a44504eb12df2a13d28f9a56a1f84b5e8ba50454eddbfa3494b"
+          },
+          {
+            "path": "/tank/hot/1cat-deploy/repetition-main-20261009-ec5f5b7e/vllm/_C_gguf.abi3.so",
+            "bytes": 72094448,
+            "sha256": "48bac2a09c8273534ee511b13df31f2668d5301eaee4c30bc9bb0cf9544ff20b"
+          },
+          {
+            "path": "/tank/hot/1cat-deploy/repetition-main-20261009-ec5f5b7e/vllm/_C_stable_libtorch.abi3.so",
+            "bytes": 41211048,
+            "sha256": "8cc47beb15721cf4487353ea915048fb53b7672c559524bcb9f4d8ea10e46559"
+          },
+          {
+            "path": "/tank/hot/1cat-deploy/repetition-main-20261009-ec5f5b7e/vllm/_h3_flashattn_C.cpython-312-x86_64-linux-gnu.so",
+            "bytes": 827088,
+            "sha256": "abc0b6466b618d9cac73874ff63f2ca679eb2288f1eae7a055ef628a1d61bada"
+          },
+          {
+            "path": "/tank/hot/1cat-deploy/repetition-main-20261009-ec5f5b7e/vllm/_h3_flashinfer_C.cpython-312-x86_64-linux-gnu.so",
+            "bytes": 355456,
+            "sha256": "c8c787525ada7172a6eb00e9243b45ff6087dbaed530b84e12e919ec344625ab"
+          },
+          {
+            "path": "/tank/hot/1cat-deploy/repetition-main-20261009-ec5f5b7e/vllm/_h3_w8a16_C.cpython-312-x86_64-linux-gnu.so",
+            "bytes": 406032,
+            "sha256": "35e0956253774f8928c20ccbf99f6dcee2fbd62795c72ae09c7e549d7393592e"
+          },
+          {
+            "path": "/tank/hot/1cat-deploy/repetition-main-20261009-ec5f5b7e/vllm/_moe_C.abi3.so",
+            "bytes": 49984384,
+            "sha256": "2dd969505cfc156661096aad8f6c7d79145b5bc0f376ae88f2aba9b8a94a0163"
+          },
+          {
+            "path": "/tank/hot/1cat-deploy/repetition-main-20261009-ec5f5b7e/vllm/_sm70_exact_reduce_C.cpython-312-x86_64-linux-gnu.so",
+            "bytes": 263240,
+            "sha256": "5c8fb3c25e54817c4860328aea8b4bb49ddcf45df74baaabe89d39726563cbe5"
+          },
+          {
+            "path": "/tank/hot/1cat-deploy/repetition-main-20261009-ec5f5b7e/vllm/_sm70_qsa_device_C.cpython-312-x86_64-linux-gnu.so",
+            "bytes": 350840,
+            "sha256": "3c9ba17260a67484d762b6fd3ca3e40d6e5507f5bc558e7ca9e0755bb3451b34"
+          },
+          {
+            "path": "/tank/hot/1cat-deploy/repetition-main-20261009-ec5f5b7e/vllm/_sm70_qsa_indexer_C.cpython-312-x86_64-linux-gnu.so",
+            "bytes": 521608,
+            "sha256": "e1e78b61802a9234abc5cf8ca1c952b3c28cacef12c1153a965c67867e96a962"
+          },
+          {
+            "path": "/tank/hot/1cat-deploy/repetition-main-20261009-ec5f5b7e/vllm/_sm70_sampler_C.abi3.so",
+            "bytes": 2617272,
+            "sha256": "88c512dae26afe3ddd032aa3fce65f47b45223018797ebb91e1d66678f1f669b"
+          },
+          {
+            "path": "/tank/hot/1cat-deploy/repetition-main-20261009-ec5f5b7e/vllm/_sm70_sparse_attention_C.cpython-312-x86_64-linux-gnu.so",
+            "bytes": 386888,
+            "sha256": "7120dea4dfc23c40e8e6d53c5374f12be04b9685261b19a647b95ef73abb34c0"
+          },
+          {
+            "path": "/tank/hot/1cat-deploy/repetition-main-20261009-ec5f5b7e/vllm/cumem_allocator.abi3.so",
+            "bytes": 27104,
+            "sha256": "5b0af8977ecd7f788c6e51ab64253055fbade02247035be675af229d5f01223b"
+          },
+          {
+            "path": "/tank/hot/1cat-deploy/repetition-main-20261009-ec5f5b7e/vllm/spinloop.abi3.so",
+            "bytes": 16504,
+            "sha256": "bca3a5fe770dc682c639afd259d32302bf42a13ea0e5d45a7a9d5659d579bf8a"
+          },
+          {
+            "path": "/tank/hot/1cat-deploy/repetition-main-20261009-ec5f5b7e/vllm/vllm_flash_attn/_vllm_fa2_C.abi3.so",
+            "bytes": 4715584,
+            "sha256": "ee65c4d88706158e3b244bd90c9a7eb3f97b43b4716c3896fb5c35b8385bcd8c"
+          },
+          {
+            "path": "/tank/hot/1cat-deploy/repetition-main-20261009-ec5f5b7e/flash-attention-v100/flash_attn_v100_cuda.cpython-312-x86_64-linux-gnu.so",
+            "bytes": 28989112,
+            "sha256": "0830cb6984820eead84f9616b75a352e75347b8c3244ccba95a75b9b24ae42b3"
+          },
+          {
+            "path": "/tank/hot/1cat-deploy/repetition-main-20261009-ec5f5b7e/flash-attention-v100/paged_kv_utils.cpython-312-x86_64-linux-gnu.so",
+            "bytes": 233584,
+            "sha256": "a33177fc3bac425db022cfa833336330ac31dba75cf936e236ebfda9f6efd5f8"
+          },
+          {
+            "path": "/tank/hot/1cat-deploy/repetition-main-20261009-ec5f5b7e/flash-attention-v100/flash_attn_v100/flash_attn_v100_cuda.cpython-312-x86_64-linux-gnu.so",
+            "bytes": 28989112,
+            "sha256": "0830cb6984820eead84f9616b75a352e75347b8c3244ccba95a75b9b24ae42b3"
+          },
+          {
+            "path": "/tank/hot/1cat-deploy/repetition-main-20261009-ec5f5b7e/flash-attention-v100/flash_attn_v100/paged_kv_utils.cpython-312-x86_64-linux-gnu.so",
+            "bytes": 233584,
+            "sha256": "a33177fc3bac425db022cfa833336330ac31dba75cf936e236ebfda9f6efd5f8"
+          },
+          {
+            "path": "/tank/hot/1cat-deploy/repetition-main-20261009-ec5f5b7e/flash_qla/ops/gated_delta_rule/chunk/sm70/flash_qla_sm70_gdn_strided.so",
+            "bytes": 6706664,
+            "sha256": "7e9461ccf5298d1b48c217cfb9750c1dd6a1dbd708364c0bff8017d656a3c1a1"
+          }
+        ],
+        "dependencies": {
+          "flash_revision": "c2eda5e6115b98c3ba4bfd181570668742eece22",
+          "flash_cutlass_revision": "62750a2b75c802660e4894434dc55e839f322277",
+          "patches": [
+            {
+              "name": "sm70_flash_attn_d256_pipeline.patch",
+              "sha256": "bbf682c776e8acd3205e7f9b9b79da1ca2e79e7bdb4e034d5d08e17d2ee59529"
+            },
+            {
+              "name": "sm70_flash_attn_d256_splitkv3.patch",
+              "sha256": "85d16e42fd7ba1e348bb0d7642a01e427833f61307b458dc483774aa2e62b9f8"
+            },
+            {
+              "name": "sm70_flash_attn_d256_k_pingpong.patch",
+              "sha256": "ec00f0ebbedc258ea44431c0cd01b8f9316b0dc9f8224034b6416df8d1758b3e"
+            },
+            {
+              "name": "sm70_flash_attn_d256_gqa_arch.patch",
+              "sha256": "0f36dd75374689fe66f8804a5dd5cfe604f3f8e5dd1dd665f1dd745c17fd78d7"
+            }
+          ]
+        },
+        "runtime_admitted": false
+      }
+    },
+    {
+      "source_path": "/tank/hot/1cat-deploy/repetition-native-20261009/native-preflight.json",
+      "source_sha256": "a5e19ec917de3aa3e45f689fb889b5d2e1bfc48bf23decd589712532c995090b",
+      "source_bytes": 1748,
+      "observations": {
+        "source_root": "/tank/hot/1cat-deploy/repetition-main-20261009-ec5f5b7e",
+        "source_revision": "ec535b1e69b6d1b2e6e4e75ce5bd24fc7302972a",
+        "python_package": "/tank/hot/1cat-deploy/repetition-main-20261009-ec5f5b7e/vllm/__init__.py",
+        "torch": "2.10.0+cu128",
+        "native_modules": {
+          "vllm._C": "/tank/hot/1cat-deploy/repetition-main-20261009-ec5f5b7e/vllm/_C.abi3.so",
+          "vllm._moe_C": "/tank/hot/1cat-deploy/repetition-main-20261009-ec5f5b7e/vllm/_moe_C.abi3.so",
+          "vllm._C_stable_libtorch": "/tank/hot/1cat-deploy/repetition-main-20261009-ec5f5b7e/vllm/_C_stable_libtorch.abi3.so",
+          "vllm._sm70_exact_reduce_C": "/tank/hot/1cat-deploy/repetition-main-20261009-ec5f5b7e/vllm/_sm70_exact_reduce_C.cpython-312-x86_64-linux-gnu.so",
+          "vllm._sm70_qsa_device_C": "/tank/hot/1cat-deploy/repetition-main-20261009-ec5f5b7e/vllm/_sm70_qsa_device_C.cpython-312-x86_64-linux-gnu.so",
+          "vllm._sm70_qsa_indexer_C": "/tank/hot/1cat-deploy/repetition-main-20261009-ec5f5b7e/vllm/_sm70_qsa_indexer_C.cpython-312-x86_64-linux-gnu.so",
+          "vllm._sm70_sampler_C": "/tank/hot/1cat-deploy/repetition-main-20261009-ec5f5b7e/vllm/_sm70_sampler_C.abi3.so",
+          "flash_attn_v100_cuda": "/tank/hot/1cat-deploy/repetition-main-20261009-ec5f5b7e/flash-attention-v100/flash_attn_v100_cuda.cpython-312-x86_64-linux-gnu.so",
+          "paged_kv_utils": "/tank/hot/1cat-deploy/repetition-main-20261009-ec5f5b7e/flash-attention-v100/paged_kv_utils.cpython-312-x86_64-linux-gnu.so"
+        },
+        "policy_abi": {
+          "_C": 55,
+          "_moe_C": 55
+        },
+        "policy_fields": 55,
+        "gdn": "/tank/hot/1cat-deploy/repetition-main-20261009-ec5f5b7e/flash_qla/ops/gated_delta_rule/chunk/sm70/flash_qla_sm70_gdn_strided.so",
+        "cpu_abi_admitted": true,
+        "numerical_admitted": false
+      }
+    }
+  ]
+}

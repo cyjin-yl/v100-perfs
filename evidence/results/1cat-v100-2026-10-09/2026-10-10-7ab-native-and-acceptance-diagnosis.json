@@ -1,0 +1,289 @@
+{
+  "kind": "Matching-native startup repairs and public DFlash acceptance localization",
+  "date": "2026-10-10",
+  "tested_source_revision": "7ab8b4477adb4137a1172de0e66c6806e997a49c",
+  "latest_checked_revision": "4e5357b59294edd31c46e66ae8219503a843b2bd",
+  "latest_delta_scope": "18 documentation/tool/CI files; no runtime/native source changes, live7ab runtime frozen",
+  "upstream_transport": "Authenticated doesrouter7893; no router edits",
+  "native_build": {
+    "artifacts": 21,
+    "elapsed_seconds": 8723.27649974823,
+    "architecture": "7.0",
+    "torch": "2.10.0+cu128",
+    "policy_abi": {
+      "_C": 67,
+      "_moe_C": 67
+    },
+    "artifact_hashes_verified": true
+  },
+  "repairs": [
+    {
+      "file": "vllm/model_executor/layers/vocab_parallel_embedding.py",
+      "change": "Capture layer execution policy and trace on real LM-head owners; real CUDA prepare/logits pass.",
+      "patched_source_sha256": "fa38be8ecc351db309ada13971ed55f2bcea9ef8563981f2758d8ffef66d2d4d"
+    },
+    {
+      "file": "vllm/model_executor/models/qwen3_dflash.py",
+      "change": "Use floating operand/params dtype, not packed uint8/float8 weight storage, for context projection.",
+      "patched_source_sha256": "32255a3a2aacebcc3a3b23a4c002424ec5baa38cbf2a8807c01ce3f13e7e7c54"
+    },
+    {
+      "file": "vllm/sm70_profiles/acceleration.py",
+      "change": "Pydantic JSON serialization preserves typed policy/diagnostic filters without frozenset startup failure.",
+      "patched_source_sha256": "228e56deea89d1a6ecc4e72b6159ad083e7c54ed17239eb51f678beb0633ec52"
+    }
+  ],
+  "regressions": {
+    "head_regression": {
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "projection_regression": {
+      "tests": 30,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0
+    },
+    "report_regression_failed": {
+      "tests": 1,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0
+    },
+    "report_regression_fixed": {
+      "tests": 8,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "initial_head_test_fixture_failure_preserved": true,
+  "startup": {
+    "ready": true,
+    "startup_seconds": 396.6657027340261,
+    "host": "127.0.0.1",
+    "port": 8001,
+    "production_port8000_restored": false,
+    "life_resumed": false,
+    "private_log_creation_mode": "0600 after supervisor umask repair; first failed raw log was0664 and was protected, never exported"
+  },
+  "resolved_graph_modes": [
+    {
+      "rank": 0,
+      "scope": "loaded_layer_selection",
+      "compilation_mode": "VLLM_COMPILE",
+      "cudagraph_mode": "FULL_AND_PIECEWISE",
+      "decode_cudagraph_mode": "FULL",
+      "mixed_cudagraph_mode": "PIECEWISE",
+      "captured_full_decode_tokens": [
+        8,
+        16,
+        24,
+        32
+      ]
+    },
+    {
+      "rank": 1,
+      "scope": "loaded_layer_selection",
+      "compilation_mode": "VLLM_COMPILE",
+      "cudagraph_mode": "FULL_AND_PIECEWISE",
+      "decode_cudagraph_mode": "FULL",
+      "mixed_cudagraph_mode": "PIECEWISE",
+      "captured_full_decode_tokens": [
+        8,
+        16,
+        24,
+        32
+      ]
+    }
+  ],
+  "b4_public_diagnostic": {
+    "input_tokens_per_stream": 12288,
+    "actual_outputs": [
+      512,
+      512,
+      512,
+      512
+    ],
+    "all_markers_found": true,
+    "attribution": {
+      "controlled_requests": 4,
+      "success_delta": 4,
+      "no_foreign_traffic_observed": true,
+      "limit": "Counters and polling support attribution; exclusive engine ownership is an operator prerequisite."
+    },
+    "prefix_hits": 0,
+    "preemptions": 0,
+    "allocation_rejections": 0,
+    "max_kv_usage": 0.4054054054054054,
+    "unique_live_cache_gib_per_rank": [
+      11.578125,
+      11.578125
+    ],
+    "initial_prefill_assignments": [
+      {
+        "0": 2048,
+        "1": 2048,
+        "2": 2048,
+        "3": 2048
+      },
+      {
+        "0": 2048,
+        "1": 2048,
+        "2": 2048,
+        "3": 2048
+      },
+      {
+        "0": 2048,
+        "1": 2048,
+        "2": 2048,
+        "3": 2048
+      },
+      {
+        "0": 2048,
+        "1": 2048,
+        "2": 2048,
+        "3": 2048
+      },
+      {
+        "0": 2048,
+        "1": 2048,
+        "2": 2048,
+        "3": 2048
+      },
+      {
+        "0": 2048,
+        "1": 2048,
+        "2": 2048,
+        "3": 2048
+      }
+    ],
+    "initial_progress_divergence_observed": false,
+    "mixed_step_observed": false,
+    "speculative_deltas": {
+      "vllm:spec_decode_num_drafts_total": 2029,
+      "vllm:spec_decode_num_draft_tokens_total": 14203,
+      "vllm:spec_decode_num_accepted_tokens_total": 15
+    },
+    "speculative_acceptance_percent": 0.10561149053016969,
+    "timing_scope": "Profiler/observer perturbed; no throughput ranking",
+    "rank0_cpu_events_dropped": 125
+  },
+  "b1_matched_control": {
+    "same_first_request_input_ids": true,
+    "input_ids_unchanged": true,
+    "cache_salts_regenerated": true,
+    "counter_deltas": {
+      "vllm:spec_decode_num_drafts_total": 509,
+      "vllm:spec_decode_num_draft_tokens_total": 3563,
+      "vllm:spec_decode_num_accepted_tokens_total": 2
+    },
+    "acceptance_percent": 0.05613247263541959,
+    "metric_deltas": {
+      "success": 1,
+      "preemptions": 0,
+      "corrupted": null,
+      "prompt_count": 1,
+      "prompt_sum": 12288,
+      "generation_count": 1,
+      "generation_sum": 512,
+      "cache_queries": 12288,
+      "cache_hits": 0
+    },
+    "attribution": {
+      "controlled_requests": 1,
+      "success_delta": 1,
+      "no_foreign_traffic_observed": true,
+      "limit": "Counters and polling support attribution; exclusive engine ownership is an operator prerequisite."
+    }
+  },
+  "conclusions": [
+    "21 matching native artifacts and real startup are now admitted; these repairs are not a proof of original severe-repetition repair.",
+    "The public4x12288+512 point completed with equal prefill, four real outputs, no allocation rejection/cache hits/preemption; no KV ceiling or long-window maximum follows.",
+    "Exact controlled deltas show14203/15 drafted/accepted at B4 and3563/2 at matched B1. Near-zero acceptance is observed in both, not only concurrent scheduling.",
+    "Inspect actual target/draft alignment and same-live-state numerics; no root-cause or deployment winner is yet claimed.",
+    "Older fixture revision rejection sent zero requests. Its original diagnostic_collected=true is superseded by a separate empty-cohort correction; old evidence preserved."
+  ],
+  "quality_admitted": false,
+  "original_private_failure_replayed": false,
+  "private_requests_or_outputs_exported": false,
+  "source_artifacts": {
+    "build": {
+      "path": "/tank/hot/1cat-deploy/repetition-native-20261009/matching-main-build-7ab8b447.json",
+      "bytes": 7284,
+      "sha256": "1234aa3c0a0fa31cde0b2404fb6c1f4ba15f42f8ee235d66f3b99cd187970aa3"
+    },
+    "abi": {
+      "path": "/tank/hot/1cat-deploy/repetition-native-20261009/native-preflight-7ab8b447.json",
+      "bytes": 2192,
+      "sha256": "f2a86321f21c89fa93c931311326ffad143d37524f2f6011c5d45df06a276012"
+    },
+    "startup_failed": {
+      "path": "/tank/hot/1cat-deploy/repetition-native-20261009/launch-verification/main7ab-w4-fp8-fair2048-diag.json",
+      "bytes": 517,
+      "sha256": "6c85c943234241fdd8cd78b9241245f3285a94d71fbe772347687dd6bc3ade90"
+    },
+    "startup_fixed": {
+      "path": "/tank/hot/1cat-deploy/repetition-native-20261009/launch-verification/main7ab-w4-fp8-fair2048-diag-jsonfix.json",
+      "bytes": 384,
+      "sha256": "59ec61bfe9409b9a07c15dd2de238bf48f1f7277ddb867216f2f127f16cda153"
+    },
+    "policy": {
+      "path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-policy/main7ab-w4-fp8-diag-jsonfix/report.json",
+      "bytes": 2351,
+      "sha256": "68e8c6905b2f9fdee5fc04c20efab40b629f9af597093e2ba87d8c80b153a555"
+    },
+    "b4": {
+      "path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-independent/main7ab-w4-fp8-4x12288-diag-fresh/report.json",
+      "bytes": 76099,
+      "sha256": "7e27790bda23167fc7741b5b8770e02dbd004402edfe256767adf80c42fc8a78"
+    },
+    "analysis": {
+      "path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-diagnostic/main7ab-w4-fp8-4x12288-diag-fresh/analysis.json",
+      "bytes": 18605,
+      "sha256": "022877f05bf6721729f470a42656ba3988c11d15a2d202600803330b3f9548a0"
+    },
+    "b4_counters": {
+      "path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-diagnostic/main7ab-w4-fp8-4x12288-diag-fresh/speculative-counter-deltas.json",
+      "bytes": 900,
+      "sha256": "5ffb852d841ae92c8480fcd1eab7593c689a31dbd72d8b2f8fee4f3f355cfcd3"
+    },
+    "b1": {
+      "path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-independent/main7ab-w4-fp8-1x12288-matched-control/acceptance-control.json",
+      "bytes": 1960,
+      "sha256": "5ad17453d618f189f6a48d030271da285a60074269a687470675199c8a847cb0"
+    },
+    "upstream": {
+      "path": "/tank/hot/1cat-deploy/repetition-native-20261009/upstream-delta-4e5357b5/receipt.json",
+      "bytes": 2854,
+      "sha256": "f3d05aa87fbc231feb82e3f0ca2d2d99d9dd36f0873e03f097d88835f54c2725"
+    },
+    "head_regression": {
+      "path": "/tank/hot/1cat-deploy/repetition-native-20261009/regression-real-tp-head-7ab8b447.xml",
+      "bytes": 355,
+      "sha256": "3bb0ff4d6322cdf6eb5333d23cc78c0c353efa8adc925e80baca395f3f1e1006"
+    },
+    "projection_regression": {
+      "path": "/tank/hot/1cat-deploy/repetition-native-20261009/regression-7ab8b447.xml",
+      "bytes": 7120,
+      "sha256": "0e0a91b9b99d66fb3ea62f72c65e8a8072966543c6e6390552f8eca9080ea734"
+    },
+    "report_regression_failed": {
+      "path": "/tank/hot/1cat-deploy/repetition-native-20261009/report-serialization-reproduced-7ab8b447.xml",
+      "bytes": 1627,
+      "sha256": "cb5c00b31f82502ec1a4aabf1276249adbd7fe08f7b96338e50630cbf615db49"
+    },
+    "report_regression_fixed": {
+      "path": "/tank/hot/1cat-deploy/repetition-native-20261009/report-serialization-fixed-7ab8b447.xml",
+      "bytes": 1332,
+      "sha256": "9d2e0406fcd555a5824c3d53353acdf8d498a3589a79edaf9635523183b10e62"
+    },
+    "empty_collection_correction": {
+      "path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-diagnostic/main7ab-w4-fp8-4x12288-diag-jsonfix/collection-outcome-correction.json",
+      "bytes": 907,
+      "sha256": "bf79da8defe8445d5dbf3a4a96565d5d4c87772b73f557c09e8d0f26b857fc1b"
+    }
+  }
+}

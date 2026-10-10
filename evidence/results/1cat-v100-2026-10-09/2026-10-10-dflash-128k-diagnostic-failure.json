@@ -1,0 +1,578 @@
+{
+  "kind": "Closed repaired7ab public four-window diagnostic: complete outputs, failed common-decode gate, no allocation rejection",
+  "date": "2026-10-10",
+  "tested_source_revision": "7ab8b4477adb4137a1172de0e66c6806e997a49c",
+  "source_files_sha256": {
+    "vllm/model_executor/layers/vocab_parallel_embedding.py": "fa38be8ecc351db309ada13971ed55f2bcea9ef8563981f2758d8ffef66d2d4d",
+    "vllm/model_executor/models/qwen3_dflash.py": "3b24b5c6f68283076593a32d5d945c011217ea28072072faa73cca34f481aa5e",
+    "vllm/sm70_profiles/acceleration.py": "228e56deea89d1a6ecc4e72b6159ad083e7c54ed17239eb51f678beb0633ec52"
+  },
+  "launch_tag": "main7ab-w4-fp8-fair2048-diag-quantfix",
+  "preceded_by_public_12k_cohort": true,
+  "inherited_mixed_budget_initial_tokens": 144,
+  "scope": "Observer-perturbed allocation/scheduling diagnosis at130560 input+512 actual output; not clean performance, maximum-capacity or private-quality admission",
+  "configuration": [
+    {
+      "event": "configuration",
+      "scheduler": "DiagnosticAsyncScheduler",
+      "async_scheduling": true,
+      "target_budget": 8192,
+      "max_num_seqs": 4,
+      "long_prefill_threshold": 2048,
+      "mixed_latency_ms": 250,
+      "mixed_min_tokens": 0,
+      "mamba_block_size": 8192,
+      "mamba_retention_interval": 0,
+      "mamba_dense_on_contention": true,
+      "lookahead_tokens": 8,
+      "reserve_full_input": true,
+      "scope": "bounded scalar diagnostic; timing is perturbed; no tokens/text/request IDs",
+      "monotonic_ns": 770467391113675
+    }
+  ],
+  "input_fixture": {
+    "source_revision": "7ab8b4477adb4137a1172de0e66c6806e997a49c",
+    "partitions": [
+      {
+        "index": 0,
+        "prompt_tokens": 130560,
+        "prompt_ids_sha256": "056a5d20383351e730d7a486518b29d8a7215d841c9f05c38b8697b75ec15e58",
+        "marker_sha256": "6acfcab6897b4910613ccf8c1a1084a8384c9512e5d2746b6511a16705f767f9",
+        "used_manifest_sha256": "93b06f731dfc631358314386efbde5c8a17520033c3e5b55bce666ae59461d71"
+      },
+      {
+        "index": 1,
+        "prompt_tokens": 130560,
+        "prompt_ids_sha256": "4826017cb2a7bef0d965262a0d4a4b50f52dfff4b81d42afd6e7ddeb7566308a",
+        "marker_sha256": "770cfa5595f717b0ca8e6739c8a9eaf851872d28c18b0f5f19123979694efcab",
+        "used_manifest_sha256": "980d1822d325d688865eacc6a228ddc74334d9e5a1afecec2d4806f61a79270c"
+      },
+      {
+        "index": 2,
+        "prompt_tokens": 130560,
+        "prompt_ids_sha256": "06df1fb36a145cf85594af4e53e49fd36431d33c18ff8c742a2c51bdaba755b5",
+        "marker_sha256": "e65381bf9882a2e6ac23aba011998475762afcedebed25a52cdca7ce98cfad05",
+        "used_manifest_sha256": "462574e4d08a1880e3be1bce65e66108b80f35e30adf782545cf545764289a8c"
+      },
+      {
+        "index": 3,
+        "prompt_tokens": 130560,
+        "prompt_ids_sha256": "ee9cc31e1fdc1793e3bcc65067fac7d87b2fb51bb892cce8f436048e1efb1554",
+        "marker_sha256": "3c3b6de5b44fd6dd1e15bb5e1e18388e8b5d7f6b40b76f2fd81c681b41331d83",
+        "used_manifest_sha256": "839bcbbc0f6a2f1ac1b3dba99eaeb465c4fd32bb3a8e2738ae9826e1c91e8a7c"
+      }
+    ],
+    "pairwise_common_prefix_tokens": [
+      {
+        "left": 0,
+        "right": 1,
+        "tokens": 3
+      },
+      {
+        "left": 0,
+        "right": 2,
+        "tokens": 3
+      },
+      {
+        "left": 0,
+        "right": 3,
+        "tokens": 3
+      },
+      {
+        "left": 1,
+        "right": 2,
+        "tokens": 3
+      },
+      {
+        "left": 1,
+        "right": 3,
+        "tokens": 3
+      },
+      {
+        "left": 2,
+        "right": 3,
+        "tokens": 3
+      }
+    ],
+    "prefix_cache_hits": 0,
+    "private_bodies_exported": false
+  },
+  "result": {
+    "run_passed": false,
+    "capacity_pass": false,
+    "failures": [
+      "all_requested_streams_running_not_observed_during_decode",
+      "sustained_decode_observation_insufficient"
+    ],
+    "actual_input_tokens_per_request": [
+      130560,
+      130560,
+      130560,
+      130560
+    ],
+    "actual_output_tokens_per_request": [
+      512,
+      512,
+      512,
+      512
+    ],
+    "all_requests_complete": true,
+    "all_markers_found": true,
+    "metric_deltas": {
+      "success": 4,
+      "preemptions": 0,
+      "corrupted": null,
+      "prompt_count": 4,
+      "prompt_sum": 522240,
+      "generation_count": 4,
+      "generation_sum": 2048,
+      "cache_queries": 522240,
+      "cache_hits": 0
+    },
+    "max_running": 4,
+    "max_kv_usage_fraction": 0.975609756097561,
+    "max_gpu_used_mib": {
+      "0": 30788,
+      "1": 30788
+    },
+    "queue_observation": {
+      "poll_interval_s": 1,
+      "common_decode_window_monotonic_s": [
+        772842.987841502,
+        772671.5315224
+      ],
+      "common_decode_samples": 0,
+      "max_sample_gap_s": null,
+      "all_requested_streams_running_during_decode": false,
+      "all_four_running_observed": false,
+      "max_waiting_before_first_output": 0,
+      "max_waiting_after_first_output": 0,
+      "max_waiting_common_decode": 0,
+      "longest_observed_queue_span_common_decode_s": 0,
+      "sustained_queue_common_decode": false,
+      "sustained_definition": "positive waiting on consecutive polls spanning >=0.8 seconds inside common decode",
+      "admission_waiting_is_not_sustained_decode_queueing": true
+    },
+    "first_to_last_output_intervals": [
+      {
+        "index": 0,
+        "first_output_monotonic_s": 772554.837788621,
+        "last_output_monotonic_s": 772671.5315224
+      },
+      {
+        "index": 1,
+        "first_output_monotonic_s": 772685.145489263,
+        "last_output_monotonic_s": 772827.173613333
+      },
+      {
+        "index": 2,
+        "first_output_monotonic_s": 772758.195529393,
+        "last_output_monotonic_s": 772848.253256504
+      },
+      {
+        "index": 3,
+        "first_output_monotonic_s": 772842.987841502,
+        "last_output_monotonic_s": 772855.021794896
+      }
+    ]
+  },
+  "speculation": {
+    "drafts": 710,
+    "draft_tokens": 4970,
+    "accepted_tokens": 1343,
+    "acceptance_percent": 27.022132796780685,
+    "receipt": {
+      "path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-diagnostic/main7ab-w4-fp8-4x130560-diag-quantfix/speculative-counter-deltas.json",
+      "bytes": 891,
+      "sha256": "15cc83797a3ee749156eba8a19340429460208fb6dbfd4c372e00e9c2bcfbdb3"
+    }
+  },
+  "scheduler_observation": {
+    "schedule_events": 627,
+    "bounded_trace_truncated": false,
+    "allocation_rejections": 0,
+    "initial_arrival_offsets_ms": [
+      {
+        "ordinal": 4,
+        "offset_ms": 0
+      },
+      {
+        "ordinal": 5,
+        "offset_ms": 10.114
+      },
+      {
+        "ordinal": 6,
+        "offset_ms": 5754.406
+      },
+      {
+        "ordinal": 7,
+        "offset_ms": 5754.62
+      }
+    ],
+    "first_mixed_schedule": {
+      "step": 251,
+      "t_from_first_arrival_ms": 458604.537,
+      "scheduled": {
+        "4": 8,
+        "5": 144
+      },
+      "computed_before": {
+        "4": 130568,
+        "5": 124928,
+        "6": 122880,
+        "7": 122880
+      },
+      "output_before": {
+        "4": 1,
+        "5": 0,
+        "6": 0,
+        "7": 0
+      },
+      "after_ordinals": [
+        4,
+        5,
+        6,
+        7
+      ],
+      "waiting": 0,
+      "prefill": 144,
+      "decode": 8,
+      "budget": 144,
+      "kv_usage": 0.9701897018970189,
+      "allocation_admitted": true
+    },
+    "first_observed_output_by_global_ordinal": {
+      "4": {
+        "step": 251,
+        "t_ms": 458604.537,
+        "computed": 130568,
+        "output": 1
+      },
+      "5": {
+        "step": 416,
+        "t_ms": 588925.53,
+        "computed": 130568,
+        "output": 1
+      },
+      "6": {
+        "step": 513,
+        "t_ms": 661973.033,
+        "computed": 130568,
+        "output": 1
+      },
+      "7": {
+        "step": 609,
+        "t_ms": 746763.986,
+        "computed": 130568,
+        "output": 1
+      }
+    },
+    "mixed_budget_range": [
+      16,
+      144
+    ],
+    "initial_mixed_feedback": [
+      {
+        "event": "mixed_timing",
+        "step": 254,
+        "prefill_tokens": 144,
+        "decode_tokens": 8,
+        "budget_tokens": 144,
+        "elapsed_ms": 586.6076049804688,
+        "budget_before": 144,
+        "budget_after": 80,
+        "monotonic_ns": 772563629259379
+      },
+      {
+        "event": "mixed_timing",
+        "step": 255,
+        "prefill_tokens": 144,
+        "decode_tokens": 8,
+        "budget_tokens": 144,
+        "elapsed_ms": 475.4759826660156,
+        "budget_before": 80,
+        "budget_after": 80,
+        "monotonic_ns": 772564104728027
+      },
+      {
+        "event": "mixed_timing",
+        "step": 256,
+        "prefill_tokens": 144,
+        "decode_tokens": 8,
+        "budget_tokens": 144,
+        "elapsed_ms": 474.8871765136719,
+        "budget_before": 80,
+        "budget_after": 64,
+        "monotonic_ns": 772564857030059
+      },
+      {
+        "event": "mixed_timing",
+        "step": 257,
+        "prefill_tokens": 80,
+        "decode_tokens": 8,
+        "budget_tokens": 80,
+        "elapsed_ms": 751.425537109375,
+        "budget_before": 64,
+        "budget_after": 32,
+        "monotonic_ns": 772565280310290
+      },
+      {
+        "event": "mixed_timing",
+        "step": 258,
+        "prefill_tokens": 80,
+        "decode_tokens": 8,
+        "budget_tokens": 80,
+        "elapsed_ms": 422.52288818359375,
+        "budget_before": 32,
+        "budget_after": 32,
+        "monotonic_ns": 772565820810367
+      },
+      {
+        "event": "mixed_timing",
+        "step": 259,
+        "prefill_tokens": 64,
+        "decode_tokens": 8,
+        "budget_tokens": 64,
+        "elapsed_ms": 540.0617065429688,
+        "budget_before": 32,
+        "budget_after": 32,
+        "monotonic_ns": 772566694075830
+      },
+      {
+        "event": "mixed_timing",
+        "step": 260,
+        "prefill_tokens": 32,
+        "decode_tokens": 8,
+        "budget_tokens": 32,
+        "elapsed_ms": 872.8616943359375,
+        "budget_before": 32,
+        "budget_after": 16,
+        "monotonic_ns": 772567083638695
+      },
+      {
+        "event": "mixed_timing",
+        "step": 261,
+        "prefill_tokens": 32,
+        "decode_tokens": 8,
+        "budget_tokens": 32,
+        "elapsed_ms": 388.86297607421875,
+        "budget_before": 16,
+        "budget_after": 16,
+        "monotonic_ns": 772567473314386
+      }
+    ],
+    "interpretation": "The captured global mixed-prefill budget shrinks to16 and is consumed FCFS. Later incomplete prefills receive no tokens in those steps. Output windows do not overlap. A clean control is required before attributing this to unprofiled behavior; zero allocator rejection does not establish four full-window capacity."
+  },
+  "physical_cache": [
+    {
+      "rank": 0,
+      "configured_cache_tensor_bytes": 12398362624,
+      "unique_live_cache_storage_bytes": 12398362624,
+      "unique_live_cache_storage_gib": 11.546875,
+      "cache_tensor_views": 117,
+      "unique_storages": 8,
+      "configured_blocks": 739,
+      "cache_groups": [
+        {
+          "spec": "MambaSpec",
+          "block_size": 8192,
+          "page_bytes": 2097152,
+          "layers": 8
+        },
+        {
+          "spec": "MambaSpec",
+          "block_size": 8192,
+          "page_bytes": 2097152,
+          "layers": 8
+        },
+        {
+          "spec": "MambaSpec",
+          "block_size": 8192,
+          "page_bytes": 2097152,
+          "layers": 8
+        },
+        {
+          "spec": "MambaSpec",
+          "block_size": 8192,
+          "page_bytes": 2097152,
+          "layers": 8
+        },
+        {
+          "spec": "MambaSpec",
+          "block_size": 8192,
+          "page_bytes": 2097152,
+          "layers": 8
+        },
+        {
+          "spec": "MambaSpec",
+          "block_size": 8192,
+          "page_bytes": 2097152,
+          "layers": 8
+        },
+        {
+          "spec": "FullAttentionSpec",
+          "block_size": 2048,
+          "page_bytes": 2097152,
+          "layers": 8
+        },
+        {
+          "spec": "FullAttentionSpec",
+          "block_size": 2048,
+          "page_bytes": 2097152,
+          "layers": 8
+        },
+        {
+          "spec": "SlidingWindowSpec",
+          "block_size": 1024,
+          "page_bytes": 2097152,
+          "layers": 5
+        }
+      ],
+      "scope": "Unique live CUDA cache storages by rank; not log-equivalent tokens or total device memory"
+    },
+    {
+      "rank": 1,
+      "configured_cache_tensor_bytes": 12398362624,
+      "unique_live_cache_storage_bytes": 12398362624,
+      "unique_live_cache_storage_gib": 11.546875,
+      "cache_tensor_views": 117,
+      "unique_storages": 8,
+      "configured_blocks": 739,
+      "cache_groups": [
+        {
+          "spec": "MambaSpec",
+          "block_size": 8192,
+          "page_bytes": 2097152,
+          "layers": 8
+        },
+        {
+          "spec": "MambaSpec",
+          "block_size": 8192,
+          "page_bytes": 2097152,
+          "layers": 8
+        },
+        {
+          "spec": "MambaSpec",
+          "block_size": 8192,
+          "page_bytes": 2097152,
+          "layers": 8
+        },
+        {
+          "spec": "MambaSpec",
+          "block_size": 8192,
+          "page_bytes": 2097152,
+          "layers": 8
+        },
+        {
+          "spec": "MambaSpec",
+          "block_size": 8192,
+          "page_bytes": 2097152,
+          "layers": 8
+        },
+        {
+          "spec": "MambaSpec",
+          "block_size": 8192,
+          "page_bytes": 2097152,
+          "layers": 8
+        },
+        {
+          "spec": "FullAttentionSpec",
+          "block_size": 2048,
+          "page_bytes": 2097152,
+          "layers": 8
+        },
+        {
+          "spec": "FullAttentionSpec",
+          "block_size": 2048,
+          "page_bytes": 2097152,
+          "layers": 8
+        },
+        {
+          "spec": "SlidingWindowSpec",
+          "block_size": 1024,
+          "page_bytes": 2097152,
+          "layers": 5
+        }
+      ],
+      "scope": "Unique live CUDA cache storages by rank; not log-equivalent tokens or total device memory"
+    }
+  ],
+  "observer": [
+    {
+      "rank": 0,
+      "dropped": 2399,
+      "cpu_events": 16384,
+      "gpu_events": 2712,
+      "gpu_event_scope": "current-stream envelopes; nested spans overlap"
+    },
+    {
+      "rank": 1,
+      "dropped": 520,
+      "cpu_events": 16384,
+      "gpu_events": 2712,
+      "gpu_event_scope": "current-stream envelopes; nested spans overlap"
+    }
+  ],
+  "limits": {
+    "observer_perturbed": true,
+    "performance_ranking_admitted": false,
+    "maximum_capacity_established": false,
+    "independent_four_full_windows_admitted": false,
+    "numerical_quality_admitted": false,
+    "semantic_quality_admitted": false,
+    "original_private_failure_replayed": false,
+    "original_private_failure_closed": false,
+    "production_8000_resumed": false,
+    "life_resumed": false
+  },
+  "upstream_check": {
+    "checked_at": "2026-10-10T08:50:45.148516+00:00",
+    "after_experiment": "diagnostic-main7ab-4x130560-quantfix",
+    "tested_revision": "7ab8b4477adb4137a1172de0e66c6806e997a49c",
+    "remote": "https://github.com/1CatAI/1Cat-vLLM.git",
+    "ref": "refs/heads/main",
+    "transport_proxy": "http://10.20.0.1:7893",
+    "upstream_revision": "16628e2f0a70761ba6525bf46e5e844c04b3e66f",
+    "update_available": true,
+    "worktree_changed": false,
+    "checked": true,
+    "proxy_authentication": "router_runtime_in_memory",
+    "exit_code": 0
+  },
+  "source_artifacts": [
+    {
+      "path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-independent/main7ab-w4-fp8-4x130560-diag-quantfix/report.json",
+      "bytes": 607064,
+      "sha256": "fd44dfd453a989cd542e8588f4cc9c20c49ee9f7a58d78cb348cf23f42adb977"
+    },
+    {
+      "path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-diagnostic/main7ab-w4-fp8-4x130560-diag-quantfix/report.json",
+      "bytes": 73771,
+      "sha256": "c4e04fa3a117b4127c466cd3de4fd34db6acedd398a5d8affdc19f20503dd6e8"
+    },
+    {
+      "path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-diagnostic/main7ab-w4-fp8-4x130560-diag-quantfix/analysis.json",
+      "bytes": 24947,
+      "sha256": "b1546df93afd76c91c8555226b0fac19a569af58cd862043043003c551af65b6"
+    },
+    {
+      "path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-diagnostic/main7ab-w4-fp8-4x130560-diag-quantfix/speculative-counter-deltas.json",
+      "bytes": 891,
+      "sha256": "15cc83797a3ee749156eba8a19340429460208fb6dbfd4c372e00e9c2bcfbdb3"
+    },
+    {
+      "path": "/tank/hot/1cat-deploy/repetition-native-20261009/upstream-checks/diagnostic-main7ab-4x130560-quantfix.json",
+      "bytes": 526,
+      "sha256": "65b6231a90eb572a635534f4c8c520129deed4e2ee4bf378858489682ff0b58b"
+    }
+  ],
+  "next_control": {
+    "tag": "main7ab-w4-fp8-4x130560-clean-quantfix",
+    "identical_input_ids_required": true,
+    "new_cache_salts": true,
+    "fresh_controller_seed_tokens": 512,
+    "observer_and_periodic_profiling_disabled": true,
+    "outcome_not_asserted": true,
+    "not_single_variable_warm_state_ablation": true
+  }
+}

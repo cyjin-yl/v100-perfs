@@ -1,0 +1,535 @@
+{
+  "kind": "c73 build admission and startup regression evidence",
+  "tested_source_revision": "c73eb2d1d1009e1ab8b980f9c1dea265ba877015",
+  "build": {
+    "source_path": "/tank/hot/1cat-deploy/repetition-native-20261009/matching-main-build-c73eb2d1.json",
+    "source_bytes": 6650,
+    "source_sha256": "966d1cfb725c60c233189fcc0d44fed8658457fa5dc64463db52cf8af1f74391",
+    "observations": {
+      "source": "/tank/hot/1cat-deploy/repetition-main-20261009-c73eb2d1",
+      "revision": "c73eb2d1d1009e1ab8b980f9c1dea265ba877015",
+      "compiler": "/usr/local/cuda-12.9/bin/nvcc",
+      "torch": "2.10.0+cu128",
+      "cuda_minor_difference": "CUDA toolkit12.9; PyTorch CUDA12.8; runtime checks still required",
+      "architecture": "7.0",
+      "max_jobs": 2,
+      "nvcc_threads": 1,
+      "elapsed_seconds": 8286.139809131622,
+      "native_artifacts": [
+        {
+          "path": "/tank/hot/1cat-deploy/repetition-main-20261009-c73eb2d1/vllm/_C.abi3.so",
+          "bytes": 100067800,
+          "sha256": "805956b29a49f18dedd1c59d962cc6cd963880354f23fe3e39896868db55cd10"
+        },
+        {
+          "path": "/tank/hot/1cat-deploy/repetition-main-20261009-c73eb2d1/vllm/_C_gguf.abi3.so",
+          "bytes": 72094448,
+          "sha256": "aa2592312d45f6194737ffc7e5e9c07e8598b4ba74bc1610a29555031348500a"
+        },
+        {
+          "path": "/tank/hot/1cat-deploy/repetition-main-20261009-c73eb2d1/vllm/_C_stable_libtorch.abi3.so",
+          "bytes": 41211048,
+          "sha256": "017a7d611b55a18f301196dbbd88b9b7fe9a47a9b4a8751b5e71ae7fba4caec1"
+        },
+        {
+          "path": "/tank/hot/1cat-deploy/repetition-main-20261009-c73eb2d1/vllm/_h3_flashattn_C.cpython-312-x86_64-linux-gnu.so",
+          "bytes": 827088,
+          "sha256": "139ae2bb0e3375af2d00524f7128c3ea627ae5e827b8126f61d0a4400c396c99"
+        },
+        {
+          "path": "/tank/hot/1cat-deploy/repetition-main-20261009-c73eb2d1/vllm/_h3_flashinfer_C.cpython-312-x86_64-linux-gnu.so",
+          "bytes": 355456,
+          "sha256": "e18977eed0abcbd796efb796556312a9a22dc309402ffb3705decc97b76f6957"
+        },
+        {
+          "path": "/tank/hot/1cat-deploy/repetition-main-20261009-c73eb2d1/vllm/_h3_w8a16_C.cpython-312-x86_64-linux-gnu.so",
+          "bytes": 406032,
+          "sha256": "5e2a52b0f4d4e1693a22c3ca01afcff64e49783d022eca719d5a0b5e3f426d8c"
+        },
+        {
+          "path": "/tank/hot/1cat-deploy/repetition-main-20261009-c73eb2d1/vllm/_moe_C.abi3.so",
+          "bytes": 49984384,
+          "sha256": "9bf99ab5bf608b62c23ca23eb68973f210f479144c75dd5949c57ecc2160a239"
+        },
+        {
+          "path": "/tank/hot/1cat-deploy/repetition-main-20261009-c73eb2d1/vllm/_sm70_exact_reduce_C.cpython-312-x86_64-linux-gnu.so",
+          "bytes": 263240,
+          "sha256": "52cc3d8b0bf738b922f59530c709c81fcfa69bf88ddcd249c823e289921ffb0b"
+        },
+        {
+          "path": "/tank/hot/1cat-deploy/repetition-main-20261009-c73eb2d1/vllm/_sm70_qsa_device_C.cpython-312-x86_64-linux-gnu.so",
+          "bytes": 350840,
+          "sha256": "b77bc8fa457579b61a8c865d2301da3c5d31a4ceb7a4b8129a727b8300631193"
+        },
+        {
+          "path": "/tank/hot/1cat-deploy/repetition-main-20261009-c73eb2d1/vllm/_sm70_qsa_indexer_C.cpython-312-x86_64-linux-gnu.so",
+          "bytes": 521608,
+          "sha256": "ed7c2bf556675ab3a8c05973526ef93d167ffec5e2d331c1ffe70aecb4763427"
+        },
+        {
+          "path": "/tank/hot/1cat-deploy/repetition-main-20261009-c73eb2d1/vllm/_sm70_sampler_C.abi3.so",
+          "bytes": 2617272,
+          "sha256": "3dfd45094b002ac2cfeefe7f2e81d8ebca8e4bb77b1423a3cb573771aa8d4e13"
+        },
+        {
+          "path": "/tank/hot/1cat-deploy/repetition-main-20261009-c73eb2d1/vllm/_sm70_sparse_attention_C.cpython-312-x86_64-linux-gnu.so",
+          "bytes": 386888,
+          "sha256": "d7ca434e09713342c6a4011d4e1c8f955e2edb8590a96a81a4ca80a23710c452"
+        },
+        {
+          "path": "/tank/hot/1cat-deploy/repetition-main-20261009-c73eb2d1/vllm/cumem_allocator.abi3.so",
+          "bytes": 27104,
+          "sha256": "82e4f99efceafc31dacc9541814cabe6c074147f35c9f9e2e0866f36bc2270e5"
+        },
+        {
+          "path": "/tank/hot/1cat-deploy/repetition-main-20261009-c73eb2d1/vllm/spinloop.abi3.so",
+          "bytes": 16504,
+          "sha256": "bca3a5fe770dc682c639afd259d32302bf42a13ea0e5d45a7a9d5659d579bf8a"
+        },
+        {
+          "path": "/tank/hot/1cat-deploy/repetition-main-20261009-c73eb2d1/vllm/vllm_flash_attn/_vllm_fa2_C.abi3.so",
+          "bytes": 4715584,
+          "sha256": "7d8f8105f1276e77e9ee14c10bf18db8c729386f6a472a4a6bfe4a21bffdf875"
+        },
+        {
+          "path": "/tank/hot/1cat-deploy/repetition-main-20261009-c73eb2d1/flash-attention-v100/flash_attn_v100_cuda.cpython-312-x86_64-linux-gnu.so",
+          "bytes": 28989112,
+          "sha256": "c10148377bb436f4deeaf7d59ca4882a75bf4dc8051616d2b8c5630011c65361"
+        },
+        {
+          "path": "/tank/hot/1cat-deploy/repetition-main-20261009-c73eb2d1/flash-attention-v100/paged_kv_utils.cpython-312-x86_64-linux-gnu.so",
+          "bytes": 233584,
+          "sha256": "bcae99c660f0abd4cdd56a8c087c03c5fb4824ece714091f7435ee247a5bdcc0"
+        },
+        {
+          "path": "/tank/hot/1cat-deploy/repetition-main-20261009-c73eb2d1/flash-attention-v100/flash_attn_v100/flash_attn_v100_cuda.cpython-312-x86_64-linux-gnu.so",
+          "bytes": 28989112,
+          "sha256": "c10148377bb436f4deeaf7d59ca4882a75bf4dc8051616d2b8c5630011c65361"
+        },
+        {
+          "path": "/tank/hot/1cat-deploy/repetition-main-20261009-c73eb2d1/flash-attention-v100/flash_attn_v100/paged_kv_utils.cpython-312-x86_64-linux-gnu.so",
+          "bytes": 233584,
+          "sha256": "bcae99c660f0abd4cdd56a8c087c03c5fb4824ece714091f7435ee247a5bdcc0"
+        },
+        {
+          "path": "/tank/hot/1cat-deploy/repetition-main-20261009-c73eb2d1/flash_qla/ops/gated_delta_rule/chunk/sm70/flash_qla_sm70_gdn_strided.so",
+          "bytes": 6706664,
+          "sha256": "38cb219567dadb6b0180ec533248a20c964b745bb82da567d3f9af1339d6bd2c"
+        }
+      ],
+      "dependencies": {
+        "flash_revision": "c2eda5e6115b98c3ba4bfd181570668742eece22",
+        "flash_cutlass_revision": "62750a2b75c802660e4894434dc55e839f322277",
+        "patches": [
+          {
+            "name": "sm70_flash_attn_d256_pipeline.patch",
+            "sha256": "bbf682c776e8acd3205e7f9b9b79da1ca2e79e7bdb4e034d5d08e17d2ee59529"
+          },
+          {
+            "name": "sm70_flash_attn_d256_splitkv3.patch",
+            "sha256": "85d16e42fd7ba1e348bb0d7642a01e427833f61307b458dc483774aa2e62b9f8"
+          },
+          {
+            "name": "sm70_flash_attn_d256_k_pingpong.patch",
+            "sha256": "ec00f0ebbedc258ea44431c0cd01b8f9316b0dc9f8224034b6416df8d1758b3e"
+          },
+          {
+            "name": "sm70_flash_attn_d256_gqa_arch.patch",
+            "sha256": "0f36dd75374689fe66f8804a5dd5cfe604f3f8e5dd1dd665f1dd745c17fd78d7"
+          }
+        ]
+      },
+      "runtime_admitted": false,
+      "elapsed_seconds_scope": "This invocation only; same-revision intermediate build outputs may be reused.",
+      "prior_executor_timeout": {
+        "reason": "local 2400s executor timeout left only orphan native compiler descendants",
+        "original_executor_timeout_seconds": 2400,
+        "source_revision": "c73eb2d1d1009e1ab8b980f9c1dea265ba877015",
+        "term_signaled_verified_pids": [],
+        "survivors": [],
+        "killed_with_sigkill": false,
+        "same_revision_intermediate_outputs_preserved": true,
+        "inference_started": false
+      }
+    }
+  },
+  "native_preflight": {
+    "source_path": "/tank/hot/1cat-deploy/repetition-native-20261009/native-preflight-c73eb2d1.json",
+    "source_bytes": 1748,
+    "source_sha256": "4a4d7c2feb9a59f44d083fe1591867a0c3e1c9152547220fec318edabe23be1c",
+    "observations": {
+      "source_root": "/tank/hot/1cat-deploy/repetition-main-20261009-c73eb2d1",
+      "source_revision": "c73eb2d1d1009e1ab8b980f9c1dea265ba877015",
+      "python_package": "/tank/hot/1cat-deploy/repetition-main-20261009-c73eb2d1/vllm/__init__.py",
+      "torch": "2.10.0+cu128",
+      "native_modules": {
+        "vllm._C": "/tank/hot/1cat-deploy/repetition-main-20261009-c73eb2d1/vllm/_C.abi3.so",
+        "vllm._moe_C": "/tank/hot/1cat-deploy/repetition-main-20261009-c73eb2d1/vllm/_moe_C.abi3.so",
+        "vllm._C_stable_libtorch": "/tank/hot/1cat-deploy/repetition-main-20261009-c73eb2d1/vllm/_C_stable_libtorch.abi3.so",
+        "vllm._sm70_exact_reduce_C": "/tank/hot/1cat-deploy/repetition-main-20261009-c73eb2d1/vllm/_sm70_exact_reduce_C.cpython-312-x86_64-linux-gnu.so",
+        "vllm._sm70_qsa_device_C": "/tank/hot/1cat-deploy/repetition-main-20261009-c73eb2d1/vllm/_sm70_qsa_device_C.cpython-312-x86_64-linux-gnu.so",
+        "vllm._sm70_qsa_indexer_C": "/tank/hot/1cat-deploy/repetition-main-20261009-c73eb2d1/vllm/_sm70_qsa_indexer_C.cpython-312-x86_64-linux-gnu.so",
+        "vllm._sm70_sampler_C": "/tank/hot/1cat-deploy/repetition-main-20261009-c73eb2d1/vllm/_sm70_sampler_C.abi3.so",
+        "flash_attn_v100_cuda": "/tank/hot/1cat-deploy/repetition-main-20261009-c73eb2d1/flash-attention-v100/flash_attn_v100_cuda.cpython-312-x86_64-linux-gnu.so",
+        "paged_kv_utils": "/tank/hot/1cat-deploy/repetition-main-20261009-c73eb2d1/flash-attention-v100/paged_kv_utils.cpython-312-x86_64-linux-gnu.so"
+      },
+      "policy_abi": {
+        "_C": 55,
+        "_moe_C": 55
+      },
+      "policy_fields": 55,
+      "gdn": "/tank/hot/1cat-deploy/repetition-main-20261009-c73eb2d1/flash_qla/ops/gated_delta_rule/chunk/sm70/flash_qla_sm70_gdn_strided.so",
+      "cpu_abi_admitted": true,
+      "numerical_admitted": false
+    }
+  },
+  "config_clone": {
+    "source_path": "/tank/hot/1cat-deploy/repetition-native-20261009/config-clone-c73eb2d1.json",
+    "source_bytes": 436,
+    "source_sha256": "d52166f588418a9f75de1c551a75fcf77720db1a763b0754aaa5b11f7c162247",
+    "observations": {
+      "source_path": "/tank/hot/1cat-deploy/repetition-main-20261009-c73eb2d1/vllm/config/utils.py",
+      "source_sha256": "4af49944ed056aa6a06ea67517b1c0344882b22977780d9cfdb17c6cd15820ce",
+      "expected": "success",
+      "clone_succeeded": true,
+      "scope": "real config.replace with runtime attachment, cached property and Pydantic non-init field; no model loading",
+      "unknown_overrides_rejected": true,
+      "expected_behavior_observed": true
+    }
+  },
+  "build_timeout_reconciliation": {
+    "source_path": "/tank/hot/1cat-deploy/repetition-native-20261009/build-timeout-reconciliation-c73eb2d1.json",
+    "source_bytes": 1080,
+    "source_sha256": "1bf5094c1b0368fe99bcf9981e7196395e3654f5bfd8a4b71ce1dc178e1672a1",
+    "observations": {
+      "observed_unix_s": 1791566184.2832355,
+      "owned_build_processes": [
+        {
+          "pid": 1454427,
+          "ppid": 1,
+          "state": "S",
+          "starttime": "71697770",
+          "executable": "sh",
+          "cwd": "/tank/hot/1cat-deploy/repetition-main-20261009-c73eb2d1/build/temp.linux-x86_64-cpython-312"
+        },
+        {
+          "pid": 1454428,
+          "ppid": 1454427,
+          "state": "S",
+          "starttime": "71697771",
+          "executable": "nvcc",
+          "cwd": "/tank/hot/1cat-deploy/repetition-main-20261009-c73eb2d1/build/temp.linux-x86_64-cpython-312"
+        },
+        {
+          "pid": 1454941,
+          "ppid": 1454428,
+          "state": "S",
+          "starttime": "71704313",
+          "executable": "sh",
+          "cwd": "/tank/hot/1cat-deploy/repetition-main-20261009-c73eb2d1/build/temp.linux-x86_64-cpython-312"
+        },
+        {
+          "pid": 1454942,
+          "ppid": 1454941,
+          "state": "R",
+          "starttime": "71704313",
+          "executable": "cicc",
+          "cwd": "/tank/hot/1cat-deploy/repetition-main-20261009-c73eb2d1/build/temp.linux-x86_64-cpython-312"
+        }
+      ],
+      "completed_receipt_present": false
+    }
+  },
+  "build_timeout_stop": {
+    "source_path": "/tank/hot/1cat-deploy/repetition-native-20261009/build-timeout-stop-c73eb2d1.json",
+    "source_bytes": 375,
+    "source_sha256": "0665958b23cd61a93331b605f3f44a14bc6ddf9dc8c31c399e28ba2904cbd974",
+    "observations": {
+      "reason": "local 2400s executor timeout left only orphan native compiler descendants",
+      "original_executor_timeout_seconds": 2400,
+      "source_revision": "c73eb2d1d1009e1ab8b980f9c1dea265ba877015",
+      "term_signaled_verified_pids": [],
+      "survivors": [],
+      "killed_with_sigkill": false,
+      "same_revision_intermediate_outputs_preserved": true,
+      "inference_started": false
+    }
+  },
+  "startup_failures": [
+    {
+      "name": "w4a16-fp8-graph",
+      "launch_verification": {
+        "source_path": "/tank/hot/1cat-deploy/repetition-native-20261009/launch-verification/c73-w4a16-graph-fp8-fair2048-c4-u90-v3.json",
+        "source_bytes": 537,
+        "source_sha256": "9abc08d58267e05f730e2c5a9d48cb4a83a83e40e5eac56fe2d29e29cb6412c2",
+        "observations": {
+          "tag": "c73-w4a16-graph-fp8-fair2048-c4-u90-v3",
+          "variant": "w4a16",
+          "draft": "fp8",
+          "profile": false,
+          "prefill_threshold": 2048,
+          "launched_pid": 1544995,
+          "ready": false,
+          "startup_seconds": null,
+          "startup_receipt": null,
+          "startup_failure": {
+            "exit_code": 1,
+            "startup_traceback_read": "not_yet_attempted"
+          },
+          "startup_log": {
+            "path": "/tank/hot/1cat-deploy/repetition-native-20261009/launches/c73-w4a16-graph-fp8-fair2048-c4-u90-v3.startup.private.log",
+            "bytes": 111648
+          },
+          "cleanup_exit": 1
+        }
+      },
+      "launch_identity": {
+        "source_path": "/tank/hot/1cat-deploy/repetition-native-20261009/launches/c73-w4a16-graph-fp8-fair2048-c4-u90-v3.private.json",
+        "source_bytes": 2475,
+        "source_sha256": "8614b06145f8c50c5ccd76b94f2df504241f42f88eb38144e23b54880f0815d5",
+        "observations": {
+          "tag": "c73-w4a16-graph-fp8-fair2048-c4-u90-v3",
+          "variant": "w4a16",
+          "draft": "fp8",
+          "context": 262144,
+          "sequences": 4,
+          "memory_util": 0.9,
+          "host": "127.0.0.1",
+          "port": 8001,
+          "eager": false,
+          "dense_rejection": false,
+          "compute_nans": false,
+          "profile": false,
+          "prefill_threshold": 2048,
+          "source": "/tank/hot/1cat-deploy/repetition-main-20261009-c73eb2d1",
+          "model": "/tank/hot/models/Merkyor-Coder390-NVFP4-W4A16-3e644f23",
+          "execute": true,
+          "pid": 1544995,
+          "starttime": "72621329",
+          "source_revision": "c73eb2d1d1009e1ab8b980f9c1dea265ba877015",
+          "argv_sha256": "04728a0baf16014a31e157dd1bb9dc1cfde312f1a657f77c1643a4ce96ebd752"
+        }
+      },
+      "startup_log": {
+        "source_path": "/tank/hot/1cat-deploy/repetition-native-20261009/launches/c73-w4a16-graph-fp8-fair2048-c4-u90-v3.startup.private.log",
+        "source_bytes": 111648,
+        "source_sha256": "62eca426d8ab5fa9a8dcceee851198052574ef201511017b0e47c7088b43adca",
+        "content_exported": false
+      },
+      "observations": {
+        "variant": "w4a16",
+        "draft": "fp8",
+        "profile": false,
+        "prefill_threshold": 2048,
+        "ready": false,
+        "startup_failure": {
+          "exit_code": 1,
+          "startup_traceback_read": "not_yet_attempted"
+        },
+        "launch_pid": 1544995,
+        "source_revision": "c73eb2d1d1009e1ab8b980f9c1dea265ba877015",
+        "model": "/tank/hot/models/Merkyor-Coder390-NVFP4-W4A16-3e644f23",
+        "selected_arguments": {
+          "context": 262144,
+          "sequences": 4,
+          "memory_util": 0.9,
+          "eager": false,
+          "prefill_threshold": 2048
+        },
+        "speculative_config": {
+          "method": "dflash",
+          "model": "/tank/hot/models/Merkyor-Coder390-NVFP4-W4A16-3e644f23/DFlash2-FP8",
+          "num_speculative_tokens": 7,
+          "kv_cache_dtype": "auto",
+          "attention_backend": "FLASH_ATTN_V100",
+          "draft_sample_method": "probabilistic",
+          "enforce_eager": false
+        },
+        "generation_exercised": false
+      }
+    },
+    {
+      "name": "w4a16-none-graph",
+      "launch_verification": {
+        "source_path": "/tank/hot/1cat-deploy/repetition-native-20261009/launch-verification/c73-w4a16-graph-none-fair2048-c4-u90.json",
+        "source_bytes": 534,
+        "source_sha256": "fd2a98dda9af9d204d15f508cd86a2c399fae0975893dedaa362d00b4ca3a1ae",
+        "observations": {
+          "tag": "c73-w4a16-graph-none-fair2048-c4-u90",
+          "variant": "w4a16",
+          "draft": "none",
+          "profile": false,
+          "prefill_threshold": 2048,
+          "launched_pid": 1547555,
+          "ready": false,
+          "startup_seconds": null,
+          "startup_receipt": null,
+          "startup_failure": {
+            "exit_code": 1,
+            "startup_traceback_read": "not_yet_attempted"
+          },
+          "startup_log": {
+            "path": "/tank/hot/1cat-deploy/repetition-native-20261009/launches/c73-w4a16-graph-none-fair2048-c4-u90.startup.private.log",
+            "bytes": 108068
+          },
+          "cleanup_exit": 1
+        }
+      },
+      "launch_identity": {
+        "source_path": "/tank/hot/1cat-deploy/repetition-native-20261009/launches/c73-w4a16-graph-none-fair2048-c4-u90.private.json",
+        "source_bytes": 2156,
+        "source_sha256": "d96eccc78958d822e82625e96541825fc141425ca0764ab41bf0ae315f4f3a8b",
+        "observations": {
+          "tag": "c73-w4a16-graph-none-fair2048-c4-u90",
+          "variant": "w4a16",
+          "draft": "none",
+          "context": 262144,
+          "sequences": 4,
+          "memory_util": 0.9,
+          "host": "127.0.0.1",
+          "port": 8001,
+          "eager": false,
+          "dense_rejection": false,
+          "compute_nans": false,
+          "profile": false,
+          "prefill_threshold": 2048,
+          "source": "/tank/hot/1cat-deploy/repetition-main-20261009-c73eb2d1",
+          "model": "/tank/hot/models/Merkyor-Coder390-NVFP4-W4A16-3e644f23",
+          "execute": true,
+          "pid": 1547555,
+          "starttime": "72647832",
+          "source_revision": "c73eb2d1d1009e1ab8b980f9c1dea265ba877015",
+          "argv_sha256": "b8305c013b4c0de2937e0454ba27c326c9e63dee5327785150d6f1d6653a2db7"
+        }
+      },
+      "startup_log": {
+        "source_path": "/tank/hot/1cat-deploy/repetition-native-20261009/launches/c73-w4a16-graph-none-fair2048-c4-u90.startup.private.log",
+        "source_bytes": 108068,
+        "source_sha256": "0941f3a1be5d4cb760870731d320090c2d8af1a113eabdb3ad7e4257ae840bf4",
+        "content_exported": false
+      },
+      "observations": {
+        "variant": "w4a16",
+        "draft": "none",
+        "profile": false,
+        "prefill_threshold": 2048,
+        "ready": false,
+        "startup_failure": {
+          "exit_code": 1,
+          "startup_traceback_read": "not_yet_attempted"
+        },
+        "launch_pid": 1547555,
+        "source_revision": "c73eb2d1d1009e1ab8b980f9c1dea265ba877015",
+        "model": "/tank/hot/models/Merkyor-Coder390-NVFP4-W4A16-3e644f23",
+        "selected_arguments": {
+          "context": 262144,
+          "sequences": 4,
+          "memory_util": 0.9,
+          "eager": false,
+          "prefill_threshold": 2048
+        },
+        "speculative_config": null,
+        "generation_exercised": false
+      }
+    },
+    {
+      "name": "mixed-eager-none",
+      "launch_identity": {
+        "source_path": "/tank/hot/1cat-deploy/repetition-native-20261009/launches/c73-mixed-eager-none-default-c4-u90.private.json",
+        "source_bytes": 2183,
+        "source_sha256": "ab389d2974f2f56fb687b01652c3d808b579c126f0ee954d8b07bcfe382a5c2c",
+        "observations": {
+          "tag": "c73-mixed-eager-none-default-c4-u90",
+          "variant": "mixed",
+          "draft": "none",
+          "context": 262144,
+          "sequences": 4,
+          "memory_util": 0.9,
+          "host": "127.0.0.1",
+          "port": 8001,
+          "eager": true,
+          "dense_rejection": false,
+          "compute_nans": false,
+          "profile": false,
+          "prefill_threshold": 0,
+          "source": "/tank/hot/1cat-deploy/repetition-main-20261009-c73eb2d1",
+          "model": "/tank/hot/models/Merkyor-Coder390-NVFP4-W4A4-W8A8-c5fd6dda",
+          "execute": true,
+          "pid": 1549645,
+          "starttime": "72669403",
+          "source_revision": "c73eb2d1d1009e1ab8b980f9c1dea265ba877015",
+          "argv_sha256": "e5b16a72ecfae977cff5e59a76ba0331da8a8229f5066e7390e8177608cfcc06"
+        }
+      },
+      "observations": {
+        "variant": "mixed",
+        "draft": "none",
+        "eager": true,
+        "prefill_threshold": 0,
+        "launch_pid": 1549645,
+        "source_revision": "c73eb2d1d1009e1ab8b980f9c1dea265ba877015",
+        "model": "/tank/hot/models/Merkyor-Coder390-NVFP4-W4A4-W8A8-c5fd6dda",
+        "selected_arguments": {
+          "context": 262144,
+          "sequences": 4,
+          "memory_util": 0.9,
+          "eager": true,
+          "prefill_threshold": 0
+        },
+        "ready": false,
+        "observed_error": "AttributeError: 'ParallelLMHead' object has no attribute '_layer_execution_policy'",
+        "generation_exercised": false,
+        "captured_output_artifact": "artifact://4695"
+      }
+    }
+  ],
+  "upstream_checks": [
+    {
+      "source_path": "/tank/hot/1cat-deploy/repetition-native-20261009/upstream-checks/c73-lmhead-startup-regression.json",
+      "source_bytes": 430,
+      "source_sha256": "226c17ac09bf5e2fddb8375885709138bc289761bbf352e78ae4d3eb4e3bff55",
+      "observations": {
+        "checked_at": "2026-10-09T20:00:16.162913+00:00",
+        "after_experiment": "c73-lmhead-startup-regression",
+        "tested_revision": "c73eb2d1d1009e1ab8b980f9c1dea265ba877015",
+        "remote": "https://github.com/1CatAI/1Cat-vLLM.git",
+        "ref": "refs/heads/main",
+        "transport_proxy": "http://10.20.0.1:7893",
+        "upstream_revision": null,
+        "update_available": null,
+        "worktree_changed": false,
+        "checked": false,
+        "exit_code": 128
+      }
+    },
+    {
+      "source_path": "/tank/hot/1cat-deploy/repetition-native-20261009/upstream-checks/c73-lmhead-startup-regression-v2.json",
+      "source_bytes": 652,
+      "source_sha256": "e88a504e8d438d2326e195bf8b125aabd3afa476926596282dfcfd1ddc52e87e",
+      "observations": {
+        "checked_at": "2026-10-09T20:02:54.919407+00:00",
+        "after_experiment": "c73-lmhead-startup-regression-v2",
+        "tested_revision": "c73eb2d1d1009e1ab8b980f9c1dea265ba877015",
+        "remote": "https://github.com/1CatAI/1Cat-vLLM.git",
+        "ref": "refs/heads/main",
+        "transport_proxy": "http://10.20.0.1:7893",
+        "upstream_revision": null,
+        "update_available": null,
+        "worktree_changed": false,
+        "checked": false,
+        "exit_code": 128,
+        "stderr_last_line": "致命错误：无法访问 'https://github.com/1CatAI/1Cat-vLLM.git/'：GnuTLS, handshake failed: TLS 链接非正常地终止了。"
+      }
+    }
+  ],
+  "post_failure_gpu_owners": {
+    "command": "nvidia-smi --query-compute-apps=pid --format=csv,noheader",
+    "observed_rows": 0
+  },
+  "limits": [
+    "No request was sent to a c73 engine.",
+    "Startup failures do not prove the original long-session repetition root cause.",
+    "Upstream check failure is transport-level and does not prove no newer main exists."
+  ],
+  "private_material_exported": false
+}

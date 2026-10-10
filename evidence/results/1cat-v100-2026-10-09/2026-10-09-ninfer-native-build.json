@@ -1,0 +1,32 @@
+{
+  "source_path": "/tank/hot/ninfer-v100-deploy/native-build-b37d0dd3-sm70-cu129.json",
+  "source_sha256": "139765d5ef44c4a63fcaa23ad1d62d16448b51b4b8359f8b90be66dde1455280",
+  "source_bytes": 1740,
+  "observations": {
+    "source": "/tank/hot/ninfer-v100-deploy/src-b37d0dd3",
+    "source_revision": "b37d0dd3e1163b9d802d8bccfa89918bf68d793e",
+    "cutlass_revision": "da5e086dab31d63815acafdac9a9c5893b1c69e2",
+    "architecture": "sm70",
+    "cuda_toolkit": "12.9",
+    "max_jobs": 2,
+    "started_at": 1791557917.0959418,
+    "completed_at": 1791559235.7265666,
+    "elapsed_seconds": 1318.6306257247925,
+    "binaries": [
+      {
+        "path": "/tank/hot/ninfer-v100-deploy/build-b37d0dd3-sm70-cu129/apps/ninfer",
+        "bytes": 318465984,
+        "sha256": "fe2009bd2535f3906f1ffb3b1fde0886e2ceb4442a85e7ba07c67d5964ab6535"
+      },
+      {
+        "path": "/tank/hot/ninfer-v100-deploy/build-b37d0dd3-sm70-cu129/apps/ninfer-serve",
+        "bytes": 320558864,
+        "sha256": "5e63beb092aef29a42fe358468c8a07b027cdafa92add212797cd9db5dd4e9e5"
+      }
+    ],
+    "runtime_admitted": false
+  },
+  "cli_help_executed": true,
+  "cli_help_exit": 0,
+  "note": "Initial native build lacked NVTX headers; explicit existing NVIDIA NVTX include binding fixed build. CPU CLI help does not admit model loading or GPU execution."
+}

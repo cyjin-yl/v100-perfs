@@ -1,0 +1,452 @@
+{
+  "kind": "field-allowlisted public summary; not raw report",
+  "published_on": "2026-10-09",
+  "excluded": "Generated text/reasoning, prompts, private request/response and launch files, raw engine logs, credentials, endpoints, raw error strings, token histograms and tool-call arguments are not copied. Original source files remain unchanged. Missing fields are unknown, not zero. Report pass flags are harness verdicts, not semantic or numerical certification.",
+  "records": [
+    {
+      "source_path": "/tank/hot/1cat-deploy/benchmarks/2026-09-21-serving-tune/tq-decision.json",
+      "source_sha256": "27471b9b6360f4a114cecadb82e814f035edc72bdb4fd988abd967b386c02d7b",
+      "source_bytes": 1649,
+      "observations": {
+        "backend_present": true,
+        "native_routes_exercised": [
+          "Flash-V100 dense raw-QKV prefill",
+          "Flash-V100 packed TurboQuant cache decode"
+        ],
+        "candidate": {
+          "backend": "TURBOQUANT",
+          "cache_dtype": "turboquant_4bit_nc",
+          "requested_block_size": 128,
+          "tq_max_kv_splits_for_cuda_graph": 512,
+          "max_model_len": 262144,
+          "max_num_seqs": 4,
+          "gpu_memory_utilization": 0.92,
+          "prefill_batch_tokens": 4096,
+          "multimodal": "same bounded image/video profile as FP8"
+        },
+        "initial_failure": "Default32 KV splits cannot cover264192 graph token capacity with maximum1024 split tile. Explicit supported512 split configuration starts successfully; no code bypass was used.",
+        "engine_reported_capacity": {
+          "logical_kv_tokens": 2100001,
+          "concurrency_at262144": 8.01,
+          "kv_cache_gib_per_gpu": 17.7,
+          "graph_capture_gib_per_gpu": 0.82
+        },
+        "measured_peak_gpu_memory_mib": [
+          30944,
+          30944
+        ],
+        "quality": "FAIL. All eight measured matched prompts produced no final answer. Single requests terminated naturally after2–8 garbage/reasoning tokens. Three concurrent requests generated1024 tokens of repetitive/gibberish reasoning. HTTP200 is not a correctness pass.",
+        "speed_disposition": "Do not compare short premature-EOS apparent tokens/s with coherent FP8 output. Degenerate streams are not a speed win.",
+        "production_decision": "Reject this installed full-graph ModelOpt NVFP4/TP2/TQ profile. Restore FP8. Do not generalize this failure to every TurboQuant model/backend configuration; eager-vs-graph root-cause isolation was not performed, and no unsafe repair was enabled.",
+        "evidence": [
+          "route-inventory.json",
+          "tq4-splits32-startup-failure.txt",
+          "tq4s512-startup.txt",
+          "tq4s512-compare.json"
+        ]
+      }
+    },
+    {
+      "source_path": "/tank/hot/1cat-deploy/benchmarks/2026-09-21-serving-tune/operator-decision.json",
+      "source_sha256": "53b5cfdf002f7520769c1b095010f6593130b95592da423177bae340a865aba9",
+      "source_bytes": 2373,
+      "observations": {
+        "production_kernel_changes": false,
+        "decision": "Retain native TurboMind NVFP4/FP8 and existing shape-gated Flash-V100 routes. Do not broaden TP4 QPN4 or TP4 collective gates on TP2.",
+        "actual_checkpoint": "ModelOpt mixed FP8 and NVFP4, FP16 activations; not the compressed-tensors TP4 acceptance checkpoint and not AWQ.",
+        "actual_hardware": "2x Tesla V100 PCIe 32GB, TP2 with verified existing PCIe P2P; not a four-GPU NVLink topology.",
+        "probe_artifact": "tp2-operator-probe.json",
+        "probe_scope": "Installed native NVFP4 E2M1 group16 operators; deterministic random weights, FP32 dequantized reference, changed-input CUDA-graph replay, actual TP2 gate/up, down and output dimensions at M=1/4/8/128. No production monkey-patch, JIT build or host compilation.",
+        "findings": [
+          "The generic QPN4 dispatcher rejects M1 K5120/N17408 gate/up and K3072/N5120 output with invalid split_k for K.",
+          "TP2 down K8704/N5120 M1 is numerically finite and graph-stable in this probe, and is faster: TurboMind59.2707us versus QPN4 40.4710us. This is a narrow candidate, not whole-model acceptance.",
+          "The same down route at M4 regresses from56.2067us to369.5350us; at M8 from56.1085us to372.4659us. Current QPN4 large-M dispatch dequantizes into a dense workspace rather than retaining the native TurboMind route.",
+          "Every successful changed-input graph replay matched its eager operator output exactly. Maximum QPN4-vs-FP32 absolute error across admitted probes was0.00154543, and maximum QPN4-vs-TurboMind absolute difference was0.001953125. These are operator-level observations, not an end-to-end model quality claim.",
+          "The installed bounded QPN4 workspace is5120*8704 FP16 elements. TP2 gate/up requires5120*17408, twice that capacity. Broadening shape guards without workspace/layout work is unsafe.",
+          "The accepted compressed-tensors QPN4 route explicitly gates max_num_seqs=1 and no MTP. ModelOpt global scales are direct multipliers, unlike the reciprocal compressed-tensors representation. No AWQ or compressed-tensors scale logic was copied into ModelOpt.",
+          "The faster M1 down-only candidate lacks complete checkpoint, mixed-prefill/concurrent-graph and long-output safety proof; it remains staged as evidence, not enabled. Its M4+ regression makes unconditional promotion unsuitable for the requested four-sequence service."
+        ]
+      }
+    },
+    {
+      "source_path": "/tank/hot/1cat-deploy/benchmarks/2026-09-21-serving-tune/final-report.json",
+      "source_sha256": "41380c4c9513725a8573d5ae4f6a1100596001e6cf55ea108a8084e8eff2a28e",
+      "source_bytes": 16300,
+      "observations": {
+        "matched_comparison": {
+          "contract": {
+            "model": "swift-qwen3.8-27b-nvfp4",
+            "dtype": "half",
+            "tp": 2,
+            "backend": "FLASH_ATTN_V100",
+            "kv": "fp8_e5m2",
+            "window": 262144,
+            "max_sequences": 4,
+            "prefill_batch": 4096,
+            "gpu_utilization": 0.92,
+            "thinking": true,
+            "temperature": 0.6,
+            "top_p": 0.95,
+            "top_k": 20,
+            "seed": 20260921,
+            "max_output_tokens": 1024,
+            "ignore_eos": false,
+            "warmup_excluded_from_speed_summaries": true
+          },
+          "nomtp": {
+            "groups": {
+              "single": {
+                "requests": 4,
+                "output_tokens": 2884,
+                "ttft_mean_s": 0.18916791200354055,
+                "ttft_range_s": [
+                  0.1581405020042439,
+                  0.2660389170050621
+                ],
+                "decode_rate_range_tokens_per_s": [
+                  39.485837579886,
+                  40.283526123740714
+                ],
+                "weighted_per_request_decode_tokens_per_s": 39.55773041124067
+              },
+              "concurrent": {
+                "requests": 4,
+                "output_tokens": 2935,
+                "ttft_mean_s": 0.5851073865014769,
+                "ttft_range_s": [
+                  0.542720969999209,
+                  0.7110402390026138
+                ],
+                "decode_rate_range_tokens_per_s": [
+                  35.32337876128313,
+                  36.55711370246866
+                ],
+                "weighted_per_request_decode_tokens_per_s": 36.32239340158984,
+                "aggregate_output_tokens_per_s": 102.28316991626575
+              }
+            },
+            "max_running": 4,
+            "peak_vram_mib": [
+              30458,
+              30458
+            ]
+          },
+          "mtp4": {
+            "groups": {
+              "single": {
+                "requests": 4,
+                "output_tokens": 2743,
+                "ttft_mean_s": 0.20508017249994737,
+                "ttft_range_s": [
+                  0.17549363800208084,
+                  0.2661911559989676
+                ],
+                "decode_rate_range_tokens_per_s": [
+                  55.02352743613647,
+                  78.65234758838997
+                ],
+                "weighted_per_request_decode_tokens_per_s": 61.97658924968187
+              },
+              "concurrent": {
+                "requests": 4,
+                "output_tokens": 2747,
+                "ttft_mean_s": 2.3395212559971696,
+                "ttft_range_s": [
+                  2.076241899994784,
+                  2.60267996499897
+                ],
+                "decode_rate_range_tokens_per_s": [
+                  45.573111789952804,
+                  56.88503946545901
+                ],
+                "weighted_per_request_decode_tokens_per_s": 48.868973311340696,
+                "aggregate_output_tokens_per_s": 109.65971849200979
+              }
+            },
+            "max_running": 4,
+            "peak_vram_mib": [
+              30680,
+              30680
+            ]
+          },
+          "prompt_hashes_match": true,
+          "acceptance": {
+            "drafts": 1892,
+            "drafted_tokens": 7568,
+            "accepted_tokens": 3635,
+            "token_acceptance": 0.4803118393234672,
+            "mean_acceptance_length_including_bonus": 2.921247357293869,
+            "scope": "complete comparison including one warmup request"
+          },
+          "quality_notes": [
+            "Coherent English restore explanation, correct138litre arithmetic, executable generated interval merger (4behavioral cases), correct image/video answers, complete natural2392token essay.",
+            "Reasoning consumes the same output budget; some1024-token code/Chinese responses ended by length, and oneMTPChinese response had not reached its final-answer segment. This is not represented as a complete-answer success.",
+            "MTP first concurrent batch showed higherTTFT2.08–2.60s than noMTP0.54–0.71s; both cold-transition latencies are retained.",
+            "Stream-derived decode rates use(completion_tokens-1)/(last_content_time-first_content_time), not GPU-kernel timing. MTP can emit token bursts; especially short completions have timing granularity limits.",
+            "No forced EOS bypass, synthetic acceptance, AWQ/NVFP4 substitution, or unverified kernel promotion."
+          ]
+        },
+        "final_warm_short_run": {
+          "groups": {
+            "single": {
+              "requests": 4,
+              "output_tokens": 2969,
+              "ttft_mean_s": 0.20032364075086662,
+              "ttft_range_s": [
+                0.1739496579975821,
+                0.2759675840061391
+              ],
+              "decode_rate_range_tokens_per_s": [
+                54.649843258074334,
+                78.15089137680397
+              ],
+              "weighted_per_request_decode_tokens_per_s": 60.24361848896905
+            },
+            "concurrent": {
+              "requests": 4,
+              "output_tokens": 3067,
+              "ttft_mean_s": 0.35535435724887066,
+              "ttft_range_s": [
+                0.3548341470013838,
+                0.3557432709931163
+              ],
+              "decode_rate_range_tokens_per_s": [
+                43.37889020072111,
+                56.74895928440437
+              ],
+              "weighted_per_request_decode_tokens_per_s": 46.90041026173535,
+              "aggregate_output_tokens_per_s": 128.12183197254458
+            }
+          },
+          "max_running": 4,
+          "peak_vram_mib": [
+            31968,
+            31968
+          ]
+        },
+        "capacity": {
+          "engine_reported": {
+            "kv_gib_per_gpu": 16.57,
+            "logical_kv_tokens": 895957,
+            "full_262144_window_capacity": 3.42
+          },
+          "four_196000_resident_natural": {
+            "requests": [
+              {
+                "label": "context-196000-0",
+                "status": 200,
+                "error": null,
+                "prompt_tokens": 196000,
+                "completion_tokens": 2168,
+                "finish_reason": "stop",
+                "ttft_s": 422.85757217000355,
+                "elapsed_s": 1902.8461617050052,
+                "scheduled_decode_tokens_per_s": 1.4642011123915553,
+                "checksum_correct": true
+              },
+              {
+                "label": "context-196000-1",
+                "status": 200,
+                "error": null,
+                "prompt_tokens": 196000,
+                "completion_tokens": 2046,
+                "finish_reason": "stop",
+                "ttft_s": 428.24018347099627,
+                "elapsed_s": 1901.9714983569938,
+                "scheduled_decode_tokens_per_s": 1.3876344788996036,
+                "checksum_correct": true
+              },
+              {
+                "label": "context-196000-2",
+                "status": 200,
+                "error": null,
+                "prompt_tokens": 196000,
+                "completion_tokens": 2517,
+                "finish_reason": "stop",
+                "ttft_s": 963.9595499770003,
+                "elapsed_s": 1967.323750222,
+                "scheduled_decode_tokens_per_s": 2.5075656726071958,
+                "checksum_correct": true
+              },
+              {
+                "label": "context-196000-3",
+                "status": 200,
+                "error": null,
+                "prompt_tokens": 196000,
+                "completion_tokens": 2290,
+                "finish_reason": "stop",
+                "ttft_s": 1657.0043275040007,
+                "elapsed_s": 1971.428118792006,
+                "scheduled_decode_tokens_per_s": 7.279991065788332,
+                "checksum_correct": true
+              }
+            ],
+            "max_running": 4,
+            "peak_kv_fraction": 0.9056224899598394,
+            "peak_vram_mib": [
+              31964,
+              31964
+            ],
+            "minimum_external_free_mib": [
+              531,
+              531
+            ]
+          },
+          "four_way_all_output_overlap_approx_s": 244.96717085299315,
+          "resident_case_notes": [
+            "Four independently salted cold196000-token prompts. All responses returned correct initial checksums and coherent long restore tutorials. All ended by naturalEOS, not the3072 cap.",
+            "Maximumrunning4 and90.56%KV utilization observed. Approximately245seconds of overlapping output after all four first-token times; independent client start skew is not recorded in this older run.",
+            "Scheduled decode rates include stalls while other long prompts prefill. This cold four-resident workload took1971.43seconds total; no claim that short-context61.98tok/s holds at four196K contexts.",
+            "During the fully resident phase engine logs showed roughly21–28aggregate generatedtokens/s; rawrequest timing is retained."
+          ],
+          "four_196000_short_output": {
+            "requests": [
+              {
+                "label": "context-196000-0",
+                "status": 200,
+                "error": null,
+                "prompt_tokens": 196000,
+                "completion_tokens": 11,
+                "finish_reason": "stop",
+                "ttft_s": 419.8929826800013,
+                "elapsed_s": 430.25096103300166,
+                "scheduled_decode_tokens_per_s": 0.9654783215102268,
+                "checksum_correct": true
+              },
+              {
+                "label": "context-196000-1",
+                "status": 200,
+                "error": null,
+                "prompt_tokens": 196000,
+                "completion_tokens": 11,
+                "finish_reason": "stop",
+                "ttft_s": 425.40225184299925,
+                "elapsed_s": 434.946039825998,
+                "scheduled_decode_tokens_per_s": 1.0478267957572136,
+                "checksum_correct": true
+              },
+              {
+                "label": "context-196000-2",
+                "status": 200,
+                "error": null,
+                "prompt_tokens": 196000,
+                "completion_tokens": 11,
+                "finish_reason": "stop",
+                "ttft_s": 848.6707750429996,
+                "elapsed_s": 858.4291481200053,
+                "scheduled_decode_tokens_per_s": 1.0248053867154179,
+                "checksum_correct": true
+              },
+              {
+                "label": "context-196000-3",
+                "status": 200,
+                "error": null,
+                "prompt_tokens": 196000,
+                "completion_tokens": 11,
+                "finish_reason": "stop",
+                "ttft_s": 865.8997718690007,
+                "elapsed_s": 866.1253470180018,
+                "scheduled_decode_tokens_per_s": 44.39834928789342,
+                "checksum_correct": true
+              }
+            ],
+            "max_running": 3,
+            "peak_kv_fraction": 0.4979919678714859,
+            "peak_vram_mib": [
+              32314,
+              32314
+            ],
+            "minimum_external_free_mib": [
+              181,
+              181
+            ]
+          },
+          "single_256000": {
+            "requests": [
+              {
+                "label": "context-256000-0",
+                "status": 200,
+                "error": null,
+                "prompt_tokens": 256000,
+                "completion_tokens": 11,
+                "finish_reason": "stop",
+                "ttft_s": 317.73348271200666,
+                "elapsed_s": 317.952799221006,
+                "scheduled_decode_tokens_per_s": 45.69115314605258,
+                "checksum_correct": true
+              }
+            ],
+            "max_running": 1,
+            "peak_kv_fraction": 0.29518072289156627,
+            "peak_vram_mib": [
+              31962,
+              31962
+            ],
+            "minimum_external_free_mib": [
+              533,
+              533
+            ]
+          },
+          "not_claimed": [
+            "Four fully resident262144-token windows",
+            "Completed new noMTP4x256K workload",
+            "131072 generated output tokens",
+            "Simultaneous worst-case image/video inputs on all four long requests"
+          ]
+        },
+        "rejected_candidates": {
+          "turboquant": "Native1Cat Flash-V100 TQ routes are installed and were exercised. Default32split startup limit was solved with explicit512splits, then matched outputs degenerated severely. Rejected; no speed credit for prematureEOS/gibberish. See tq-decision.json.",
+          "tp4_operator_port": "No production kernel patch. Existing QPN4 rejects two TP2M1 shapes; downM1 improves59.27→40.47us butM4 regresses56.21→369.54us. Changed-input graph replay and numerical probes retained; insufficient end-to-end proof and concurrency regression block promotion. See operator-decision.json."
+        },
+        "headroom_and_limits": [
+          ".94/8192 trial reached32484MiB used with11MiB externalfree perGPU during an intentionally interrupted longprefill. It did not prove a deadlock orOOM.",
+          "Selected.92/4096 completed all measurements. Largest observed allocation across accepted-profile cases was32314MiB with181MiB externalfree; resident-long test peak31964MiB/free531MiB. Do not raise to.94–.96 based only on startup cache capacity.",
+          "Allocator memory remains reserved after stress; finalidle31968MiB used/free527MiB each, GPU0%, requests0running/0waiting.",
+          "RAM service limit remains20GiB; final measured serviceMemoryPeak15282761728bytes. No host/VM/GPU reboot/reset or global network restart.",
+          "V2 warns that separate thinking_token_budget request control is unsupported; total output/window budgeting and thinking default work."
+        ]
+      }
+    },
+    {
+      "source_path": "/tank/shared/projects/life/areas/technology/home-lab/2026-09-28-v100-sm70-jit-aot-quality-drift.md",
+      "source_sha256": "dc8dfa8a7de28f79409198c5cdf2d89e8eef5bf45b3f983f3b7998eb7a89bd15",
+      "source_bytes": 18482,
+      "evidence_level": "historical narrative, not recovered original tensor dumps",
+      "final_observations": {
+        "compile_parity_env": "VLLM_SM70_FLASH_V100_0DOT3_COMPILE_GRAPH=1",
+        "mtp4_final_cause": "capture metadata selects first-chunk prefill instead of continuation; graph-safe sequence derivation also required",
+        "final_core_cosines": [
+          0.9999,
+          1.0,
+          1.0,
+          0.9999,
+          1.0
+        ],
+        "final_qkv_qrot_cosine": 1.0,
+        "bounded_output_tokens": 128,
+        "approx_tokens_per_s": 58,
+        "mean_acceptance_length": 2.53,
+        "positional_acceptance": [
+          0.78,
+          0.41,
+          0.25,
+          0.09
+        ],
+        "upstream_issue": 728,
+        "upstream_pr": 729,
+        "fix_commit_prefix": "138259478",
+        "base_commit_prefix": "357d07bcb"
+      },
+      "superseded_claims": [
+        "L3 q cosine -0.07 was probe aliasing artifact",
+        "dirtyH/I/J core_out0.42 comparison was warmup-contaminated",
+        "synth_seq_lens-only fixes and NEVER-only final necessity were superseded by the final capture-branch fix"
+      ],
+      "unverified_in_this_backfill": [
+        "original tensor dumps",
+        "universal zero drift",
+        "general independent maximum capacity"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,456 @@
+{
+  "kind": "postprocessed completed public-run SSE token counts and phase times",
+  "checker": {
+    "source_path": "/tank/hot/1cat-deploy/repetition-native-20261009/summarize-stream-phases.py",
+    "source_sha256": "299a0c78d5276e7bda4741680b1988d09a4fde2055f7c12d24046b100a8b6505"
+  },
+  "records": [
+    {
+      "source_path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-independent/main-mixed-graph-none-baseline1x8k512/stream-phase-summary.json",
+      "source_bytes": 2237,
+      "source_sha256": "6b900fd439a80938f0247ab18b4afa9e3ee8ecce9074ccbeb192bc29f15600a4",
+      "observations": {
+        "tag": "main-mixed-graph-none-baseline1x8k512",
+        "report_binding": {
+          "source_path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-independent/main-mixed-graph-none-baseline1x8k512/report.json",
+          "source_bytes": 26900,
+          "source_sha256": "2b8e0b6ed6de56d97997b368ff416aa19b1d62d98620682722c5989b777f7b88"
+        },
+        "stream_metadata_binding": {
+          "source_path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-independent/main-mixed-graph-none-baseline1x8k512/responses.private.json",
+          "source_bytes": 45883,
+          "source_sha256": "808aba2551876681377b03c35637f13b5f76a934fe6f6c6d4296bebd79b840b8"
+        },
+        "basis": "actual returned token IDs and SSE chunk timestamps; no generated text exported",
+        "interval_convention": "(latest first output, earliest last output]; chunk at left boundary excluded",
+        "limits": "Client-observed common output phase, not GPU-kernel throughput; no extrapolation outside interval; short/speculative chunk batching affects endpoints.",
+        "whole_batch": {
+          "wall_s": 20.409081703983247,
+          "actual_output_tokens": 512,
+          "aggregate_end_to_end_tokens_per_s": 25.08687100312175,
+          "aggregate_input_tokens": 8192
+        },
+        "ttft_s": [
+          5.799979062983766
+        ],
+        "whole_stream_decode_tokens_per_s": [
+          34.99495244548303
+        ],
+        "common_output_window_exists": true,
+        "common_output_seconds": 14.60210585501045,
+        "common_output_tokens": 511,
+        "common_output_tokens_per_s": 34.99495244548303,
+        "per_stream_common_output_tokens": [
+          511
+        ],
+        "queue_observation": {
+          "poll_interval_s": 1,
+          "common_decode_window_monotonic_s": [
+            710443.802622014,
+            710458.404727869
+          ],
+          "common_decode_samples": 15,
+          "max_sample_gap_s": 1.0077449009986594,
+          "all_requested_streams_running_during_decode": true,
+          "all_four_running_observed": false,
+          "max_waiting_before_first_output": 0,
+          "max_waiting_after_first_output": 0,
+          "max_waiting_common_decode": 0,
+          "longest_observed_queue_span_common_decode_s": 0,
+          "sustained_queue_common_decode": false,
+          "sustained_definition": "positive waiting on consecutive polls spanning >=0.8 seconds inside common decode",
+          "admission_waiting_is_not_sustained_decode_queueing": true
+        }
+      }
+    },
+    {
+      "source_path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-independent/main-mixed-graph-none-baseline4x8k512/stream-phase-summary.json",
+      "source_bytes": 2415,
+      "source_sha256": "1cbad7f71d16946f584970122003fe15aa39e7354eca0c85e0e522799f5ebe19",
+      "observations": {
+        "tag": "main-mixed-graph-none-baseline4x8k512",
+        "report_binding": {
+          "source_path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-independent/main-mixed-graph-none-baseline4x8k512/report.json",
+          "source_bytes": 51320,
+          "source_sha256": "cdd1549c7bb01eec305d22decbc313d0f9316dae1c0648d76707f5b3515949fc"
+        },
+        "stream_metadata_binding": {
+          "source_path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-independent/main-mixed-graph-none-baseline4x8k512/responses.private.json",
+          "source_bytes": 183644,
+          "source_sha256": "ae6ef1c68ac9b538b28795c9f55674e9648d85ed5ac14e0c6c14a965f803b929"
+        },
+        "basis": "actual returned token IDs and SSE chunk timestamps; no generated text exported",
+        "interval_convention": "(latest first output, earliest last output]; chunk at left boundary excluded",
+        "limits": "Client-observed common output phase, not GPU-kernel throughput; no extrapolation outside interval; short/speculative chunk batching affects endpoints.",
+        "whole_batch": {
+          "wall_s": 46.13824581296649,
+          "actual_output_tokens": 2048,
+          "aggregate_end_to_end_tokens_per_s": 44.38833691905207,
+          "aggregate_input_tokens": 32768
+        },
+        "ttft_s": [
+          5.523387471912429,
+          11.739473685040139,
+          19.349516057991423,
+          27.334197126096115
+        ],
+        "whole_stream_decode_tokens_per_s": [
+          13.258498690983899,
+          15.771988272532251,
+          19.780989379838957,
+          27.189068672148696
+        ],
+        "common_output_window_exists": true,
+        "common_output_seconds": 16.723705456010066,
+        "common_output_tokens": 1783,
+        "common_output_tokens_per_s": 106.61512812994658,
+        "per_stream_common_output_tokens": [
+          446,
+          446,
+          446,
+          445
+        ],
+        "queue_observation": {
+          "poll_interval_s": 1,
+          "common_decode_window_monotonic_s": [
+            706531.641184336,
+            706548.364889792
+          ],
+          "common_decode_samples": 17,
+          "max_sample_gap_s": 1.0077458620071411,
+          "all_requested_streams_running_during_decode": true,
+          "all_four_running_observed": true,
+          "max_waiting_before_first_output": 0,
+          "max_waiting_after_first_output": 2,
+          "max_waiting_common_decode": 0,
+          "longest_observed_queue_span_common_decode_s": 0,
+          "sustained_queue_common_decode": false,
+          "sustained_definition": "positive waiting on consecutive polls spanning >=0.8 seconds inside common decode",
+          "admission_waiting_is_not_sustained_decode_queueing": true
+        }
+      }
+    },
+    {
+      "source_path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-independent/main-w4a16-graph-none-baseline1x8k512/stream-phase-summary.json",
+      "source_bytes": 2239,
+      "source_sha256": "410e7d207423c29f87d7890a31a757a2928788892fafe31cd2b8f602b99703f5",
+      "observations": {
+        "tag": "main-w4a16-graph-none-baseline1x8k512",
+        "report_binding": {
+          "source_path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-independent/main-w4a16-graph-none-baseline1x8k512/report.json",
+          "source_bytes": 25951,
+          "source_sha256": "4f762ea5497fb46640711f2ca4277f856f79681ffea31489bfb0332866467cbc"
+        },
+        "stream_metadata_binding": {
+          "source_path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-independent/main-w4a16-graph-none-baseline1x8k512/responses.private.json",
+          "source_bytes": 46080,
+          "source_sha256": "ded8c0102fd994ec4aa45d82e3ac1420961da9c84c931d9ace9b44e93f0788e7"
+        },
+        "basis": "actual returned token IDs and SSE chunk timestamps; no generated text exported",
+        "interval_convention": "(latest first output, earliest last output]; chunk at left boundary excluded",
+        "limits": "Client-observed common output phase, not GPU-kernel throughput; no extrapolation outside interval; short/speculative chunk batching affects endpoints.",
+        "whole_batch": {
+          "wall_s": 19.785796315059997,
+          "actual_output_tokens": 512,
+          "aggregate_end_to_end_tokens_per_s": 25.877149033940587,
+          "aggregate_input_tokens": 8192
+        },
+        "ttft_s": [
+          5.446450715069659
+        ],
+        "whole_stream_decode_tokens_per_s": [
+          35.64659573640798
+        ],
+        "common_output_window_exists": true,
+        "common_output_seconds": 14.335169725003652,
+        "common_output_tokens": 511,
+        "common_output_tokens_per_s": 35.64659573640798,
+        "per_stream_common_output_tokens": [
+          511
+        ],
+        "queue_observation": {
+          "poll_interval_s": 1,
+          "common_decode_window_monotonic_s": [
+            712163.519165914,
+            712177.854335639
+          ],
+          "common_decode_samples": 14,
+          "max_sample_gap_s": 1.0071857379516587,
+          "all_requested_streams_running_during_decode": true,
+          "all_four_running_observed": false,
+          "max_waiting_before_first_output": 0,
+          "max_waiting_after_first_output": 0,
+          "max_waiting_common_decode": 0,
+          "longest_observed_queue_span_common_decode_s": 0,
+          "sustained_queue_common_decode": false,
+          "sustained_definition": "positive waiting on consecutive polls spanning >=0.8 seconds inside common decode",
+          "admission_waiting_is_not_sustained_decode_queueing": true
+        }
+      }
+    },
+    {
+      "source_path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-independent/main-w4a16-graph-none-baseline4x8k512/stream-phase-summary.json",
+      "source_bytes": 2415,
+      "source_sha256": "566a0d9b3ce9fecec5d5e3be308077b57f5e4a7c430beb7e82c0ffaee2dc6f72",
+      "observations": {
+        "tag": "main-w4a16-graph-none-baseline4x8k512",
+        "report_binding": {
+          "source_path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-independent/main-w4a16-graph-none-baseline4x8k512/report.json",
+          "source_bytes": 52448,
+          "source_sha256": "acfb6daba395c43c99c9018c278e02fb46815426d61ca4d0c6ac290bac286159"
+        },
+        "stream_metadata_binding": {
+          "source_path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-independent/main-w4a16-graph-none-baseline4x8k512/responses.private.json",
+          "source_bytes": 183562,
+          "source_sha256": "d64c10c560af2a4e6597413a326b715f8b2e95ac0ea5f45441a83b668510cf3d"
+        },
+        "basis": "actual returned token IDs and SSE chunk timestamps; no generated text exported",
+        "interval_convention": "(latest first output, earliest last output]; chunk at left boundary excluded",
+        "limits": "Client-observed common output phase, not GPU-kernel throughput; no extrapolation outside interval; short/speculative chunk batching affects endpoints.",
+        "whole_batch": {
+          "wall_s": 47.31254674005322,
+          "actual_output_tokens": 2048,
+          "aggregate_end_to_end_tokens_per_s": 43.28661509709499,
+          "aggregate_input_tokens": 32768
+        },
+        "ttft_s": [
+          5.488309214008041,
+          11.466244840994477,
+          19.288842844893225,
+          27.660676494939253
+        ],
+        "whole_stream_decode_tokens_per_s": [
+          12.893800176895407,
+          15.149667233911114,
+          18.888719529219056,
+          26.016870401750214
+        ],
+        "common_output_window_exists": true,
+        "common_output_seconds": 17.451971108093858,
+        "common_output_tokens": 1777,
+        "common_output_tokens_per_s": 101.82230929639029,
+        "per_stream_common_output_tokens": [
+          445,
+          444,
+          444,
+          444
+        ],
+        "queue_observation": {
+          "poll_interval_s": 1,
+          "common_decode_window_monotonic_s": [
+            712217.304695688,
+            712234.756666796
+          ],
+          "common_decode_samples": 18,
+          "max_sample_gap_s": 1.0055520909372717,
+          "all_requested_streams_running_during_decode": true,
+          "all_four_running_observed": true,
+          "max_waiting_before_first_output": 0,
+          "max_waiting_after_first_output": 2,
+          "max_waiting_common_decode": 0,
+          "longest_observed_queue_span_common_decode_s": 0,
+          "sustained_queue_common_decode": false,
+          "sustained_definition": "positive waiting on consecutive polls spanning >=0.8 seconds inside common decode",
+          "admission_waiting_is_not_sustained_decode_queueing": true
+        }
+      }
+    },
+    {
+      "source_path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-independent/main-mixed-graph-none-capacity4x128k/stream-phase-summary.json",
+      "source_bytes": 2335,
+      "source_sha256": "2681718b63f232bcaa6fdeed288ce68478f4c803b58dfcdd071f9efc4397d72d",
+      "observations": {
+        "tag": "main-mixed-graph-none-capacity4x128k",
+        "report_binding": {
+          "source_path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-independent/main-mixed-graph-none-capacity4x128k/report.json",
+          "source_bytes": 558118,
+          "source_sha256": "7fb9b2adee2b49fdfb917affdc1f53b8ebd8f8ce478907764b8547ea968b4513"
+        },
+        "stream_metadata_binding": {
+          "source_path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-independent/main-mixed-graph-none-capacity4x128k/responses.private.json",
+          "source_bytes": 183574,
+          "source_sha256": "a42af3bc9932d963a128ac3734b740cf486b9c135b6ec69e34d57007f8eec58a"
+        },
+        "basis": "actual returned token IDs and SSE chunk timestamps; no generated text exported",
+        "interval_convention": "(latest first output, earliest last output]; chunk at left boundary excluded",
+        "limits": "Client-observed common output phase, not GPU-kernel throughput; no extrapolation outside interval; short/speculative chunk batching affects endpoints.",
+        "whole_batch": {
+          "wall_s": 687.5980448370101,
+          "actual_output_tokens": 2048,
+          "aggregate_end_to_end_tokens_per_s": 2.9784843272575956,
+          "aggregate_input_tokens": 522240
+        },
+        "ttft_s": [
+          116.04428910801653,
+          316.2650715559721,
+          492.8627560980385,
+          660.9389159680577
+        ],
+        "whole_stream_decode_tokens_per_s": [
+          3.9733670356062185,
+          7.265454114570569,
+          7.607632413275291,
+          19.193052697264353
+        ],
+        "common_output_window_exists": false,
+        "common_output_seconds": null,
+        "common_output_tokens": null,
+        "common_output_tokens_per_s": null,
+        "per_stream_common_output_tokens": [],
+        "queue_observation": {
+          "poll_interval_s": 1,
+          "common_decode_window_monotonic_s": [
+            710289.473723907,
+            709873.155788197
+          ],
+          "common_decode_samples": 0,
+          "max_sample_gap_s": null,
+          "all_requested_streams_running_during_decode": false,
+          "all_four_running_observed": false,
+          "max_waiting_before_first_output": 3,
+          "max_waiting_after_first_output": 1,
+          "max_waiting_common_decode": 0,
+          "longest_observed_queue_span_common_decode_s": 0,
+          "sustained_queue_common_decode": false,
+          "sustained_definition": "positive waiting on consecutive polls spanning >=0.8 seconds inside common decode",
+          "admission_waiting_is_not_sustained_decode_queueing": true
+        }
+      }
+    },
+    {
+      "source_path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-independent/main-w4a16-graph-none-fair2048-4x8k512/stream-phase-summary.json",
+      "source_bytes": 2415,
+      "source_sha256": "c60a4ccba70ceece37c42fe3e1a9a91e66211148cd3afe80c5ed35e2fe8e3044",
+      "observations": {
+        "tag": "main-w4a16-graph-none-fair2048-4x8k512",
+        "report_binding": {
+          "source_path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-independent/main-w4a16-graph-none-fair2048-4x8k512/report.json",
+          "source_bytes": 52477,
+          "source_sha256": "41a78a9ce1c174b112c2b5620faa2883eca6a4302aadeae66311a0aeb674be1f"
+        },
+        "stream_metadata_binding": {
+          "source_path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-independent/main-w4a16-graph-none-fair2048-4x8k512/responses.private.json",
+          "source_bytes": 183550,
+          "source_sha256": "ba51c10bf1273de328d69dd8864c992e0f7fef4be23efde2f62bf56516214c7b"
+        },
+        "basis": "actual returned token IDs and SSE chunk timestamps; no generated text exported",
+        "interval_convention": "(latest first output, earliest last output]; chunk at left boundary excluded",
+        "limits": "Client-observed common output phase, not GPU-kernel throughput; no extrapolation outside interval; short/speculative chunk batching affects endpoints.",
+        "whole_batch": {
+          "wall_s": 48.667700093006715,
+          "actual_output_tokens": 2048,
+          "aggregate_end_to_end_tokens_per_s": 42.08129819338404,
+          "aggregate_input_tokens": 32768
+        },
+        "ttft_s": [
+          8.329849484958686,
+          18.24168896698393,
+          24.335790271055885,
+          30.640643539023586
+        ],
+        "whole_stream_decode_tokens_per_s": [
+          13.479992593755867,
+          17.707389529528673,
+          21.66391051817779,
+          28.432017602833618
+        ],
+        "common_output_window_exists": true,
+        "common_output_seconds": 15.546256063040346,
+        "common_output_tokens": 1741,
+        "common_output_tokens_per_s": 111.98837796960335,
+        "per_stream_common_output_tokens": [
+          436,
+          435,
+          435,
+          435
+        ],
+        "queue_observation": {
+          "poll_interval_s": 1,
+          "common_decode_window_monotonic_s": [
+            712970.015621652,
+            712985.561877715
+          ],
+          "common_decode_samples": 16,
+          "max_sample_gap_s": 1.0063768130494282,
+          "all_requested_streams_running_during_decode": true,
+          "all_four_running_observed": true,
+          "max_waiting_before_first_output": 0,
+          "max_waiting_after_first_output": 0,
+          "max_waiting_common_decode": 0,
+          "longest_observed_queue_span_common_decode_s": 0,
+          "sustained_queue_common_decode": false,
+          "sustained_definition": "positive waiting on consecutive polls spanning >=0.8 seconds inside common decode",
+          "admission_waiting_is_not_sustained_decode_queueing": true
+        }
+      }
+    },
+    {
+      "source_path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-independent/main-w4a16-graph-none-fair2048-4x128k/stream-phase-summary.json",
+      "source_bytes": 2407,
+      "source_sha256": "d8e4b3418907e3d08554cb6832929258349cfde7c071702534e83a2a7a1beab8",
+      "observations": {
+        "tag": "main-w4a16-graph-none-fair2048-4x128k",
+        "report_binding": {
+          "source_path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-independent/main-w4a16-graph-none-fair2048-4x128k/report.json",
+          "source_bytes": 436344,
+          "source_sha256": "d16885a7b03386b0cb6971b69f6b09f79f10f959174ecd1f772fc8fbd0fbec78"
+        },
+        "stream_metadata_binding": {
+          "source_path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-independent/main-w4a16-graph-none-fair2048-4x128k/responses.private.json",
+          "source_bytes": 183560,
+          "source_sha256": "6cbab6fb97b60cae89874a0de3596eb09ef1503f8036f9940c7693d72e8c2508"
+        },
+        "basis": "actual returned token IDs and SSE chunk timestamps; no generated text exported",
+        "interval_convention": "(latest first output, earliest last output]; chunk at left boundary excluded",
+        "limits": "Client-observed common output phase, not GPU-kernel throughput; no extrapolation outside interval; short/speculative chunk batching affects endpoints.",
+        "whole_batch": {
+          "wall_s": 540.2480557700619,
+          "actual_output_tokens": 2048,
+          "aggregate_end_to_end_tokens_per_s": 3.79085121755933,
+          "aggregate_input_tokens": 522240
+        },
+        "ttft_s": [
+          481.0459815179929,
+          481.0921201360179,
+          485.66256515705027,
+          502.23199257301167
+        ],
+        "whole_stream_decode_tokens_per_s": [
+          9.013295060827762,
+          9.022244795935707,
+          9.805185617384755,
+          13.45555850436958
+        ],
+        "common_output_window_exists": true,
+        "common_output_seconds": 35.47618816094473,
+        "common_output_tokens": 1847,
+        "common_output_tokens_per_s": 52.06309064606152,
+        "per_stream_common_output_tokens": [
+          462,
+          461,
+          462,
+          462
+        ],
+        "queue_observation": {
+          "poll_interval_s": 1,
+          "common_decode_window_monotonic_s": [
+            713507.338953651,
+            713542.815141812
+          ],
+          "common_decode_samples": 36,
+          "max_sample_gap_s": 1.0116321359528229,
+          "all_requested_streams_running_during_decode": true,
+          "all_four_running_observed": true,
+          "max_waiting_before_first_output": 0,
+          "max_waiting_after_first_output": 0,
+          "max_waiting_common_decode": 0,
+          "longest_observed_queue_span_common_decode_s": 0,
+          "sustained_queue_common_decode": false,
+          "sustained_definition": "positive waiting on consecutive polls spanning >=0.8 seconds inside common decode",
+          "admission_waiting_is_not_sustained_decode_queueing": true
+        }
+      }
+    }
+  ],
+  "exclusions": "No new generation, no text or token-ID sequence exported; do not sum per-stream decode rates or call these GPU kernel timings."
+}

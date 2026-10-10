@@ -1,0 +1,188 @@
+{
+  "kind": "field-allowlisted saved-tool schema validation",
+  "exclusions": "No arguments, tool names, prompts, generated text or raw responses. No tool execution or semantic correctness assertion.",
+  "checker": {
+    "source_path": "/tank/hot/1cat-deploy/repetition-native-20261009/validate-replay-tools.py",
+    "source_bytes": 3946,
+    "source_sha256": "d3e2ba708a3fb5d9b85c91a9401ccdfb94b2c0817c83806da6e75499b7ab35b9"
+  },
+  "records": [
+    {
+      "source_path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-replay/main-mixed-eager-none-replay32k/tool-schema-validation.json",
+      "source_bytes": 2024,
+      "source_sha256": "b1903f3356f3f6b37c6edd7b8f968557d7b9075872a071fecb5e36018a3b5056",
+      "observations": {
+        "tag": "main-mixed-eager-none-replay32k",
+        "captured_at": "2026-10-09T16:10:16.369735+00:00",
+        "scope": "JSON Schema validity of saved declared tool calls; not semantic or execution correctness",
+        "tools_executed": false,
+        "network_references_enabled": false,
+        "passed": true,
+        "records": [
+          {
+            "name": "cold",
+            "request_binding": {
+              "source_path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-replay/main-mixed-eager-none-replay32k/cold-request.private.json",
+              "source_bytes": 261584,
+              "source_sha256": "02afd786277c5a05f8bbd27e1bb1f152df684de99ff7006441d23090777e7886"
+            },
+            "response_binding": {
+              "source_path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-replay/main-mixed-eager-none-replay32k/cold-response.private.json",
+              "source_bytes": 1334521,
+              "source_sha256": "b9288df0c510db5f7514dcf298f58e217e6a85dc893804d572d099b58979cc09"
+            },
+            "calls": [
+              {
+                "output_index": 2,
+                "name_is_declared": true,
+                "arguments_schema_valid": true,
+                "error_keywords": []
+              }
+            ],
+            "passed": true
+          },
+          {
+            "name": "warm",
+            "request_binding": {
+              "source_path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-replay/main-mixed-eager-none-replay32k/warm-request.private.json",
+              "source_bytes": 261584,
+              "source_sha256": "21cdb157ca70090df151743240eb654cd98f4b86187ada1200d6239dac91b6de"
+            },
+            "response_binding": {
+              "source_path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-replay/main-mixed-eager-none-replay32k/warm-response.private.json",
+              "source_bytes": 1334525,
+              "source_sha256": "6ee8552fdad60258d517192d252b66e5864e023630b577b420ee48927402d9ee"
+            },
+            "calls": [
+              {
+                "output_index": 2,
+                "name_is_declared": true,
+                "arguments_schema_valid": true,
+                "error_keywords": []
+              }
+            ],
+            "passed": true
+          }
+        ]
+      }
+    },
+    {
+      "source_path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-replay/main-mixed-graph-none-replay32k/tool-schema-validation.json",
+      "source_bytes": 2024,
+      "source_sha256": "b656fd951e9421cf008960e0dacfc49d48b9f8ed8b6352dfcac1297963beb1ee",
+      "observations": {
+        "tag": "main-mixed-graph-none-replay32k",
+        "captured_at": "2026-10-09T16:10:17.146142+00:00",
+        "scope": "JSON Schema validity of saved declared tool calls; not semantic or execution correctness",
+        "tools_executed": false,
+        "network_references_enabled": false,
+        "passed": true,
+        "records": [
+          {
+            "name": "cold",
+            "request_binding": {
+              "source_path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-replay/main-mixed-graph-none-replay32k/cold-request.private.json",
+              "source_bytes": 261584,
+              "source_sha256": "092460aa799951e7e18f114f80b742e5aea7f6254cdf69835a9e3d263b6e1ed1"
+            },
+            "response_binding": {
+              "source_path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-replay/main-mixed-graph-none-replay32k/cold-response.private.json",
+              "source_bytes": 1335805,
+              "source_sha256": "72407c85fd6a4b685e0b027621138e11adeff1aae04908d02647aff383b04c38"
+            },
+            "calls": [
+              {
+                "output_index": 2,
+                "name_is_declared": true,
+                "arguments_schema_valid": true,
+                "error_keywords": []
+              }
+            ],
+            "passed": true
+          },
+          {
+            "name": "warm",
+            "request_binding": {
+              "source_path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-replay/main-mixed-graph-none-replay32k/warm-request.private.json",
+              "source_bytes": 261584,
+              "source_sha256": "25b49094e3506107fa0faa9d5e22526a3757732facfba3c6621fab3af1b56dc7"
+            },
+            "response_binding": {
+              "source_path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-replay/main-mixed-graph-none-replay32k/warm-response.private.json",
+              "source_bytes": 1335809,
+              "source_sha256": "d21ebb221024d8d54b7b6568006e0ff645247e899af94208a7504feb58683858"
+            },
+            "calls": [
+              {
+                "output_index": 2,
+                "name_is_declared": true,
+                "arguments_schema_valid": true,
+                "error_keywords": []
+              }
+            ],
+            "passed": true
+          }
+        ]
+      }
+    },
+    {
+      "source_path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-replay/main-w4a16-graph-none-replay32k/tool-schema-validation.json",
+      "source_bytes": 2024,
+      "source_sha256": "a96cd2e075b5e2216231ac01db69b02a6aa5e3e8c571df8d2bae1aaba1a7d410",
+      "observations": {
+        "tag": "main-w4a16-graph-none-replay32k",
+        "captured_at": "2026-10-09T16:10:17.836719+00:00",
+        "scope": "JSON Schema validity of saved declared tool calls; not semantic or execution correctness",
+        "tools_executed": false,
+        "network_references_enabled": false,
+        "passed": true,
+        "records": [
+          {
+            "name": "cold",
+            "request_binding": {
+              "source_path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-replay/main-w4a16-graph-none-replay32k/cold-request.private.json",
+              "source_bytes": 261584,
+              "source_sha256": "b66bfd640bb765570b42d3336c1181ec93577f80bfeb543be2ca88382269ea57"
+            },
+            "response_binding": {
+              "source_path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-replay/main-w4a16-graph-none-replay32k/cold-response.private.json",
+              "source_bytes": 1352886,
+              "source_sha256": "d265f81c19f3133d819b98bb48d06734e12d7b5ec8dd705bb9bedb424f475f4a"
+            },
+            "calls": [
+              {
+                "output_index": 2,
+                "name_is_declared": true,
+                "arguments_schema_valid": true,
+                "error_keywords": []
+              }
+            ],
+            "passed": true
+          },
+          {
+            "name": "warm",
+            "request_binding": {
+              "source_path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-replay/main-w4a16-graph-none-replay32k/warm-request.private.json",
+              "source_bytes": 261584,
+              "source_sha256": "556039dc256bf4b36fe1aea48fdff5a7adb741f8fa0b7c04bd1c20590e3c8bcd"
+            },
+            "response_binding": {
+              "source_path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-replay/main-w4a16-graph-none-replay32k/warm-response.private.json",
+              "source_bytes": 1352890,
+              "source_sha256": "7969cf81e330d1ca468bf6ee299d8b08a5b1cf2b5c4d63f2881a463a2b3ab138"
+            },
+            "calls": [
+              {
+                "output_index": 2,
+                "name_is_declared": true,
+                "arguments_schema_valid": true,
+                "error_keywords": []
+              }
+            ],
+            "passed": true
+          }
+        ]
+      }
+    }
+  ]
+}

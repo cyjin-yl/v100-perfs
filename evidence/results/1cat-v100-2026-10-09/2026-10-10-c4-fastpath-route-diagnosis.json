@@ -1,0 +1,873 @@
+{
+  "kind": "Actual original-source C4 ModelOpt native route diagnosis; bounded profiling, not a throughput reranking",
+  "date": "2026-10-10",
+  "tested_source_revision": "ec535b1e69b6d1b2e6e4e75ce5bd24fc7302972a",
+  "executed_capture_helper_schema": 1,
+  "executed_capture_helper_sha256": "2870693123857ce9a432220ea7247a9d7bed1d3d6f8047fbeeb38a3b92f6215f",
+  "executed_capture_helper_snapshot": "/tank/hot/1cat-deploy/repetition-native-20261009/source-snapshots-fastpath/profile-cohort-v1.py",
+  "corrected_capture_helper_schema": 2,
+  "corrected_classifier_cpu_smoke_passed": true,
+  "native_build_receipt": {
+    "path": "/tank/hot/1cat-deploy/repetition-native-20261009/matching-main-build.json",
+    "bytes": 6119,
+    "sha256": "7675faf54ab0d2303e6153a5a66f44db9ed6587ef18568e3e76a3cecc431e520"
+  },
+  "native_abi": 55,
+  "artifacts": {
+    "w4a16": "3e644f233eb7ebb294a5128d75ca79143987f661",
+    "mixed": "c5fd6ddaec921a7d596b178d91299976abe73011"
+  },
+  "cohort_contract": {
+    "streams": 4,
+    "input_tokens_each": 8192,
+    "actual_output_tokens_each": 512,
+    "sampling": {
+      "temperature": 1,
+      "top_p": 0.95,
+      "top_k": 20,
+      "ignore_eos": true
+    },
+    "source_revision_unchanged": true,
+    "actual_input_id_marker_manifest_hashes_match": true,
+    "independent_fresh_cache_salts": true,
+    "profile_iterations": 8,
+    "phases": [
+      "initial eight target forwards",
+      "after all four first outputs; eight common-decode target forwards"
+    ],
+    "scope": "Same four public inputs as original mixed/W4A16 timing cohort; no private failing workload replay. Profiling overhead excludes speed rankings."
+  },
+  "input_partitions": [
+    {
+      "index": 0,
+      "prompt_tokens": 8192,
+      "prompt_ids_sha256": "3580893fb3b42529de28b9f425e01c13862c46478cc07db5d6a1feed42a25432",
+      "marker_sha256": "1a9d63bf75745b2206938e6ac66ab4f0ea4688df99833ab1a0df22dfaae978c9",
+      "used_manifest_sha256": "21a572b7552a7fb6c9313620b84ab0509f886559fa2a11e9727929a4c66b847f"
+    },
+    {
+      "index": 1,
+      "prompt_tokens": 8192,
+      "prompt_ids_sha256": "ef983e71473d03183b3ba1cb9a352c65fbd5e82cdc18a705246d64c37f408ee0",
+      "marker_sha256": "852ddc39c8df01aef9989b1f52f92fd3d1fbe2bb7e5b0e98f5a0e057512e429a",
+      "used_manifest_sha256": "8f9450eb5f8c5dadecbd4b9778fc4981980da1793bbdaf285f07b01452227fc8"
+    },
+    {
+      "index": 2,
+      "prompt_tokens": 8192,
+      "prompt_ids_sha256": "a7666c4ef9ae93b6019b24cd556884ff80ae6f3e4dac47598bbfee17687461c1",
+      "marker_sha256": "ef636f7b3b822f632c8c3437df0b9e7a7373f74e1b24c2b268d4b3a24087835a",
+      "used_manifest_sha256": "1b5de56e02d4177b383b5cd1d0c880d85801ae9665738aa0d4d2d79760db50ea"
+    },
+    {
+      "index": 3,
+      "prompt_tokens": 8192,
+      "prompt_ids_sha256": "d4d9a7f9b9d2ec026c77d75e158c9794d7a384fc8620e19cd89a3dc7e46a1e21",
+      "marker_sha256": "884757f1a6776266e1c4fc2ae27667e4c7042dbc3c43a61730a4c0bdda42f581",
+      "used_manifest_sha256": "e12917c34327cb51c8dc7aa1a1c696d5871ab3d9a62ac99fb9f3ad4a6d4ce765"
+    }
+  ],
+  "captures": [
+    {
+      "variant": "w4a16",
+      "phase": "initial",
+      "route_passed": true,
+      "run_passed": true,
+      "capacity_pass": true,
+      "metric_deltas": {
+        "success": 4,
+        "preemptions": 0,
+        "corrupted": null,
+        "prompt_count": 4,
+        "prompt_sum": 32768,
+        "generation_count": 4,
+        "generation_sum": 2048,
+        "cache_queries": 286720,
+        "cache_hits": 0
+      },
+      "actual_outputs": [
+        512,
+        512,
+        512,
+        512
+      ],
+      "all_markers_found": true,
+      "queue_observation": {
+        "poll_interval_s": 1,
+        "common_decode_window_monotonic_s": [
+          777604.019055644,
+          777620.697705176
+        ],
+        "common_decode_samples": 17,
+        "max_sample_gap_s": 1.019708313047886,
+        "all_requested_streams_running_during_decode": true,
+        "all_four_running_observed": true,
+        "max_waiting_before_first_output": 0,
+        "max_waiting_after_first_output": 2,
+        "max_waiting_common_decode": 0,
+        "longest_observed_queue_span_common_decode_s": 0,
+        "sustained_queue_common_decode": false,
+        "sustained_definition": "positive waiting on consecutive polls spanning >=0.8 seconds inside common decode",
+        "admission_waiting_is_not_sustained_decode_queueing": true
+      },
+      "generated_counts_at_profile_start_request": null,
+      "receipts": {
+        "route": {
+          "path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-profile-cohort/ec535-w4-c4-initial-20261010/kernel-route.json",
+          "bytes": 173222,
+          "sha256": "e7804d9421553e92c8871323a4fedd7b5e7c0739df4b0cb2ed766dd3fc90c189"
+        },
+        "cohort": {
+          "path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-profile-cohort/ec535-w4-c4-initial-20261010/report.json",
+          "bytes": 67150,
+          "sha256": "3bcce76a174023681a7219cf97b7a9ecf051195faf07601846f07dc3626773b4"
+        }
+      },
+      "ranks": [
+        {
+          "trace_file": "rank0.1791626691085094377.pt.trace.json.gz",
+          "trace_bytes": 3531606,
+          "trace_sha256": "cf73133a9cb65c4d55a058e3bf7e380cf3109df41b5c82b147294b5292fd5c79",
+          "kernel_event_count": 16278,
+          "families": {
+            "other": {
+              "count": 12245,
+              "duration_us": 1024117.8800000001
+            },
+            "sampling_filter_or_draw": {
+              "count": 185,
+              "duration_us": 1504.232
+            },
+            "nccl_all_reduce": {
+              "count": 1032,
+              "duration_us": 2868416.7329999995
+            },
+            "fp4_weight_fp16_activation_sm70_hmma": {
+              "count": 2048,
+              "duration_us": 8030496.114000005
+            },
+            "unquantized_half_cutlass_gemm": {
+              "count": 296,
+              "duration_us": 43687.032999999996
+            },
+            "kv_store": {
+              "count": 128,
+              "duration_us": 3856.7009999999977
+            },
+            "nccl_all_gather": {
+              "count": 8,
+              "duration_us": 784.511
+            },
+            "flash_v100": {
+              "count": 336,
+              "duration_us": 618679.0259999998
+            }
+          },
+          "kernel_span_us": 18318848.57397461,
+          "gpu_kernel_union_us": 12591542.236694336,
+          "cuda_graph_replays": 0,
+          "direct_cuda_kernel_launches": 9769,
+          "host_scalar_reads": 1540,
+          "compact_filter_clear_count": 7,
+          "compact_filter_scatter_count": 7,
+          "topk_cpu_count": 7
+        },
+        {
+          "trace_file": "rank1.1791626691065681222.pt.trace.json.gz",
+          "trace_bytes": 3532380,
+          "trace_sha256": "ae51989d1b37e04ab238368a2f8ac952d81a3c36a972fe450523fd9db5143a5e",
+          "kernel_event_count": 16278,
+          "families": {
+            "other": {
+              "count": 12245,
+              "duration_us": 1020424.9130000004
+            },
+            "sampling_filter_or_draw": {
+              "count": 185,
+              "duration_us": 1532.2489999999998
+            },
+            "nccl_all_reduce": {
+              "count": 1032,
+              "duration_us": 7503647.186999999
+            },
+            "fp4_weight_fp16_activation_sm70_hmma": {
+              "count": 2048,
+              "duration_us": 8060015.599000001
+            },
+            "unquantized_half_cutlass_gemm": {
+              "count": 296,
+              "duration_us": 43625.95200000001
+            },
+            "kv_store": {
+              "count": 128,
+              "duration_us": 3808.6919999999977
+            },
+            "nccl_all_gather": {
+              "count": 8,
+              "duration_us": 810.685
+            },
+            "flash_v100": {
+              "count": 336,
+              "duration_us": 612298.5640000007
+            }
+          },
+          "kernel_span_us": 18318261.209960938,
+          "gpu_kernel_union_us": 17246163.829589844,
+          "cuda_graph_replays": 0,
+          "direct_cuda_kernel_launches": 9769,
+          "host_scalar_reads": 1540,
+          "compact_filter_clear_count": 7,
+          "compact_filter_scatter_count": 7,
+          "topk_cpu_count": 7
+        }
+      ]
+    },
+    {
+      "variant": "w4a16",
+      "phase": "common-decode",
+      "route_passed": true,
+      "run_passed": true,
+      "capacity_pass": true,
+      "metric_deltas": {
+        "success": 4,
+        "preemptions": 0,
+        "corrupted": null,
+        "prompt_count": 4,
+        "prompt_sum": 32768,
+        "generation_count": 4,
+        "generation_sum": 2048,
+        "cache_queries": 32768,
+        "cache_hits": 0
+      },
+      "actual_outputs": [
+        512,
+        512,
+        512,
+        512
+      ],
+      "all_markers_found": true,
+      "queue_observation": {
+        "poll_interval_s": 1,
+        "common_decode_window_monotonic_s": [
+          777713.013795745,
+          777735.414829346
+        ],
+        "common_decode_samples": 23,
+        "max_sample_gap_s": 1.0136173849459738,
+        "all_requested_streams_running_during_decode": true,
+        "all_four_running_observed": true,
+        "max_waiting_before_first_output": 0,
+        "max_waiting_after_first_output": 1,
+        "max_waiting_common_decode": 0,
+        "longest_observed_queue_span_common_decode_s": 0,
+        "sustained_queue_common_decode": false,
+        "sustained_definition": "positive waiting on consecutive polls spanning >=0.8 seconds inside common decode",
+        "admission_waiting_is_not_sustained_decode_queueing": true
+      },
+      "generated_counts_at_profile_start_request": [
+        36,
+        35,
+        34,
+        1
+      ],
+      "receipts": {
+        "route": {
+          "path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-profile-cohort/ec535-w4-c4-common-20261010/kernel-route.json",
+          "bytes": 121041,
+          "sha256": "e555f3208a504eb315be4bb33e2bc55c3cb2f72da90ca246649f2f3946084947"
+        },
+        "cohort": {
+          "path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-profile-cohort/ec535-w4-c4-common-20261010/report.json",
+          "bytes": 52960,
+          "sha256": "52b6749cf0642fcb6b78dedc32fcce39699ac3a6f9f079cdd3ae58905e31c350"
+        }
+      },
+      "ranks": [
+        {
+          "trace_file": "rank0.1791626830385591350.pt.trace.json.gz",
+          "trace_bytes": 639113,
+          "trace_sha256": "f83e7e60c1ad47939cecc40b0e6831d953d0afda945e28be110ce705305878b5",
+          "kernel_event_count": 15644,
+          "families": {
+            "other": {
+              "count": 11061,
+              "duration_us": 41032.11100000001
+            },
+            "nccl_all_reduce": {
+              "count": 1032,
+              "duration_us": 20595.998000000025
+            },
+            "fp4_weight_fp16_activation_sm70_hmma": {
+              "count": 2048,
+              "duration_us": 124385.3119999999
+            },
+            "unquantized_half_cutlass_gemm": {
+              "count": 392,
+              "duration_us": 19677.702
+            },
+            "native_gdn_decode": {
+              "count": 384,
+              "duration_us": 9323.256999999994
+            },
+            "kv_store": {
+              "count": 128,
+              "duration_us": 1994.3949999999995
+            },
+            "flash_v100": {
+              "count": 384,
+              "duration_us": 31212.048000000006
+            },
+            "nccl_all_gather": {
+              "count": 8,
+              "duration_us": 1056.194
+            },
+            "sampling_filter_or_draw": {
+              "count": 207,
+              "duration_us": 1772.097
+            }
+          },
+          "kernel_span_us": 327592.625,
+          "gpu_kernel_union_us": 251049.1346435547,
+          "cuda_graph_replays": 8,
+          "direct_cuda_kernel_launches": 784,
+          "host_scalar_reads": 56,
+          "compact_filter_clear_count": 8,
+          "compact_filter_scatter_count": 8,
+          "topk_cpu_count": 8
+        },
+        {
+          "trace_file": "rank1.1791626830352243676.pt.trace.json.gz",
+          "trace_bytes": 638129,
+          "trace_sha256": "642473a38a9ccccb19d0913ccf5d684a2fcbb00a762f32b4cf20cef898829412",
+          "kernel_event_count": 15644,
+          "families": {
+            "other": {
+              "count": 11061,
+              "duration_us": 41905.21900000005
+            },
+            "nccl_all_reduce": {
+              "count": 1032,
+              "duration_us": 32096.957000000006
+            },
+            "fp4_weight_fp16_activation_sm70_hmma": {
+              "count": 2048,
+              "duration_us": 123891.97199999978
+            },
+            "unquantized_half_cutlass_gemm": {
+              "count": 392,
+              "duration_us": 19694.97299999999
+            },
+            "native_gdn_decode": {
+              "count": 384,
+              "duration_us": 9375.090999999988
+            },
+            "kv_store": {
+              "count": 128,
+              "duration_us": 1976.797999999999
+            },
+            "flash_v100": {
+              "count": 384,
+              "duration_us": 31322.389000000003
+            },
+            "nccl_all_gather": {
+              "count": 8,
+              "duration_us": 1062.779
+            },
+            "sampling_filter_or_draw": {
+              "count": 207,
+              "duration_us": 1810.6170000000002
+            }
+          },
+          "kernel_span_us": 327893.7130126953,
+          "gpu_kernel_union_us": 263136.8239746094,
+          "cuda_graph_replays": 8,
+          "direct_cuda_kernel_launches": 784,
+          "host_scalar_reads": 56,
+          "compact_filter_clear_count": 8,
+          "compact_filter_scatter_count": 8,
+          "topk_cpu_count": 8
+        }
+      ]
+    },
+    {
+      "variant": "mixed",
+      "phase": "initial",
+      "route_passed": true,
+      "run_passed": true,
+      "capacity_pass": true,
+      "metric_deltas": {
+        "success": 4,
+        "preemptions": 0,
+        "corrupted": null,
+        "prompt_count": 4,
+        "prompt_sum": 32768,
+        "generation_count": 4,
+        "generation_sum": 2048,
+        "cache_queries": 286720,
+        "cache_hits": 0
+      },
+      "actual_outputs": [
+        512,
+        512,
+        512,
+        512
+      ],
+      "all_markers_found": true,
+      "queue_observation": {
+        "poll_interval_s": 1,
+        "common_decode_window_monotonic_s": [
+          778456.083284898,
+          778473.399459157
+        ],
+        "common_decode_samples": 17,
+        "max_sample_gap_s": 1.0074464009376243,
+        "all_requested_streams_running_during_decode": true,
+        "all_four_running_observed": true,
+        "max_waiting_before_first_output": 0,
+        "max_waiting_after_first_output": 2,
+        "max_waiting_common_decode": 0,
+        "longest_observed_queue_span_common_decode_s": 0,
+        "sustained_queue_common_decode": false,
+        "sustained_definition": "positive waiting on consecutive polls spanning >=0.8 seconds inside common decode",
+        "admission_waiting_is_not_sustained_decode_queueing": true
+      },
+      "generated_counts_at_profile_start_request": null,
+      "receipts": {
+        "route": {
+          "path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-profile-cohort/ec535-mixed-c4-initial-20261010/kernel-route.json",
+          "bytes": 189322,
+          "sha256": "fcbe1e037340e0c95ad826f4d7a87210b33680b651ad30df8de3e8ca37d41ab7"
+        },
+        "cohort": {
+          "path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-profile-cohort/ec535-mixed-c4-initial-20261010/report.json",
+          "bytes": 64885,
+          "sha256": "41db1575cac777fa000c159291af2cc5802e04dd87f952535c2f667ef8ddad1c"
+        }
+      },
+      "ranks": [
+        {
+          "trace_file": "rank0.1791627544222717962.pt.trace.json.gz",
+          "trace_bytes": 3425679,
+          "trace_sha256": "ba96105169650601b451270c1521350a8e2b00c5ee9e860eb4c43ffa40e786ca",
+          "kernel_event_count": 15010,
+          "families": {
+            "other": {
+              "count": 10881,
+              "duration_us": 1009484.5180000003
+            },
+            "sampling_filter_or_draw": {
+              "count": 185,
+              "duration_us": 1514.4620000000002
+            },
+            "nccl_all_reduce": {
+              "count": 1032,
+              "duration_us": 2857253.550999997
+            },
+            "fp8_weight_fp16_activation_sm70_hmma": {
+              "count": 1024,
+              "duration_us": 2357790.65
+            },
+            "unquantized_half_cutlass_gemm": {
+              "count": 392,
+              "duration_us": 45876.252000000015
+            },
+            "fp4_weight_fp16_activation_sm70_hmma": {
+              "count": 1024,
+              "duration_us": 6451095.973000003
+            },
+            "kv_store": {
+              "count": 128,
+              "duration_us": 3833.1109999999994
+            },
+            "nccl_all_gather": {
+              "count": 8,
+              "duration_us": 831.166
+            },
+            "flash_v100": {
+              "count": 336,
+              "duration_us": 607930.4219999994
+            }
+          },
+          "kernel_span_us": 15257972.394897461,
+          "gpu_kernel_union_us": 13335610.099609375,
+          "cuda_graph_replays": 0,
+          "direct_cuda_kernel_launches": 8403,
+          "host_scalar_reads": 1540,
+          "compact_filter_clear_count": 7,
+          "compact_filter_scatter_count": 7,
+          "topk_cpu_count": 7
+        },
+        {
+          "trace_file": "rank1.1791627544027842295.pt.trace.json.gz",
+          "trace_bytes": 3429214,
+          "trace_sha256": "fdcd43ebdeefb0d9d16a0da830f704af152f2721e88f0b3bcca71d61424d2910",
+          "kernel_event_count": 15010,
+          "families": {
+            "other": {
+              "count": 10881,
+              "duration_us": 1011911.0889999999
+            },
+            "sampling_filter_or_draw": {
+              "count": 185,
+              "duration_us": 1517.0149999999999
+            },
+            "nccl_all_reduce": {
+              "count": 1032,
+              "duration_us": 2856114.540000006
+            },
+            "fp8_weight_fp16_activation_sm70_hmma": {
+              "count": 1024,
+              "duration_us": 2359413.2199999997
+            },
+            "unquantized_half_cutlass_gemm": {
+              "count": 392,
+              "duration_us": 45859.03800000001
+            },
+            "fp4_weight_fp16_activation_sm70_hmma": {
+              "count": 1024,
+              "duration_us": 6449476.126999997
+            },
+            "kv_store": {
+              "count": 128,
+              "duration_us": 3832.142999999999
+            },
+            "nccl_all_gather": {
+              "count": 8,
+              "duration_us": 839.6129999999999
+            },
+            "flash_v100": {
+              "count": 336,
+              "duration_us": 606207.468
+            }
+          },
+          "kernel_span_us": 15258323.836914062,
+          "gpu_kernel_union_us": 13335170.245117188,
+          "cuda_graph_replays": 0,
+          "direct_cuda_kernel_launches": 8403,
+          "host_scalar_reads": 1540,
+          "compact_filter_clear_count": 7,
+          "compact_filter_scatter_count": 7,
+          "topk_cpu_count": 7
+        }
+      ]
+    },
+    {
+      "variant": "mixed",
+      "phase": "common-decode",
+      "route_passed": true,
+      "run_passed": true,
+      "capacity_pass": true,
+      "metric_deltas": {
+        "success": 4,
+        "preemptions": 0,
+        "corrupted": null,
+        "prompt_count": 4,
+        "prompt_sum": 32768,
+        "generation_count": 4,
+        "generation_sum": 2048,
+        "cache_queries": 303104,
+        "cache_hits": 0
+      },
+      "actual_outputs": [
+        512,
+        512,
+        512,
+        512
+      ],
+      "all_markers_found": true,
+      "queue_observation": {
+        "poll_interval_s": 1,
+        "common_decode_window_monotonic_s": [
+          778635.166302625,
+          778656.803261278
+        ],
+        "common_decode_samples": 22,
+        "max_sample_gap_s": 1.0061697940109298,
+        "all_requested_streams_running_during_decode": true,
+        "all_four_running_observed": true,
+        "max_waiting_before_first_output": 0,
+        "max_waiting_after_first_output": 1,
+        "max_waiting_common_decode": 0,
+        "longest_observed_queue_span_common_decode_s": 0,
+        "sustained_queue_common_decode": false,
+        "sustained_definition": "positive waiting on consecutive polls spanning >=0.8 seconds inside common decode",
+        "admission_waiting_is_not_sustained_decode_queueing": true
+      },
+      "generated_counts_at_profile_start_request": [
+        69,
+        67,
+        34,
+        1
+      ],
+      "receipts": {
+        "route": {
+          "path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-profile-cohort/ec535-mixed-c4-common-20261010/kernel-route.json",
+          "bytes": 133898,
+          "sha256": "521dfe5d87bca62cea2f725a936ca7236935c9581ab7598725dbd981f61aa086"
+        },
+        "cohort": {
+          "path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-profile-cohort/ec535-mixed-c4-common-20261010/report.json",
+          "bytes": 59206,
+          "sha256": "1fd4581e0aebddc509bbf6ac22eeeba62e2f174b2185fd8dd5f00d4743233c18"
+        }
+      },
+      "ranks": [
+        {
+          "trace_file": "rank0.1791627752480689728.pt.trace.json.gz",
+          "trace_bytes": 654127,
+          "trace_sha256": "6ddce001b96435f38271cb0f87460627a54c32eb9a1894169528d25d7795fa71",
+          "kernel_event_count": 15656,
+          "families": {
+            "other": {
+              "count": 11072,
+              "duration_us": 41123.476999999984
+            },
+            "sampling_filter_or_draw": {
+              "count": 208,
+              "duration_us": 1802.6200000000001
+            },
+            "nccl_all_reduce": {
+              "count": 1032,
+              "duration_us": 20569.719000000023
+            },
+            "fp8_weight_fp16_activation_sm70_hmma": {
+              "count": 1024,
+              "duration_us": 51086.077
+            },
+            "unquantized_half_cutlass_gemm": {
+              "count": 392,
+              "duration_us": 19590.72500000001
+            },
+            "native_gdn_decode": {
+              "count": 384,
+              "duration_us": 9169.003000000004
+            },
+            "fp4_weight_fp16_activation_sm70_hmma": {
+              "count": 1024,
+              "duration_us": 82726.58900000014
+            },
+            "kv_store": {
+              "count": 128,
+              "duration_us": 1986.753000000001
+            },
+            "flash_v100": {
+              "count": 384,
+              "duration_us": 31222.591999999993
+            },
+            "nccl_all_gather": {
+              "count": 8,
+              "duration_us": 1096.149
+            }
+          },
+          "kernel_span_us": 329174.1199951172,
+          "gpu_kernel_union_us": 260373.75439453125,
+          "cuda_graph_replays": 8,
+          "direct_cuda_kernel_launches": 784,
+          "host_scalar_reads": 56,
+          "compact_filter_clear_count": 8,
+          "compact_filter_scatter_count": 8,
+          "topk_cpu_count": 8
+        },
+        {
+          "trace_file": "rank1.1791627752477388626.pt.trace.json.gz",
+          "trace_bytes": 652475,
+          "trace_sha256": "7f7038238e12f9a99736d3d908806966698d8e770d700ffec3201787d10fa474",
+          "kernel_event_count": 15656,
+          "families": {
+            "other": {
+              "count": 11072,
+              "duration_us": 41897.535999999964
+            },
+            "sampling_filter_or_draw": {
+              "count": 208,
+              "duration_us": 1801.089
+            },
+            "nccl_all_reduce": {
+              "count": 1032,
+              "duration_us": 29311.93700000001
+            },
+            "fp8_weight_fp16_activation_sm70_hmma": {
+              "count": 1024,
+              "duration_us": 51038.03200000002
+            },
+            "unquantized_half_cutlass_gemm": {
+              "count": 392,
+              "duration_us": 19642.814999999984
+            },
+            "native_gdn_decode": {
+              "count": 384,
+              "duration_us": 9163.784000000001
+            },
+            "fp4_weight_fp16_activation_sm70_hmma": {
+              "count": 1024,
+              "duration_us": 82441.2639999999
+            },
+            "kv_store": {
+              "count": 128,
+              "duration_us": 1996.9640000000004
+            },
+            "flash_v100": {
+              "count": 384,
+              "duration_us": 31176.967999999986
+            },
+            "nccl_all_gather": {
+              "count": 8,
+              "duration_us": 1052.4279999999999
+            }
+          },
+          "kernel_span_us": 329086.1799316406,
+          "gpu_kernel_union_us": 269522.7869873047,
+          "cuda_graph_replays": 8,
+          "direct_cuda_kernel_launches": 784,
+          "host_scalar_reads": 56,
+          "compact_filter_clear_count": 8,
+          "compact_filter_scatter_count": 8,
+          "topk_cpu_count": 8
+        }
+      ]
+    }
+  ],
+  "resolved_routes": {
+    "artifact_dialect": "ModelOpt MIXED_PRECISION, not the compressed-tensors config_groups/QPN contract",
+    "w4a16": "FP4 packed weights, FP16 activations, FP16 Volta HMMA with float accumulation",
+    "mixed": "FP4 packed MLP weights and FP8 packed attention-projection weights, FP16 activations, Volta HMMA",
+    "gdn_decode": "Native mixed-QKV global-state recurrence observed on both ranks for C4",
+    "attention_decode": "Native Flash-V100 D256/GQA6 XQA-TC partition, reduce-stats, reduce-output observed",
+    "graph": "Eight actual forward cudaGraphLaunch calls per rank in each common-decode window; head/filter/RNG/output/IPC are not all covered by this graph",
+    "sampling": "Compact clear/scatter and top-k/top-p/Gumbel observed at C4; do not transfer singleton dense-sort diagnosis",
+    "head_and_ba": "Unquantized half CUTLASS GEMMs observed; 392 per rank/common window, consistent with48 narrow GDN b/a plusone output head perstep; family assignment is source-derived, not a measured per-layer correlation"
+  },
+  "specialized_gate_results": [
+    {
+      "route": "QPN2/QPN8 compressed-tensors providers",
+      "result": "Not prepared by these ModelOpt adapters; ordinary TurboMind providers selected. This is not proof of a missing native binary."
+    },
+    {
+      "route": "QPN4 singleton/native M1 and TP4 M1 linear tuning",
+      "result": "C4/max_num_seqs4 and TP2 local shapes do not satisfy these workload/shape gates."
+    },
+    {
+      "route": "Greedy top1 / singleton head-top20 / native Philox-top20",
+      "result": "Greedy rejects temperature1; singleton/classic-runner shortcuts do not govern this MRv2 C4 contract."
+    },
+    {
+      "route": "TP4 one-pass GDN / collective fusion",
+      "result": "TP2 has24 local value heads rather than TP4-specific12-head geometry."
+    }
+  ],
+  "timing_limits": [
+    "Kernel durations are per-rank sums; concurrent streams overlap. Do not add ranks as wall time.",
+    "Trace spans/occupancy include profiling effects and are not CPU/IPC causal attribution.",
+    "No speed winner, unprofiled performance gain or numerical/private-quality admission follows from these captures.",
+    "Steady logical M4 follows four alive no-spec q1 requests and graph eligibility; tensor/operator dimensions were not directly recorded. Kernel tile sizes are not input M.",
+    "Initial eight-forward windows include actual cold/ramp work; they are not guaranteed to represent all four complete prefills."
+  ],
+  "classifier_correction": "The retained capture helper v1 incorrectly labelled every Sm70/SM70_MMA_884 GEMM nvfp4_sm70_hmma and missed float-accumulator half CUTLASS names. This publication reclassifies full packed Operand_B codecs and half-GEMM symbols; original route receipts are preserved unchanged.",
+  "upstream": {
+    "fetched_revision": "44276e9719831955f1d6c11679669940a0409ad1",
+    "fetched_ref": "refs/remotes/fastpath-44276e97/main",
+    "isolated_worktree": "/tank/hot/1cat-deploy/repetition-native-20261009/fastpath-main-44276e97",
+    "latest_after_experiment": "ec535-mixed-c4-common-20261010",
+    "tested_7ab_head_and_three_owned_source_hashes_preserved": true,
+    "delta_8216_to_44276": {
+      "base": "8216c055d439c801a7a3c463a315c81142a40aba",
+      "head": "44276e9719831955f1d6c11679669940a0409ad1",
+      "checked_at": "2026-10-10T10:17:22.162927+00:00",
+      "proxy": "http://10.20.0.1:7893",
+      "authentication": "runtime_in_memory",
+      "comparison_sha256": "b0beabafaa3972b3d4905778ff38dd8a92af1e91aac0cd343aab8beed918de3e",
+      "status": "ahead",
+      "commits": 2,
+      "files": [
+        {
+          "name": "docs/design/architecture/sm70_phase_c.md",
+          "status": "modified",
+          "additions": 74,
+          "deletions": 0
+        },
+        {
+          "name": "tests/kernels/test_gdn_prefill_stages.py",
+          "status": "added",
+          "additions": 195,
+          "deletions": 0
+        },
+        {
+          "name": "tests/kernels/test_sm70_gdn_mixed_spec_verify.py",
+          "status": "modified",
+          "additions": 18,
+          "deletions": 14
+        },
+        {
+          "name": "tests/kernels/test_sm70_mtp_gdn_mixed_qkv.py",
+          "status": "modified",
+          "additions": 2,
+          "deletions": 0
+        },
+        {
+          "name": "tests/model_executor/layers/test_gdn_stage_lifecycle.py",
+          "status": "added",
+          "additions": 250,
+          "deletions": 0
+        },
+        {
+          "name": "tools/pre_commit/layering_baseline.json",
+          "status": "modified",
+          "additions": 11,
+          "deletions": 2
+        },
+        {
+          "name": "vllm/model_executor/layers/fla/ops/gdn_diagnostics.py",
+          "status": "modified",
+          "additions": 88,
+          "deletions": 1
+        },
+        {
+          "name": "vllm/model_executor/layers/fla/ops/gdn_prefill.py",
+          "status": "modified",
+          "additions": 143,
+          "deletions": 0
+        },
+        {
+          "name": "vllm/model_executor/layers/fla/ops/gdn_preparation.py",
+          "status": "added",
+          "additions": 276,
+          "deletions": 0
+        },
+        {
+          "name": "vllm/model_executor/layers/fla/ops/gdn_stages.py",
+          "status": "modified",
+          "additions": 8,
+          "deletions": 0
+        },
+        {
+          "name": "vllm/model_executor/layers/fla/ops/sm70/gdn_decode.py",
+          "status": "modified",
+          "additions": 6,
+          "deletions": 9
+        },
+        {
+          "name": "vllm/model_executor/layers/mamba/gdn/qwen_gdn_linear_attn.py",
+          "status": "modified",
+          "additions": 107,
+          "deletions": 1038
+        },
+        {
+          "name": "vllm/model_executor/warmup/gdn.py",
+          "status": "added",
+          "additions": 648,
+          "deletions": 0
+        }
+      ],
+      "source_or_runtime_changed": true
+    },
+    "performance_tested": false,
+    "native_runtime_admitted": false
+  },
+  "source_references": [
+    "vllm/model_executor/layers/quantization/modelopt.py:_try_prepare_sm70_modelopt_nvfp4,ModelOptFp8LinearMethod,ModelOptMixedPrecisionConfig",
+    "vllm/model_executor/kernels/linear/sm70_provider.py:bind_prepared_provider",
+    "vllm/v1/worker/gpu/model_runner.py:forward,sample",
+    "vllm/v1/sample/ops/topk_topp_triton.py:compact filtering and reference boundary guards"
+  ],
+  "excluded": "No input/token bodies, generated text, tensor values, request IDs, private argv/env, raw logs, credential values, metric labels or private failure replay."
+}

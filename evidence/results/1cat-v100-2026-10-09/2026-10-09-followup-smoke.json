@@ -1,0 +1,186 @@
+{
+  "kind": "field-allowlisted public summary; not raw report",
+  "published_on": "2026-10-09",
+  "excluded": "Generated text/reasoning, prompts, private request/response and launch files, raw engine logs, credentials, endpoints, raw error strings, token histograms and tool-call arguments are not copied. Original source files remain unchanged. Missing fields are unknown, not zero. Report pass flags are harness verdicts, not semantic or numerical certification.",
+  "records": [
+    {
+      "source_path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-smoke/main-mixed-graph-none-image-pair/failure.json",
+      "source_sha256": "76324acb1d42b95af6c85989db21c5046554dee3ad4bc6e531f37b370dc78267",
+      "source_bytes": 40,
+      "observations": {
+        "http_status": 400,
+        "probe_name": "image_left_red",
+        "error_class": "invalid probe: missing mandatory image detail:auto",
+        "engine_quality_failure": false
+      },
+      "diagnosis_source": "Main controlled runtime owner; private response not opened for publication"
+    },
+    {
+      "source_path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-smoke/main-mixed-graph-none-image-pair-v2/report.json",
+      "source_sha256": "6b0e90947beb9e4b96a5c3558ab6313b766cf1cc9f11ca9fa43a6db331d5bfcd",
+      "source_bytes": 3382,
+      "observations": {
+        "tag": "main-mixed-graph-none-image-pair-v2",
+        "passed": true,
+        "success_delta": 2.0,
+        "failure_count": 0,
+        "requests": [
+          {
+            "name": "image_left_red",
+            "status": "completed",
+            "passed": true,
+            "answer_correct": true,
+            "elapsed_s": 12.956929179024883,
+            "usage": {
+              "input_tokens": 130,
+              "input_tokens_details": {
+                "cached_tokens": 0,
+                "input_tokens_per_turn": [],
+                "cached_tokens_per_turn": []
+              },
+              "output_tokens": 2,
+              "output_tokens_details": {
+                "reasoning_tokens": 0,
+                "tool_output_tokens": 0,
+                "output_tokens_per_turn": [],
+                "tool_output_tokens_per_turn": []
+              },
+              "total_tokens": 132
+            },
+            "actual_input_tokens": 130,
+            "actual_output_tokens": 2,
+            "output_sha256": "b1f51a511f1da0cd348b8f8598db32e61cb963e5fc69e2b41485bf99590ed75a",
+            "image_sha256": "63fe3e66151091afb459f2ed6723f104f9f1a5fe3f39daf6022159e09d4ef56e",
+            "error_present": false
+          },
+          {
+            "name": "image_left_blue",
+            "status": "completed",
+            "passed": true,
+            "answer_correct": true,
+            "elapsed_s": 0.40181008796207607,
+            "usage": {
+              "input_tokens": 130,
+              "input_tokens_details": {
+                "cached_tokens": 0,
+                "input_tokens_per_turn": [],
+                "cached_tokens_per_turn": []
+              },
+              "output_tokens": 2,
+              "output_tokens_details": {
+                "reasoning_tokens": 0,
+                "tool_output_tokens": 0,
+                "output_tokens_per_turn": [],
+                "tool_output_tokens_per_turn": []
+              },
+              "total_tokens": 132
+            },
+            "actual_input_tokens": 130,
+            "actual_output_tokens": 2,
+            "output_sha256": "16477688c0e00699c6cfa4497a3612d7e83c532062b64b250fed8908128ed548",
+            "image_sha256": "c68be7ee25c5ace0a0a61f60e4eb99091ac86b1b7ea1c633188928a3d2bf42cc",
+            "error_present": false
+          }
+        ],
+        "before": {
+          "success": 11.0,
+          "preemptions": 0.0,
+          "corrupted": null,
+          "prompt_count": 11.0,
+          "prompt_sum": 307768.0,
+          "generation_count": 11.0,
+          "generation_sum": 3344.0,
+          "cache_queries": 553528.0,
+          "cache_hits": 131072.0
+        },
+        "after": {
+          "success": 13.0,
+          "preemptions": 0.0,
+          "corrupted": null,
+          "prompt_count": 13.0,
+          "prompt_sum": 308028.0,
+          "generation_count": 13.0,
+          "generation_sum": 3348.0,
+          "cache_queries": 553788.0,
+          "cache_hits": 131072.0
+        }
+      }
+    },
+    {
+      "source_path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-independent/main-mixed-graph-none-baseline4x8k512/report.json",
+      "source_sha256": "cdd1549c7bb01eec305d22decbc313d0f9316dae1c0648d76707f5b3515949fc",
+      "source_bytes": 51320,
+      "observations": {
+        "prompts": {
+          "source_revision": "ec535b1e69b6d1b2e6e4e75ce5bd24fc7302972a",
+          "pairwise_common_prefix_tokens": [
+            {
+              "left": 0,
+              "right": 1,
+              "tokens": 3
+            },
+            {
+              "left": 0,
+              "right": 2,
+              "tokens": 3
+            },
+            {
+              "left": 0,
+              "right": 3,
+              "tokens": 3
+            },
+            {
+              "left": 1,
+              "right": 2,
+              "tokens": 3
+            },
+            {
+              "left": 1,
+              "right": 3,
+              "tokens": 3
+            },
+            {
+              "left": 2,
+              "right": 3,
+              "tokens": 3
+            }
+          ],
+          "template_applied": true,
+          "enable_thinking": false,
+          "tokenization": "template-prefix + unique-source + template-suffix"
+        },
+        "queue_observation": {
+          "poll_interval_s": 1.0,
+          "common_decode_window_monotonic_s": [
+            706531.641184336,
+            706548.364889792
+          ],
+          "common_decode_samples": 17,
+          "max_sample_gap_s": 1.0077458620071411,
+          "all_requested_streams_running_during_decode": true,
+          "all_four_running_observed": true,
+          "max_waiting_before_first_output": 0,
+          "max_waiting_after_first_output": 2.0,
+          "max_waiting_common_decode": 0,
+          "longest_observed_queue_span_common_decode_s": 0,
+          "sustained_queue_common_decode": false,
+          "sustained_definition": "positive waiting on consecutive polls spanning >=0.8 seconds inside common decode",
+          "admission_waiting_is_not_sustained_decode_queueing": true
+        },
+        "capacity_extent": {
+          "input_tokens_per_stream": 8192,
+          "requested_output_budget_per_stream": 512,
+          "actual_output_tokens_per_stream": [
+            512,
+            512,
+            512,
+            512
+          ],
+          "every_output_budget_exhausted": true,
+          "natural_eos_may_finish_below_budget": false,
+          "applies_only_to_observed_lengths": true
+        }
+      }
+    }
+  ]
+}

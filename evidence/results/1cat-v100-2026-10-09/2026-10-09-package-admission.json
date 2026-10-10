@@ -1,0 +1,174 @@
+{
+  "kind": "field-allowlisted public summary; not raw report",
+  "published_on": "2026-10-09",
+  "excluded": "Generated text/reasoning, prompts, private request/response and launch files, raw engine logs, credentials, endpoints, raw error strings, token histograms and tool-call arguments are not copied. Original source files remain unchanged. Missing fields are unknown, not zero. Report pass flags are harness verdicts, not semantic or numerical certification.",
+  "records": [
+    {
+      "source_path": "/tank/hot/models/.ninfer-acquisition-20261009/compatibility-outcome.json",
+      "source_sha256": "85b2f71a2b1d0292ee813e4afa9d4ca7e172df199bcc3cd77fabc66df9578a9e",
+      "source_bytes": 1732,
+      "observations": {
+        "observed_at": 1791557483.1856601,
+        "runtime_commit": "b37d0dd3e1163b9d802d8bccfa89918bf68d793e",
+        "scope": "artifact acquisition only; no runtime compatibility or native execution claimed",
+        "primary_v2": {
+          "status": "acquire_as_conversion_input_only",
+          "container_magic_supported": true,
+          "loads_unchanged": false,
+          "blockers": [
+            "missing mandatory embedded vision inventory",
+            "missing frontend/preprocessor_config.json and frontend/video_preprocessor_config.json",
+            "frontend tokenizer/template contract unproven"
+          ],
+          "sidecar_status": "hash-admitted source material only; no external runtime sidecar option",
+          "authority": "Main explicitly instructed preserve/complete existing transfer as conversion input"
+        },
+        "primary_v3": {
+          "status": "headers_only_no_bulk_download",
+          "loads_unchanged": false,
+          "blockers": [
+            "V3 magic and schema rejected by immutable V2 reader"
+          ]
+        },
+        "q6": {
+          "status": "headers_and_metadata_only_no_bulk_download",
+          "revision": "08748898ab265b471b59263d654925df2de25005",
+          "loads_unchanged": false,
+          "blockers": [
+            "V3 magic and schema rejected",
+            "GGUF Q6_K/Q8_0 codecs absent",
+            "no concrete V100-compatible conversion path"
+          ],
+          "bulk_bytes_downloaded": 0
+        },
+        "imatrix": {
+          "status": "not_acquired",
+          "reason": "importance matrix cannot resolve container/codec/kernel incompatibility"
+        },
+        "source_evidence": [
+          "src/artifact/reader.cpp:28-33,85-110,268-302",
+          "src/targets/qwen3_6/impl/frontend/resources.cpp:20-32",
+          "src/targets/qwen3_6_27b/impl/load/bindings.cpp:492-574",
+          "tools/artifact/container.py:15,305-307"
+        ]
+      }
+    },
+    {
+      "source_path": "/tank/hot/models/.ninfer-acquisition-20261009/header-admission.json",
+      "source_sha256": "a6f4e8edd277e9c82a271cff11868e63ddfcba95a0a1aa887a2cde670bad105a",
+      "source_bytes": 3698,
+      "observations": {
+        "observed_at": 1791556345.239434,
+        "admission": "bounded header only; complete file SHA required after transfer",
+        "records": [
+          {
+            "variant": "primary",
+            "model_id": "Merkyor/Qwen3.8-27B-Coder390-EfficientThink-Opus5.5-GPT6Astra-Grok4.7-DSV4Pro-K3-SFT-RLOO-NVFP4-NInfer",
+            "revision": "3e644f233eb7ebb294a5128d75ca79143987f661",
+            "path": "NVFP4-NInfer/W4A4-W8A8/Qwen3.8-27B-Coder390-EfficientThink-W4A4-W8A8-MTP-DFlash2.ninfer",
+            "expected_file_bytes": 23773675264,
+            "expected_sha256": "cccfbf0ba3ec4e86837e8e6481ec32ee3e10636633e421429f19ea3ea97926e2",
+            "container_magic_hex": "4e494e4645520003",
+            "version": 3,
+            "header_bytes": 397312,
+            "header_sha256": "869a92ad293c67363e77e3c2f0526a866f81631a6608ea22b08693370613cfd8",
+            "objects": 1256,
+            "full_file_admitted": false,
+            "components": [
+              "text",
+              "mtp",
+              "dflash2",
+              "vision"
+            ],
+            "self_contained": true,
+            "payload_bytes": 23773277952
+          },
+          {
+            "variant": "primary",
+            "model_id": "Merkyor/Qwen3.8-27B-Coder390-EfficientThink-Opus5.5-GPT6Astra-Grok4.7-DSV4Pro-K3-SFT-RLOO-NVFP4-NInfer",
+            "revision": "3e644f233eb7ebb294a5128d75ca79143987f661",
+            "path": "NVFP4-NInfer/W4A4-W8A8/Qwen3.8-27B-Coder390-W4A4-W8A8-MTP-DFlash2-NInferV2-NOT-FOR-V3.ninfer",
+            "expected_file_bytes": 23477696516,
+            "expected_sha256": "099b2d00fa3982d601218d6587dc25222cc21ef708de7dab8b2e2c0bee60da74",
+            "container_magic_hex": "4e494e4645520002",
+            "version": 2,
+            "header_bytes": 137901,
+            "header_sha256": "eb33c51cbad182bc1c43236a256c29dfe9f693bd483a4151371ecfe1f8798bb3",
+            "objects": 865,
+            "full_file_admitted": false
+          },
+          {
+            "variant": "q6",
+            "model_id": "Merkyor/Qwen3.8-27B-Coder390-EfficientThink-Opus5.5-GPT6Astra-Grok4.7-DSV4Pro-K3-SFT-RLOO-GGUF-NInfer",
+            "revision": "08748898ab265b471b59263d654925df2de25005",
+            "path": "GGUF-NInfer/Qwen3.8-27B-Coder390-EfficientThink-Q6_K-MTP.ninfer",
+            "expected_file_bytes": 23379962880,
+            "expected_sha256": "60d7b3f4f79304e1ab1e22c161cdace29e7f8f9b8350755e4eab45e2d5e0d168",
+            "container_magic_hex": "4e494e4645520003",
+            "version": 3,
+            "header_bytes": 339968,
+            "header_sha256": "568c3ceb1ed2e0b4d613db4d8ad1e027b7d18c24ee1d7b098036c1d0482b8141",
+            "objects": 1059,
+            "full_file_admitted": false,
+            "components": [
+              "text",
+              "mtp",
+              "vision"
+            ],
+            "self_contained": true,
+            "payload_bytes": 23379622912
+          }
+        ]
+      }
+    },
+    {
+      "source_path": "/tank/hot/models/.ninfer-acquisition-20261009/w4a16/admission-receipt.json",
+      "source_sha256": "f5ae51c0407c3b5724db633279519b0f27c822a43423feb762f18545caf56349",
+      "source_bytes": 11653,
+      "observations": {
+        "complete": true,
+        "model_id": "Merkyor/Qwen3.8-27B-Coder390-EfficientThink-Opus5.5-GPT6Astra-Grok4.7-DSV4Pro-K3-SFT-RLOO-NVFP4-NInfer",
+        "revision": "3e644f233eb7ebb294a5128d75ca79143987f661",
+        "manifest_sha256": "8be97eb1fcf77ea980760173039d175155f96da456f154d554d501afde5a313a",
+        "expected_files": 21,
+        "expected_bytes": 23020791633,
+        "verified_files": 21,
+        "verified_bytes": 23020791633,
+        "unresolved_control_files": []
+      },
+      "runtime_tested": false
+    }
+  ],
+  "pinned_runtime_source_sha256": [
+    {
+      "source_path": "/tank/hot/ninfer-v100-deploy/src-b37d0dd3/src/artifact/reader.cpp",
+      "source_sha256": "5f78f2723b5caae1f33b4d251f4e47b7724174dbaea68600c850786d07337840",
+      "source_bytes": 16345
+    },
+    {
+      "source_path": "/tank/hot/ninfer-v100-deploy/src-b37d0dd3/src/artifact/binder.cpp",
+      "source_sha256": "f370b2cad72b5e14e058952c1361e67e4406f7c90cfec7809844d01f729d4bb5",
+      "source_bytes": 5808
+    },
+    {
+      "source_path": "/tank/hot/ninfer-v100-deploy/src-b37d0dd3/src/targets/qwen3_6/impl/frontend/resources.cpp",
+      "source_sha256": "20409f727b2fa40fe940bfade6a81388ffb4c18350d24eeda473cb9d497b8db0",
+      "source_bytes": 2120
+    },
+    {
+      "source_path": "/tank/hot/ninfer-v100-deploy/src-b37d0dd3/src/targets/qwen3_6_27b/impl/load/bindings.cpp",
+      "source_sha256": "d173efe9f477ce4419532de751fdbafd4f45a8c95c18b66f0918222012d6754d",
+      "source_bytes": 42457
+    },
+    {
+      "source_path": "/tank/hot/ninfer-v100-deploy/src-b37d0dd3/src/targets/qwen3_6/impl/frontend/chat_template.cpp",
+      "source_sha256": "3b4e154ae18ab45c26525eb05b18e749c6ebff893a07ea0374fb1a81d710dea9",
+      "source_bytes": 31843
+    },
+    {
+      "source_path": "/tank/hot/ninfer-v100-deploy/src-b37d0dd3/docs/maintainer/qwen3.8-27b-artifact.md",
+      "source_sha256": "31a79befbdc1f6d4d77019741731e3f611ad84c148562effd2de00af6a676825",
+      "source_bytes": 45582
+    }
+  ]
+}

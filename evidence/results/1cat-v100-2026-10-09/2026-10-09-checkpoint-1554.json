@@ -1,0 +1,1797 @@
+{
+  "kind": "field-allowlisted public summary; not raw report",
+  "published_on": "2026-10-09",
+  "checkpoint": "2026-10-09T15:54:53.550972+00:00",
+  "excluded": "Generated text/reasoning, prompts, private request/response trees, original-session identifiers, wire payloads, launch argv/env, raw engine logs, credentials, raw error strings, token histograms, tool-call arguments, full metric sample series and full profiler traces are not copied. Original source files remain unchanged. Missing fields are unknown, not zero. Harness verdicts are not semantic or numerical certification.",
+  "checkpoint_context_source": "local://v100-comparison-checkpoint-1554.json; Main-owned bounded read-only capture and completed-report allowlist",
+  "runtime_readonly_capture": {
+    "capture_policy": {
+      "read_only": true,
+      "generation_request_sent": false,
+      "state_mutated": false,
+      "process_restarted": false
+    },
+    "source": "Main SSH to doescompute: TCP connect 127.0.0.1 ports 8000/8001 and GET /health at 8001; no generation request",
+    "ports": {
+      "8000": {
+        "listening": false
+      },
+      "8001": {
+        "listening": true,
+        "health_status": 200
+      }
+    }
+  },
+  "operational_policy": {
+    "production_promoted": false,
+    "life_resume_authorized": false,
+    "winner_selected": false
+  },
+  "candidate": {
+    "launch_tag": "main-w4a16-graph-none-c4-u90",
+    "model": "Merkyor-Coder390-NVFP4-W4A16",
+    "artifact_revision": "3e644f233eb7ebb294a5128d75ca79143987f661",
+    "source_revision": "ec535b1e69b6d1b2e6e4e75ce5bd24fc7302972a",
+    "tensor_parallel": 2,
+    "draft": "none",
+    "graph": true,
+    "max_num_seqs": 4,
+    "gpu_memory_utilization": 0.9,
+    "max_model_len": 262144,
+    "long_prefill_token_threshold": 0,
+    "observation_basis": "Main-owned launcher plus completed public profile/replay report launch identity; no inference from August FastLLM snapshot"
+  },
+  "records": [
+    {
+      "source_path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-independent/main-mixed-graph-none-baseline1x8k512/report.json",
+      "source_sha256": "2b8e0b6ed6de56d97997b368ff416aa19b1d62d98620682722c5989b777f7b88",
+      "source_bytes": 26900,
+      "observations": {
+        "schema_version": 1,
+        "tag": "main-mixed-graph-none-baseline1x8k512",
+        "streams": 1,
+        "input_tokens_per_request": 8192,
+        "output_budget_per_request": 512,
+        "arm": "capacity_stress_ignore_eos",
+        "deadline_s": 240,
+        "preparation_outside_serving_deadline": true,
+        "capacity_pass": false,
+        "run_passed": true,
+        "scope": "Capacity/allocation only at this measured input/output pair; not numerical-quality admission or proof that original 32K repetition is fixed.",
+        "finite_logits_observed": false,
+        "nan_counter_observed": false,
+        "numerical_quality_admitted": false,
+        "nan_counter_required": false,
+        "quality_limit": "NaN counter and bounded corruption indicators are not semantic review.",
+        "preparation_s": 11.936352188931778,
+        "engine_kv_block_sizes": [
+          2048
+        ],
+        "kv_block_size_source": "cache_config_info",
+        "numerical_quality_note": "Zero observed NaN-counter delta is a diagnostic only; the diagnostic profile must enable computation, and Inf is not covered. Main owns real-workload numerical/semantic admission.",
+        "max_running": 1.0,
+        "max_kv_usage_fraction": 0.019093078758949833,
+        "max_gpu_used_mib": {
+          "0": 30366.0,
+          "1": 30366.0
+        },
+        "sampling": {
+          "temperature": 1.0,
+          "top_p": 0.95,
+          "top_k": 20,
+          "ignore_eos": true
+        },
+        "metric_deltas": {
+          "success": 1.0,
+          "preemptions": 0.0,
+          "corrupted": null,
+          "prompt_count": 1.0,
+          "prompt_sum": 8192.0,
+          "generation_count": 1.0,
+          "generation_sum": 512.0,
+          "cache_queries": 8192.0,
+          "cache_hits": 0.0
+        },
+        "queue_observation": {
+          "poll_interval_s": 1.0,
+          "common_decode_window_monotonic_s": [
+            710443.802622014,
+            710458.404727869
+          ],
+          "common_decode_samples": 15,
+          "max_sample_gap_s": 1.0077449009986594,
+          "all_requested_streams_running_during_decode": true,
+          "all_four_running_observed": false,
+          "max_waiting_before_first_output": 0,
+          "max_waiting_after_first_output": 0,
+          "max_waiting_common_decode": 0,
+          "longest_observed_queue_span_common_decode_s": 0,
+          "sustained_queue_common_decode": false,
+          "sustained_definition": "positive waiting on consecutive polls spanning >=0.8 seconds inside common decode",
+          "admission_waiting_is_not_sustained_decode_queueing": true
+        },
+        "batch": {
+          "wall_s": 20.409081703983247,
+          "actual_output_tokens": 512,
+          "aggregate_end_to_end_tokens_per_s": 25.08687100312175,
+          "aggregate_input_tokens": 8192
+        },
+        "capacity_extent": {
+          "input_tokens_per_stream": 8192,
+          "requested_output_budget_per_stream": 512,
+          "actual_output_tokens_per_stream": [
+            512
+          ],
+          "every_output_budget_exhausted": true,
+          "natural_eos_may_finish_below_budget": false,
+          "applies_only_to_observed_lengths": true
+        },
+        "marker_quality": {
+          "all_markers_found": true,
+          "separate_from_capacity_gate": true,
+          "natural_quality_evidence": false,
+          "requires_manual_semantic_review": true
+        },
+        "attribution": {
+          "controlled_requests": 1,
+          "success_delta": 1.0,
+          "no_foreign_traffic_observed": true,
+          "limit": "Counters and polling support attribution; exclusive engine ownership is an operator prerequisite."
+        },
+        "prompts": {
+          "source_revision": "ec535b1e69b6d1b2e6e4e75ce5bd24fc7302972a",
+          "template_applied": true,
+          "enable_thinking": false,
+          "tokenization": "template-prefix + unique-source + template-suffix",
+          "input_ids_unchanged": true,
+          "cache_salts_regenerated": true,
+          "partitions": [
+            {
+              "index": 0,
+              "partition_sha256": "34aa1029687b803f45ad7518864ac9c0a594cf1999fed344e1def1027bb85ef0",
+              "used_manifest_sha256": "21a572b7552a7fb6c9313620b84ab0509f886559fa2a11e9727929a4c66b847f",
+              "file_count": 3,
+              "available_files": 975,
+              "source_tokens": 8066,
+              "template_and_instruction_tokens": 126,
+              "prompt_tokens": 8192,
+              "prompt_ids_sha256": "3580893fb3b42529de28b9f425e01c13862c46478cc07db5d6a1feed42a25432",
+              "marker_sha256": "1a9d63bf75745b2206938e6ac66ab4f0ea4688df99833ab1a0df22dfaae978c9"
+            },
+            {
+              "index": 1,
+              "partition_sha256": "907ff5830e7cb28614e4cfb64bacc402b4248de1474262add0e55257eb6d7fe3",
+              "used_manifest_sha256": "8f9450eb5f8c5dadecbd4b9778fc4981980da1793bbdaf285f07b01452227fc8",
+              "file_count": 4,
+              "available_files": 979,
+              "source_tokens": 8064,
+              "template_and_instruction_tokens": 128,
+              "prompt_tokens": 8192,
+              "prompt_ids_sha256": "ef983e71473d03183b3ba1cb9a352c65fbd5e82cdc18a705246d64c37f408ee0",
+              "marker_sha256": "852ddc39c8df01aef9989b1f52f92fd3d1fbe2bb7e5b0e98f5a0e057512e429a"
+            },
+            {
+              "index": 2,
+              "partition_sha256": "db2b7066166eaea22eb766458b4f8d30e97da5edfa1af1e37187428acb318398",
+              "used_manifest_sha256": "1b5de56e02d4177b383b5cd1d0c880d85801ae9665738aa0d4d2d79760db50ea",
+              "file_count": 2,
+              "available_files": 981,
+              "source_tokens": 8062,
+              "template_and_instruction_tokens": 130,
+              "prompt_tokens": 8192,
+              "prompt_ids_sha256": "a7666c4ef9ae93b6019b24cd556884ff80ae6f3e4dac47598bbfee17687461c1",
+              "marker_sha256": "ef636f7b3b822f632c8c3437df0b9e7a7373f74e1b24c2b268d4b3a24087835a"
+            },
+            {
+              "index": 3,
+              "partition_sha256": "71fd67b45a8be42d8491e3b620856dfaaa7f3f37f857c3e79607a086ae9b3611",
+              "used_manifest_sha256": "e12917c34327cb51c8dc7aa1a1c696d5871ab3d9a62ac99fb9f3ad4a6d4ce765",
+              "file_count": 2,
+              "available_files": 982,
+              "source_tokens": 8064,
+              "template_and_instruction_tokens": 128,
+              "prompt_tokens": 8192,
+              "prompt_ids_sha256": "d4d9a7f9b9d2ec026c77d75e158c9794d7a384fc8620e19cd89a3dc7e46a1e21",
+              "marker_sha256": "884757f1a6776266e1c4fc2ae27667e4c7042dbc3c43a61730a4c0bdda42f581"
+            }
+          ],
+          "pairwise_common_prefix_tokens": [
+            {
+              "left": 0,
+              "right": 1,
+              "tokens": 3
+            },
+            {
+              "left": 0,
+              "right": 2,
+              "tokens": 3
+            },
+            {
+              "left": 0,
+              "right": 3,
+              "tokens": 3
+            },
+            {
+              "left": 1,
+              "right": 2,
+              "tokens": 3
+            },
+            {
+              "left": 1,
+              "right": 3,
+              "tokens": 3
+            },
+            {
+              "left": 2,
+              "right": 3,
+              "tokens": 3
+            }
+          ]
+        },
+        "requests": [
+          {
+            "index": 0,
+            "http_status": 200,
+            "started_monotonic_s": 710438.002642951,
+            "first_token_monotonic_s": 710443.802622014,
+            "last_token_monotonic_s": 710458.404727869,
+            "finished_monotonic_s": 710458.404732289,
+            "ended_monotonic_s": 710458.411724655,
+            "ttft_s": 5.799979062983766,
+            "elapsed_s": 20.409081703983247,
+            "decode_s": 14.60210585501045,
+            "decode_tokens_per_s": 34.99495244548303,
+            "end_to_end_tokens_per_s": 25.08687100312175,
+            "prompt_tokens": 8192,
+            "completion_tokens": 512,
+            "total_tokens": 8704,
+            "cached_tokens": null,
+            "finish_reason": "length",
+            "sse_done": true,
+            "prompt_echo_match": true,
+            "generated_token_ids_supported": true,
+            "generated_token_count": 512,
+            "generated_token_ids_sha256": "06afb4e4325d5a44f7a56987fff86e0d7d4cccfb854f0e3f8d4f16090ad4831e",
+            "output_sha256": "fa0a3d413f2f367648b34be3a31d5d8692058325ac1b93a1629589ff1e0e32ea",
+            "nonfinite_sse": false,
+            "retrieval_marker_found": true,
+            "actual_output_complete": true,
+            "full_output_budget_generated": true,
+            "error_present": false,
+            "corruption_indicators": {
+              "flags": [],
+              "replacement_characters": 0,
+              "control_characters": 0,
+              "longest_consecutive_cycle_tokens": 0,
+              "nonoverlapping_16_token_chunk_diversity": 1.0,
+              "token_basis": "server_ids",
+              "semantic_quality_verified": false
+            }
+          }
+        ],
+        "before": {
+          "success": 17.0,
+          "preemptions": 0.0,
+          "corrupted": null,
+          "prompt_count": 17.0,
+          "prompt_sum": 830268.0,
+          "generation_count": 17.0,
+          "generation_sum": 5396.0,
+          "cache_queries": 67792188.0,
+          "cache_hits": 131072.0
+        },
+        "after": {
+          "success": 18.0,
+          "preemptions": 0.0,
+          "corrupted": null,
+          "prompt_count": 18.0,
+          "prompt_sum": 838460.0,
+          "generation_count": 18.0,
+          "generation_sum": 5908.0,
+          "cache_queries": 67800380.0,
+          "cache_hits": 131072.0
+        },
+        "failures_count": 0,
+        "monitor_errors_count": 0
+      }
+    },
+    {
+      "source_path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-independent/main-mixed-graph-none-capacity4x128k/report.json",
+      "source_sha256": "7fb9b2adee2b49fdfb917affdc1f53b8ebd8f8ce478907764b8547ea968b4513",
+      "source_bytes": 558118,
+      "observations": {
+        "schema_version": 1,
+        "tag": "main-mixed-graph-none-capacity4x128k",
+        "streams": 4,
+        "input_tokens_per_request": 130560,
+        "output_budget_per_request": 512,
+        "arm": "capacity_stress_ignore_eos",
+        "deadline_s": 1800,
+        "preparation_outside_serving_deadline": true,
+        "capacity_pass": false,
+        "run_passed": false,
+        "scope": "Capacity/allocation only at this measured input/output pair; not numerical-quality admission or proof that original 32K repetition is fixed.",
+        "finite_logits_observed": false,
+        "nan_counter_observed": false,
+        "numerical_quality_admitted": false,
+        "nan_counter_required": false,
+        "quality_limit": "NaN counter and bounded corruption indicators are not semantic review.",
+        "preparation_s": 19.367916582035832,
+        "engine_kv_block_sizes": [
+          2048
+        ],
+        "kv_block_size_source": "cache_config_info",
+        "numerical_quality_note": "Zero observed NaN-counter delta is a diagnostic only; the diagnostic profile must enable computation, and Inf is not covered. Main owns real-workload numerical/semantic admission.",
+        "max_running": 3.0,
+        "max_kv_usage_fraction": 0.25298329355608595,
+        "max_gpu_used_mib": {
+          "0": 30366.0,
+          "1": 30366.0
+        },
+        "sampling": {
+          "temperature": 1.0,
+          "top_p": 0.95,
+          "top_k": 20,
+          "ignore_eos": true
+        },
+        "metric_deltas": {
+          "success": 4.0,
+          "preemptions": 0.0,
+          "corrupted": null,
+          "prompt_count": 4.0,
+          "prompt_sum": 522240.0,
+          "generation_count": 4.0,
+          "generation_sum": 2048.0,
+          "cache_queries": 67238400.0,
+          "cache_hits": 0.0
+        },
+        "queue_observation": {
+          "poll_interval_s": 1.0,
+          "common_decode_window_monotonic_s": [
+            710289.473723907,
+            709873.155788197
+          ],
+          "common_decode_samples": 0,
+          "max_sample_gap_s": null,
+          "all_requested_streams_running_during_decode": false,
+          "all_four_running_observed": false,
+          "max_waiting_before_first_output": 3.0,
+          "max_waiting_after_first_output": 1.0,
+          "max_waiting_common_decode": 0,
+          "longest_observed_queue_span_common_decode_s": 0,
+          "sustained_queue_common_decode": false,
+          "sustained_definition": "positive waiting on consecutive polls spanning >=0.8 seconds inside common decode",
+          "admission_waiting_is_not_sustained_decode_queueing": true
+        },
+        "batch": {
+          "wall_s": 687.5980448370101,
+          "actual_output_tokens": 2048,
+          "aggregate_end_to_end_tokens_per_s": 2.9784843272575956,
+          "aggregate_input_tokens": 522240
+        },
+        "capacity_extent": {
+          "input_tokens_per_stream": 130560,
+          "requested_output_budget_per_stream": 512,
+          "actual_output_tokens_per_stream": [
+            512,
+            512,
+            512,
+            512
+          ],
+          "every_output_budget_exhausted": true,
+          "natural_eos_may_finish_below_budget": false,
+          "applies_only_to_observed_lengths": true
+        },
+        "marker_quality": {
+          "all_markers_found": true,
+          "separate_from_capacity_gate": true,
+          "natural_quality_evidence": false,
+          "requires_manual_semantic_review": true
+        },
+        "attribution": {
+          "controlled_requests": 4,
+          "success_delta": 4.0,
+          "no_foreign_traffic_observed": true,
+          "limit": "Counters and polling support attribution; exclusive engine ownership is an operator prerequisite."
+        },
+        "prompts": {
+          "source_revision": "ec535b1e69b6d1b2e6e4e75ce5bd24fc7302972a",
+          "template_applied": true,
+          "enable_thinking": false,
+          "tokenization": "template-prefix + unique-source + template-suffix",
+          "partitions": [
+            {
+              "index": 0,
+              "partition_sha256": "34aa1029687b803f45ad7518864ac9c0a594cf1999fed344e1def1027bb85ef0",
+              "used_manifest_sha256": "141241d5a534e2a0ba9eabbdfb4215d920d73195857a45a3795b973777661314",
+              "file_count": 32,
+              "available_files": 975,
+              "source_tokens": 130432,
+              "template_and_instruction_tokens": 128,
+              "prompt_tokens": 130560,
+              "prompt_ids_sha256": "66761d6e224650ddcec84483bfb7179ca5a4f8586b8fb70c66f03bb97ec526e9",
+              "marker_sha256": "5192aee79f66c999d96185dcd4d002811ea76ff879e05519dd967eae2bca3514"
+            },
+            {
+              "index": 1,
+              "partition_sha256": "907ff5830e7cb28614e4cfb64bacc402b4248de1474262add0e55257eb6d7fe3",
+              "used_manifest_sha256": "5fce4b72c6514233958648c7a7eec079fd0cb4f4e9137f4976292d3e740042c0",
+              "file_count": 9,
+              "available_files": 979,
+              "source_tokens": 130434,
+              "template_and_instruction_tokens": 126,
+              "prompt_tokens": 130560,
+              "prompt_ids_sha256": "aca238c1ef1b939b09826859dfebbdcb99f0395344713e2c70da1aa1f9967e8a",
+              "marker_sha256": "048f9abf02063434df8f42282d67a5a068c7c2c8a54bd7883462f0a7d52eb894"
+            },
+            {
+              "index": 2,
+              "partition_sha256": "db2b7066166eaea22eb766458b4f8d30e97da5edfa1af1e37187428acb318398",
+              "used_manifest_sha256": "d03dbc2b7c4423322ea4937f7f11b266a75cd9442bbb30b406f40055d543eb67",
+              "file_count": 7,
+              "available_files": 981,
+              "source_tokens": 130430,
+              "template_and_instruction_tokens": 130,
+              "prompt_tokens": 130560,
+              "prompt_ids_sha256": "37a1f3cf4faa52849f58bdf2be4f92f8a67c1085e3026773b201ac73fc5a0f40",
+              "marker_sha256": "83a80c3b9fc03861a5d0a89e44a91a1feac760f5995da272870e0cb0087d1fed"
+            },
+            {
+              "index": 3,
+              "partition_sha256": "71fd67b45a8be42d8491e3b620856dfaaa7f3f37f857c3e79607a086ae9b3611",
+              "used_manifest_sha256": "382e419db2adab8b62b4710ee1a57f9869f8f0f86e0d7f3a2c719c086000c090",
+              "file_count": 32,
+              "available_files": 982,
+              "source_tokens": 130436,
+              "template_and_instruction_tokens": 124,
+              "prompt_tokens": 130560,
+              "prompt_ids_sha256": "4c5a0161b32c0ab535fc9a9319a7e42c3da7eb435d16493cf1148324193f2e63",
+              "marker_sha256": "c344c3e3d1882ab2b8e8a1a8eb660080554418b75701b0ecd6153d3f9b0bfa04"
+            }
+          ],
+          "pairwise_common_prefix_tokens": [
+            {
+              "left": 0,
+              "right": 1,
+              "tokens": 3
+            },
+            {
+              "left": 0,
+              "right": 2,
+              "tokens": 3
+            },
+            {
+              "left": 0,
+              "right": 3,
+              "tokens": 3
+            },
+            {
+              "left": 1,
+              "right": 2,
+              "tokens": 3
+            },
+            {
+              "left": 1,
+              "right": 3,
+              "tokens": 3
+            },
+            {
+              "left": 2,
+              "right": 3,
+              "tokens": 3
+            }
+          ]
+        },
+        "requests": [
+          {
+            "index": 0,
+            "http_status": 200,
+            "started_monotonic_s": 709628.505207392,
+            "first_token_monotonic_s": 709744.5494965,
+            "last_token_monotonic_s": 709873.155788197,
+            "finished_monotonic_s": 709873.155809349,
+            "ended_monotonic_s": 709873.168610819,
+            "ttft_s": 116.04428910801653,
+            "elapsed_s": 244.6634034269955,
+            "decode_s": 128.6062916968949,
+            "decode_tokens_per_s": 3.9733670356062185,
+            "end_to_end_tokens_per_s": 2.092670962753015,
+            "prompt_tokens": 130560,
+            "completion_tokens": 512,
+            "total_tokens": 131072,
+            "cached_tokens": null,
+            "finish_reason": "length",
+            "sse_done": true,
+            "prompt_echo_match": true,
+            "generated_token_ids_supported": true,
+            "generated_token_count": 512,
+            "generated_token_ids_sha256": "2c77b7e5bf6c7f068415888d05279182e082575d5016b16de5e825ad57a58dbb",
+            "output_sha256": "21eed65b82f48bdafac6978691504c86828a28cce20beaef104d725b9a6dca57",
+            "nonfinite_sse": false,
+            "retrieval_marker_found": true,
+            "actual_output_complete": true,
+            "full_output_budget_generated": true,
+            "error_present": false,
+            "corruption_indicators": {
+              "flags": [],
+              "replacement_characters": 0,
+              "control_characters": 0,
+              "longest_consecutive_cycle_tokens": 0,
+              "nonoverlapping_16_token_chunk_diversity": 1.0,
+              "token_basis": "server_ids",
+              "semantic_quality_verified": false
+            }
+          },
+          {
+            "index": 1,
+            "http_status": 200,
+            "started_monotonic_s": 709628.515643254,
+            "first_token_monotonic_s": 709944.78071481,
+            "last_token_monotonic_s": 710015.113551814,
+            "finished_monotonic_s": 710015.113565535,
+            "ended_monotonic_s": 710015.121444209,
+            "ttft_s": 316.2650715559721,
+            "elapsed_s": 386.60580095497426,
+            "decode_s": 70.3328370039817,
+            "decode_tokens_per_s": 7.265454114570569,
+            "end_to_end_tokens_per_s": 1.32434639815358,
+            "prompt_tokens": 130560,
+            "completion_tokens": 512,
+            "total_tokens": 131072,
+            "cached_tokens": null,
+            "finish_reason": "length",
+            "sse_done": true,
+            "prompt_echo_match": true,
+            "generated_token_ids_supported": true,
+            "generated_token_count": 512,
+            "generated_token_ids_sha256": "1a79551bb90197502b98489aad66921d567e65fe96d0954353642d37554b9e61",
+            "output_sha256": "b97e5f3c77dc7970b27fac4feb04a079135b7c7a3151a8c9057d1ccc63a02071",
+            "nonfinite_sse": false,
+            "retrieval_marker_found": true,
+            "actual_output_complete": true,
+            "full_output_budget_generated": true,
+            "error_present": false,
+            "corruption_indicators": {
+              "flags": [],
+              "replacement_characters": 0,
+              "control_characters": 0,
+              "longest_consecutive_cycle_tokens": 0,
+              "nonoverlapping_16_token_chunk_diversity": 1.0,
+              "token_basis": "server_ids",
+              "semantic_quality_verified": false
+            }
+          },
+          {
+            "index": 2,
+            "http_status": 200,
+            "started_monotonic_s": 709628.524985938,
+            "first_token_monotonic_s": 710121.387742036,
+            "last_token_monotonic_s": 710188.557128284,
+            "finished_monotonic_s": 710188.557139145,
+            "ended_monotonic_s": 710188.56432319,
+            "ttft_s": 492.8627560980385,
+            "elapsed_s": 560.0393372520339,
+            "decode_s": 67.16938624798786,
+            "decode_tokens_per_s": 7.607632413275291,
+            "end_to_end_tokens_per_s": 0.914221494711871,
+            "prompt_tokens": 130560,
+            "completion_tokens": 512,
+            "total_tokens": 131072,
+            "cached_tokens": null,
+            "finish_reason": "length",
+            "sse_done": true,
+            "prompt_echo_match": true,
+            "generated_token_ids_supported": true,
+            "generated_token_count": 512,
+            "generated_token_ids_sha256": "371c90689c1d8043f9a56b592b160d40d332f10462f21d4f4265d24fe6a0559c",
+            "output_sha256": "fb3d87e4c7e97e433c2cd20284171101aeb0c2a695d273529845d31ee9c76a19",
+            "nonfinite_sse": false,
+            "retrieval_marker_found": true,
+            "actual_output_complete": true,
+            "full_output_budget_generated": true,
+            "error_present": false,
+            "corruption_indicators": {
+              "flags": [],
+              "replacement_characters": 0,
+              "control_characters": 0,
+              "longest_consecutive_cycle_tokens": 0,
+              "nonoverlapping_16_token_chunk_diversity": 1.0,
+              "token_basis": "server_ids",
+              "semantic_quality_verified": false
+            }
+          },
+          {
+            "index": 3,
+            "http_status": 200,
+            "started_monotonic_s": 709628.534807939,
+            "first_token_monotonic_s": 710289.473723907,
+            "last_token_monotonic_s": 710316.097940912,
+            "finished_monotonic_s": 710316.097947393,
+            "ended_monotonic_s": 710316.103252229,
+            "ttft_s": 660.9389159680577,
+            "elapsed_s": 687.568444290082,
+            "decode_s": 26.624217004980892,
+            "decode_tokens_per_s": 19.193052697264353,
+            "end_to_end_tokens_per_s": 0.7446531385375643,
+            "prompt_tokens": 130560,
+            "completion_tokens": 512,
+            "total_tokens": 131072,
+            "cached_tokens": null,
+            "finish_reason": "length",
+            "sse_done": true,
+            "prompt_echo_match": true,
+            "generated_token_ids_supported": true,
+            "generated_token_count": 512,
+            "generated_token_ids_sha256": "f410103b75e44b515804b859ae05cdc11974dd75896dfa1d923c4d60858ea6e3",
+            "output_sha256": "3960b4d8f3298011641e6a99fe09bdae5c053b14dd7961e1ae4d149039acc1d6",
+            "nonfinite_sse": false,
+            "retrieval_marker_found": true,
+            "actual_output_complete": true,
+            "full_output_budget_generated": true,
+            "error_present": false,
+            "corruption_indicators": {
+              "flags": [],
+              "replacement_characters": 0,
+              "control_characters": 0,
+              "longest_consecutive_cycle_tokens": 0,
+              "nonoverlapping_16_token_chunk_diversity": 1.0,
+              "token_basis": "server_ids",
+              "semantic_quality_verified": false
+            }
+          }
+        ],
+        "before": {
+          "success": 13.0,
+          "preemptions": 0.0,
+          "corrupted": null,
+          "prompt_count": 13.0,
+          "prompt_sum": 308028.0,
+          "generation_count": 13.0,
+          "generation_sum": 3348.0,
+          "cache_queries": 553788.0,
+          "cache_hits": 131072.0
+        },
+        "after": {
+          "success": 17.0,
+          "preemptions": 0.0,
+          "corrupted": null,
+          "prompt_count": 17.0,
+          "prompt_sum": 830268.0,
+          "generation_count": 17.0,
+          "generation_sum": 5396.0,
+          "cache_queries": 67792188.0,
+          "cache_hits": 131072.0
+        },
+        "failures_count": 2,
+        "monitor_errors_count": 0,
+        "failure_classifications": [
+          "simultaneous_four_stream_common_decode_residency_not_observed",
+          "whole_window_four_running_not_observed"
+        ],
+        "failure_classification_basis": "Derived from queue_observation and max_running; original failure strings are not copied."
+      }
+    },
+    {
+      "source_path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-independent/main-mixed-graph-none-capacity4x128k/run-conditions.json",
+      "source_sha256": "12622c041314eea5c1f1a70c94fb19140767e4a6ef696c1029869f5a35c45d15",
+      "source_bytes": 643,
+      "observations": {
+        "tag": "main-mixed-graph-none-capacity4x128k",
+        "purpose": "Four independent live context allocations:130560 input+512 actual forced output tokens per stream; not natural-quality evidence",
+        "concurrent_cpu_work": "NInfer native compilation with MAX_JOBS=2 overlapped part of this run; no other GPU inference owner",
+        "build_receipt": "/tank/hot/ninfer-v100-deploy/native-build-b37d0dd3-sm70-cu129.json",
+        "throughput_ranking_admitted": false,
+        "capacity_claim_requires_report": "No capacity result is asserted here; require completed report, actual token counts, common decode observations, no preemption and request attribution."
+      }
+    },
+    {
+      "source_path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-smoke/main-w4a16-graph-none-smoke/report.json",
+      "source_sha256": "767188d418a83f702a74c5a6c07c877460277303cb03fbf5e7048300095d81c3",
+      "source_bytes": 4324,
+      "observations": {
+        "tag": "main-w4a16-graph-none-smoke",
+        "passed": true,
+        "scope": "public short-input smoke only; no private or long-context admission",
+        "success_delta": 3.0,
+        "requests": [
+          {
+            "name": "ordinary_top20",
+            "status": "completed",
+            "passed": true,
+            "answer_correct": true,
+            "elapsed_s": 9.65619741298724,
+            "output_sha256": "73475cb40a568e8da8a045ced110137e159f890ac4da883b6b17dc651b3a8049",
+            "actual_input_tokens": 26,
+            "actual_output_tokens": 3,
+            "image_sha256": null,
+            "corruption_indicators": {
+              "flags": [],
+              "replacement_characters": 0,
+              "control_characters": 0,
+              "longest_consecutive_cycle_tokens": 0,
+              "nonoverlapping_16_token_chunk_diversity": null,
+              "token_basis": "server_ids",
+              "semantic_quality_verified": false
+            },
+            "usage": {
+              "input_tokens": 26,
+              "output_tokens": 3,
+              "total_tokens": 29,
+              "input_tokens_details": {
+                "cached_tokens": 0
+              },
+              "output_tokens_details": {
+                "reasoning_tokens": 0,
+                "tool_output_tokens": 0
+              }
+            }
+          },
+          {
+            "name": "dense_topk_disabled",
+            "status": "completed",
+            "passed": true,
+            "answer_correct": true,
+            "elapsed_s": 0.3019467880949378,
+            "output_sha256": "73475cb40a568e8da8a045ced110137e159f890ac4da883b6b17dc651b3a8049",
+            "actual_input_tokens": 26,
+            "actual_output_tokens": 3,
+            "image_sha256": null,
+            "corruption_indicators": {
+              "flags": [],
+              "replacement_characters": 0,
+              "control_characters": 0,
+              "longest_consecutive_cycle_tokens": 0,
+              "nonoverlapping_16_token_chunk_diversity": null,
+              "token_basis": "server_ids",
+              "semantic_quality_verified": false
+            },
+            "usage": {
+              "input_tokens": 26,
+              "output_tokens": 3,
+              "total_tokens": 29,
+              "input_tokens_details": {
+                "cached_tokens": 0
+              },
+              "output_tokens_details": {
+                "reasoning_tokens": 0,
+                "tool_output_tokens": 0
+              }
+            }
+          },
+          {
+            "name": "structured_json",
+            "status": "completed",
+            "passed": true,
+            "answer_correct": true,
+            "elapsed_s": 4.480880209011957,
+            "output_sha256": "2607badb8436d9f69df4152a5f040467e5498d2cd3c05a7ea627404532204ed6",
+            "actual_input_tokens": 28,
+            "actual_output_tokens": 12,
+            "image_sha256": null,
+            "corruption_indicators": {
+              "flags": [],
+              "replacement_characters": 0,
+              "control_characters": 0,
+              "longest_consecutive_cycle_tokens": 0,
+              "nonoverlapping_16_token_chunk_diversity": null,
+              "token_basis": "server_ids",
+              "semantic_quality_verified": false
+            },
+            "usage": {
+              "input_tokens": 28,
+              "output_tokens": 12,
+              "total_tokens": 40,
+              "input_tokens_details": {
+                "cached_tokens": 0
+              },
+              "output_tokens_details": {
+                "reasoning_tokens": 0,
+                "tool_output_tokens": 0
+              }
+            }
+          }
+        ],
+        "before": {
+          "success": 0.0,
+          "preemptions": 0.0,
+          "corrupted": null,
+          "prompt_count": 0.0,
+          "prompt_sum": 0.0,
+          "generation_count": 0.0,
+          "generation_sum": 0.0,
+          "cache_queries": 0.0,
+          "cache_hits": 0.0
+        },
+        "after": {
+          "success": 3.0,
+          "preemptions": 0.0,
+          "corrupted": null,
+          "prompt_count": 3.0,
+          "prompt_sum": 80.0,
+          "generation_count": 3.0,
+          "generation_sum": 18.0,
+          "cache_queries": 80.0,
+          "cache_hits": 0.0
+        },
+        "failures_count": 0
+      }
+    },
+    {
+      "source_path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-smoke/main-w4a16-graph-none-image-pair/report.json",
+      "source_sha256": "21071f7d305cd25c3742abb28f060f392bc095dcf0e79aa8c85d5197e871b9c7",
+      "source_bytes": 3344,
+      "observations": {
+        "tag": "main-w4a16-graph-none-image-pair",
+        "passed": true,
+        "scope": "paired public-image position smoke only; no general vision-quality admission",
+        "success_delta": 2.0,
+        "requests": [
+          {
+            "name": "image_left_red",
+            "status": "completed",
+            "passed": true,
+            "answer_correct": true,
+            "elapsed_s": 6.051409668987617,
+            "output_sha256": "b1f51a511f1da0cd348b8f8598db32e61cb963e5fc69e2b41485bf99590ed75a",
+            "actual_input_tokens": 130,
+            "actual_output_tokens": 2,
+            "image_sha256": "63fe3e66151091afb459f2ed6723f104f9f1a5fe3f39daf6022159e09d4ef56e",
+            "corruption_indicators": {
+              "flags": [],
+              "replacement_characters": 0,
+              "control_characters": 0,
+              "longest_consecutive_cycle_tokens": 0,
+              "nonoverlapping_16_token_chunk_diversity": null,
+              "token_basis": "server_ids",
+              "semantic_quality_verified": false
+            },
+            "usage": {
+              "input_tokens": 130,
+              "output_tokens": 2,
+              "total_tokens": 132,
+              "input_tokens_details": {
+                "cached_tokens": 0
+              },
+              "output_tokens_details": {
+                "reasoning_tokens": 0,
+                "tool_output_tokens": 0
+              }
+            }
+          },
+          {
+            "name": "image_left_blue",
+            "status": "completed",
+            "passed": true,
+            "answer_correct": true,
+            "elapsed_s": 0.29793922300450504,
+            "output_sha256": "16477688c0e00699c6cfa4497a3612d7e83c532062b64b250fed8908128ed548",
+            "actual_input_tokens": 130,
+            "actual_output_tokens": 2,
+            "image_sha256": "c68be7ee25c5ace0a0a61f60e4eb99091ac86b1b7ea1c633188928a3d2bf42cc",
+            "corruption_indicators": {
+              "flags": [],
+              "replacement_characters": 0,
+              "control_characters": 0,
+              "longest_consecutive_cycle_tokens": 0,
+              "nonoverlapping_16_token_chunk_diversity": null,
+              "token_basis": "server_ids",
+              "semantic_quality_verified": false
+            },
+            "usage": {
+              "input_tokens": 130,
+              "output_tokens": 2,
+              "total_tokens": 132,
+              "input_tokens_details": {
+                "cached_tokens": 0
+              },
+              "output_tokens_details": {
+                "reasoning_tokens": 0,
+                "tool_output_tokens": 0
+              }
+            }
+          }
+        ],
+        "before": {
+          "success": 3.0,
+          "preemptions": 0.0,
+          "corrupted": null,
+          "prompt_count": 3.0,
+          "prompt_sum": 80.0,
+          "generation_count": 3.0,
+          "generation_sum": 18.0,
+          "cache_queries": 80.0,
+          "cache_hits": 0.0
+        },
+        "after": {
+          "success": 5.0,
+          "preemptions": 0.0,
+          "corrupted": null,
+          "prompt_count": 5.0,
+          "prompt_sum": 340.0,
+          "generation_count": 5.0,
+          "generation_sum": 22.0,
+          "cache_queries": 340.0,
+          "cache_hits": 0.0
+        },
+        "failures_count": 0
+      }
+    },
+    {
+      "source_path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-profile/main-w4a16-graph-none-kernel-route/report.json",
+      "source_sha256": "9aa0dfeb14e5c45cb8bc064dc50990d08f577e7b9fa9cfeac524c26bed103b87",
+      "source_bytes": 58836,
+      "observations": {
+        "tag": "main-w4a16-graph-none-kernel-route",
+        "launch_tag": "main-w4a16-graph-none-c4-u90",
+        "scope": "eight-iteration bounded public kernel-route capture; profiling overhead excludes throughput ranking",
+        "input_ids_sha256": "3580893fb3b42529de28b9f425e01c13862c46478cc07db5d6a1feed42a25432",
+        "passed": true,
+        "start_profile_status": 200,
+        "http_status": 200,
+        "finish_reasons": [
+          "length"
+        ],
+        "stop_profile_status": 200,
+        "success_delta": 1.0,
+        "preemptions_delta": 0.0,
+        "usage": {
+          "prompt_tokens": 8192,
+          "total_tokens": 8320,
+          "completion_tokens": 128
+        },
+        "traces": [
+          {
+            "trace_file": "rank0.1791560750772066352.pt.trace.json.gz",
+            "trace_sha256": "69bb7a66d7262c0b6295b512ccdafc7bb8b71a10de68098daaecd988d374a546",
+            "trace_bytes": 973380,
+            "kernel_event_count": 14773,
+            "selected_kernel_counts": {
+              "void turbomind::gemm::gemm_kernel<turbomind::gemm::GemmUniversal<turbomind::gemm::Sm70, turbomind::gemm::MainloopSm70<turbomind::gemm::Tiled_MMA_v2<turbomind::gemm::SM70_MMA_884, turbomind::gemm::MMA_Map<128, 128, 16, 8, 32, 8, turbomind::gemm::Blocked<2, 2, (turbomind::gemm::Order)0>, 1, false>, (turbomind::gemm::Order)0>, turbomind::gemm::sm70_s884::Operand_A<__half>, turbomind::gemm::IteratorSm70<(turbomind::gemm::Striding)2, turbomind::cache_policy::Default>, turbomind::gemm::Transform_Default, turbomind::gemm::VoidOperand, 1, turbomind::gemm::sm70_s884::Operand_B_Pack<turbomind::fp4_e2m1_t>, turbomind::gemm::IteratorSm70<(turbomind::gemm::Striding)3, turbomind::cache_policy::Default>, turbomind::gemm::Transform_HMMA_SIMT_B, turbomind::gemm::sm70_s884::Operand_V_Pack<unsigned short>, 16, 2, true, 1>, turbomind::gemm::Epilogue_<__half, 128, 128, 64, 128, 128, turbomind::gemm::Rearrange<turbomind::gemm::Tiled_MMA_v2<turbomind::gemm::SM70_MMA_884, turbomind::gemm::MMA_Map<128, 128, 16, 8, 32, 8, turbomind::gemm::Blocked<2, 2, (turbomind::gemm::Order)0>, 1, false>, (turbomind::gemm::Order)0> >, turbomind::gemm::sm70_s884::Operand_C<float, (turbomind::gemm::Order)1>, (turbomind::gemm::Striding)3, true>, turbomind::gemm::SchedulerSm70<(turbomind::gemm::Order)0, 128, 128, 16, 16, 1, 0> >, turbomind::gemm::GemmParam, turbomind::gemm::EpilogueParam, turbomind::gemm::SchedulerSm70<(turbomind::gemm::Order)0, 128, 128, 16, 16, 1, 0> >(turbomind::gemm::GemmParam, turbomind::gemm::EpilogueParam, turbomind::gemm::SchedulerSm70<(turbomind::gemm::Order)0, 128, 128, 16, 16, 1, 0>)": 256,
+              "void turbomind::gemm::gemm_kernel<turbomind::gemm::GemmUniversal<turbomind::gemm::Sm70, turbomind::gemm::MainloopSm70<turbomind::gemm::Tiled_MMA_v2<turbomind::gemm::SM70_MMA_884, turbomind::gemm::MMA_Map<8, 128, 64, 8, 32, 8, turbomind::gemm::Blocked<1, 4, (turbomind::gemm::Order)0>, 1, false>, (turbomind::gemm::Order)0>, turbomind::gemm::sm70_s884::Operand_A<__half>, turbomind::gemm::IteratorSm70<(turbomind::gemm::Striding)2, turbomind::cache_policy::Default>, turbomind::gemm::Transform_Default, turbomind::gemm::VoidOperand, 1, turbomind::gemm::sm70_s884::Operand_B_Pack<turbomind::fp4_e2m1_t>, turbomind::gemm::IteratorSm70<(turbomind::gemm::Striding)3, turbomind::cache_policy::Stream>, turbomind::gemm::Transform_HMMA_SIMT_B, turbomind::gemm::sm70_s884::Operand_V_Pack<unsigned short>, 16, 2, true, 1>, turbomind::gemm::Epilogue_<__half, 8, 128, 8, 128, 128, turbomind::gemm::Rearrange<turbomind::gemm::Tiled_MMA_v2<turbomind::gemm::SM70_MMA_884, turbomind::gemm::MMA_Map<8, 128, 64, 8, 32, 8, turbomind::gemm::Blocked<1, 4, (turbomind::gemm::Order)0>, 1, false>, (turbomind::gemm::Order)0> >, turbomind::gemm::sm70_s884::Operand_C<float, (turbomind::gemm::Order)1>, (turbomind::gemm::Striding)3, true>, turbomind::gemm::SchedulerSm70<(turbomind::gemm::Order)0, 8, 128, 64, 64, 1, 0> >, turbomind::gemm::GemmParam, turbomind::gemm::EpilogueParam, turbomind::gemm::SchedulerSm70<(turbomind::gemm::Order)0, 8, 128, 64, 64, 1, 0> >(turbomind::gemm::GemmParam, turbomind::gemm::EpilogueParam, turbomind::gemm::SchedulerSm70<(turbomind::gemm::Order)0, 8, 128, 64, 64, 1, 0>)": 1792,
+              "void (anonymous namespace)::gdn_decode_mixed_qkv_global_state_kernel<c10::Half, c10::Half, float, 128, 128, 4, 16>(c10::Half const*, c10::Half const*, c10::Half const*, float const*, c10::Half const*, float*, int const*, c10::Half*, int, int, long, int, int, int, float, bool)": 336,
+              "void (anonymous namespace)::flash_attention_decode_xqa_tc_partition_kernel_256_wide<256, 6, true, 256, 1, 0, false, false, 1, 0, false, false, false, false, float>(__half const*, void const*, void const*, float*, float*, float*, int const*, int const*, int const*, int, int, int, int, int, int, long, long, long, long, long, long, long, long, long, long, long, long, long, float, float, float, int, int, int)": 112,
+              "void (anonymous namespace)::flash_attention_decode_reduce_kernel<256, 256, 0, float>(float const*, float const*, float const*, int const*, int const*, __half*, int, int, int, long, long, long, long, long, long, long, int, int, int, int)": 112
+            }
+          },
+          {
+            "trace_file": "rank1.1791560750775160668.pt.trace.json.gz",
+            "trace_sha256": "4ad711556fcc0383d2a420e5ab9fd40e4bc47955f2a727a29a7917feef24ea44",
+            "trace_bytes": 974472,
+            "kernel_event_count": 14773,
+            "selected_kernel_counts": {
+              "void turbomind::gemm::gemm_kernel<turbomind::gemm::GemmUniversal<turbomind::gemm::Sm70, turbomind::gemm::MainloopSm70<turbomind::gemm::Tiled_MMA_v2<turbomind::gemm::SM70_MMA_884, turbomind::gemm::MMA_Map<128, 128, 16, 8, 32, 8, turbomind::gemm::Blocked<2, 2, (turbomind::gemm::Order)0>, 1, false>, (turbomind::gemm::Order)0>, turbomind::gemm::sm70_s884::Operand_A<__half>, turbomind::gemm::IteratorSm70<(turbomind::gemm::Striding)2, turbomind::cache_policy::Default>, turbomind::gemm::Transform_Default, turbomind::gemm::VoidOperand, 1, turbomind::gemm::sm70_s884::Operand_B_Pack<turbomind::fp4_e2m1_t>, turbomind::gemm::IteratorSm70<(turbomind::gemm::Striding)3, turbomind::cache_policy::Default>, turbomind::gemm::Transform_HMMA_SIMT_B, turbomind::gemm::sm70_s884::Operand_V_Pack<unsigned short>, 16, 2, true, 1>, turbomind::gemm::Epilogue_<__half, 128, 128, 64, 128, 128, turbomind::gemm::Rearrange<turbomind::gemm::Tiled_MMA_v2<turbomind::gemm::SM70_MMA_884, turbomind::gemm::MMA_Map<128, 128, 16, 8, 32, 8, turbomind::gemm::Blocked<2, 2, (turbomind::gemm::Order)0>, 1, false>, (turbomind::gemm::Order)0> >, turbomind::gemm::sm70_s884::Operand_C<float, (turbomind::gemm::Order)1>, (turbomind::gemm::Striding)3, true>, turbomind::gemm::SchedulerSm70<(turbomind::gemm::Order)0, 128, 128, 16, 16, 1, 0> >, turbomind::gemm::GemmParam, turbomind::gemm::EpilogueParam, turbomind::gemm::SchedulerSm70<(turbomind::gemm::Order)0, 128, 128, 16, 16, 1, 0> >(turbomind::gemm::GemmParam, turbomind::gemm::EpilogueParam, turbomind::gemm::SchedulerSm70<(turbomind::gemm::Order)0, 128, 128, 16, 16, 1, 0>)": 256,
+              "void turbomind::gemm::gemm_kernel<turbomind::gemm::GemmUniversal<turbomind::gemm::Sm70, turbomind::gemm::MainloopSm70<turbomind::gemm::Tiled_MMA_v2<turbomind::gemm::SM70_MMA_884, turbomind::gemm::MMA_Map<8, 128, 64, 8, 32, 8, turbomind::gemm::Blocked<1, 4, (turbomind::gemm::Order)0>, 1, false>, (turbomind::gemm::Order)0>, turbomind::gemm::sm70_s884::Operand_A<__half>, turbomind::gemm::IteratorSm70<(turbomind::gemm::Striding)2, turbomind::cache_policy::Default>, turbomind::gemm::Transform_Default, turbomind::gemm::VoidOperand, 1, turbomind::gemm::sm70_s884::Operand_B_Pack<turbomind::fp4_e2m1_t>, turbomind::gemm::IteratorSm70<(turbomind::gemm::Striding)3, turbomind::cache_policy::Stream>, turbomind::gemm::Transform_HMMA_SIMT_B, turbomind::gemm::sm70_s884::Operand_V_Pack<unsigned short>, 16, 2, true, 1>, turbomind::gemm::Epilogue_<__half, 8, 128, 8, 128, 128, turbomind::gemm::Rearrange<turbomind::gemm::Tiled_MMA_v2<turbomind::gemm::SM70_MMA_884, turbomind::gemm::MMA_Map<8, 128, 64, 8, 32, 8, turbomind::gemm::Blocked<1, 4, (turbomind::gemm::Order)0>, 1, false>, (turbomind::gemm::Order)0> >, turbomind::gemm::sm70_s884::Operand_C<float, (turbomind::gemm::Order)1>, (turbomind::gemm::Striding)3, true>, turbomind::gemm::SchedulerSm70<(turbomind::gemm::Order)0, 8, 128, 64, 64, 1, 0> >, turbomind::gemm::GemmParam, turbomind::gemm::EpilogueParam, turbomind::gemm::SchedulerSm70<(turbomind::gemm::Order)0, 8, 128, 64, 64, 1, 0> >(turbomind::gemm::GemmParam, turbomind::gemm::EpilogueParam, turbomind::gemm::SchedulerSm70<(turbomind::gemm::Order)0, 8, 128, 64, 64, 1, 0>)": 1792,
+              "void (anonymous namespace)::gdn_decode_mixed_qkv_global_state_kernel<c10::Half, c10::Half, float, 128, 128, 4, 16>(c10::Half const*, c10::Half const*, c10::Half const*, float const*, c10::Half const*, float*, int const*, c10::Half*, int, int, long, int, int, int, float, bool)": 336,
+              "void (anonymous namespace)::flash_attention_decode_xqa_tc_partition_kernel_256_wide<256, 6, true, 256, 1, 0, false, false, 1, 0, false, false, false, false, float>(__half const*, void const*, void const*, float*, float*, float*, int const*, int const*, int const*, int, int, int, int, int, int, long, long, long, long, long, long, long, long, long, long, long, long, long, float, float, float, int, int, int)": 112,
+              "void (anonymous namespace)::flash_attention_decode_reduce_kernel<256, 256, 0, float>(float const*, float const*, float const*, int const*, int const*, __half*, int, int, int, long, long, long, long, long, long, long, int, int, int, int)": 112
+            }
+          }
+        ]
+      }
+    },
+    {
+      "source_path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-replay/main-w4a16-graph-none-replay32k/report.json",
+      "source_sha256": "18aadb62aba41c35dd956071b9fe6cf8e4b736cfd011388d17dd364a9e64853a",
+      "source_bytes": 137705,
+      "observations": {
+        "tag": "main-w4a16-graph-none-replay32k",
+        "original_prompt_tokens": 83870,
+        "original_cached_tokens": 81920,
+        "original_output_tokens": 32768,
+        "tools_executed": false,
+        "passed": true,
+        "success_delta": 2.0,
+        "preemption_delta": 0.0,
+        "identical_input_tokens": true,
+        "cached_tokens": {
+          "cold": 0,
+          "warm": 65536
+        },
+        "max_output_budget_exercised": 32768,
+        "saved_branch_32k_budget_pass": true,
+        "length_matched_32k_budget_pass": false,
+        "exact_historical_wire_replayed": false,
+        "semantic_quality_admitted": false,
+        "requests": [
+          {
+            "name": "cold",
+            "status": "completed",
+            "passed": true,
+            "ttft_s": 55.36753215803765,
+            "elapsed_s": 108.60353395109996,
+            "end_to_end_tokens_per_s": 12.283209868664581,
+            "output_sha256": "9e0272b336110de987f0dba8ddb8bdf573cf0270322055969617bd15b6bb886b",
+            "actual_input_tokens": 68730,
+            "actual_output_tokens": 1334,
+            "input_tokens_sha256": "d4b9aaf7f6e79d20ad366878172e9774ee8131c8134bffb47e3766915dde7f3b",
+            "output_tokens_sha256": "25d76b54d1b09cfa9a75826f555a762ddc4aa58c497dc8ceb83d704848e793b7",
+            "output_characters": 3611,
+            "bang_characters": 0,
+            "all_bang_output": false,
+            "output_types": [
+              "reasoning",
+              "message",
+              "function_call"
+            ],
+            "corruption_indicators": {
+              "flags": [],
+              "replacement_characters": 0,
+              "control_characters": 0,
+              "longest_consecutive_cycle_tokens": 11,
+              "nonoverlapping_16_token_chunk_diversity": 1.0,
+              "token_basis": "server_ids",
+              "semantic_quality_verified": false
+            },
+            "usage": {
+              "input_tokens": 68730,
+              "output_tokens": 1334,
+              "total_tokens": 70064,
+              "input_tokens_details": {
+                "cached_tokens": 0
+              },
+              "output_tokens_details": {
+                "reasoning_tokens": 0,
+                "tool_output_tokens": 0
+              }
+            },
+            "tool_calls": [
+              {
+                "name_is_declared": true,
+                "arguments_are_json_object": true
+              }
+            ]
+          },
+          {
+            "name": "warm",
+            "status": "completed",
+            "passed": true,
+            "ttft_s": 5.33871702698525,
+            "elapsed_s": 58.64311434107367,
+            "end_to_end_tokens_per_s": 22.747768685021313,
+            "output_sha256": "9e0272b336110de987f0dba8ddb8bdf573cf0270322055969617bd15b6bb886b",
+            "actual_input_tokens": 68730,
+            "actual_output_tokens": 1334,
+            "input_tokens_sha256": "d4b9aaf7f6e79d20ad366878172e9774ee8131c8134bffb47e3766915dde7f3b",
+            "output_tokens_sha256": "25d76b54d1b09cfa9a75826f555a762ddc4aa58c497dc8ceb83d704848e793b7",
+            "output_characters": 3611,
+            "bang_characters": 0,
+            "all_bang_output": false,
+            "output_types": [
+              "reasoning",
+              "message",
+              "function_call"
+            ],
+            "corruption_indicators": {
+              "flags": [],
+              "replacement_characters": 0,
+              "control_characters": 0,
+              "longest_consecutive_cycle_tokens": 11,
+              "nonoverlapping_16_token_chunk_diversity": 1.0,
+              "token_basis": "server_ids",
+              "semantic_quality_verified": false
+            },
+            "usage": {
+              "input_tokens": 68730,
+              "output_tokens": 1334,
+              "total_tokens": 70064,
+              "input_tokens_details": {
+                "cached_tokens": 65536
+              },
+              "output_tokens_details": {
+                "reasoning_tokens": 0,
+                "tool_output_tokens": 0
+              }
+            },
+            "tool_calls": [
+              {
+                "name_is_declared": true,
+                "arguments_are_json_object": true
+              }
+            ]
+          }
+        ],
+        "before": {
+          "success": 6.0,
+          "preemptions": 0.0,
+          "corrupted": null,
+          "prompt_count": 6.0,
+          "prompt_sum": 8532.0,
+          "generation_count": 6.0,
+          "generation_sum": 150.0,
+          "cache_queries": 8532.0,
+          "cache_hits": 0.0
+        },
+        "after": {
+          "success": 8.0,
+          "preemptions": 0.0,
+          "corrupted": null,
+          "prompt_count": 8.0,
+          "prompt_sum": 145992.0,
+          "generation_count": 8.0,
+          "generation_sum": 2818.0,
+          "cache_queries": 145992.0,
+          "cache_hits": 65536.0
+        },
+        "failures_count": 0,
+        "monitor_errors_count": 0
+      }
+    },
+    {
+      "source_path": "/tank/hot/ninfer-v100-deploy/results-v2-native-admission/report.json",
+      "source_sha256": "8e33acd4a0a17d4247fcb56cc6d783b9d4cd314b49954630fb09be8db4267299",
+      "source_bytes": 827,
+      "observations": {
+        "source_revision": "b37d0dd3e1163b9d802d8bccfa89918bf68d793e",
+        "binary_sha256": "fe2009bd2535f3906f1ffb3b1fde0886e2ceb4442a85e7ba07c67d5964ab6535",
+        "model_sha256": "099b2d00fa3982d601218d6587dc25222cc21ef708de7dab8b2e2c0bee60da74",
+        "admission_receipt": "/tank/hot/models/.ninfer-acquisition-20261009/primary-v2/admission-receipt.json",
+        "started_at": 1791559915.8677413,
+        "elapsed_s": 0.4246683120727539,
+        "native_exit": 1,
+        "observed_error_terms": [
+          "frontend/preprocessor_config.json"
+        ],
+        "gpu_owners_after": false,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "3d5230a70dde9dff237cd7f2d71d9bbabf4557fabb40e725e9bcdf9c615310b5",
+        "scope": "Original admitted V2 startup only; no repack, source bypass, model substitution or throughput claim"
+      }
+    }
+  ],
+  "supplemental_records": [
+    {
+      "source_path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-independent/main-w4a16-graph-none-baseline1x8k512/report.json",
+      "source_sha256": "4f762ea5497fb46640711f2ca4277f856f79681ffea31489bfb0332866467cbc",
+      "source_bytes": 25951,
+      "completion_timing": "Completed subsequent to the2026-10-09T15:54:53.550972+00:00 service capture; admitted by Main during integration. Not a new service capture.",
+      "observations": {
+        "schema_version": 1,
+        "tag": "main-w4a16-graph-none-baseline1x8k512",
+        "streams": 1,
+        "input_tokens_per_request": 8192,
+        "output_budget_per_request": 512,
+        "arm": "capacity_stress_ignore_eos",
+        "deadline_s": 240,
+        "preparation_outside_serving_deadline": true,
+        "capacity_pass": false,
+        "run_passed": true,
+        "scope": "Capacity/allocation only at this measured input/output pair; not numerical-quality admission or proof that original 32K repetition is fixed.",
+        "finite_logits_observed": false,
+        "nan_counter_observed": false,
+        "numerical_quality_admitted": false,
+        "nan_counter_required": false,
+        "quality_limit": "NaN counter and bounded corruption indicators are not semantic review.",
+        "preparation_s": 12.212983604054898,
+        "engine_kv_block_sizes": [
+          2048
+        ],
+        "kv_block_size_source": "cache_config_info",
+        "numerical_quality_note": "Zero observed NaN-counter delta is a diagnostic only; the diagnostic profile must enable computation, and Inf is not covered. Main owns real-workload numerical/semantic admission.",
+        "max_running": 1.0,
+        "max_kv_usage_fraction": 0.01716738197424894,
+        "max_gpu_used_mib": {
+          "0": 30102.0,
+          "1": 30102.0
+        },
+        "sampling": {
+          "temperature": 1.0,
+          "top_p": 0.95,
+          "top_k": 20,
+          "ignore_eos": true
+        },
+        "metric_deltas": {
+          "success": 1.0,
+          "preemptions": 0.0,
+          "corrupted": null,
+          "prompt_count": 1.0,
+          "prompt_sum": 8192.0,
+          "generation_count": 1.0,
+          "generation_sum": 512.0,
+          "cache_queries": 8192.0,
+          "cache_hits": 0.0
+        },
+        "queue_observation": {
+          "poll_interval_s": 1.0,
+          "common_decode_window_monotonic_s": [
+            712163.519165914,
+            712177.854335639
+          ],
+          "common_decode_samples": 14,
+          "max_sample_gap_s": 1.0071857379516587,
+          "all_requested_streams_running_during_decode": true,
+          "all_four_running_observed": false,
+          "max_waiting_before_first_output": 0,
+          "max_waiting_after_first_output": 0,
+          "max_waiting_common_decode": 0,
+          "longest_observed_queue_span_common_decode_s": 0,
+          "sustained_queue_common_decode": false,
+          "sustained_definition": "positive waiting on consecutive polls spanning >=0.8 seconds inside common decode",
+          "admission_waiting_is_not_sustained_decode_queueing": true
+        },
+        "batch": {
+          "wall_s": 19.785796315059997,
+          "actual_output_tokens": 512,
+          "aggregate_end_to_end_tokens_per_s": 25.877149033940587,
+          "aggregate_input_tokens": 8192
+        },
+        "capacity_extent": {
+          "input_tokens_per_stream": 8192,
+          "requested_output_budget_per_stream": 512,
+          "actual_output_tokens_per_stream": [
+            512
+          ],
+          "every_output_budget_exhausted": true,
+          "natural_eos_may_finish_below_budget": false,
+          "applies_only_to_observed_lengths": true
+        },
+        "marker_quality": {
+          "all_markers_found": true,
+          "separate_from_capacity_gate": true,
+          "natural_quality_evidence": false,
+          "requires_manual_semantic_review": true
+        },
+        "attribution": {
+          "controlled_requests": 1,
+          "success_delta": 1.0,
+          "no_foreign_traffic_observed": true,
+          "limit": "Counters and polling support attribution; exclusive engine ownership is an operator prerequisite."
+        },
+        "prompts": {
+          "source_revision": "ec535b1e69b6d1b2e6e4e75ce5bd24fc7302972a",
+          "template_applied": true,
+          "enable_thinking": false,
+          "tokenization": "template-prefix + unique-source + template-suffix",
+          "input_ids_unchanged": true,
+          "cache_salts_regenerated": true,
+          "reused_from": "/tank/hot/1cat-deploy/repetition-native-20261009/results-independent/main-mixed-graph-none-baseline4x8k512",
+          "source_report_sha256": "cdd1549c7bb01eec305d22decbc313d0f9316dae1c0648d76707f5b3515949fc",
+          "source_prompts_sha256": "d3e47a99cd201caf487095d734f1c6a609632edc3eb35e0c0fcfc85593499137",
+          "partitions": [
+            {
+              "index": 0,
+              "partition_sha256": "34aa1029687b803f45ad7518864ac9c0a594cf1999fed344e1def1027bb85ef0",
+              "used_manifest_sha256": "21a572b7552a7fb6c9313620b84ab0509f886559fa2a11e9727929a4c66b847f",
+              "file_count": 3,
+              "available_files": 975,
+              "source_tokens": 8066,
+              "template_and_instruction_tokens": 126,
+              "prompt_tokens": 8192,
+              "prompt_ids_sha256": "3580893fb3b42529de28b9f425e01c13862c46478cc07db5d6a1feed42a25432",
+              "marker_sha256": "1a9d63bf75745b2206938e6ac66ab4f0ea4688df99833ab1a0df22dfaae978c9"
+            },
+            {
+              "index": 1,
+              "partition_sha256": "907ff5830e7cb28614e4cfb64bacc402b4248de1474262add0e55257eb6d7fe3",
+              "used_manifest_sha256": "8f9450eb5f8c5dadecbd4b9778fc4981980da1793bbdaf285f07b01452227fc8",
+              "file_count": 4,
+              "available_files": 979,
+              "source_tokens": 8064,
+              "template_and_instruction_tokens": 128,
+              "prompt_tokens": 8192,
+              "prompt_ids_sha256": "ef983e71473d03183b3ba1cb9a352c65fbd5e82cdc18a705246d64c37f408ee0",
+              "marker_sha256": "852ddc39c8df01aef9989b1f52f92fd3d1fbe2bb7e5b0e98f5a0e057512e429a"
+            },
+            {
+              "index": 2,
+              "partition_sha256": "db2b7066166eaea22eb766458b4f8d30e97da5edfa1af1e37187428acb318398",
+              "used_manifest_sha256": "1b5de56e02d4177b383b5cd1d0c880d85801ae9665738aa0d4d2d79760db50ea",
+              "file_count": 2,
+              "available_files": 981,
+              "source_tokens": 8062,
+              "template_and_instruction_tokens": 130,
+              "prompt_tokens": 8192,
+              "prompt_ids_sha256": "a7666c4ef9ae93b6019b24cd556884ff80ae6f3e4dac47598bbfee17687461c1",
+              "marker_sha256": "ef636f7b3b822f632c8c3437df0b9e7a7373f74e1b24c2b268d4b3a24087835a"
+            },
+            {
+              "index": 3,
+              "partition_sha256": "71fd67b45a8be42d8491e3b620856dfaaa7f3f37f857c3e79607a086ae9b3611",
+              "used_manifest_sha256": "e12917c34327cb51c8dc7aa1a1c696d5871ab3d9a62ac99fb9f3ad4a6d4ce765",
+              "file_count": 2,
+              "available_files": 982,
+              "source_tokens": 8064,
+              "template_and_instruction_tokens": 128,
+              "prompt_tokens": 8192,
+              "prompt_ids_sha256": "d4d9a7f9b9d2ec026c77d75e158c9794d7a384fc8620e19cd89a3dc7e46a1e21",
+              "marker_sha256": "884757f1a6776266e1c4fc2ae27667e4c7042dbc3c43a61730a4c0bdda42f581"
+            }
+          ],
+          "pairwise_common_prefix_tokens": [
+            {
+              "left": 0,
+              "right": 1,
+              "tokens": 3
+            },
+            {
+              "left": 0,
+              "right": 2,
+              "tokens": 3
+            },
+            {
+              "left": 0,
+              "right": 3,
+              "tokens": 3
+            },
+            {
+              "left": 1,
+              "right": 2,
+              "tokens": 3
+            },
+            {
+              "left": 1,
+              "right": 3,
+              "tokens": 3
+            },
+            {
+              "left": 2,
+              "right": 3,
+              "tokens": 3
+            }
+          ]
+        },
+        "requests": [
+          {
+            "index": 0,
+            "http_status": 200,
+            "started_monotonic_s": 712158.072715199,
+            "first_token_monotonic_s": 712163.519165914,
+            "last_token_monotonic_s": 712177.854335639,
+            "finished_monotonic_s": 712177.854342709,
+            "ended_monotonic_s": 712177.858511514,
+            "ttft_s": 5.446450715069659,
+            "elapsed_s": 19.785796315059997,
+            "decode_s": 14.335169725003652,
+            "decode_tokens_per_s": 35.64659573640798,
+            "end_to_end_tokens_per_s": 25.877149033940587,
+            "prompt_tokens": 8192,
+            "completion_tokens": 512,
+            "total_tokens": 8704,
+            "cached_tokens": null,
+            "finish_reason": "length",
+            "sse_done": true,
+            "prompt_echo_match": true,
+            "generated_token_ids_supported": true,
+            "generated_token_count": 512,
+            "generated_token_ids_sha256": "95739c85b06aff5ff2227c310c7cea4c280931d26d7fe13aa42b0852cf111117",
+            "output_sha256": "87bef1f00ccede894c598e69f7fbe4667fed2b4ec268a16f2f91108a6ef00f35",
+            "nonfinite_sse": false,
+            "retrieval_marker_found": true,
+            "actual_output_complete": true,
+            "full_output_budget_generated": true,
+            "error_present": false,
+            "corruption_indicators": {
+              "flags": [],
+              "replacement_characters": 0,
+              "control_characters": 0,
+              "longest_consecutive_cycle_tokens": 0,
+              "nonoverlapping_16_token_chunk_diversity": 1.0,
+              "token_basis": "server_ids",
+              "semantic_quality_verified": false
+            }
+          }
+        ],
+        "before": {
+          "success": 8.0,
+          "preemptions": 0.0,
+          "corrupted": null,
+          "prompt_count": 8.0,
+          "prompt_sum": 145992.0,
+          "generation_count": 8.0,
+          "generation_sum": 2818.0,
+          "cache_queries": 145992.0,
+          "cache_hits": 65536.0
+        },
+        "after": {
+          "success": 9.0,
+          "preemptions": 0.0,
+          "corrupted": null,
+          "prompt_count": 9.0,
+          "prompt_sum": 154184.0,
+          "generation_count": 9.0,
+          "generation_sum": 3330.0,
+          "cache_queries": 154184.0,
+          "cache_hits": 65536.0
+        },
+        "failures_count": 0,
+        "monitor_errors_count": 0
+      }
+    },
+    {
+      "source_path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-independent/main-w4a16-graph-none-baseline4x8k512/report.json",
+      "source_sha256": "acfb6daba395c43c99c9018c278e02fb46815426d61ca4d0c6ac290bac286159",
+      "source_bytes": 52448,
+      "completion_timing": "Completed subsequent to the2026-10-09T15:54:53.550972+00:00 service capture; admitted by Main during integration. Not a new service capture.",
+      "observations": {
+        "schema_version": 1,
+        "tag": "main-w4a16-graph-none-baseline4x8k512",
+        "streams": 4,
+        "input_tokens_per_request": 8192,
+        "output_budget_per_request": 512,
+        "arm": "capacity_stress_ignore_eos",
+        "deadline_s": 300,
+        "preparation_outside_serving_deadline": true,
+        "capacity_pass": true,
+        "run_passed": true,
+        "scope": "Capacity/allocation only at this measured input/output pair; not numerical-quality admission or proof that original 32K repetition is fixed.",
+        "finite_logits_observed": false,
+        "nan_counter_observed": false,
+        "numerical_quality_admitted": false,
+        "nan_counter_required": false,
+        "quality_limit": "NaN counter and bounded corruption indicators are not semantic review.",
+        "preparation_s": 8.316731169936247,
+        "engine_kv_block_sizes": [
+          2048
+        ],
+        "kv_block_size_source": "cache_config_info",
+        "numerical_quality_note": "Zero observed NaN-counter delta is a diagnostic only; the diagnostic profile must enable computation, and Inf is not covered. Main owns real-workload numerical/semantic admission.",
+        "max_running": 4.0,
+        "max_kv_usage_fraction": 0.06866952789699576,
+        "max_gpu_used_mib": {
+          "0": 30102.0,
+          "1": 30102.0
+        },
+        "sampling": {
+          "temperature": 1.0,
+          "top_p": 0.95,
+          "top_k": 20,
+          "ignore_eos": true
+        },
+        "metric_deltas": {
+          "success": 4.0,
+          "preemptions": 0.0,
+          "corrupted": null,
+          "prompt_count": 4.0,
+          "prompt_sum": 32768.0,
+          "generation_count": 4.0,
+          "generation_sum": 2048.0,
+          "cache_queries": 286720.0,
+          "cache_hits": 0.0
+        },
+        "queue_observation": {
+          "poll_interval_s": 1.0,
+          "common_decode_window_monotonic_s": [
+            712217.304695688,
+            712234.756666796
+          ],
+          "common_decode_samples": 18,
+          "max_sample_gap_s": 1.0055520909372717,
+          "all_requested_streams_running_during_decode": true,
+          "all_four_running_observed": true,
+          "max_waiting_before_first_output": 0,
+          "max_waiting_after_first_output": 2.0,
+          "max_waiting_common_decode": 0,
+          "longest_observed_queue_span_common_decode_s": 0,
+          "sustained_queue_common_decode": false,
+          "sustained_definition": "positive waiting on consecutive polls spanning >=0.8 seconds inside common decode",
+          "admission_waiting_is_not_sustained_decode_queueing": true
+        },
+        "batch": {
+          "wall_s": 47.31254674005322,
+          "actual_output_tokens": 2048,
+          "aggregate_end_to_end_tokens_per_s": 43.28661509709499,
+          "aggregate_input_tokens": 32768
+        },
+        "capacity_extent": {
+          "input_tokens_per_stream": 8192,
+          "requested_output_budget_per_stream": 512,
+          "actual_output_tokens_per_stream": [
+            512,
+            512,
+            512,
+            512
+          ],
+          "every_output_budget_exhausted": true,
+          "natural_eos_may_finish_below_budget": false,
+          "applies_only_to_observed_lengths": true
+        },
+        "marker_quality": {
+          "all_markers_found": true,
+          "separate_from_capacity_gate": true,
+          "natural_quality_evidence": false,
+          "requires_manual_semantic_review": true
+        },
+        "attribution": {
+          "controlled_requests": 4,
+          "success_delta": 4.0,
+          "no_foreign_traffic_observed": true,
+          "limit": "Counters and polling support attribution; exclusive engine ownership is an operator prerequisite."
+        },
+        "prompts": {
+          "source_revision": "ec535b1e69b6d1b2e6e4e75ce5bd24fc7302972a",
+          "template_applied": true,
+          "enable_thinking": false,
+          "tokenization": "template-prefix + unique-source + template-suffix",
+          "input_ids_unchanged": true,
+          "cache_salts_regenerated": true,
+          "reused_from": "/tank/hot/1cat-deploy/repetition-native-20261009/results-independent/main-mixed-graph-none-baseline4x8k512",
+          "source_report_sha256": "cdd1549c7bb01eec305d22decbc313d0f9316dae1c0648d76707f5b3515949fc",
+          "source_prompts_sha256": "d3e47a99cd201caf487095d734f1c6a609632edc3eb35e0c0fcfc85593499137",
+          "partitions": [
+            {
+              "index": 0,
+              "partition_sha256": "34aa1029687b803f45ad7518864ac9c0a594cf1999fed344e1def1027bb85ef0",
+              "used_manifest_sha256": "21a572b7552a7fb6c9313620b84ab0509f886559fa2a11e9727929a4c66b847f",
+              "file_count": 3,
+              "available_files": 975,
+              "source_tokens": 8066,
+              "template_and_instruction_tokens": 126,
+              "prompt_tokens": 8192,
+              "prompt_ids_sha256": "3580893fb3b42529de28b9f425e01c13862c46478cc07db5d6a1feed42a25432",
+              "marker_sha256": "1a9d63bf75745b2206938e6ac66ab4f0ea4688df99833ab1a0df22dfaae978c9"
+            },
+            {
+              "index": 1,
+              "partition_sha256": "907ff5830e7cb28614e4cfb64bacc402b4248de1474262add0e55257eb6d7fe3",
+              "used_manifest_sha256": "8f9450eb5f8c5dadecbd4b9778fc4981980da1793bbdaf285f07b01452227fc8",
+              "file_count": 4,
+              "available_files": 979,
+              "source_tokens": 8064,
+              "template_and_instruction_tokens": 128,
+              "prompt_tokens": 8192,
+              "prompt_ids_sha256": "ef983e71473d03183b3ba1cb9a352c65fbd5e82cdc18a705246d64c37f408ee0",
+              "marker_sha256": "852ddc39c8df01aef9989b1f52f92fd3d1fbe2bb7e5b0e98f5a0e057512e429a"
+            },
+            {
+              "index": 2,
+              "partition_sha256": "db2b7066166eaea22eb766458b4f8d30e97da5edfa1af1e37187428acb318398",
+              "used_manifest_sha256": "1b5de56e02d4177b383b5cd1d0c880d85801ae9665738aa0d4d2d79760db50ea",
+              "file_count": 2,
+              "available_files": 981,
+              "source_tokens": 8062,
+              "template_and_instruction_tokens": 130,
+              "prompt_tokens": 8192,
+              "prompt_ids_sha256": "a7666c4ef9ae93b6019b24cd556884ff80ae6f3e4dac47598bbfee17687461c1",
+              "marker_sha256": "ef636f7b3b822f632c8c3437df0b9e7a7373f74e1b24c2b268d4b3a24087835a"
+            },
+            {
+              "index": 3,
+              "partition_sha256": "71fd67b45a8be42d8491e3b620856dfaaa7f3f37f857c3e79607a086ae9b3611",
+              "used_manifest_sha256": "e12917c34327cb51c8dc7aa1a1c696d5871ab3d9a62ac99fb9f3ad4a6d4ce765",
+              "file_count": 2,
+              "available_files": 982,
+              "source_tokens": 8064,
+              "template_and_instruction_tokens": 128,
+              "prompt_tokens": 8192,
+              "prompt_ids_sha256": "d4d9a7f9b9d2ec026c77d75e158c9794d7a384fc8620e19cd89a3dc7e46a1e21",
+              "marker_sha256": "884757f1a6776266e1c4fc2ae27667e4c7042dbc3c43a61730a4c0bdda42f581"
+            }
+          ],
+          "pairwise_common_prefix_tokens": [
+            {
+              "left": 0,
+              "right": 1,
+              "tokens": 3
+            },
+            {
+              "left": 0,
+              "right": 2,
+              "tokens": 3
+            },
+            {
+              "left": 0,
+              "right": 3,
+              "tokens": 3
+            },
+            {
+              "left": 1,
+              "right": 2,
+              "tokens": 3
+            },
+            {
+              "left": 1,
+              "right": 3,
+              "tokens": 3
+            },
+            {
+              "left": 2,
+              "right": 3,
+              "tokens": 3
+            }
+          ]
+        },
+        "requests": [
+          {
+            "index": 0,
+            "http_status": 200,
+            "started_monotonic_s": 712189.636907351,
+            "first_token_monotonic_s": 712195.125216565,
+            "last_token_monotonic_s": 712234.756666796,
+            "finished_monotonic_s": 712234.756671066,
+            "ended_monotonic_s": 712234.75989934,
+            "ttft_s": 5.488309214008041,
+            "elapsed_s": 45.122991989017464,
+            "decode_s": 39.63145023107063,
+            "decode_tokens_per_s": 12.893800176895407,
+            "end_to_end_tokens_per_s": 11.346765305913586,
+            "prompt_tokens": 8192,
+            "completion_tokens": 512,
+            "total_tokens": 8704,
+            "cached_tokens": null,
+            "finish_reason": "length",
+            "sse_done": true,
+            "prompt_echo_match": true,
+            "generated_token_ids_supported": true,
+            "generated_token_count": 512,
+            "generated_token_ids_sha256": "95739c85b06aff5ff2227c310c7cea4c280931d26d7fe13aa42b0852cf111117",
+            "output_sha256": "87bef1f00ccede894c598e69f7fbe4667fed2b4ec268a16f2f91108a6ef00f35",
+            "nonfinite_sse": false,
+            "retrieval_marker_found": true,
+            "actual_output_complete": true,
+            "full_output_budget_generated": true,
+            "error_present": false,
+            "corruption_indicators": {
+              "flags": [],
+              "replacement_characters": 0,
+              "control_characters": 0,
+              "longest_consecutive_cycle_tokens": 0,
+              "nonoverlapping_16_token_chunk_diversity": 1.0,
+              "token_basis": "server_ids",
+              "semantic_quality_verified": false
+            }
+          },
+          {
+            "index": 1,
+            "http_status": 200,
+            "started_monotonic_s": 712189.639361103,
+            "first_token_monotonic_s": 712201.105605944,
+            "last_token_monotonic_s": 712234.835719755,
+            "finished_monotonic_s": 712234.835725495,
+            "ended_monotonic_s": 712234.839432584,
+            "ttft_s": 11.466244840994477,
+            "elapsed_s": 45.20007148105651,
+            "decode_s": 33.73011381109245,
+            "decode_tokens_per_s": 15.149667233911114,
+            "end_to_end_tokens_per_s": 11.327415714698168,
+            "prompt_tokens": 8192,
+            "completion_tokens": 512,
+            "total_tokens": 8704,
+            "cached_tokens": null,
+            "finish_reason": "length",
+            "sse_done": true,
+            "prompt_echo_match": true,
+            "generated_token_ids_supported": true,
+            "generated_token_count": 512,
+            "generated_token_ids_sha256": "7b5f329974b7d044b87af0cdcaacf1ce44677f3879dbd078ec98c69177541e2d",
+            "output_sha256": "e413a9e77e1c40e153dcad8b3f630aba5cb00bee41dfaf1f9f597c4eed4f1c53",
+            "nonfinite_sse": false,
+            "retrieval_marker_found": true,
+            "actual_output_complete": true,
+            "full_output_budget_generated": true,
+            "error_present": false,
+            "corruption_indicators": {
+              "flags": [],
+              "replacement_characters": 0,
+              "control_characters": 0,
+              "longest_consecutive_cycle_tokens": 3,
+              "nonoverlapping_16_token_chunk_diversity": 1.0,
+              "token_basis": "server_ids",
+              "semantic_quality_verified": false
+            }
+          },
+          {
+            "index": 2,
+            "http_status": 200,
+            "started_monotonic_s": 712189.641621174,
+            "first_token_monotonic_s": 712208.930464019,
+            "last_token_monotonic_s": 712235.983647757,
+            "finished_monotonic_s": 712235.983650547,
+            "ended_monotonic_s": 712235.990512666,
+            "ttft_s": 19.288842844893225,
+            "elapsed_s": 46.3488914918853,
+            "decode_s": 27.053183738025837,
+            "decode_tokens_per_s": 18.888719529219056,
+            "end_to_end_tokens_per_s": 11.046650384068846,
+            "prompt_tokens": 8192,
+            "completion_tokens": 512,
+            "total_tokens": 8704,
+            "cached_tokens": null,
+            "finish_reason": "length",
+            "sse_done": true,
+            "prompt_echo_match": true,
+            "generated_token_ids_supported": true,
+            "generated_token_count": 512,
+            "generated_token_ids_sha256": "4111d3200b461e134a229754797eae1f77be492a8784e98c07cf0d27b1728ce2",
+            "output_sha256": "f6a3549e95a037273639e005a9d666613b56a2cbf2f949a08a1db95f5f991ffe",
+            "nonfinite_sse": false,
+            "retrieval_marker_found": true,
+            "actual_output_complete": true,
+            "full_output_budget_generated": true,
+            "error_present": false,
+            "corruption_indicators": {
+              "flags": [],
+              "replacement_characters": 0,
+              "control_characters": 0,
+              "longest_consecutive_cycle_tokens": 0,
+              "nonoverlapping_16_token_chunk_diversity": 1.0,
+              "token_basis": "server_ids",
+              "semantic_quality_verified": false
+            }
+          },
+          {
+            "index": 3,
+            "http_status": 200,
+            "started_monotonic_s": 712189.644019193,
+            "first_token_monotonic_s": 712217.304695688,
+            "last_token_monotonic_s": 712236.945797485,
+            "finished_monotonic_s": 712236.945800305,
+            "ended_monotonic_s": 712236.949454091,
+            "ttft_s": 27.660676494939253,
+            "elapsed_s": 47.30543489800766,
+            "decode_s": 19.641101796994917,
+            "decode_tokens_per_s": 26.016870401750214,
+            "end_to_end_tokens_per_s": 10.823280688654311,
+            "prompt_tokens": 8192,
+            "completion_tokens": 512,
+            "total_tokens": 8704,
+            "cached_tokens": null,
+            "finish_reason": "length",
+            "sse_done": true,
+            "prompt_echo_match": true,
+            "generated_token_ids_supported": true,
+            "generated_token_count": 512,
+            "generated_token_ids_sha256": "f8a2b8a4117fb668e2a195c970886f118d0d6bdbc066e8becda31dc761e8408e",
+            "output_sha256": "9ed362fe84005b437d7014a2d7009f07154c8685af9f7a8981312bebafe54cd9",
+            "nonfinite_sse": false,
+            "retrieval_marker_found": true,
+            "actual_output_complete": true,
+            "full_output_budget_generated": true,
+            "error_present": false,
+            "corruption_indicators": {
+              "flags": [],
+              "replacement_characters": 0,
+              "control_characters": 0,
+              "longest_consecutive_cycle_tokens": 0,
+              "nonoverlapping_16_token_chunk_diversity": 1.0,
+              "token_basis": "server_ids",
+              "semantic_quality_verified": false
+            }
+          }
+        ],
+        "before": {
+          "success": 9.0,
+          "preemptions": 0.0,
+          "corrupted": null,
+          "prompt_count": 9.0,
+          "prompt_sum": 154184.0,
+          "generation_count": 9.0,
+          "generation_sum": 3330.0,
+          "cache_queries": 154184.0,
+          "cache_hits": 65536.0
+        },
+        "after": {
+          "success": 13.0,
+          "preemptions": 0.0,
+          "corrupted": null,
+          "prompt_count": 13.0,
+          "prompt_sum": 186952.0,
+          "generation_count": 13.0,
+          "generation_sum": 5378.0,
+          "cache_queries": 440904.0,
+          "cache_hits": 65536.0
+        },
+        "failures_count": 0,
+        "monitor_errors_count": 0
+      }
+    }
+  ],
+  "supplemental_conditions": {
+    "source": "Main operator message after completion; separate from the15:54:53 service capture",
+    "no_concurrent_cpu_build": true,
+    "no_concurrent_gpu_inference": true,
+    "fixture": "Exact mixed-baseline public input fixture, input IDs unchanged, cache salts regenerated",
+    "long_prefill_token_threshold2048_result_included": false
+  },
+  "interpretation_bounds": [
+    "The single8K run has run_passed=true and capacity_pass=false; retain both, not a four-stream residency claim.",
+    "All four 130560-input/512-output requests completed, but the residency gate failed. The empty common-decode intersection and zero common-decode samples cannot establish queue-free simultaneous residency. CPU compilation overlapped; no throughput ranking, OOM or maximum-capacity conclusion follows.",
+    "W4A16 short smoke/image passes and selected native kernel counts are bounded functional/path observations, not broad quality or performance certification. Trace hashes/counts are copied from the allowed profile report; raw traces were not opened or independently rehashed.",
+    "W4A16 cold/warm saved-branch runs actually generated1334 tokens each under32768 budget, not32768. They are neither exact historical wire replay nor semantic or root-cause repair admission; unequal mixed/W4 output lengths exclude a relative speed claim.",
+    "NInfer native build success is separate from the actual native_exit=1 missing frontend/preprocessor_config.json admission. Later binder/template incompatibilities remain independently source-backed, not all exercised by this fail-fast probe.",
+    "Two W4A16 one/four-stream throughput reports completed after the15:54:53 service capture and were explicitly admitted by Main as supplemental_records. They do not update that capture or authorize promotion. No long_prefill_token_threshold2048 result is included."
+  ],
+  "existing_supporting_evidence": [
+    "2026-10-09-author-protocol-details.json",
+    "2026-10-09-ninfer-compatibility-analysis.json",
+    "2026-10-09-ninfer-native-build.json"
+  ]
+}

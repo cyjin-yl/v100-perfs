@@ -1,0 +1,2324 @@
+{
+  "kind": "field-allowlisted public summary; not raw report",
+  "published_on": "2026-10-09",
+  "excluded": "Generated text/reasoning, prompts, private request/response and launch files, raw engine logs, credentials, endpoints, raw error strings, token histograms and tool-call arguments are not copied. Original source files remain unchanged. Missing fields are unknown, not zero. Report pass flags are harness verdicts, not semantic or numerical certification.",
+  "records": [
+    {
+      "source_path": "/tank/hot/1cat-deploy/benchmarks/2026-09-28-swift15-candidates/dryrun-prod-compare.json",
+      "source_sha256": "ed5e5a3b01373220e09a42852d229b6abab60a45132529783a834b8863802c3b",
+      "source_bytes": 106304,
+      "observations": {
+        "sampling": {
+          "temperature": 0.6,
+          "top_p": 0.95,
+          "top_k": 20,
+          "seed": 20260921,
+          "ignore_eos": false
+        },
+        "results": [
+          {
+            "label": "warmup",
+            "status": 200,
+            "output_budget": 128,
+            "prompt_sha256": "0d43febf68bbb1fa4dac27b84bb66e5af838f2e72b8e7dc5f329d6d634f3d360",
+            "ttft_s": 0.1655384000041522,
+            "elapsed_s": 0.4427941520116292,
+            "decode_s": 0.2768185200111475,
+            "decode_tokens_per_s": 93.92435158945644,
+            "usage": {
+              "prompt_tokens": 63,
+              "total_tokens": 90,
+              "completion_tokens": 27
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          },
+          {
+            "label": "single-0",
+            "status": 200,
+            "output_budget": 1024,
+            "prompt_sha256": "392401aeb51fe372697671ad30121790909ea14f131b2210aba12b003179db21",
+            "ttft_s": 0.17426524899201468,
+            "elapsed_s": 9.632111679005902,
+            "decode_s": 9.457463049999205,
+            "decode_tokens_per_s": 59.84691634613868,
+            "usage": {
+              "prompt_tokens": 89,
+              "total_tokens": 656,
+              "completion_tokens": 567
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          },
+          {
+            "label": "single-1",
+            "status": 200,
+            "output_budget": 1024,
+            "prompt_sha256": "b47f72c9ba34240d76c5d1562dc9e0c4fb25444cd53d695ccb7d76fec7661564",
+            "ttft_s": 0.178840451000724,
+            "elapsed_s": 1.8000011080002878,
+            "decode_s": 1.620778946991777,
+            "decode_tokens_per_s": 78.35738503126319,
+            "usage": {
+              "prompt_tokens": 109,
+              "total_tokens": 237,
+              "completion_tokens": 128
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          },
+          {
+            "label": "single-2",
+            "status": 200,
+            "output_budget": 1024,
+            "prompt_sha256": "67b95e2e0cfccb0a918aa130d953e9dbd6bd68946a8f5a1a77e272c68f44eb84",
+            "ttft_s": 0.17530340398661792,
+            "elapsed_s": 27.00819920800859,
+            "decode_s": 26.83250908300397,
+            "decode_tokens_per_s": 38.12539471562055,
+            "usage": {
+              "prompt_tokens": 92,
+              "total_tokens": 1116,
+              "completion_tokens": 1024
+            },
+            "finish_reason": "length",
+            "error_present": false
+          },
+          {
+            "label": "single-3",
+            "status": 200,
+            "output_budget": 1024,
+            "prompt_sha256": "c8d1f4ce367676c049be58487583e2aeb5eca9e8d0598c24a5ef590061938d08",
+            "ttft_s": 0.8597333369834814,
+            "elapsed_s": 32.70554818797973,
+            "decode_s": 31.845415360003244,
+            "decode_tokens_per_s": 32.12393333342586,
+            "usage": {
+              "prompt_tokens": 91,
+              "total_tokens": 1115,
+              "completion_tokens": 1024
+            },
+            "finish_reason": "length",
+            "error_present": false
+          },
+          {
+            "label": "concurrent-0",
+            "status": 200,
+            "output_budget": 1024,
+            "prompt_sha256": "392401aeb51fe372697671ad30121790909ea14f131b2210aba12b003179db21",
+            "ttft_s": 1.0435509590024594,
+            "elapsed_s": 23.540524418000132,
+            "decode_s": 22.442372429009993,
+            "decode_tokens_per_s": 32.26040394303973,
+            "usage": {
+              "prompt_tokens": 89,
+              "total_tokens": 814,
+              "completion_tokens": 725
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          },
+          {
+            "label": "concurrent-1",
+            "status": 200,
+            "output_budget": 1024,
+            "prompt_sha256": "b47f72c9ba34240d76c5d1562dc9e0c4fb25444cd53d695ccb7d76fec7661564",
+            "ttft_s": 1.0428432619955856,
+            "elapsed_s": 4.759727088996442,
+            "decode_s": 3.7162788650020957,
+            "decode_tokens_per_s": 34.173969342294875,
+            "usage": {
+              "prompt_tokens": 109,
+              "total_tokens": 237,
+              "completion_tokens": 128
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          },
+          {
+            "label": "concurrent-2",
+            "status": 200,
+            "output_budget": 1024,
+            "prompt_sha256": "67b95e2e0cfccb0a918aa130d953e9dbd6bd68946a8f5a1a77e272c68f44eb84",
+            "ttft_s": 1.0429334960062988,
+            "elapsed_s": 36.07174969301559,
+            "decode_s": 35.02849111999967,
+            "decode_tokens_per_s": 29.204797788618237,
+            "usage": {
+              "prompt_tokens": 92,
+              "total_tokens": 1116,
+              "completion_tokens": 1024
+            },
+            "finish_reason": "length",
+            "error_present": false
+          },
+          {
+            "label": "concurrent-3",
+            "status": 200,
+            "output_budget": 1024,
+            "prompt_sha256": "c8d1f4ce367676c049be58487583e2aeb5eca9e8d0598c24a5ef590061938d08",
+            "ttft_s": 5.571126546012238,
+            "elapsed_s": 39.678254088998074,
+            "decode_s": 34.1065972049837,
+            "decode_tokens_per_s": 29.994197130006214,
+            "usage": {
+              "prompt_tokens": 91,
+              "total_tokens": 1115,
+              "completion_tokens": 1024
+            },
+            "finish_reason": "length",
+            "error_present": false
+          }
+        ],
+        "speculation_metric_deltas": {
+          "vllm:spec_decode_num_drafts_total{": 2603.0,
+          "vllm:spec_decode_num_draft_tokens_total{": 10412.0,
+          "vllm:spec_decode_num_accepted_tokens_total{": 5233.0
+        },
+        "sample_count": 55,
+        "max_waiting": 1.0,
+        "profile": "dryrun-prod",
+        "mode": "compare"
+      },
+      "provenance_limit": "Historical capture, not current deployment; engine/asset revisions not inferred when absent from the report. Raw response text omitted; HTTP 200 is not quality acceptance."
+    },
+    {
+      "source_path": "/tank/hot/1cat-deploy/benchmarks/2026-09-28-swift15-candidates/swift-1_5-qwen3_8-27b-int4-compare.json",
+      "source_sha256": "d4a2cf7ad428cd50687c8a277ee1b5d519160531e73dccccc1b0ecac8a44d2c6",
+      "source_bytes": 106390,
+      "observations": {
+        "sampling": {
+          "temperature": 0.6,
+          "top_p": 0.95,
+          "top_k": 20,
+          "seed": 20260921,
+          "ignore_eos": false
+        },
+        "results": [
+          {
+            "label": "warmup",
+            "status": 200,
+            "output_budget": 128,
+            "prompt_sha256": "0d43febf68bbb1fa4dac27b84bb66e5af838f2e72b8e7dc5f329d6d634f3d360",
+            "ttft_s": 12.334416050987784,
+            "elapsed_s": 18.04202264000196,
+            "decode_s": 5.707047380012227,
+            "decode_tokens_per_s": 7.709766026141828,
+            "usage": {
+              "prompt_tokens": 63,
+              "total_tokens": 108,
+              "completion_tokens": 45
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          },
+          {
+            "label": "single-0",
+            "status": 200,
+            "output_budget": 1024,
+            "prompt_sha256": "392401aeb51fe372697671ad30121790909ea14f131b2210aba12b003179db21",
+            "ttft_s": 0.3093352380092256,
+            "elapsed_s": 10.31723980800598,
+            "decode_s": 10.007508759008488,
+            "decode_tokens_per_s": 62.553030436919855,
+            "usage": {
+              "prompt_tokens": 89,
+              "total_tokens": 716,
+              "completion_tokens": 627
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          },
+          {
+            "label": "single-1",
+            "status": 200,
+            "output_budget": 1024,
+            "prompt_sha256": "b47f72c9ba34240d76c5d1562dc9e0c4fb25444cd53d695ccb7d76fec7661564",
+            "ttft_s": 0.19431922299554572,
+            "elapsed_s": 2.09288386098342,
+            "decode_s": 1.8982505619933363,
+            "decode_tokens_per_s": 69.53771153444988,
+            "usage": {
+              "prompt_tokens": 109,
+              "total_tokens": 242,
+              "completion_tokens": 133
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          },
+          {
+            "label": "single-2",
+            "status": 200,
+            "output_budget": 1024,
+            "prompt_sha256": "67b95e2e0cfccb0a918aa130d953e9dbd6bd68946a8f5a1a77e272c68f44eb84",
+            "ttft_s": 0.18224170900066383,
+            "elapsed_s": 16.52784842599067,
+            "decode_s": 16.34513787200558,
+            "decode_tokens_per_s": 62.587419452245705,
+            "usage": {
+              "prompt_tokens": 92,
+              "total_tokens": 1116,
+              "completion_tokens": 1024
+            },
+            "finish_reason": "length",
+            "error_present": false
+          },
+          {
+            "label": "single-3",
+            "status": 200,
+            "output_budget": 1024,
+            "prompt_sha256": "c8d1f4ce367676c049be58487583e2aeb5eca9e8d0598c24a5ef590061938d08",
+            "ttft_s": 0.18836741099948995,
+            "elapsed_s": 18.954527391993906,
+            "decode_s": 18.765870055009145,
+            "decode_tokens_per_s": 54.51385930954649,
+            "usage": {
+              "prompt_tokens": 91,
+              "total_tokens": 1115,
+              "completion_tokens": 1024
+            },
+            "finish_reason": "length",
+            "error_present": false
+          },
+          {
+            "label": "concurrent-0",
+            "status": 200,
+            "output_budget": 1024,
+            "prompt_sha256": "392401aeb51fe372697671ad30121790909ea14f131b2210aba12b003179db21",
+            "ttft_s": 0.2292664889828302,
+            "elapsed_s": 18.650406564993318,
+            "decode_s": 18.420802098000422,
+            "decode_tokens_per_s": 47.06635440669073,
+            "usage": {
+              "prompt_tokens": 89,
+              "total_tokens": 957,
+              "completion_tokens": 868
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          },
+          {
+            "label": "concurrent-1",
+            "status": 200,
+            "output_budget": 1024,
+            "prompt_sha256": "b47f72c9ba34240d76c5d1562dc9e0c4fb25444cd53d695ccb7d76fec7661564",
+            "ttft_s": 0.5954919479845557,
+            "elapsed_s": 3.8236567589920014,
+            "decode_s": 3.227751969010569,
+            "decode_tokens_per_s": 59.7939376547455,
+            "usage": {
+              "prompt_tokens": 109,
+              "total_tokens": 303,
+              "completion_tokens": 194
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          },
+          {
+            "label": "concurrent-2",
+            "status": 200,
+            "output_budget": 1024,
+            "prompt_sha256": "67b95e2e0cfccb0a918aa130d953e9dbd6bd68946a8f5a1a77e272c68f44eb84",
+            "ttft_s": 0.5952088439953513,
+            "elapsed_s": 22.1569449279923,
+            "decode_s": 21.561442197998986,
+            "decode_tokens_per_s": 47.445805832735054,
+            "usage": {
+              "prompt_tokens": 92,
+              "total_tokens": 1116,
+              "completion_tokens": 1024
+            },
+            "finish_reason": "length",
+            "error_present": false
+          },
+          {
+            "label": "concurrent-3",
+            "status": 200,
+            "output_budget": 1024,
+            "prompt_sha256": "c8d1f4ce367676c049be58487583e2aeb5eca9e8d0598c24a5ef590061938d08",
+            "ttft_s": 0.5947566200047731,
+            "elapsed_s": 26.511623908008914,
+            "decode_s": 25.916548681998393,
+            "decode_tokens_per_s": 39.47284850897507,
+            "usage": {
+              "prompt_tokens": 91,
+              "total_tokens": 1115,
+              "completion_tokens": 1024
+            },
+            "finish_reason": "length",
+            "error_present": false
+          }
+        ],
+        "speculation_metric_deltas": {
+          "vllm:spec_decode_num_drafts_total{": 2068.0,
+          "vllm:spec_decode_num_draft_tokens_total{": 8272.0,
+          "vllm:spec_decode_num_accepted_tokens_total{": 3902.0
+        },
+        "sample_count": 46,
+        "max_waiting": 0,
+        "profile": "swift-1_5-qwen3_8-27b-int4",
+        "mode": "compare"
+      },
+      "provenance_limit": "Historical capture, not current deployment; engine/asset revisions not inferred when absent from the report. Raw response text omitted; HTTP 200 is not quality acceptance."
+    },
+    {
+      "source_path": "/tank/hot/1cat-deploy/benchmarks/2026-09-28-swift15-candidates/swift-1_5-qwen3_8-27b-int4-context-160000-1.json",
+      "source_sha256": "4835b1abca22b49b744d93d55e7066d59a5f20b3fe841820bb974641f2c4dd57",
+      "source_bytes": 28920,
+      "observations": {
+        "sampling": {
+          "temperature": 0,
+          "top_p": 0.95,
+          "top_k": 20,
+          "seed": 20260921,
+          "ignore_eos": false
+        },
+        "results": [
+          {
+            "label": "context-160000-0",
+            "status": 200,
+            "output_budget": 32,
+            "prompt_sha256": "f29b6d9ad81e9bee3bb763f70d8b00b57324dee95062a35657ce57e6165c88b9",
+            "ttft_s": 143.12266270499094,
+            "elapsed_s": 143.3273638440005,
+            "decode_s": 0.20434516100795008,
+            "decode_tokens_per_s": 48.93680844055294,
+            "usage": {
+              "prompt_tokens": 160000,
+              "total_tokens": 160011,
+              "completion_tokens": 11
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          }
+        ],
+        "speculation_metric_deltas": {
+          "vllm:spec_decode_num_drafts_total{": 2.0,
+          "vllm:spec_decode_num_draft_tokens_total{": 8.0,
+          "vllm:spec_decode_num_accepted_tokens_total{": 8.0
+        },
+        "sample_count": 70,
+        "max_waiting": 0,
+        "profile": "swift-1_5-qwen3_8-27b-int4",
+        "mode": "context"
+      },
+      "provenance_limit": "Historical capture, not current deployment; engine/asset revisions not inferred when absent from the report. Raw response text omitted; HTTP 200 is not quality acceptance."
+    },
+    {
+      "source_path": "/tank/hot/1cat-deploy/benchmarks/2026-09-28-swift15-candidates/swift-1_5-qwen3_8-27b-int4-context-160000-4.json",
+      "source_sha256": "4be51ca83e6350a3c76477941459ec99961257a441f3bd0a2dd4e845a013871b",
+      "source_bytes": 94731,
+      "observations": {
+        "sampling": {
+          "temperature": 0,
+          "top_p": 0.95,
+          "top_k": 20,
+          "seed": 20260921,
+          "ignore_eos": false
+        },
+        "results": [
+          {
+            "label": "context-160000-0",
+            "status": 200,
+            "output_budget": 32,
+            "prompt_sha256": "f29b6d9ad81e9bee3bb763f70d8b00b57324dee95062a35657ce57e6165c88b9",
+            "ttft_s": 17.839704875979805,
+            "elapsed_s": 29.165522183990106,
+            "decode_s": 11.325376155000413,
+            "decode_tokens_per_s": 0.882972879941367,
+            "usage": {
+              "prompt_tokens": 160000,
+              "total_tokens": 160011,
+              "completion_tokens": 11
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          },
+          {
+            "label": "context-160000-1",
+            "status": 200,
+            "output_budget": 32,
+            "prompt_sha256": "195aa2fad5abf2ba77f1568094b7729dbac11992f91963e3eaeb597045fee5db",
+            "ttft_s": 172.17695409600856,
+            "elapsed_s": 184.40353582901298,
+            "decode_s": 12.22613175000879,
+            "decode_tokens_per_s": 0.8179201896783757,
+            "usage": {
+              "prompt_tokens": 160000,
+              "total_tokens": 160011,
+              "completion_tokens": 11
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          },
+          {
+            "label": "context-160000-2",
+            "status": 200,
+            "output_budget": 32,
+            "prompt_sha256": "2cf6c23d799d2dcb58eeaf2bf9cb00b1d4717970d6db314a4da98000ceeae03c",
+            "ttft_s": 318.52134769398253,
+            "elapsed_s": 362.4163996569987,
+            "decode_s": 43.89466111100046,
+            "decode_tokens_per_s": 0.706236230451978,
+            "usage": {
+              "prompt_tokens": 160000,
+              "total_tokens": 160032,
+              "completion_tokens": 32
+            },
+            "finish_reason": "length",
+            "error_present": false
+          },
+          {
+            "label": "context-160000-3",
+            "status": 200,
+            "output_budget": 32,
+            "prompt_sha256": "b97a4afd36194ffc402b0d66ac80835f71bd48e9ea3498ca24e0b18bc1be9d91",
+            "ttft_s": 469.039176027989,
+            "elapsed_s": 469.253745066002,
+            "decode_s": 0.21408775201416574,
+            "decode_tokens_per_s": 46.709818314773656,
+            "usage": {
+              "prompt_tokens": 160000,
+              "total_tokens": 160011,
+              "completion_tokens": 11
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          }
+        ],
+        "speculation_metric_deltas": {
+          "vllm:spec_decode_num_drafts_total{": 16.0,
+          "vllm:spec_decode_num_draft_tokens_total{": 64.0,
+          "vllm:spec_decode_num_accepted_tokens_total{": 46.0
+        },
+        "sample_count": 229,
+        "max_waiting": 1.0,
+        "profile": "swift-1_5-qwen3_8-27b-int4",
+        "mode": "context"
+      },
+      "provenance_limit": "Historical capture, not current deployment; engine/asset revisions not inferred when absent from the report. Raw response text omitted; HTTP 200 is not quality acceptance."
+    },
+    {
+      "source_path": "/tank/hot/1cat-deploy/benchmarks/2026-09-28-swift15-candidates/swift-1_5-qwen3_8-27b-int4-context-256000-1.json",
+      "source_sha256": "8550b760226c7cece47f34ffcc2a4a55a2074a5cda285e7a279edef79f0416f0",
+      "source_bytes": 55401,
+      "observations": {
+        "sampling": {
+          "temperature": 0,
+          "top_p": 0.95,
+          "top_k": 20,
+          "seed": 20260921,
+          "ignore_eos": false
+        },
+        "results": [
+          {
+            "label": "context-256000-0",
+            "status": 200,
+            "output_budget": 32,
+            "prompt_sha256": "9b30a6caa11f12e9e5755fbc11354ff139e2a5434f468463fc3a64cbc9bf82f0",
+            "ttft_s": 280.6211072279839,
+            "elapsed_s": 280.90531481499784,
+            "decode_s": 0.28392410301603377,
+            "decode_tokens_per_s": 35.2206800823644,
+            "usage": {
+              "prompt_tokens": 256000,
+              "total_tokens": 256011,
+              "completion_tokens": 11
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          }
+        ],
+        "speculation_metric_deltas": {
+          "vllm:spec_decode_num_drafts_total{": 2.0,
+          "vllm:spec_decode_num_draft_tokens_total{": 8.0,
+          "vllm:spec_decode_num_accepted_tokens_total{": 8.0
+        },
+        "sample_count": 137,
+        "max_waiting": 0,
+        "profile": "swift-1_5-qwen3_8-27b-int4",
+        "mode": "context"
+      },
+      "provenance_limit": "Historical capture, not current deployment; engine/asset revisions not inferred when absent from the report. Raw response text omitted; HTTP 200 is not quality acceptance."
+    },
+    {
+      "source_path": "/tank/hot/1cat-deploy/benchmarks/2026-09-28-swift15-candidates/swift-1_5-qwen3_8-27b-int4-long.json",
+      "source_sha256": "032bdecfd2f3f1256775796b315b73108c23f57a09b5e96fb73e72fe4b535ec3",
+      "source_bytes": 47126,
+      "observations": {
+        "sampling": {
+          "temperature": 0.6,
+          "top_p": 0.95,
+          "top_k": 20,
+          "seed": 20260921,
+          "ignore_eos": false
+        },
+        "results": [
+          {
+            "label": "long-natural",
+            "status": 200,
+            "output_budget": 3072,
+            "prompt_sha256": "b38345e9e9a8217cdfce137c19fb5f18d9b7b11d1054e27b3be5d0da6ef24874",
+            "ttft_s": 0.15998276899335906,
+            "elapsed_s": 46.70434772898443,
+            "decode_s": 46.54392119598924,
+            "decode_tokens_per_s": 55.49596883174899,
+            "usage": {
+              "prompt_tokens": 64,
+              "total_tokens": 2648,
+              "completion_tokens": 2584
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          }
+        ],
+        "speculation_metric_deltas": {
+          "vllm:spec_decode_num_drafts_total{": 933.0,
+          "vllm:spec_decode_num_draft_tokens_total{": 3732.0,
+          "vllm:spec_decode_num_accepted_tokens_total{": 1650.0
+        },
+        "sample_count": 23,
+        "max_waiting": 0,
+        "profile": "swift-1_5-qwen3_8-27b-int4",
+        "mode": "long"
+      },
+      "provenance_limit": "Historical capture, not current deployment; engine/asset revisions not inferred when absent from the report. Raw response text omitted; HTTP 200 is not quality acceptance."
+    },
+    {
+      "source_path": "/tank/hot/1cat-deploy/benchmarks/2026-09-28-swift15-candidates/swift-1_5-qwen3_8-27b-int4-mm.json",
+      "source_sha256": "c6be5718f4bba6660eeb1154a272ffd83261eafbef3ceddfe91f5680e37c5a3a",
+      "source_bytes": 7481,
+      "observations": {
+        "sampling": {
+          "temperature": 0.6,
+          "top_p": 0.95,
+          "top_k": 20,
+          "seed": 20260921,
+          "ignore_eos": false
+        },
+        "results": [
+          {
+            "label": "image-red-square",
+            "status": 200,
+            "output_budget": 512,
+            "prompt_sha256": "3d55724e0b2639af30d4e119ad149a06ea6b50b5051c10465bbaf90fe8830800",
+            "ttft_s": 5.434041911008535,
+            "elapsed_s": 6.397045935998904,
+            "decode_s": 0.9626607069803867,
+            "decode_tokens_per_s": 66.4824060397678,
+            "usage": {
+              "prompt_tokens": 130,
+              "total_tokens": 195,
+              "completion_tokens": 65
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          },
+          {
+            "label": "video-color-change",
+            "status": 200,
+            "output_budget": 512,
+            "prompt_sha256": "d5c24d8bf15f66c89dfbc0a9523bdddf312af1693f9dcaa13c4e85cde05e647f",
+            "ttft_s": 0.29971180300344713,
+            "elapsed_s": 2.3730631369980983,
+            "decode_s": 2.073029546998441,
+            "decode_tokens_per_s": 83.45274202699538,
+            "usage": {
+              "prompt_tokens": 165,
+              "total_tokens": 339,
+              "completion_tokens": 174
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          },
+          {
+            "label": "131072-output-allowance",
+            "status": 200,
+            "output_budget": 131072,
+            "prompt_sha256": "0a8c2a546f906f9f2d7947e3647c5ba862df5753f391caf9a75e93141d93a61d",
+            "ttft_s": 0.15870191200519912,
+            "elapsed_s": 0.20552748299087398,
+            "decode_s": 0.0,
+            "decode_tokens_per_s": null,
+            "usage": {
+              "prompt_tokens": 19,
+              "total_tokens": 21,
+              "completion_tokens": 2
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          }
+        ],
+        "speculation_metric_deltas": {
+          "vllm:spec_decode_num_drafts_total{": 65.0,
+          "vllm:spec_decode_num_draft_tokens_total{": 260.0,
+          "vllm:spec_decode_num_accepted_tokens_total{": 178.0
+        },
+        "sample_count": 5,
+        "max_waiting": 0,
+        "profile": "swift-1_5-qwen3_8-27b-int4",
+        "mode": "mm"
+      },
+      "provenance_limit": "Historical capture, not current deployment; engine/asset revisions not inferred when absent from the report. Raw response text omitted; HTTP 200 is not quality acceptance."
+    },
+    {
+      "source_path": "/tank/hot/1cat-deploy/benchmarks/2026-09-28-swift15-candidates/swift-1_5-qwen3_8-27b-nvfp4-compare.json",
+      "source_sha256": "a556dac102008371df9042edd11cf9a84e477cb1615b8bcfdd5677994617343a",
+      "source_bytes": 103093,
+      "observations": {
+        "sampling": {
+          "temperature": 0.6,
+          "top_p": 0.95,
+          "top_k": 20,
+          "seed": 20260921,
+          "ignore_eos": false
+        },
+        "results": [
+          {
+            "label": "warmup",
+            "status": 200,
+            "output_budget": 128,
+            "prompt_sha256": "0d43febf68bbb1fa4dac27b84bb66e5af838f2e72b8e7dc5f329d6d634f3d360",
+            "ttft_s": 12.235830999008613,
+            "elapsed_s": 17.785017251997488,
+            "decode_s": 5.54885577497771,
+            "decode_tokens_per_s": 5.226302714655887,
+            "usage": {
+              "prompt_tokens": 63,
+              "total_tokens": 93,
+              "completion_tokens": 30
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          },
+          {
+            "label": "single-0",
+            "status": 200,
+            "output_budget": 1024,
+            "prompt_sha256": "392401aeb51fe372697671ad30121790909ea14f131b2210aba12b003179db21",
+            "ttft_s": 0.2605507340049371,
+            "elapsed_s": 9.001499254023656,
+            "decode_s": 8.740597721014638,
+            "decode_tokens_per_s": 62.009489201967625,
+            "usage": {
+              "prompt_tokens": 89,
+              "total_tokens": 632,
+              "completion_tokens": 543
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          },
+          {
+            "label": "single-1",
+            "status": 200,
+            "output_budget": 1024,
+            "prompt_sha256": "b47f72c9ba34240d76c5d1562dc9e0c4fb25444cd53d695ccb7d76fec7661564",
+            "ttft_s": 0.1746838410035707,
+            "elapsed_s": 1.7789769720111508,
+            "decode_s": 1.6039536029857118,
+            "decode_tokens_per_s": 77.30896939236752,
+            "usage": {
+              "prompt_tokens": 109,
+              "total_tokens": 234,
+              "completion_tokens": 125
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          },
+          {
+            "label": "single-2",
+            "status": 200,
+            "output_budget": 1024,
+            "prompt_sha256": "67b95e2e0cfccb0a918aa130d953e9dbd6bd68946a8f5a1a77e272c68f44eb84",
+            "ttft_s": 0.1740645389945712,
+            "elapsed_s": 16.55751586399856,
+            "decode_s": 16.383137078984873,
+            "decode_tokens_per_s": 62.442253584768686,
+            "usage": {
+              "prompt_tokens": 92,
+              "total_tokens": 1116,
+              "completion_tokens": 1024
+            },
+            "finish_reason": "length",
+            "error_present": false
+          },
+          {
+            "label": "single-3",
+            "status": 200,
+            "output_budget": 1024,
+            "prompt_sha256": "c8d1f4ce367676c049be58487583e2aeb5eca9e8d0598c24a5ef590061938d08",
+            "ttft_s": 0.19176087898085825,
+            "elapsed_s": 17.86346859499463,
+            "decode_s": 17.671290554018924,
+            "decode_tokens_per_s": 57.890508725031545,
+            "usage": {
+              "prompt_tokens": 91,
+              "total_tokens": 1115,
+              "completion_tokens": 1024
+            },
+            "finish_reason": "length",
+            "error_present": false
+          },
+          {
+            "label": "concurrent-0",
+            "status": 200,
+            "output_budget": 1024,
+            "prompt_sha256": "392401aeb51fe372697671ad30121790909ea14f131b2210aba12b003179db21",
+            "ttft_s": 2.026159712986555,
+            "elapsed_s": 18.09254663498723,
+            "decode_s": 16.06600990300649,
+            "decode_tokens_per_s": 51.163917174367995,
+            "usage": {
+              "prompt_tokens": 89,
+              "total_tokens": 912,
+              "completion_tokens": 823
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          },
+          {
+            "label": "concurrent-1",
+            "status": 200,
+            "output_budget": 1024,
+            "prompt_sha256": "b47f72c9ba34240d76c5d1562dc9e0c4fb25444cd53d695ccb7d76fec7661564",
+            "ttft_s": 2.0259587530163117,
+            "elapsed_s": 4.349759522010572,
+            "decode_s": 2.3235050629882608,
+            "decode_tokens_per_s": 53.36764785893066,
+            "usage": {
+              "prompt_tokens": 109,
+              "total_tokens": 234,
+              "completion_tokens": 125
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          },
+          {
+            "label": "concurrent-2",
+            "status": 200,
+            "output_budget": 1024,
+            "prompt_sha256": "67b95e2e0cfccb0a918aa130d953e9dbd6bd68946a8f5a1a77e272c68f44eb84",
+            "ttft_s": 2.299085909005953,
+            "elapsed_s": 18.142363604012644,
+            "decode_s": 15.842934307001997,
+            "decode_tokens_per_s": 55.545265980877815,
+            "usage": {
+              "prompt_tokens": 92,
+              "total_tokens": 973,
+              "completion_tokens": 881
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          },
+          {
+            "label": "concurrent-3",
+            "status": 200,
+            "output_budget": 1024,
+            "prompt_sha256": "c8d1f4ce367676c049be58487583e2aeb5eca9e8d0598c24a5ef590061938d08",
+            "ttft_s": 2.299180234025698,
+            "elapsed_s": 28.904612353013363,
+            "decode_s": 26.605127812974388,
+            "decode_tokens_per_s": 38.45123418279986,
+            "usage": {
+              "prompt_tokens": 91,
+              "total_tokens": 1115,
+              "completion_tokens": 1024
+            },
+            "finish_reason": "length",
+            "error_present": false
+          }
+        ],
+        "speculation_metric_deltas": {
+          "vllm:spec_decode_num_drafts_total{": 1985.0,
+          "vllm:spec_decode_num_draft_tokens_total{": 7940.0,
+          "vllm:spec_decode_num_accepted_tokens_total{": 3622.0
+        },
+        "sample_count": 46,
+        "max_waiting": 0,
+        "profile": "swift-1_5-qwen3_8-27b-nvfp4",
+        "mode": "compare"
+      },
+      "provenance_limit": "Historical capture, not current deployment; engine/asset revisions not inferred when absent from the report. Raw response text omitted; HTTP 200 is not quality acceptance."
+    },
+    {
+      "source_path": "/tank/hot/1cat-deploy/benchmarks/2026-09-28-swift15-candidates/swift-1_5-qwen3_8-27b-nvfp4-context-160000-1.json",
+      "source_sha256": "810b688822eaa4b437a4cc9542b46ab64285dea7f2da9776300eae299fe1ee5c",
+      "source_bytes": 29825,
+      "observations": {
+        "sampling": {
+          "temperature": 0,
+          "top_p": 0.95,
+          "top_k": 20,
+          "seed": 20260921,
+          "ignore_eos": false
+        },
+        "results": [
+          {
+            "label": "context-160000-0",
+            "status": 200,
+            "output_budget": 32,
+            "prompt_sha256": "f29b6d9ad81e9bee3bb763f70d8b00b57324dee95062a35657ce57e6165c88b9",
+            "ttft_s": 148.99038402098813,
+            "elapsed_s": 149.19529325098847,
+            "decode_s": 0.20439501301734708,
+            "decode_tokens_per_s": 48.92487273723893,
+            "usage": {
+              "prompt_tokens": 160000,
+              "total_tokens": 160011,
+              "completion_tokens": 11
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          }
+        ],
+        "speculation_metric_deltas": {
+          "vllm:spec_decode_num_drafts_total{": 2.0,
+          "vllm:spec_decode_num_draft_tokens_total{": 8.0,
+          "vllm:spec_decode_num_accepted_tokens_total{": 8.0
+        },
+        "sample_count": 73,
+        "max_waiting": 0,
+        "profile": "swift-1_5-qwen3_8-27b-nvfp4",
+        "mode": "context"
+      },
+      "provenance_limit": "Historical capture, not current deployment; engine/asset revisions not inferred when absent from the report. Raw response text omitted; HTTP 200 is not quality acceptance."
+    },
+    {
+      "source_path": "/tank/hot/1cat-deploy/benchmarks/2026-09-28-swift15-candidates/swift-1_5-qwen3_8-27b-nvfp4-context-160000-4.json",
+      "source_sha256": "661e50b2437e95a8af2a9e0a0eeb4e9fbbe7ab50096e5fa4c24d295b9bc128f7",
+      "source_bytes": 94181,
+      "observations": {
+        "sampling": {
+          "temperature": 0,
+          "top_p": 0.95,
+          "top_k": 20,
+          "seed": 20260921,
+          "ignore_eos": false
+        },
+        "results": [
+          {
+            "label": "context-160000-0",
+            "status": 200,
+            "output_budget": 32,
+            "prompt_sha256": "f29b6d9ad81e9bee3bb763f70d8b00b57324dee95062a35657ce57e6165c88b9",
+            "ttft_s": 18.63476740400074,
+            "elapsed_s": 30.82950913402601,
+            "decode_s": 12.194257274008123,
+            "decode_tokens_per_s": 0.8200581450183809,
+            "usage": {
+              "prompt_tokens": 160000,
+              "total_tokens": 160011,
+              "completion_tokens": 11
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          },
+          {
+            "label": "context-160000-1",
+            "status": 200,
+            "output_budget": 32,
+            "prompt_sha256": "195aa2fad5abf2ba77f1568094b7729dbac11992f91963e3eaeb597045fee5db",
+            "ttft_s": 179.1768577269977,
+            "elapsed_s": 192.43418083598954,
+            "decode_s": 13.256923637993168,
+            "decode_tokens_per_s": 0.754322818254824,
+            "usage": {
+              "prompt_tokens": 160000,
+              "total_tokens": 160011,
+              "completion_tokens": 11
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          },
+          {
+            "label": "context-160000-2",
+            "status": 200,
+            "output_budget": 32,
+            "prompt_sha256": "2cf6c23d799d2dcb58eeaf2bf9cb00b1d4717970d6db314a4da98000ceeae03c",
+            "ttft_s": 330.91834254399873,
+            "elapsed_s": 341.2232222839957,
+            "decode_s": 10.304417734994786,
+            "decode_tokens_per_s": 0.9704575510403703,
+            "usage": {
+              "prompt_tokens": 160000,
+              "total_tokens": 160011,
+              "completion_tokens": 11
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          },
+          {
+            "label": "context-160000-3",
+            "status": 200,
+            "output_budget": 32,
+            "prompt_sha256": "b97a4afd36194ffc402b0d66ac80835f71bd48e9ea3498ca24e0b18bc1be9d91",
+            "ttft_s": 477.1131758830161,
+            "elapsed_s": 477.3252585400187,
+            "decode_s": 0.21175173000665382,
+            "decode_tokens_per_s": 47.225115939717575,
+            "usage": {
+              "prompt_tokens": 160000,
+              "total_tokens": 160011,
+              "completion_tokens": 11
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          }
+        ],
+        "speculation_metric_deltas": {
+          "vllm:spec_decode_num_drafts_total{": 8.0,
+          "vllm:spec_decode_num_draft_tokens_total{": 32.0,
+          "vllm:spec_decode_num_accepted_tokens_total{": 32.0
+        },
+        "sample_count": 231,
+        "max_waiting": 1.0,
+        "profile": "swift-1_5-qwen3_8-27b-nvfp4",
+        "mode": "context"
+      },
+      "provenance_limit": "Historical capture, not current deployment; engine/asset revisions not inferred when absent from the report. Raw response text omitted; HTTP 200 is not quality acceptance."
+    },
+    {
+      "source_path": "/tank/hot/1cat-deploy/benchmarks/2026-09-28-swift15-candidates/swift-1_5-qwen3_8-27b-nvfp4-context-256000-1.json",
+      "source_sha256": "f544aa38019354aec98682444ad03f0a7b6c100eb6744251462c7ed046eb2506",
+      "source_bytes": 56272,
+      "observations": {
+        "sampling": {
+          "temperature": 0,
+          "top_p": 0.95,
+          "top_k": 20,
+          "seed": 20260921,
+          "ignore_eos": false
+        },
+        "results": [
+          {
+            "label": "context-256000-0",
+            "status": 200,
+            "output_budget": 32,
+            "prompt_sha256": "9b30a6caa11f12e9e5755fbc11354ff139e2a5434f468463fc3a64cbc9bf82f0",
+            "ttft_s": 288.45918720099144,
+            "elapsed_s": 288.73732242998085,
+            "decode_s": 0.27761848201043904,
+            "decode_tokens_per_s": 36.02065657726627,
+            "usage": {
+              "prompt_tokens": 256000,
+              "total_tokens": 256011,
+              "completion_tokens": 11
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          }
+        ],
+        "speculation_metric_deltas": {
+          "vllm:spec_decode_num_drafts_total{": 2.0,
+          "vllm:spec_decode_num_draft_tokens_total{": 8.0,
+          "vllm:spec_decode_num_accepted_tokens_total{": 8.0
+        },
+        "sample_count": 141,
+        "max_waiting": 0,
+        "profile": "swift-1_5-qwen3_8-27b-nvfp4",
+        "mode": "context"
+      },
+      "provenance_limit": "Historical capture, not current deployment; engine/asset revisions not inferred when absent from the report. Raw response text omitted; HTTP 200 is not quality acceptance."
+    },
+    {
+      "source_path": "/tank/hot/1cat-deploy/benchmarks/2026-09-28-swift15-candidates/swift-1_5-qwen3_8-27b-nvfp4-long.json",
+      "source_sha256": "67a57a6b54e63161c0737d01b085ecf311b020c11b24eb1161f5cb0ce37e8686",
+      "source_bytes": 42039,
+      "observations": {
+        "sampling": {
+          "temperature": 0.6,
+          "top_p": 0.95,
+          "top_k": 20,
+          "seed": 20260921,
+          "ignore_eos": false
+        },
+        "results": [
+          {
+            "label": "long-natural",
+            "status": 200,
+            "output_budget": 3072,
+            "prompt_sha256": "b38345e9e9a8217cdfce137c19fb5f18d9b7b11d1054e27b3be5d0da6ef24874",
+            "ttft_s": 0.15826482902048156,
+            "elapsed_s": 38.23724927200237,
+            "decode_s": 38.07858636198216,
+            "decode_tokens_per_s": 64.78706894600121,
+            "usage": {
+              "prompt_tokens": 64,
+              "total_tokens": 2532,
+              "completion_tokens": 2468
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          }
+        ],
+        "speculation_metric_deltas": {
+          "vllm:spec_decode_num_drafts_total{": 825.0,
+          "vllm:spec_decode_num_draft_tokens_total{": 3300.0,
+          "vllm:spec_decode_num_accepted_tokens_total{": 1644.0
+        },
+        "sample_count": 19,
+        "max_waiting": 0,
+        "profile": "swift-1_5-qwen3_8-27b-nvfp4",
+        "mode": "long"
+      },
+      "provenance_limit": "Historical capture, not current deployment; engine/asset revisions not inferred when absent from the report. Raw response text omitted; HTTP 200 is not quality acceptance."
+    },
+    {
+      "source_path": "/tank/hot/1cat-deploy/benchmarks/2026-09-28-swift15-candidates/swift-1_5-qwen3_8-27b-nvfp4-mm.json",
+      "source_sha256": "caf900ac34906be9a0250872f6e9d78a8490a4d2e673b568ae9e31a8817bb089",
+      "source_bytes": 6260,
+      "observations": {
+        "sampling": {
+          "temperature": 0.6,
+          "top_p": 0.95,
+          "top_k": 20,
+          "seed": 20260921,
+          "ignore_eos": false
+        },
+        "results": [
+          {
+            "label": "image-red-square",
+            "status": 200,
+            "output_budget": 512,
+            "prompt_sha256": "3d55724e0b2639af30d4e119ad149a06ea6b50b5051c10465bbaf90fe8830800",
+            "ttft_s": 5.452170973003376,
+            "elapsed_s": 6.149402429990005,
+            "decode_s": 0.6967853640089743,
+            "decode_tokens_per_s": 84.6745684503788,
+            "usage": {
+              "prompt_tokens": 130,
+              "total_tokens": 190,
+              "completion_tokens": 60
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          },
+          {
+            "label": "video-color-change",
+            "status": 200,
+            "output_budget": 512,
+            "prompt_sha256": "d5c24d8bf15f66c89dfbc0a9523bdddf312af1693f9dcaa13c4e85cde05e647f",
+            "ttft_s": 0.34014733700314537,
+            "elapsed_s": 1.5270748120092321,
+            "decode_s": 1.1864792720007244,
+            "decode_tokens_per_s": 90.18278070679575,
+            "usage": {
+              "prompt_tokens": 165,
+              "total_tokens": 273,
+              "completion_tokens": 108
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          },
+          {
+            "label": "131072-output-allowance",
+            "status": 200,
+            "output_budget": 131072,
+            "prompt_sha256": "0a8c2a546f906f9f2d7947e3647c5ba862df5753f391caf9a75e93141d93a61d",
+            "ttft_s": 0.14224108599592,
+            "elapsed_s": 0.18529417901299894,
+            "decode_s": 0.0,
+            "decode_tokens_per_s": null,
+            "usage": {
+              "prompt_tokens": 19,
+              "total_tokens": 21,
+              "completion_tokens": 2
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          }
+        ],
+        "speculation_metric_deltas": {
+          "vllm:spec_decode_num_drafts_total{": 44.0,
+          "vllm:spec_decode_num_draft_tokens_total{": 176.0,
+          "vllm:spec_decode_num_accepted_tokens_total{": 129.0
+        },
+        "sample_count": 4,
+        "max_waiting": 0,
+        "profile": "swift-1_5-qwen3_8-27b-nvfp4",
+        "mode": "mm"
+      },
+      "provenance_limit": "Historical capture, not current deployment; engine/asset revisions not inferred when absent from the report. Raw response text omitted; HTTP 200 is not quality acceptance."
+    },
+    {
+      "source_path": "/tank/hot/1cat-deploy/benchmarks/2026-09-28-swift15-candidates/swift-1_5-qwen3_8-27b-w4a16-autoround-compare.json",
+      "source_sha256": "b2e0ddae48fe21c88edc2f6189e9aca5225ec4db58c95032066fc8281358404b",
+      "source_bytes": 64382,
+      "observations": {
+        "sampling": {
+          "temperature": 0.6,
+          "top_p": 0.95,
+          "top_k": 20,
+          "seed": 20260921,
+          "ignore_eos": false
+        },
+        "results": [
+          {
+            "label": "warmup",
+            "status": 200,
+            "output_budget": 128,
+            "prompt_sha256": "0d43febf68bbb1fa4dac27b84bb66e5af838f2e72b8e7dc5f329d6d634f3d360",
+            "ttft_s": 7.058404406008776,
+            "elapsed_s": 18.039822164020734,
+            "decode_s": 0.0,
+            "decode_tokens_per_s": null,
+            "usage": {
+              "prompt_tokens": 63,
+              "total_tokens": 191,
+              "completion_tokens": 128
+            },
+            "finish_reason": "length",
+            "error_present": false
+          },
+          {
+            "label": "single-0",
+            "status": 200,
+            "output_budget": 1024,
+            "prompt_sha256": "392401aeb51fe372697671ad30121790909ea14f131b2210aba12b003179db21",
+            "ttft_s": 0.22594689700054005,
+            "elapsed_s": 52.002592431992525,
+            "decode_s": 0.0,
+            "decode_tokens_per_s": null,
+            "usage": {
+              "prompt_tokens": 89,
+              "total_tokens": 1113,
+              "completion_tokens": 1024
+            },
+            "finish_reason": "length",
+            "error_present": false
+          },
+          {
+            "label": "single-1",
+            "status": 200,
+            "output_budget": 1024,
+            "prompt_sha256": "b47f72c9ba34240d76c5d1562dc9e0c4fb25444cd53d695ccb7d76fec7661564",
+            "ttft_s": 0.23711701200227253,
+            "elapsed_s": 51.00874730400392,
+            "decode_s": 0.0,
+            "decode_tokens_per_s": null,
+            "usage": {
+              "prompt_tokens": 109,
+              "total_tokens": 1133,
+              "completion_tokens": 1024
+            },
+            "finish_reason": "length",
+            "error_present": false
+          },
+          {
+            "label": "single-2",
+            "status": 200,
+            "output_budget": 1024,
+            "prompt_sha256": "67b95e2e0cfccb0a918aa130d953e9dbd6bd68946a8f5a1a77e272c68f44eb84",
+            "ttft_s": 0.18549740998423658,
+            "elapsed_s": 50.54928885598201,
+            "decode_s": 0.0,
+            "decode_tokens_per_s": null,
+            "usage": {
+              "prompt_tokens": 92,
+              "total_tokens": 1116,
+              "completion_tokens": 1024
+            },
+            "finish_reason": "length",
+            "error_present": false
+          },
+          {
+            "label": "single-3",
+            "status": 200,
+            "output_budget": 1024,
+            "prompt_sha256": "c8d1f4ce367676c049be58487583e2aeb5eca9e8d0598c24a5ef590061938d08",
+            "ttft_s": 0.21789272301248275,
+            "elapsed_s": 50.26157202399918,
+            "decode_s": 0.0,
+            "decode_tokens_per_s": null,
+            "usage": {
+              "prompt_tokens": 91,
+              "total_tokens": 1115,
+              "completion_tokens": 1024
+            },
+            "finish_reason": "length",
+            "error_present": false
+          },
+          {
+            "label": "concurrent-0",
+            "status": 200,
+            "output_budget": 1024,
+            "prompt_sha256": "392401aeb51fe372697671ad30121790909ea14f131b2210aba12b003179db21",
+            "ttft_s": 2.2426879550039303,
+            "elapsed_s": 68.35275198699674,
+            "decode_s": 0.0,
+            "decode_tokens_per_s": null,
+            "usage": {
+              "prompt_tokens": 89,
+              "total_tokens": 1113,
+              "completion_tokens": 1024
+            },
+            "finish_reason": "length",
+            "error_present": false
+          },
+          {
+            "label": "concurrent-1",
+            "status": 200,
+            "output_budget": 1024,
+            "prompt_sha256": "b47f72c9ba34240d76c5d1562dc9e0c4fb25444cd53d695ccb7d76fec7661564",
+            "ttft_s": 2.2426256019971333,
+            "elapsed_s": 68.35256273698178,
+            "decode_s": 0.0,
+            "decode_tokens_per_s": null,
+            "usage": {
+              "prompt_tokens": 109,
+              "total_tokens": 1133,
+              "completion_tokens": 1024
+            },
+            "finish_reason": "length",
+            "error_present": false
+          },
+          {
+            "label": "concurrent-2",
+            "status": 200,
+            "output_budget": 1024,
+            "prompt_sha256": "67b95e2e0cfccb0a918aa130d953e9dbd6bd68946a8f5a1a77e272c68f44eb84",
+            "ttft_s": null,
+            "elapsed_s": 73.42082918301458,
+            "decode_s": null,
+            "decode_tokens_per_s": null,
+            "usage": {
+              "prompt_tokens": 92,
+              "total_tokens": 1116,
+              "completion_tokens": 1024
+            },
+            "finish_reason": "length",
+            "error_present": false
+          },
+          {
+            "label": "concurrent-3",
+            "status": 200,
+            "output_budget": 1024,
+            "prompt_sha256": "c8d1f4ce367676c049be58487583e2aeb5eca9e8d0598c24a5ef590061938d08",
+            "ttft_s": null,
+            "elapsed_s": 73.47257100199931,
+            "decode_s": null,
+            "decode_tokens_per_s": null,
+            "usage": {
+              "prompt_tokens": 91,
+              "total_tokens": 1115,
+              "completion_tokens": 1024
+            },
+            "finish_reason": "length",
+            "error_present": false
+          }
+        ],
+        "speculation_metric_deltas": {
+          "vllm:spec_decode_num_drafts_total{": 8311.0,
+          "vllm:spec_decode_num_draft_tokens_total{": 33244.0,
+          "vllm:spec_decode_num_accepted_tokens_total{": 0.0
+        },
+        "sample_count": 145,
+        "max_waiting": 0,
+        "profile": "swift-1_5-qwen3_8-27b-w4a16-autoround",
+        "mode": "compare"
+      },
+      "provenance_limit": "Historical capture, not current deployment; engine/asset revisions not inferred when absent from the report. Raw response text omitted; HTTP 200 is not quality acceptance."
+    },
+    {
+      "source_path": "/tank/hot/1cat-deploy/benchmarks/2026-09-28-swift15-candidates/swift-1_5-qwen3_8-27b-w4a16-awq-compare.json",
+      "source_sha256": "4c0511a5f67c6f7caa5ccdb6066b6f6a57fa24dff10a1432a57384c8d1981fac",
+      "source_bytes": 237814,
+      "observations": {
+        "sampling": {
+          "temperature": 0.6,
+          "top_p": 0.95,
+          "top_k": 20,
+          "seed": 20260921,
+          "ignore_eos": false
+        },
+        "results": [
+          {
+            "label": "warmup",
+            "status": 200,
+            "output_budget": 128,
+            "prompt_sha256": "0d43febf68bbb1fa4dac27b84bb66e5af838f2e72b8e7dc5f329d6d634f3d360",
+            "ttft_s": 5.228024612006266,
+            "elapsed_s": 11.226045456016436,
+            "decode_s": 5.952262178005185,
+            "decode_tokens_per_s": 2.8560569900328727,
+            "usage": {
+              "prompt_tokens": 63,
+              "total_tokens": 81,
+              "completion_tokens": 18
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          },
+          {
+            "label": "single-0",
+            "status": 200,
+            "output_budget": 1024,
+            "prompt_sha256": "392401aeb51fe372697671ad30121790909ea14f131b2210aba12b003179db21",
+            "ttft_s": 0.25479751100647263,
+            "elapsed_s": 36.62993117098813,
+            "decode_s": 36.325148903008085,
+            "decode_tokens_per_s": 21.500255982029174,
+            "usage": {
+              "prompt_tokens": 89,
+              "total_tokens": 871,
+              "completion_tokens": 782
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          },
+          {
+            "label": "single-1",
+            "status": 200,
+            "output_budget": 1024,
+            "prompt_sha256": "b47f72c9ba34240d76c5d1562dc9e0c4fb25444cd53d695ccb7d76fec7661564",
+            "ttft_s": 0.1858979310200084,
+            "elapsed_s": 8.113729453005362,
+            "decode_s": 7.8809987109852955,
+            "decode_tokens_per_s": 22.078420055755373,
+            "usage": {
+              "prompt_tokens": 109,
+              "total_tokens": 284,
+              "completion_tokens": 175
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          },
+          {
+            "label": "single-2",
+            "status": 200,
+            "output_budget": 1024,
+            "prompt_sha256": "67b95e2e0cfccb0a918aa130d953e9dbd6bd68946a8f5a1a77e272c68f44eb84",
+            "ttft_s": 0.1829040430020541,
+            "elapsed_s": 48.491150061017834,
+            "decode_s": 48.30788433901034,
+            "decode_tokens_per_s": 21.176667411491067,
+            "usage": {
+              "prompt_tokens": 92,
+              "total_tokens": 1116,
+              "completion_tokens": 1024
+            },
+            "finish_reason": "length",
+            "error_present": false
+          },
+          {
+            "label": "single-3",
+            "status": 200,
+            "output_budget": 1024,
+            "prompt_sha256": "c8d1f4ce367676c049be58487583e2aeb5eca9e8d0598c24a5ef590061938d08",
+            "ttft_s": 0.20225837000180036,
+            "elapsed_s": 48.44708075301605,
+            "decode_s": 48.24438725999789,
+            "decode_tokens_per_s": 21.204539182700454,
+            "usage": {
+              "prompt_tokens": 91,
+              "total_tokens": 1115,
+              "completion_tokens": 1024
+            },
+            "finish_reason": "length",
+            "error_present": false
+          },
+          {
+            "label": "concurrent-0",
+            "status": 200,
+            "output_budget": 1024,
+            "prompt_sha256": "392401aeb51fe372697671ad30121790909ea14f131b2210aba12b003179db21",
+            "ttft_s": 0.2913557729916647,
+            "elapsed_s": 42.96582689299248,
+            "decode_s": 42.61791295700823,
+            "decode_tokens_per_s": 18.208305995246818,
+            "usage": {
+              "prompt_tokens": 89,
+              "total_tokens": 866,
+              "completion_tokens": 777
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          },
+          {
+            "label": "concurrent-1",
+            "status": 200,
+            "output_budget": 1024,
+            "prompt_sha256": "b47f72c9ba34240d76c5d1562dc9e0c4fb25444cd53d695ccb7d76fec7661564",
+            "ttft_s": 0.5637475890107453,
+            "elapsed_s": 9.665571816993179,
+            "decode_s": 9.042355981975561,
+            "decode_tokens_per_s": 17.252140958723608,
+            "usage": {
+              "prompt_tokens": 109,
+              "total_tokens": 266,
+              "completion_tokens": 157
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          },
+          {
+            "label": "concurrent-2",
+            "status": 200,
+            "output_budget": 1024,
+            "prompt_sha256": "67b95e2e0cfccb0a918aa130d953e9dbd6bd68946a8f5a1a77e272c68f44eb84",
+            "ttft_s": 0.5636230130039621,
+            "elapsed_s": 61.00142369500827,
+            "decode_s": 60.43754564799019,
+            "decode_tokens_per_s": 16.926564257892217,
+            "usage": {
+              "prompt_tokens": 92,
+              "total_tokens": 1116,
+              "completion_tokens": 1024
+            },
+            "finish_reason": "length",
+            "error_present": false
+          },
+          {
+            "label": "concurrent-3",
+            "status": 200,
+            "output_budget": 1024,
+            "prompt_sha256": "c8d1f4ce367676c049be58487583e2aeb5eca9e8d0598c24a5ef590061938d08",
+            "ttft_s": 0.7385524979908951,
+            "elapsed_s": 61.050155064993305,
+            "decode_s": 60.31129829099518,
+            "decode_tokens_per_s": 16.961995993920425,
+            "usage": {
+              "prompt_tokens": 91,
+              "total_tokens": 1115,
+              "completion_tokens": 1024
+            },
+            "finish_reason": "length",
+            "error_present": false
+          }
+        ],
+        "speculation_metric_deltas": {
+          "vllm:spec_decode_num_drafts_total{": 5996.0,
+          "vllm:spec_decode_num_draft_tokens_total{": 23984.0,
+          "vllm:spec_decode_num_accepted_tokens_total{": 0.0
+        },
+        "sample_count": 105,
+        "max_waiting": 0,
+        "profile": "swift-1_5-qwen3_8-27b-w4a16-awq",
+        "mode": "compare"
+      },
+      "provenance_limit": "Historical capture, not current deployment; engine/asset revisions not inferred when absent from the report. Raw response text omitted; HTTP 200 is not quality acceptance."
+    },
+    {
+      "source_path": "/tank/hot/1cat-deploy/benchmarks/2026-09-28-swift15-candidates/swift-1_5-qwen3_8-27b-w4a16-awq-context-160000-1.json",
+      "source_sha256": "3fe161532ed7227e2331b95c4e21d6e1c8cf582b40df80727b7a713e60191722",
+      "source_bytes": 29081,
+      "observations": {
+        "sampling": {
+          "temperature": 0,
+          "top_p": 0.95,
+          "top_k": 20,
+          "seed": 20260921,
+          "ignore_eos": false
+        },
+        "results": [
+          {
+            "label": "context-160000-0",
+            "status": 200,
+            "output_budget": 32,
+            "prompt_sha256": "f29b6d9ad81e9bee3bb763f70d8b00b57324dee95062a35657ce57e6165c88b9",
+            "ttft_s": 141.76800793601433,
+            "elapsed_s": 142.8886384460202,
+            "decode_s": 0.9875388350046705,
+            "decode_tokens_per_s": 9.11356564520061,
+            "usage": {
+              "prompt_tokens": 160000,
+              "total_tokens": 160010,
+              "completion_tokens": 10
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          }
+        ],
+        "speculation_metric_deltas": {
+          "vllm:spec_decode_num_drafts_total{": 9.0,
+          "vllm:spec_decode_num_draft_tokens_total{": 36.0,
+          "vllm:spec_decode_num_accepted_tokens_total{": 0.0
+        },
+        "sample_count": 70,
+        "max_waiting": 0,
+        "profile": "swift-1_5-qwen3_8-27b-w4a16-awq",
+        "mode": "context"
+      },
+      "provenance_limit": "Historical capture, not current deployment; engine/asset revisions not inferred when absent from the report. Raw response text omitted; HTTP 200 is not quality acceptance."
+    },
+    {
+      "source_path": "/tank/hot/1cat-deploy/benchmarks/2026-09-28-swift15-candidates/swift-1_5-qwen3_8-27b-w4a16-awq-context-160000-4.json",
+      "source_sha256": "23395de915c26f80eb0b02ac7ad86a053c7cc3ff5da4a40abbc97febff9976f2",
+      "source_bytes": 100551,
+      "observations": {
+        "sampling": {
+          "temperature": 0,
+          "top_p": 0.95,
+          "top_k": 20,
+          "seed": 20260921,
+          "ignore_eos": false
+        },
+        "results": [
+          {
+            "label": "context-160000-0",
+            "status": 200,
+            "output_budget": 32,
+            "prompt_sha256": "f29b6d9ad81e9bee3bb763f70d8b00b57324dee95062a35657ce57e6165c88b9",
+            "ttft_s": 17.668223593995208,
+            "elapsed_s": 71.43359807500383,
+            "decode_s": 47.03726166402339,
+            "decode_tokens_per_s": 0.19133766893755383,
+            "usage": {
+              "prompt_tokens": 160000,
+              "total_tokens": 160010,
+              "completion_tokens": 10
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          },
+          {
+            "label": "context-160000-1",
+            "status": 200,
+            "output_budget": 32,
+            "prompt_sha256": "195aa2fad5abf2ba77f1568094b7729dbac11992f91963e3eaeb597045fee5db",
+            "ttft_s": 199.71992127000703,
+            "elapsed_s": 253.25770767001086,
+            "decode_s": 53.30063590500504,
+            "decode_tokens_per_s": 0.16885352017263422,
+            "usage": {
+              "prompt_tokens": 160000,
+              "total_tokens": 160010,
+              "completion_tokens": 10
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          },
+          {
+            "label": "context-160000-2",
+            "status": 200,
+            "output_budget": 32,
+            "prompt_sha256": "2cf6c23d799d2dcb58eeaf2bf9cb00b1d4717970d6db314a4da98000ceeae03c",
+            "ttft_s": 363.202096923982,
+            "elapsed_s": 413.30816150299506,
+            "decode_s": 38.878304433019366,
+            "decode_tokens_per_s": 0.23149157688976515,
+            "usage": {
+              "prompt_tokens": 160000,
+              "total_tokens": 160010,
+              "completion_tokens": 10
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          },
+          {
+            "label": "context-160000-3",
+            "status": 200,
+            "output_budget": 32,
+            "prompt_sha256": "b97a4afd36194ffc402b0d66ac80835f71bd48e9ea3498ca24e0b18bc1be9d91",
+            "ttft_s": 497.4196504210122,
+            "elapsed_s": 498.5378936849884,
+            "decode_s": 0.9863720329885837,
+            "decode_tokens_per_s": 9.124346290244187,
+            "usage": {
+              "prompt_tokens": 160000,
+              "total_tokens": 160010,
+              "completion_tokens": 10
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          }
+        ],
+        "speculation_metric_deltas": {
+          "vllm:spec_decode_num_drafts_total{": 36.0,
+          "vllm:spec_decode_num_draft_tokens_total{": 144.0,
+          "vllm:spec_decode_num_accepted_tokens_total{": 0.0
+        },
+        "sample_count": 243,
+        "max_waiting": 1.0,
+        "profile": "swift-1_5-qwen3_8-27b-w4a16-awq",
+        "mode": "context"
+      },
+      "provenance_limit": "Historical capture, not current deployment; engine/asset revisions not inferred when absent from the report. Raw response text omitted; HTTP 200 is not quality acceptance."
+    },
+    {
+      "source_path": "/tank/hot/1cat-deploy/benchmarks/2026-09-28-swift15-candidates/swift-1_5-qwen3_8-27b-w4a16-awq-context-256000-1.json",
+      "source_sha256": "062931fe1d6c5c8d116c610f0bd2e51f110fcbc5be967affe1d17f66124ca21f",
+      "source_bytes": 55546,
+      "observations": {
+        "sampling": {
+          "temperature": 0,
+          "top_p": 0.95,
+          "top_k": 20,
+          "seed": 20260921,
+          "ignore_eos": false
+        },
+        "results": [
+          {
+            "label": "context-256000-0",
+            "status": 200,
+            "output_budget": 32,
+            "prompt_sha256": "9b30a6caa11f12e9e5755fbc11354ff139e2a5434f468463fc3a64cbc9bf82f0",
+            "ttft_s": 278.2997162170068,
+            "elapsed_s": 279.8553930420021,
+            "decode_s": 1.372265524987597,
+            "decode_tokens_per_s": 6.558497489092969,
+            "usage": {
+              "prompt_tokens": 256000,
+              "total_tokens": 256010,
+              "completion_tokens": 10
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          }
+        ],
+        "speculation_metric_deltas": {
+          "vllm:spec_decode_num_drafts_total{": 9.0,
+          "vllm:spec_decode_num_draft_tokens_total{": 36.0,
+          "vllm:spec_decode_num_accepted_tokens_total{": 0.0
+        },
+        "sample_count": 137,
+        "max_waiting": 0,
+        "profile": "swift-1_5-qwen3_8-27b-w4a16-awq",
+        "mode": "context"
+      },
+      "provenance_limit": "Historical capture, not current deployment; engine/asset revisions not inferred when absent from the report. Raw response text omitted; HTTP 200 is not quality acceptance."
+    },
+    {
+      "source_path": "/tank/hot/1cat-deploy/benchmarks/2026-09-28-swift15-candidates/swift-1_5-qwen3_8-27b-w4a16-awq-long.json",
+      "source_sha256": "e17557760bc30e8a8e2e843c880a67ed03e803bed3a5bc39ccf8bc949b475281",
+      "source_bytes": 98686,
+      "observations": {
+        "sampling": {
+          "temperature": 0.6,
+          "top_p": 0.95,
+          "top_k": 20,
+          "seed": 20260921,
+          "ignore_eos": false
+        },
+        "results": [
+          {
+            "label": "long-natural",
+            "status": 200,
+            "output_budget": 3072,
+            "prompt_sha256": "b38345e9e9a8217cdfce137c19fb5f18d9b7b11d1054e27b3be5d0da6ef24874",
+            "ttft_s": 0.17479522700887173,
+            "elapsed_s": 114.29127974298899,
+            "decode_s": 114.06677941398812,
+            "decode_tokens_per_s": 20.803603048943422,
+            "usage": {
+              "prompt_tokens": 64,
+              "total_tokens": 2438,
+              "completion_tokens": 2374
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          }
+        ],
+        "speculation_metric_deltas": {
+          "vllm:spec_decode_num_drafts_total{": 2373.0,
+          "vllm:spec_decode_num_draft_tokens_total{": 9492.0,
+          "vllm:spec_decode_num_accepted_tokens_total{": 0.0
+        },
+        "sample_count": 57,
+        "max_waiting": 0,
+        "profile": "swift-1_5-qwen3_8-27b-w4a16-awq",
+        "mode": "long"
+      },
+      "provenance_limit": "Historical capture, not current deployment; engine/asset revisions not inferred when absent from the report. Raw response text omitted; HTTP 200 is not quality acceptance."
+    },
+    {
+      "source_path": "/tank/hot/1cat-deploy/benchmarks/2026-09-28-swift15-candidates/swift-1_5-qwen3_8-27b-w4a16-awq-mm.json",
+      "source_sha256": "fb465abb6229e66541b171e08240b33a1b157f3aae7c1f08c253822be7314acd",
+      "source_bytes": 11743,
+      "observations": {
+        "sampling": {
+          "temperature": 0.6,
+          "top_p": 0.95,
+          "top_k": 20,
+          "seed": 20260921,
+          "ignore_eos": false
+        },
+        "results": [
+          {
+            "label": "image-red-square",
+            "status": 200,
+            "output_budget": 512,
+            "prompt_sha256": "3d55724e0b2639af30d4e119ad149a06ea6b50b5051c10465bbaf90fe8830800",
+            "ttft_s": 5.366561332019046,
+            "elapsed_s": 8.12248848300078,
+            "decode_s": 2.710884232976241,
+            "decode_tokens_per_s": 22.50188306013679,
+            "usage": {
+              "prompt_tokens": 130,
+              "total_tokens": 192,
+              "completion_tokens": 62
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          },
+          {
+            "label": "video-color-change",
+            "status": 200,
+            "output_budget": 512,
+            "prompt_sha256": "d5c24d8bf15f66c89dfbc0a9523bdddf312af1693f9dcaa13c4e85cde05e647f",
+            "ttft_s": 5.59048316301778,
+            "elapsed_s": 10.446494053001516,
+            "decode_s": 4.80880009898101,
+            "decode_tokens_per_s": 22.04292085721374,
+            "usage": {
+              "prompt_tokens": 165,
+              "total_tokens": 272,
+              "completion_tokens": 107
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          },
+          {
+            "label": "131072-output-allowance",
+            "status": 200,
+            "output_budget": 131072,
+            "prompt_sha256": "0a8c2a546f906f9f2d7947e3647c5ba862df5753f391caf9a75e93141d93a61d",
+            "ttft_s": 0.15216659900033846,
+            "elapsed_s": 0.19789788199705072,
+            "decode_s": 0.0,
+            "decode_tokens_per_s": null,
+            "usage": {
+              "prompt_tokens": 19,
+              "total_tokens": 21,
+              "completion_tokens": 2
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          }
+        ],
+        "speculation_metric_deltas": {
+          "vllm:spec_decode_num_drafts_total{": 168.0,
+          "vllm:spec_decode_num_draft_tokens_total{": 672.0,
+          "vllm:spec_decode_num_accepted_tokens_total{": 0.0
+        },
+        "sample_count": 10,
+        "max_waiting": 0,
+        "profile": "swift-1_5-qwen3_8-27b-w4a16-awq",
+        "mode": "mm"
+      },
+      "provenance_limit": "Historical capture, not current deployment; engine/asset revisions not inferred when absent from the report. Raw response text omitted; HTTP 200 is not quality acceptance."
+    },
+    {
+      "source_path": "/tank/hot/1cat-deploy/benchmarks/2026-09-28-swift15-candidates/swift-qwen3.json",
+      "source_sha256": "21827fc6991396396e468ec3dd653657976c1323972c804d080c0f083d8814c8",
+      "source_bytes": 56300,
+      "observations": {
+        "sampling": {
+          "temperature": 0,
+          "top_p": 0.95,
+          "top_k": 20,
+          "seed": 20260921,
+          "ignore_eos": false
+        },
+        "results": [
+          {
+            "label": "context-256000-0",
+            "status": 200,
+            "output_budget": 32,
+            "prompt_sha256": "9b30a6caa11f12e9e5755fbc11354ff139e2a5434f468463fc3a64cbc9bf82f0",
+            "ttft_s": 290.95577318800497,
+            "elapsed_s": 291.23044963600114,
+            "decode_s": 0.27413659999729134,
+            "decode_tokens_per_s": 36.47816453585113,
+            "usage": {
+              "prompt_tokens": 256000,
+              "total_tokens": 256011,
+              "completion_tokens": 11
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          }
+        ],
+        "speculation_metric_deltas": {
+          "vllm:spec_decode_num_drafts_total{": 2.0,
+          "vllm:spec_decode_num_draft_tokens_total{": 8.0,
+          "vllm:spec_decode_num_accepted_tokens_total{": 8.0
+        },
+        "sample_count": 141,
+        "max_waiting": 0,
+        "profile": "swift-qwen3.8-27b-nvfp4",
+        "mode": "context"
+      },
+      "provenance_limit": "Historical capture, not current deployment; engine/asset revisions not inferred when absent from the report. Raw response text omitted; HTTP 200 is not quality acceptance."
+    },
+    {
+      "source_path": "/tank/hot/1cat-deploy/benchmarks/2026-09-28-swift15-candidates/swift-qwen3_8-27b-nvfp4-compare.json",
+      "source_sha256": "0dcbde3d046f4ab3be461141aff7e28dfeff19935cdbcd1e71dd0de9411c24fd",
+      "source_bytes": 104741,
+      "observations": {
+        "sampling": {
+          "temperature": 0.6,
+          "top_p": 0.95,
+          "top_k": 20,
+          "seed": 20260921,
+          "ignore_eos": false
+        },
+        "results": [
+          {
+            "label": "warmup",
+            "status": 200,
+            "output_budget": 128,
+            "prompt_sha256": "0d43febf68bbb1fa4dac27b84bb66e5af838f2e72b8e7dc5f329d6d634f3d360",
+            "ttft_s": 7.164282820012886,
+            "elapsed_s": 12.489237347006565,
+            "decode_s": 5.3245082539797295,
+            "decode_tokens_per_s": 4.883080044164954,
+            "usage": {
+              "prompt_tokens": 63,
+              "total_tokens": 90,
+              "completion_tokens": 27
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          },
+          {
+            "label": "single-0",
+            "status": 200,
+            "output_budget": 1024,
+            "prompt_sha256": "392401aeb51fe372697671ad30121790909ea14f131b2210aba12b003179db21",
+            "ttft_s": 0.2632040139869787,
+            "elapsed_s": 13.66278367000632,
+            "decode_s": 13.352946063998388,
+            "decode_tokens_per_s": 63.806144046153534,
+            "usage": {
+              "prompt_tokens": 89,
+              "total_tokens": 942,
+              "completion_tokens": 853
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          },
+          {
+            "label": "single-1",
+            "status": 200,
+            "output_budget": 1024,
+            "prompt_sha256": "b47f72c9ba34240d76c5d1562dc9e0c4fb25444cd53d695ccb7d76fec7661564",
+            "ttft_s": 0.1801993709814269,
+            "elapsed_s": 1.7128327249956783,
+            "decode_s": 1.5322580940264743,
+            "decode_tokens_per_s": 80.2736826645047,
+            "usage": {
+              "prompt_tokens": 109,
+              "total_tokens": 233,
+              "completion_tokens": 124
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          },
+          {
+            "label": "single-2",
+            "status": 200,
+            "output_budget": 1024,
+            "prompt_sha256": "67b95e2e0cfccb0a918aa130d953e9dbd6bd68946a8f5a1a77e272c68f44eb84",
+            "ttft_s": 0.1800221819721628,
+            "elapsed_s": 15.34501670699683,
+            "decode_s": 15.164691379002761,
+            "decode_tokens_per_s": 67.45933526985321,
+            "usage": {
+              "prompt_tokens": 92,
+              "total_tokens": 1116,
+              "completion_tokens": 1024
+            },
+            "finish_reason": "length",
+            "error_present": false
+          },
+          {
+            "label": "single-3",
+            "status": 200,
+            "output_budget": 1024,
+            "prompt_sha256": "c8d1f4ce367676c049be58487583e2aeb5eca9e8d0598c24a5ef590061938d08",
+            "ttft_s": 0.19980117998784408,
+            "elapsed_s": 17.96613817999605,
+            "decode_s": 17.76596174100996,
+            "decode_tokens_per_s": 57.58202201001951,
+            "usage": {
+              "prompt_tokens": 91,
+              "total_tokens": 1115,
+              "completion_tokens": 1024
+            },
+            "finish_reason": "length",
+            "error_present": false
+          },
+          {
+            "label": "concurrent-0",
+            "status": 200,
+            "output_budget": 1024,
+            "prompt_sha256": "392401aeb51fe372697671ad30121790909ea14f131b2210aba12b003179db21",
+            "ttft_s": 2.0413118099968415,
+            "elapsed_s": 15.97433459199965,
+            "decode_s": 13.93263373200898,
+            "decode_tokens_per_s": 47.37079956991254,
+            "usage": {
+              "prompt_tokens": 89,
+              "total_tokens": 750,
+              "completion_tokens": 661
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          },
+          {
+            "label": "concurrent-1",
+            "status": 200,
+            "output_budget": 1024,
+            "prompt_sha256": "b47f72c9ba34240d76c5d1562dc9e0c4fb25444cd53d695ccb7d76fec7661564",
+            "ttft_s": 2.0411075089941733,
+            "elapsed_s": 4.266187507979339,
+            "decode_s": 2.2247658820124343,
+            "decode_tokens_per_s": 55.28671623134526,
+            "usage": {
+              "prompt_tokens": 109,
+              "total_tokens": 233,
+              "completion_tokens": 124
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          },
+          {
+            "label": "concurrent-2",
+            "status": 200,
+            "output_budget": 1024,
+            "prompt_sha256": "67b95e2e0cfccb0a918aa130d953e9dbd6bd68946a8f5a1a77e272c68f44eb84",
+            "ttft_s": 2.319018515991047,
+            "elapsed_s": 25.46613534700009,
+            "decode_s": 23.146707638981752,
+            "decode_tokens_per_s": 44.19635033870428,
+            "usage": {
+              "prompt_tokens": 92,
+              "total_tokens": 1116,
+              "completion_tokens": 1024
+            },
+            "finish_reason": "length",
+            "error_present": false
+          },
+          {
+            "label": "concurrent-3",
+            "status": 200,
+            "output_budget": 1024,
+            "prompt_sha256": "c8d1f4ce367676c049be58487583e2aeb5eca9e8d0598c24a5ef590061938d08",
+            "ttft_s": 2.3191360530036036,
+            "elapsed_s": 27.542533391999314,
+            "decode_s": 25.22309930299525,
+            "decode_tokens_per_s": 40.55806099445196,
+            "usage": {
+              "prompt_tokens": 91,
+              "total_tokens": 1115,
+              "completion_tokens": 1024
+            },
+            "finish_reason": "length",
+            "error_present": false
+          }
+        ],
+        "speculation_metric_deltas": {
+          "vllm:spec_decode_num_drafts_total{": 2005.0,
+          "vllm:spec_decode_num_draft_tokens_total{": 8020.0,
+          "vllm:spec_decode_num_accepted_tokens_total{": 3888.0
+        },
+        "sample_count": 44,
+        "max_waiting": 0,
+        "profile": "swift-qwen3_8-27b-nvfp4",
+        "mode": "compare"
+      },
+      "provenance_limit": "Historical capture, not current deployment; engine/asset revisions not inferred when absent from the report. Raw response text omitted; HTTP 200 is not quality acceptance."
+    },
+    {
+      "source_path": "/tank/hot/1cat-deploy/benchmarks/2026-09-28-swift15-candidates/swift-qwen3_8-27b-nvfp4-context-160000-1.json",
+      "source_sha256": "86ff2606ca8b09b9fdf9019fb1a43308f502f27b996df463fe99200a2dcef7fe",
+      "source_bytes": 29434,
+      "observations": {
+        "sampling": {
+          "temperature": 0,
+          "top_p": 0.95,
+          "top_k": 20,
+          "seed": 20260921,
+          "ignore_eos": false
+        },
+        "results": [
+          {
+            "label": "context-160000-0",
+            "status": 200,
+            "output_budget": 32,
+            "prompt_sha256": "f29b6d9ad81e9bee3bb763f70d8b00b57324dee95062a35657ce57e6165c88b9",
+            "ttft_s": 149.24289404199226,
+            "elapsed_s": 149.4449229509919,
+            "decode_s": 0.20169124199310318,
+            "decode_tokens_per_s": 49.580734895479246,
+            "usage": {
+              "prompt_tokens": 160000,
+              "total_tokens": 160011,
+              "completion_tokens": 11
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          }
+        ],
+        "speculation_metric_deltas": {
+          "vllm:spec_decode_num_drafts_total{": 2.0,
+          "vllm:spec_decode_num_draft_tokens_total{": 8.0,
+          "vllm:spec_decode_num_accepted_tokens_total{": 8.0
+        },
+        "sample_count": 72,
+        "max_waiting": 0,
+        "profile": "swift-qwen3_8-27b-nvfp4",
+        "mode": "context"
+      },
+      "provenance_limit": "Historical capture, not current deployment; engine/asset revisions not inferred when absent from the report. Raw response text omitted; HTTP 200 is not quality acceptance."
+    },
+    {
+      "source_path": "/tank/hot/1cat-deploy/benchmarks/2026-09-28-swift15-candidates/swift-qwen3_8-27b-nvfp4-context-160000-4.json",
+      "source_sha256": "077b4fbe3f4c5015404f8f4236ea45835b1cb1a0740a0e273666a3679e4f9ab9",
+      "source_bytes": 95343,
+      "observations": {
+        "sampling": {
+          "temperature": 0,
+          "top_p": 0.95,
+          "top_k": 20,
+          "seed": 20260921,
+          "ignore_eos": false
+        },
+        "results": [
+          {
+            "label": "context-160000-0",
+            "status": 200,
+            "output_budget": 32,
+            "prompt_sha256": "f29b6d9ad81e9bee3bb763f70d8b00b57324dee95062a35657ce57e6165c88b9",
+            "ttft_s": 18.64793966599973,
+            "elapsed_s": 30.85038030098076,
+            "decode_s": 12.201942158979364,
+            "decode_tokens_per_s": 0.8195416655569898,
+            "usage": {
+              "prompt_tokens": 160000,
+              "total_tokens": 160011,
+              "completion_tokens": 11
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          },
+          {
+            "label": "context-160000-1",
+            "status": 200,
+            "output_budget": 32,
+            "prompt_sha256": "195aa2fad5abf2ba77f1568094b7729dbac11992f91963e3eaeb597045fee5db",
+            "ttft_s": 180.26233877800405,
+            "elapsed_s": 193.39216615600162,
+            "decode_s": 13.129427705978742,
+            "decode_tokens_per_s": 0.7616478207535508,
+            "usage": {
+              "prompt_tokens": 160000,
+              "total_tokens": 160011,
+              "completion_tokens": 11
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          },
+          {
+            "label": "context-160000-2",
+            "status": 200,
+            "output_budget": 32,
+            "prompt_sha256": "2cf6c23d799d2dcb58eeaf2bf9cb00b1d4717970d6db314a4da98000ceeae03c",
+            "ttft_s": 333.01035894898814,
+            "elapsed_s": 343.2925500749843,
+            "decode_s": 10.281872399005806,
+            "decode_tokens_per_s": 0.9725854992099434,
+            "usage": {
+              "prompt_tokens": 160000,
+              "total_tokens": 160011,
+              "completion_tokens": 11
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          },
+          {
+            "label": "context-160000-3",
+            "status": 200,
+            "output_budget": 32,
+            "prompt_sha256": "b97a4afd36194ffc402b0d66ac80835f71bd48e9ea3498ca24e0b18bc1be9d91",
+            "ttft_s": 480.27795233100187,
+            "elapsed_s": 480.4787817559845,
+            "decode_s": 0.20046564599033445,
+            "decode_tokens_per_s": 49.88385890559101,
+            "usage": {
+              "prompt_tokens": 160000,
+              "total_tokens": 160011,
+              "completion_tokens": 11
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          }
+        ],
+        "speculation_metric_deltas": {
+          "vllm:spec_decode_num_drafts_total{": 8.0,
+          "vllm:spec_decode_num_draft_tokens_total{": 32.0,
+          "vllm:spec_decode_num_accepted_tokens_total{": 32.0
+        },
+        "sample_count": 234,
+        "max_waiting": 2.0,
+        "profile": "swift-qwen3_8-27b-nvfp4",
+        "mode": "context"
+      },
+      "provenance_limit": "Historical capture, not current deployment; engine/asset revisions not inferred when absent from the report. Raw response text omitted; HTTP 200 is not quality acceptance."
+    },
+    {
+      "source_path": "/tank/hot/1cat-deploy/benchmarks/2026-09-28-swift15-candidates/swift-qwen3_8-27b-nvfp4-context-256000-1.json",
+      "source_sha256": "4a63d6961a173a870f67bbc3714a2ea3c7f93db171967fbac01d4f759f96bb41",
+      "source_bytes": 56655,
+      "observations": {
+        "sampling": {
+          "temperature": 0,
+          "top_p": 0.95,
+          "top_k": 20,
+          "seed": 20260921,
+          "ignore_eos": false
+        },
+        "results": [
+          {
+            "label": "context-256000-0",
+            "status": 200,
+            "output_budget": 32,
+            "prompt_sha256": "9b30a6caa11f12e9e5755fbc11354ff139e2a5434f468463fc3a64cbc9bf82f0",
+            "ttft_s": 291.5739720730053,
+            "elapsed_s": 291.84977425899706,
+            "decode_s": 0.2753863139951136,
+            "decode_tokens_per_s": 36.3126251807032,
+            "usage": {
+              "prompt_tokens": 256000,
+              "total_tokens": 256011,
+              "completion_tokens": 11
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          }
+        ],
+        "speculation_metric_deltas": {
+          "vllm:spec_decode_num_drafts_total{": 2.0,
+          "vllm:spec_decode_num_draft_tokens_total{": 8.0,
+          "vllm:spec_decode_num_accepted_tokens_total{": 8.0
+        },
+        "sample_count": 142,
+        "max_waiting": 0,
+        "profile": "swift-qwen3_8-27b-nvfp4",
+        "mode": "context"
+      },
+      "provenance_limit": "Historical capture, not current deployment; engine/asset revisions not inferred when absent from the report. Raw response text omitted; HTTP 200 is not quality acceptance."
+    },
+    {
+      "source_path": "/tank/hot/1cat-deploy/benchmarks/2026-09-28-swift15-candidates/swift-qwen3_8-27b-nvfp4-long.json",
+      "source_sha256": "f8551a527231020b6a6882c384603483313c226b7dda808233c8c7d400df7f61",
+      "source_bytes": 41669,
+      "observations": {
+        "sampling": {
+          "temperature": 0.6,
+          "top_p": 0.95,
+          "top_k": 20,
+          "seed": 20260921,
+          "ignore_eos": false
+        },
+        "results": [
+          {
+            "label": "long-natural",
+            "status": 200,
+            "output_budget": 3072,
+            "prompt_sha256": "b38345e9e9a8217cdfce137c19fb5f18d9b7b11d1054e27b3be5d0da6ef24874",
+            "ttft_s": 0.16899753198958933,
+            "elapsed_s": 38.4950239599857,
+            "decode_s": 38.32569465000415,
+            "decode_tokens_per_s": 62.04714674362053,
+            "usage": {
+              "prompt_tokens": 64,
+              "total_tokens": 2443,
+              "completion_tokens": 2379
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          }
+        ],
+        "speculation_metric_deltas": {
+          "vllm:spec_decode_num_drafts_total{": 821.0,
+          "vllm:spec_decode_num_draft_tokens_total{": 3284.0,
+          "vllm:spec_decode_num_accepted_tokens_total{": 1559.0
+        },
+        "sample_count": 19,
+        "max_waiting": 0,
+        "profile": "swift-qwen3_8-27b-nvfp4",
+        "mode": "long"
+      },
+      "provenance_limit": "Historical capture, not current deployment; engine/asset revisions not inferred when absent from the report. Raw response text omitted; HTTP 200 is not quality acceptance."
+    },
+    {
+      "source_path": "/tank/hot/1cat-deploy/benchmarks/2026-09-28-swift15-candidates/swift-qwen3_8-27b-nvfp4-mm.json",
+      "source_sha256": "ad892268738559c8faf0f6a854a854ae6478913d959def67833cfd31c1f7b210",
+      "source_bytes": 6604,
+      "observations": {
+        "sampling": {
+          "temperature": 0.6,
+          "top_p": 0.95,
+          "top_k": 20,
+          "seed": 20260921,
+          "ignore_eos": false
+        },
+        "results": [
+          {
+            "label": "image-red-square",
+            "status": 200,
+            "output_budget": 512,
+            "prompt_sha256": "3d55724e0b2639af30d4e119ad149a06ea6b50b5051c10465bbaf90fe8830800",
+            "ttft_s": 0.4117533109965734,
+            "elapsed_s": 1.1664653279876802,
+            "decode_s": 0.7544081109808758,
+            "decode_tokens_per_s": 78.20700644812612,
+            "usage": {
+              "prompt_tokens": 130,
+              "total_tokens": 190,
+              "completion_tokens": 60
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          },
+          {
+            "label": "video-color-change",
+            "status": 200,
+            "output_budget": 512,
+            "prompt_sha256": "d5c24d8bf15f66c89dfbc0a9523bdddf312af1693f9dcaa13c4e85cde05e647f",
+            "ttft_s": 5.405795184982708,
+            "elapsed_s": 6.584196691983379,
+            "decode_s": 1.1779256820154842,
+            "decode_tokens_per_s": 90.83764929627661,
+            "usage": {
+              "prompt_tokens": 165,
+              "total_tokens": 273,
+              "completion_tokens": 108
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          },
+          {
+            "label": "131072-output-allowance",
+            "status": 200,
+            "output_budget": 131072,
+            "prompt_sha256": "0a8c2a546f906f9f2d7947e3647c5ba862df5753f391caf9a75e93141d93a61d",
+            "ttft_s": 0.14520736198755912,
+            "elapsed_s": 0.19003685799543746,
+            "decode_s": 0.0,
+            "decode_tokens_per_s": null,
+            "usage": {
+              "prompt_tokens": 19,
+              "total_tokens": 21,
+              "completion_tokens": 2
+            },
+            "finish_reason": "stop",
+            "error_present": false
+          }
+        ],
+        "speculation_metric_deltas": {
+          "vllm:spec_decode_num_drafts_total{": 44.0,
+          "vllm:spec_decode_num_draft_tokens_total{": 176.0,
+          "vllm:spec_decode_num_accepted_tokens_total{": 130.0
+        },
+        "sample_count": 5,
+        "max_waiting": 0,
+        "profile": "swift-qwen3_8-27b-nvfp4",
+        "mode": "mm"
+      },
+      "provenance_limit": "Historical capture, not current deployment; engine/asset revisions not inferred when absent from the report. Raw response text omitted; HTTP 200 is not quality acceptance."
+    }
+  ]
+}

@@ -1,0 +1,186 @@
+{
+  "kind": "Closed unprofiled repaired 7ab four-window control: complete outputs, failed common-decode overlap",
+  "date": "2026-10-10",
+  "tested_source_revision": "7ab8b4477adb4137a1172de0e66c6806e997a49c",
+  "source_files_sha256": {
+    "vllm/model_executor/layers/vocab_parallel_embedding.py": "fa38be8ecc351db309ada13971ed55f2bcea9ef8563981f2758d8ffef66d2d4d",
+    "vllm/model_executor/models/qwen3_dflash.py": "3b24b5c6f68283076593a32d5d945c011217ea28072072faa73cca34f481aa5e",
+    "vllm/sm70_profiles/acceleration.py": "228e56deea89d1a6ecc4e72b6159ad083e7c54ed17239eb51f678beb0633ec52"
+  },
+  "launch_tag": "main7ab-w4-fp8-4x130560-clean-quantfix",
+  "scope": "Matched public 130560 input + 512 actual output per request; no custom scheduler/worker/Torch/periodic/route observer; not private-quality or maximum-capacity admission",
+  "observer_admission": {
+    "tag": "main7ab-w4-fp8-fair2048-clean-quantfix",
+    "checked_at": "2026-10-10T09:13:39.785188+00:00",
+    "identity_verified": true,
+    "unprofiled": true,
+    "source_revision": "7ab8b4477adb4137a1172de0e66c6806e997a49c",
+    "source_files_sha256": {
+      "vllm/model_executor/layers/vocab_parallel_embedding.py": "fa38be8ecc351db309ada13971ed55f2bcea9ef8563981f2758d8ffef66d2d4d",
+      "vllm/model_executor/models/qwen3_dflash.py": "3b24b5c6f68283076593a32d5d945c011217ea28072072faa73cca34f481aa5e",
+      "vllm/sm70_profiles/acceleration.py": "228e56deea89d1a6ecc4e72b6159ad083e7c54ed17239eb51f678beb0633ec52"
+    },
+    "observer_files_sha256": {},
+    "custom_scheduler_absent": true,
+    "custom_worker_observer_absent": true,
+    "torch_profiler_absent": true,
+    "periodic_mtp_profiling_disabled": true,
+    "route_summaries_disabled": true,
+    "nan_diagnostics_disabled": true,
+    "scalar_trace_directory_absent": true,
+    "devmode_absent": true,
+    "private_environment_or_argv_exported": false
+  },
+  "initial_mixed_budget_tokens": 512,
+  "input_fixture": {
+    "source_revision": "7ab8b4477adb4137a1172de0e66c6806e997a49c",
+    "partitions": [
+      {
+        "index": 0,
+        "prompt_tokens": 130560,
+        "prompt_ids_sha256": "056a5d20383351e730d7a486518b29d8a7215d841c9f05c38b8697b75ec15e58",
+        "marker_sha256": "6acfcab6897b4910613ccf8c1a1084a8384c9512e5d2746b6511a16705f767f9",
+        "used_manifest_sha256": "93b06f731dfc631358314386efbde5c8a17520033c3e5b55bce666ae59461d71",
+        "input_ids_identical": true,
+        "cache_salt_changed": true
+      },
+      {
+        "index": 1,
+        "prompt_tokens": 130560,
+        "prompt_ids_sha256": "4826017cb2a7bef0d965262a0d4a4b50f52dfff4b81d42afd6e7ddeb7566308a",
+        "marker_sha256": "770cfa5595f717b0ca8e6739c8a9eaf851872d28c18b0f5f19123979694efcab",
+        "used_manifest_sha256": "980d1822d325d688865eacc6a228ddc74334d9e5a1afecec2d4806f61a79270c",
+        "input_ids_identical": true,
+        "cache_salt_changed": true
+      },
+      {
+        "index": 2,
+        "prompt_tokens": 130560,
+        "prompt_ids_sha256": "06df1fb36a145cf85594af4e53e49fd36431d33c18ff8c742a2c51bdaba755b5",
+        "marker_sha256": "e65381bf9882a2e6ac23aba011998475762afcedebed25a52cdca7ce98cfad05",
+        "used_manifest_sha256": "462574e4d08a1880e3be1bce65e66108b80f35e30adf782545cf545764289a8c",
+        "input_ids_identical": true,
+        "cache_salt_changed": true
+      },
+      {
+        "index": 3,
+        "prompt_tokens": 130560,
+        "prompt_ids_sha256": "ee9cc31e1fdc1793e3bcc65067fac7d87b2fb51bb892cce8f436048e1efb1554",
+        "marker_sha256": "3c3b6de5b44fd6dd1e15bb5e1e18388e8b5d7f6b40b76f2fd81c681b41331d83",
+        "used_manifest_sha256": "839bcbbc0f6a2f1ac1b3dba99eaeb465c4fd32bb3a8e2738ae9826e1c91e8a7c",
+        "input_ids_identical": true,
+        "cache_salt_changed": true
+      }
+    ],
+    "prefix_cache_hits": 0,
+    "private_bodies_exported": false
+  },
+  "result": {
+    "run_passed": false,
+    "capacity_pass": false,
+    "failures": [
+      "all_requested_streams_running_not_observed_during_decode",
+      "sustained_decode_observation_insufficient"
+    ],
+    "actual_input_tokens_per_request": [
+      130560,
+      130560,
+      130560,
+      130560
+    ],
+    "actual_output_tokens_per_request": [
+      512,
+      512,
+      512,
+      512
+    ],
+    "all_requests_complete": true,
+    "all_markers_found": true,
+    "metric_deltas": {
+      "success": 4,
+      "preemptions": 0,
+      "corrupted": null,
+      "prompt_count": 4,
+      "prompt_sum": 522240,
+      "generation_count": 4,
+      "generation_sum": 2048,
+      "cache_queries": 522240,
+      "cache_hits": 0
+    },
+    "max_running": 4,
+    "max_kv_usage_fraction": 0.9769647696476965,
+    "max_gpu_used_mib": {
+      "0": 30668,
+      "1": 30668
+    },
+    "queue_observation": {
+      "poll_interval_s": 1,
+      "common_decode_window_monotonic_s": [
+        774774.627414244,
+        774639.965834334
+      ],
+      "common_decode_samples": 0,
+      "max_sample_gap_s": null,
+      "all_requested_streams_running_during_decode": false,
+      "all_four_running_observed": false,
+      "max_waiting_before_first_output": 0,
+      "max_waiting_after_first_output": 0,
+      "max_waiting_common_decode": 0,
+      "longest_observed_queue_span_common_decode_s": 0,
+      "sustained_queue_common_decode": false,
+      "sustained_definition": "positive waiting on consecutive polls spanning >=0.8 seconds inside common decode",
+      "admission_waiting_is_not_sustained_decode_queueing": true
+    },
+    "first_to_last_output_intervals": [
+      {
+        "index": 0,
+        "first_output_monotonic_s": 774513.874295851,
+        "last_output_monotonic_s": 774639.965834334
+      },
+      {
+        "index": 1,
+        "first_output_monotonic_s": 774646.983099271,
+        "last_output_monotonic_s": 774767.10685213
+      },
+      {
+        "index": 2,
+        "first_output_monotonic_s": 774772.311259993,
+        "last_output_monotonic_s": 774794.777823685
+      },
+      {
+        "index": 3,
+        "first_output_monotonic_s": 774774.627414244,
+        "last_output_monotonic_s": 774793.579794283
+      }
+    ],
+    "cohort_wall_s": 742.081024030922
+  },
+  "speculation": {
+    "drafts": 700,
+    "draft_tokens": 4900,
+    "accepted_tokens": 1351,
+    "acceptance_percent": 27.571428571428573,
+    "metrics_before_sha256": "80e92cbfc4b368637f4dc439d428d74c53d8937225d9f83c8b7f2244b22ebc9d",
+    "metrics_after_sha256": "e057fb1ea9326569aeaec248baf35b769ed1b01f94dd7651bfaed94c62bce15a"
+  },
+  "comparison_limits": [
+    "Same four actual input ID hashes, markers and manifests as the observed cohort; independent fresh salts.",
+    "Failure persists without the custom observers, so it is not solely an observer artifact.",
+    "Fresh engine starts the adaptive budget at512, unlike the observed cohort inherited144; this is not a one-variable timing comparison.",
+    "All outputs complete and acceptance improves after namespace repair, but neither run passes the four-stream overlap gate.",
+    "No allocation rejection does not establish four complete simultaneous working sets or a universal context ceiling."
+  ],
+  "receipts": {
+    "cohort": {
+      "path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-independent/main7ab-w4-fp8-4x130560-clean-quantfix/report.json",
+      "bytes": 589785,
+      "sha256": "a1aec3fdf12f18d4e04d17b8412fe4711f950bb72f98adfed2c9eaacd0a92c03"
+    },
+    "observed_cohort": {
+      "path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-independent/main7ab-w4-fp8-4x130560-diag-quantfix/report.json",
+      "bytes": 607064,
+      "sha256": "fd44dfd453a989cd542e8588f4cc9c20c49ee9f7a58d78cb348cf23f42adb977"
+    }
+  },
+  "excluded": "No prompt/token bodies, generated text, request IDs, private argv/environment, raw logs, metric labels, credentials or private failing workload."
+}

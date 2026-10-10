@@ -1,0 +1,468 @@
+{
+  "kind": "Closed matched public DFlash FP8 namespace defect and repair, not production or private quality admission",
+  "date": "2026-10-10",
+  "tested_source_revision": "7ab8b4477adb4137a1172de0e66c6806e997a49c",
+  "native_abi_rebuild_required": false,
+  "baseline_record": "2026-10-10-7ab-native-and-acceptance-diagnosis.json",
+  "checkpoint_contract": {
+    "header_only": true,
+    "checkpoint_tensor_bodies_read": false,
+    "fc_and_qkv0": "Checkpoint BF16 with no FP8 scales; runtime exclusions must preserve declared half precision",
+    "runtime_namespace": "model.fc and model.layers.64..68 rather than checkpoint fc and layers.0..4",
+    "fix": "Fresh DFlash Fp8Config: component-boundary suffix exclusion mode; descending local-to-offset layer mapping and existing packed-module mapping before constructing layers",
+    "checkpoint_or_model_config_bytes_modified": false
+  },
+  "source_fingerprints": {
+    "before": {
+      "vllm/model_executor/layers/vocab_parallel_embedding.py": "fa38be8ecc351db309ada13971ed55f2bcea9ef8563981f2758d8ffef66d2d4d",
+      "vllm/model_executor/models/qwen3_dflash.py": "32255a3a2aacebcc3a3b23a4c002424ec5baa38cbf2a8807c01ce3f13e7e7c54",
+      "vllm/sm70_profiles/acceleration.py": "228e56deea89d1a6ecc4e72b6159ad083e7c54ed17239eb51f678beb0633ec52"
+    },
+    "after": {
+      "vllm/model_executor/layers/vocab_parallel_embedding.py": "fa38be8ecc351db309ada13971ed55f2bcea9ef8563981f2758d8ffef66d2d4d",
+      "vllm/model_executor/models/qwen3_dflash.py": "3b24b5c6f68283076593a32d5d945c011217ea28072072faa73cca34f481aa5e",
+      "vllm/sm70_profiles/acceleration.py": "228e56deea89d1a6ecc4e72b6159ad083e7c54ed17239eb51f678beb0633ec52"
+    },
+    "only_dflash_model_source_changed": true,
+    "observer_metadata_helper_changed": true
+  },
+  "paired_input_binding": {
+    "source_revision": "7ab8b4477adb4137a1172de0e66c6806e997a49c",
+    "source_policy": "committed regular code blobs; ignore/exclusion filtered; no repeated blobs",
+    "input_ids_unchanged": true,
+    "cache_salts_regenerated": true,
+    "actual_ids_and_bound_hashes_verified": true,
+    "partitions": [
+      {
+        "index": 0,
+        "prompt_tokens": 12288,
+        "prompt_ids_sha256": "075a7186a2030c49bef7cc16bcde4c6b85acb877b2068caf82f5d232b98239b8",
+        "marker_sha256": "83efbb1a74396bc3b6c45869cf3a73d0ef2ec94e145b0571a1aff98100fb287c",
+        "used_manifest_sha256": "43e713c20d2c8700002c9ac3aac42cfe2afc7dcf41373c1ff742cf29ecd03394",
+        "input_ids_identical": true,
+        "cache_salt_changed": true
+      },
+      {
+        "index": 1,
+        "prompt_tokens": 12288,
+        "prompt_ids_sha256": "af9e2bfda2ef9b0bff308502fa9df14e05e63c42234f0ff16bd60a1d2110ea7e",
+        "marker_sha256": "f14084dfd1bece9858de616ac5c21a0cd10d6d83ab379b5d5bb9f9b816ccac45",
+        "used_manifest_sha256": "b82ef40400fd108f258a70f031abdb7d96ff4ae8116419f1037a92b6632f85cf",
+        "input_ids_identical": true,
+        "cache_salt_changed": true
+      },
+      {
+        "index": 2,
+        "prompt_tokens": 12288,
+        "prompt_ids_sha256": "f2acda3930169b182d3b89a21a5a3f1baac973e3514e7fc5ad10be49b4975b5c",
+        "marker_sha256": "998d974e008637c83fd697eebc427efc21f43d47b208b598e9aa4149d0f41000",
+        "used_manifest_sha256": "47a4a83e5952122e647dd50550db6a128268bc126fd5a520981d9ac4da905628",
+        "input_ids_identical": true,
+        "cache_salt_changed": true
+      },
+      {
+        "index": 3,
+        "prompt_tokens": 12288,
+        "prompt_ids_sha256": "ab10816f4c4447f34ce2f4e57d570accfb44a6cfbce4856d0544df37165223a8",
+        "marker_sha256": "908b570d9e7d5e85ec0302c7f75513853927ec532002c612524896c7f651b7a7",
+        "used_manifest_sha256": "21f9fe2ba112ff9271b626584dcb40d2cada5f1e7fd6988102d1604b695b2d84",
+        "input_ids_identical": true,
+        "cache_salt_changed": true
+      }
+    ],
+    "source_report_sha256": "7e27790bda23167fc7741b5b8770e02dbd004402edfe256767adf80c42fc8a78",
+    "source_prompts_sha256": "3f590defd69c1a7b721d7931d063822aafc42682807750400f5813266b890b26",
+    "private_prompt_bodies_exported": false
+  },
+  "before": {
+    "tag": "main7ab-w4-fp8-4x12288-diag-fresh",
+    "report": {
+      "path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-independent/main7ab-w4-fp8-4x12288-diag-fresh/report.json",
+      "bytes": 76099,
+      "sha256": "7e27790bda23167fc7741b5b8770e02dbd004402edfe256767adf80c42fc8a78"
+    },
+    "run_passed": true,
+    "capacity_pass": true,
+    "input_tokens_per_stream": 12288,
+    "actual_output_tokens_per_stream": [
+      512,
+      512,
+      512,
+      512
+    ],
+    "all_markers_found": true,
+    "metric_deltas": {
+      "success": 4,
+      "preemptions": 0,
+      "corrupted": null,
+      "prompt_count": 4,
+      "prompt_sum": 49152,
+      "generation_count": 4,
+      "generation_sum": 2048,
+      "cache_queries": 49152,
+      "cache_hits": 0
+    },
+    "max_kv_usage_fraction": 0.4054054054054054,
+    "queue_observation": {
+      "poll_interval_s": 1,
+      "common_decode_window_monotonic_s": [
+        765327.078758396,
+        765369.058912587
+      ],
+      "common_decode_samples": 42,
+      "max_sample_gap_s": 1.0220728700514883,
+      "all_requested_streams_running_during_decode": true,
+      "all_four_running_observed": true,
+      "max_waiting_before_first_output": 0,
+      "max_waiting_after_first_output": 0,
+      "max_waiting_common_decode": 0,
+      "longest_observed_queue_span_common_decode_s": 0,
+      "sustained_queue_common_decode": false,
+      "sustained_definition": "positive waiting on consecutive polls spanning >=0.8 seconds inside common decode",
+      "admission_waiting_is_not_sustained_decode_queueing": true
+    },
+    "speculation": {
+      "drafts": 2029,
+      "draft_tokens": 14203,
+      "accepted_tokens": 15,
+      "acceptance_percent": 0.10561149053016969,
+      "receipt": {
+        "path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-diagnostic/main7ab-w4-fp8-4x12288-diag-fresh/speculative-counter-deltas.json",
+        "bytes": 900,
+        "sha256": "5ffb852d841ae92c8480fcd1eab7593c689a31dbd72d8b2f8fee4f3f355cfcd3"
+      }
+    }
+  },
+  "after": {
+    "tag": "main7ab-w4-fp8-4x12288-diag-quantfix",
+    "report": {
+      "path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-independent/main7ab-w4-fp8-4x12288-diag-quantfix/report.json",
+      "bytes": 63331,
+      "sha256": "1eaaff0d4987df8192f977e695a8272b5e26184d9efd1d797f1403a3535b6d72"
+    },
+    "run_passed": true,
+    "capacity_pass": true,
+    "input_tokens_per_stream": 12288,
+    "actual_output_tokens_per_stream": [
+      512,
+      512,
+      512,
+      512
+    ],
+    "all_markers_found": true,
+    "metric_deltas": {
+      "success": 4,
+      "preemptions": 0,
+      "corrupted": null,
+      "prompt_count": 4,
+      "prompt_sum": 49152,
+      "generation_count": 4,
+      "generation_sum": 2048,
+      "cache_queries": 49152,
+      "cache_hits": 0
+    },
+    "max_kv_usage_fraction": 0.3929539295392954,
+    "queue_observation": {
+      "poll_interval_s": 1,
+      "common_decode_window_monotonic_s": [
+        770685.730817203,
+        770703.131997893
+      ],
+      "common_decode_samples": 17,
+      "max_sample_gap_s": 1.0067101849708706,
+      "all_requested_streams_running_during_decode": true,
+      "all_four_running_observed": true,
+      "max_waiting_before_first_output": 0,
+      "max_waiting_after_first_output": 0,
+      "max_waiting_common_decode": 0,
+      "longest_observed_queue_span_common_decode_s": 0,
+      "sustained_queue_common_decode": false,
+      "sustained_definition": "positive waiting on consecutive polls spanning >=0.8 seconds inside common decode",
+      "admission_waiting_is_not_sustained_decode_queueing": true
+    },
+    "speculation": {
+      "drafts": 652,
+      "draft_tokens": 4564,
+      "accepted_tokens": 1403,
+      "acceptance_percent": 30.740578439964942,
+      "receipt": {
+        "path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-diagnostic/main7ab-w4-fp8-4x12288-diag-quantfix/speculative-counter-deltas.json",
+        "bytes": 899,
+        "sha256": "37737709c30da4930a8901c7ade290aa9a832d27a252bcc9f8716cc678033e91"
+      }
+    }
+  },
+  "loaded_contract": {
+    "passed": true,
+    "ranks": [
+      {
+        "rank": 0,
+        "scope": "Loaded public draft metadata and small scale reductions; no request buffers or checkpoint bodies",
+        "projections": [
+          {
+            "component": "fc",
+            "quant_method": "UnquantizedLinearMethod",
+            "weight_dtype": "torch.float16",
+            "weight_shape": [
+              5120,
+              25600
+            ],
+            "params_dtype": "torch.float16",
+            "scales": {}
+          },
+          {
+            "component": "qkv0",
+            "quant_method": "UnquantizedLinearMethod",
+            "weight_dtype": "torch.float16",
+            "weight_shape": [
+              3072,
+              5120
+            ],
+            "params_dtype": "torch.float16",
+            "scales": {}
+          },
+          {
+            "component": "o0",
+            "quant_method": "Fp8LinearMethod",
+            "weight_dtype": "torch.uint8",
+            "weight_shape": [
+              0
+            ],
+            "params_dtype": "torch.float16",
+            "scales": {
+              "weight_scale_inv": {
+                "dtype": "torch.float32",
+                "shape": [
+                  40,
+                  16
+                ],
+                "numel": 640,
+                "finite": 640,
+                "positive": 640,
+                "minimum": 0.000701904296875,
+                "maximum": 0.01360212080180645,
+                "fp32_sentinels": 0
+              },
+              "_sm70_block_fp8_qpn8_packed_scales": {
+                "dtype": "torch.float16",
+                "shape": [
+                  16,
+                  160
+                ],
+                "numel": 2560,
+                "finite": 2560,
+                "positive": 2560,
+                "minimum": 0.1796875,
+                "maximum": 3.482421875,
+                "fp32_sentinels": null
+              }
+            }
+          }
+        ],
+        "aux_boundaries": [
+          6,
+          20,
+          34,
+          48,
+          62
+        ],
+        "shared_embedding": true,
+        "shared_head": true,
+        "target_head_is_embedding": false,
+        "has_own_embedding": false,
+        "has_own_head": false,
+        "draft_id_mapping_absent": true,
+        "mask_token_id": 248070,
+        "separate_mask_embedding": false,
+        "synthetic_fc": {
+          "rows": 2,
+          "shape": [
+            2,
+            5120
+          ],
+          "finite": 10240,
+          "numel": 10240,
+          "zero_row_max_abs": 0,
+          "signature_row_rms": 0.2302207201719284,
+          "signature_row_max_abs": 1.529296875,
+          "scope": "Pure FC on fresh synthetic inputs only; no hybrid-model replay or numerical-quality admission"
+        }
+      },
+      {
+        "rank": 1,
+        "scope": "Loaded public draft metadata and small scale reductions; no request buffers or checkpoint bodies",
+        "projections": [
+          {
+            "component": "fc",
+            "quant_method": "UnquantizedLinearMethod",
+            "weight_dtype": "torch.float16",
+            "weight_shape": [
+              5120,
+              25600
+            ],
+            "params_dtype": "torch.float16",
+            "scales": {}
+          },
+          {
+            "component": "qkv0",
+            "quant_method": "UnquantizedLinearMethod",
+            "weight_dtype": "torch.float16",
+            "weight_shape": [
+              3072,
+              5120
+            ],
+            "params_dtype": "torch.float16",
+            "scales": {}
+          },
+          {
+            "component": "o0",
+            "quant_method": "Fp8LinearMethod",
+            "weight_dtype": "torch.uint8",
+            "weight_shape": [
+              0
+            ],
+            "params_dtype": "torch.float16",
+            "scales": {
+              "weight_scale_inv": {
+                "dtype": "torch.float32",
+                "shape": [
+                  40,
+                  16
+                ],
+                "numel": 640,
+                "finite": 640,
+                "positive": 640,
+                "minimum": 0.0006844656891189516,
+                "maximum": 0.01457868330180645,
+                "fp32_sentinels": 0
+              },
+              "_sm70_block_fp8_qpn8_packed_scales": {
+                "dtype": "torch.float16",
+                "shape": [
+                  16,
+                  160
+                ],
+                "numel": 2560,
+                "finite": 2560,
+                "positive": 2560,
+                "minimum": 0.1751708984375,
+                "maximum": 3.732421875,
+                "fp32_sentinels": null
+              }
+            }
+          }
+        ],
+        "aux_boundaries": [
+          6,
+          20,
+          34,
+          48,
+          62
+        ],
+        "shared_embedding": true,
+        "shared_head": true,
+        "target_head_is_embedding": false,
+        "has_own_embedding": false,
+        "has_own_head": false,
+        "draft_id_mapping_absent": true,
+        "mask_token_id": 248070,
+        "separate_mask_embedding": false,
+        "synthetic_fc": {
+          "rows": 2,
+          "shape": [
+            2,
+            5120
+          ],
+          "finite": 10240,
+          "numel": 10240,
+          "zero_row_max_abs": 0,
+          "signature_row_rms": 0.2302207201719284,
+          "signature_row_max_abs": 1.529296875,
+          "scope": "Pure FC on fresh synthetic inputs only; no hybrid-model replay or numerical-quality admission"
+        }
+      }
+    ],
+    "receipt": {
+      "path": "/tank/hot/1cat-deploy/repetition-native-20261009/draft-loaded-contract-quantfix-7ab8b447.json",
+      "bytes": 5299,
+      "sha256": "5ac2a9afa93b94fc66cb43d63941c7851a5d3435cd5a5219ba8771009e7f6665"
+    },
+    "limit": "Loaded precision/scale/ownership and pure FC checks; not hybrid numerical parity or original private quality repair"
+  },
+  "permanent_namespace_regressions": {
+    "tests": 3,
+    "failures": 0,
+    "errors": 0,
+    "receipt": {
+      "path": "/tank/hot/1cat-deploy/repetition-native-20261009/draft-quant-exclusion-regression-7ab8b447.xml",
+      "bytes": 640,
+      "sha256": "8fce11d09eda6f733cd750ebc776d858970f1850da18b27983fe95cadd96326f"
+    }
+  },
+  "initial_admission_caveat": "After repair, only three requests were admitted in the first two scheduler steps; the fourth joined step 2 about 8.935 seconds later. Initial 4K skew is admission timing, not evidence of an equal-start four-way prefill.",
+  "limits": {
+    "observer_perturbed": true,
+    "performance_ranking_admitted": false,
+    "numerical_quality_admitted": false,
+    "semantic_quality_admitted": false,
+    "original_private_failure_replayed": false,
+    "original_private_failure_closed": false,
+    "full_128k_or_maximum_capacity_proven_by_this_cohort": false,
+    "full_32k_generation_or_reasoning_proven": false,
+    "production_8000_resumed": false,
+    "life_resumed": false
+  },
+  "upstream": {
+    "latest_checked_revision": "16628e2f0a70761ba6525bf46e5e844c04b3e66f",
+    "comparison_base": "4e5357b59294edd31c46e66ae8219503a843b2bd",
+    "delta_commits": 2,
+    "changed_files": [
+      "tests/config/test_sm70_loaded_routes.py",
+      "vllm/sm70_profiles/acceleration.py"
+    ],
+    "runtime_change": "SM70 policy report frozenset serializer; no sampler, model, capture, native or namespace change in this pinned delta",
+    "tested_tree_updated_mid_cohort": false
+  },
+  "source_artifacts": [
+    {
+      "path": "/tank/hot/1cat-deploy/repetition-native-20261009/draft-fp8-header-contract-7ab8b447.json",
+      "bytes": 3838,
+      "sha256": "714a08f371ffd2b91966bcf23b65fdc9d31f9ffd1d9059aab4ce17a7fbd895fc"
+    },
+    {
+      "path": "/tank/hot/1cat-deploy/repetition-native-20261009/draft-quant-admission-before-7ab8b447.json",
+      "bytes": 1168,
+      "sha256": "8cbc449c2f417ce71aa479c15b388b5d7896ff217245699fea6ab213f5b09ab3"
+    },
+    {
+      "path": "/tank/hot/1cat-deploy/repetition-native-20261009/draft-quant-admission-after-7ab8b447.json",
+      "bytes": 1204,
+      "sha256": "0e87dbcacd7e8da7dcd0639350462c01381abf5a6b199b25629e1f257a78ca68"
+    },
+    {
+      "path": "/tank/hot/1cat-deploy/repetition-native-20261009/draft-loaded-contract-quantfix-7ab8b447.json",
+      "bytes": 5299,
+      "sha256": "5ac2a9afa93b94fc66cb43d63941c7851a5d3435cd5a5219ba8771009e7f6665"
+    },
+    {
+      "path": "/tank/hot/1cat-deploy/repetition-native-20261009/source-snapshots-7ab/prior-source-binding.json",
+      "bytes": 422,
+      "sha256": "4c721198740ca1cc40c05ee99a260d6d6caf6e9ce20f37785ea078280de9083a"
+    },
+    {
+      "path": "/tank/hot/1cat-deploy/repetition-native-20261009/matching-main-build-7ab8b447.json",
+      "bytes": 7284,
+      "sha256": "1234aa3c0a0fa31cde0b2404fb6c1f4ba15f42f8ee235d66f3b99cd187970aa3"
+    },
+    {
+      "path": "/tank/hot/1cat-deploy/repetition-native-20261009/native-preflight-7ab8b447.json",
+      "bytes": 2192,
+      "sha256": "f2a86321f21c89fa93c931311326ffad143d37524f2f6011c5d45df06a276012"
+    },
+    {
+      "path": "/tank/hot/1cat-deploy/repetition-native-20261009/upstream-delta-16628e2f/receipt.json",
+      "bytes": 700,
+      "sha256": "6d720fe4de7f86a2784ab6193981a723a3c2a1301046a8ac427f5d511b45f40e"
+    }
+  ]
+}

@@ -1,0 +1,77 @@
+{
+  "kind": "field-allowlisted public summary; not raw report",
+  "published_on": "2026-10-09",
+  "excluded": "Generated text/reasoning, prompts, private request/response and launch files, raw engine logs, credentials, endpoints, raw error strings, token histograms and tool-call arguments are not copied. Original source files remain unchanged. Missing fields are unknown, not zero. Report pass flags are harness verdicts, not semantic or numerical certification.",
+  "records": [
+    {
+      "source_path": "/tank/hot/1cat-deploy/benchmarks/2026-09-21-serving-tune/provenance.json",
+      "source_sha256": "b745c980346440cfab588b4ffd832435dc8dd6b883d1d3eae67a3e0f68323dfe",
+      "source_bytes": 2569,
+      "observations": {
+        "hardware": "VM101: two Tesla V100-PCIE-32GB, exactSM70, PCIe P2P preserved, TP2",
+        "model_id": "swift-qwen3.8-27b-nvfp4",
+        "model_config_sha256": "f86a8fdcc5406e30958d7335af88df4f437954517ec58c93155c41e6b3e12bd5",
+        "generation_config_sha256": "0b65d40c797e19ad9bbd38538f1b45155b2832ffaffa7a69df96ddf57213fc9b",
+        "installed_wheel": "1cat_vllm-1.5.0-cp312-cp312-linux_x86_64.whl",
+        "wheel_sha256": "2a4d6bee4e19d315b142f2c563059f3064ddeeca563a6bdc828c33e1073c825b",
+        "runtime_patch": "mtp-conditional-head.patch with SHA256-gated apply_mtp_head_fix.py and eagle-utils.before.py rollback"
+      }
+    },
+    {
+      "source_path": "/tank/shared/projects/life/areas/technology/home-lab/2026-10-09-doescompute-1cat-dflash2-candidate-trial.md",
+      "source_sha256": "02e5d11df312bd32f3860c2edb8135122a1601dd11ae30ab6e5ee8f45be527d3",
+      "source_bytes": 21486,
+      "evidence_level": "historical narrative; operational wording is superseded by current deployment authority",
+      "observations": {
+        "python_revision": "c4f6245f841466782752a8c3283e4727565cf17a",
+        "donor_distribution": "1.5.1.dev878+g357d07bcb.cu129",
+        "mixed_target_revision": "a9d09ee5171e7ce32dd05f28b82c5bd021928b5d",
+        "traffic_attribution": {
+          "fp8-c4": {
+            "controlled": 24,
+            "success_delta": 25
+          },
+          "fp8-c4-warm": {
+            "controlled": 17,
+            "success_delta": 17
+          },
+          "bf16-c4-warm": {
+            "controlled": 17,
+            "success_delta": 24
+          },
+          "fp8-c4-256k": {
+            "controlled": 13,
+            "success_delta": 13,
+            "local_compute": 136445,
+            "local_cache_hit": 344064
+          },
+          "fp8-c4-soak": {
+            "controlled": 25,
+            "success_delta": 25
+          }
+        },
+        "dense_schema_smoke": {
+          "requests": 4,
+          "printable_fraction": 1.0,
+          "unique_word_ratio_range": [
+            0.72,
+            0.81
+          ],
+          "schema_valid": true,
+          "standalone_safe_report_recovered": false
+        },
+        "configuration_dependent_kv_estimates": {
+          "fp8_draft_context262144": 550582,
+          "bf16_draft_context262144": 517913,
+          "fp8_draft_context131072": 450600,
+          "fp8_available_kv_gib_both_profiles": 10.81
+        },
+        "withdrawn": [
+          "pure prefill3600tok/s",
+          "threefold prefill speedup",
+          "four independent128K resident from identical-prefix workload"
+        ]
+      }
+    }
+  ]
+}
