@@ -1,0 +1,78 @@
+{
+  "kind": "Bounded CPU consumer proof of mixed-prefill quantized-growth recovery",
+  "date": "2026-10-10",
+  "schema_version": 1,
+  "scope": "CPU-only mixed-prefill quantized-growth repair; synthetic outputs/timing/KV, not GPU performance, private quality or four-stream 128K proof",
+  "source_revision": "7ab8b4477adb4137a1172de0e66c6806e997a49c",
+  "controller_before": {
+    "path": "/tank/hot/1cat-deploy/repetition-native-20261009/router-main-refresh-20261010T033712Z/source/vllm/v1/core/sched/mixed_prefill.py",
+    "sha256": "dc54c74690e89119029dd4c989d02c1266b163c53d39fea93e9fcac225745566"
+  },
+  "controller_after": {
+    "path": "/tank/hot/1cat-deploy/repetition-native-20261009/router-main-refresh-20261010T033712Z/source/vllm/v1/core/sched/mixed_prefill.py",
+    "sha256": "40668c0baca11bf9d84e295923d2db2e1f2818650aa3c248bf5aa16cef069b53"
+  },
+  "scheduler_sha256": "346bb6d0ff981f80056d16803514b2ff2c2dc13e23ba2be01501d97d6aaad1f1",
+  "before_receipt": {
+    "path": "/tank/hot/1cat-deploy/repetition-native-20261009/mixed-prefill-recovery-cpu/main7ab-before-growth-fix-20261010.json",
+    "bytes": 3147,
+    "sha256": "045402f5a7900a17a65d21ec82023d32ebf44caf3ffa594bb217719c850b5871"
+  },
+  "after_receipt": {
+    "path": "/tank/hot/1cat-deploy/repetition-native-20261009/mixed-prefill-recovery-cpu/main7ab-after-growth-fix-20261010.json",
+    "bytes": 3156,
+    "sha256": "d16c6dec3dc3ad4e59a0842116d91c5684839fb4735352eb0ea0b864ff643695"
+  },
+  "before_grants": [
+    16,
+    16,
+    16,
+    16,
+    16,
+    16,
+    16,
+    16,
+    16,
+    16,
+    16,
+    16,
+    16,
+    16,
+    16,
+    16
+  ],
+  "after_grants": [
+    16,
+    16,
+    16,
+    32,
+    48,
+    64,
+    80,
+    96,
+    112,
+    128,
+    160,
+    192,
+    240,
+    288,
+    352,
+    432
+  ],
+  "final_before": 16,
+  "final_after": 528,
+  "resident_decode_grants": [
+    8
+  ],
+  "preemptions": 0,
+  "permanent_regression": "tests/v1/core/test_mixed_prefill_budget.py::test_mixed_prefill_recovers_without_interrupting_resident_decode",
+  "regression_module_sha256": "215f617f62dc1cce35de8b77a192d623a4f3cdea8424ffa8410b1ec0304671e9",
+  "consumer_pre_fix": "consumer-before-growth-fix-fixture-20261010.xml",
+  "consumer_post_fix": "consumer-after-growth-fix-20261010.xml",
+  "focused_tests_passed": 12,
+  "upstream_revision": "c39f53abae51df6bf8ef122e34975a9f3596a93c",
+  "upstream_runtime_admitted": false,
+  "native_128k_revalidation_passed": false,
+  "private_quality_passed": null,
+  "native_revalidation_record": "2026-10-10-dflash-128k-growthfix-revalidation.json"
+}

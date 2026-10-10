@@ -1,0 +1,257 @@
+{
+  "kind": "Closed unprofiled 7ab quantized-growth repair revalidation: complete outputs, failed common-decode overlap",
+  "date": "2026-10-10",
+  "tested_source_revision": "7ab8b4477adb4137a1172de0e66c6806e997a49c",
+  "source_files_sha256": {
+    "vllm/model_executor/layers/vocab_parallel_embedding.py": "fa38be8ecc351db309ada13971ed55f2bcea9ef8563981f2758d8ffef66d2d4d",
+    "vllm/model_executor/models/qwen3_dflash.py": "3b24b5c6f68283076593a32d5d945c011217ea28072072faa73cca34f481aa5e",
+    "vllm/sm70_profiles/acceleration.py": "228e56deea89d1a6ecc4e72b6159ad083e7c54ed17239eb51f678beb0633ec52",
+    "vllm/v1/core/sched/mixed_prefill.py": "40668c0baca11bf9d84e295923d2db2e1f2818650aa3c248bf5aa16cef069b53"
+  },
+  "launch_tag": "main7ab-w4-fp8-4x130560-clean-growthfix",
+  "engine_launch_tag": "main7ab-w4-fp8-fair2048-clean-growthfix",
+  "scope": "Same four public 130560 inputs and512 actual outputs with new cache salts; quantized-growth repair only. Failed original overlap gates; no maximum-capacity or private-quality admission.",
+  "observer_admission": {
+    "tag": "main7ab-w4-fp8-fair2048-clean-growthfix",
+    "variant": "w4a16",
+    "draft": "fp8",
+    "context": 262144,
+    "sequences": 4,
+    "memory_util": 0.9,
+    "host": "127.0.0.1",
+    "port": 8001,
+    "eager": false,
+    "dense_rejection": false,
+    "compute_nans": false,
+    "profile": false,
+    "unprofiled": true,
+    "prefill_threshold": 2048,
+    "source_revision": "7ab8b4477adb4137a1172de0e66c6806e997a49c",
+    "source_files_sha256": {
+      "vllm/model_executor/layers/vocab_parallel_embedding.py": "fa38be8ecc351db309ada13971ed55f2bcea9ef8563981f2758d8ffef66d2d4d",
+      "vllm/model_executor/models/qwen3_dflash.py": "3b24b5c6f68283076593a32d5d945c011217ea28072072faa73cca34f481aa5e",
+      "vllm/sm70_profiles/acceleration.py": "228e56deea89d1a6ecc4e72b6159ad083e7c54ed17239eb51f678beb0633ec52"
+    },
+    "mixed_prefill_step_latency_ms": {
+      "value": 250,
+      "explicit_in_recorded_argv": false
+    },
+    "mixed_prefill_min_tokens": {
+      "value": 0,
+      "explicit_in_recorded_argv": false
+    },
+    "custom_scheduler_absent": true,
+    "custom_worker_observer_absent": true,
+    "torch_profiler_absent": true,
+    "private_environment_or_argv_exported": false,
+    "verification_basis": "Recorded controlled launch and identity-safe stop; default250ms/min0 source mapping when no CLI override. No post-stop engine or pure-decode timing claim."
+  },
+  "initial_mixed_budget_tokens": 512,
+  "input_fixture": {
+    "source_revision": "7ab8b4477adb4137a1172de0e66c6806e997a49c",
+    "partitions": [
+      {
+        "index": 0,
+        "prompt_tokens": 130560,
+        "input_ids_identical": true,
+        "marker_identical": true,
+        "manifest_identical": true,
+        "cache_salt_changed": true,
+        "prompt_ids_sha256": "056a5d20383351e730d7a486518b29d8a7215d841c9f05c38b8697b75ec15e58",
+        "marker_sha256": "6acfcab6897b4910613ccf8c1a1084a8384c9512e5d2746b6511a16705f767f9",
+        "used_manifest_sha256": "93b06f731dfc631358314386efbde5c8a17520033c3e5b55bce666ae59461d71"
+      },
+      {
+        "index": 1,
+        "prompt_tokens": 130560,
+        "input_ids_identical": true,
+        "marker_identical": true,
+        "manifest_identical": true,
+        "cache_salt_changed": true,
+        "prompt_ids_sha256": "4826017cb2a7bef0d965262a0d4a4b50f52dfff4b81d42afd6e7ddeb7566308a",
+        "marker_sha256": "770cfa5595f717b0ca8e6739c8a9eaf851872d28c18b0f5f19123979694efcab",
+        "used_manifest_sha256": "980d1822d325d688865eacc6a228ddc74334d9e5a1afecec2d4806f61a79270c"
+      },
+      {
+        "index": 2,
+        "prompt_tokens": 130560,
+        "input_ids_identical": true,
+        "marker_identical": true,
+        "manifest_identical": true,
+        "cache_salt_changed": true,
+        "prompt_ids_sha256": "06df1fb36a145cf85594af4e53e49fd36431d33c18ff8c742a2c51bdaba755b5",
+        "marker_sha256": "e65381bf9882a2e6ac23aba011998475762afcedebed25a52cdca7ce98cfad05",
+        "used_manifest_sha256": "462574e4d08a1880e3be1bce65e66108b80f35e30adf782545cf545764289a8c"
+      },
+      {
+        "index": 3,
+        "prompt_tokens": 130560,
+        "input_ids_identical": true,
+        "marker_identical": true,
+        "manifest_identical": true,
+        "cache_salt_changed": true,
+        "prompt_ids_sha256": "ee9cc31e1fdc1793e3bcc65067fac7d87b2fb51bb892cce8f436048e1efb1554",
+        "marker_sha256": "3c3b6de5b44fd6dd1e15bb5e1e18388e8b5d7f6b40b76f2fd81c681b41331d83",
+        "used_manifest_sha256": "839bcbbc0f6a2f1ac1b3dba99eaeb465c4fd32bb3a8e2738ae9826e1c91e8a7c"
+      }
+    ],
+    "four_distinct_new_salts": true,
+    "prefix_cache_hits": 0,
+    "private_bodies_exported": false
+  },
+  "result": {
+    "run_passed": false,
+    "capacity_pass": false,
+    "failures": [
+      "all_requested_streams_running_not_observed_during_decode",
+      "sustained_decode_observation_insufficient"
+    ],
+    "actual_input_tokens_per_request": [
+      130560,
+      130560,
+      130560,
+      130560
+    ],
+    "actual_output_tokens_per_request": [
+      512,
+      512,
+      512,
+      512
+    ],
+    "all_requests_complete": true,
+    "all_markers_found": true,
+    "metric_deltas": {
+      "success": 4,
+      "preemptions": 0,
+      "corrupted": null,
+      "prompt_count": 4,
+      "prompt_sum": 522240,
+      "generation_count": 4,
+      "generation_sum": 2048,
+      "cache_queries": 522240,
+      "cache_hits": 0
+    },
+    "max_running": 4,
+    "max_kv_usage_fraction": 0.9661246612466124,
+    "max_gpu_used_mib": {
+      "0": 30268,
+      "1": 30268
+    },
+    "queue_observation": {
+      "poll_interval_s": 1,
+      "common_decode_window_monotonic_s": [
+        790520.154640435,
+        790323.958032396
+      ],
+      "common_decode_samples": 0,
+      "max_sample_gap_s": null,
+      "all_requested_streams_running_during_decode": false,
+      "all_four_running_observed": false,
+      "max_waiting_before_first_output": 0,
+      "max_waiting_after_first_output": 0,
+      "max_waiting_common_decode": 0,
+      "longest_observed_queue_span_common_decode_s": 0,
+      "sustained_queue_common_decode": false,
+      "sustained_definition": "positive waiting on consecutive polls spanning >=0.8 seconds inside common decode",
+      "admission_waiting_is_not_sustained_decode_queueing": true
+    },
+    "first_to_last_output_intervals": [
+      {
+        "index": 0,
+        "ttft_s": 438.9512019379763,
+        "last_output_after_request_start_s": 569.7764790470246,
+        "decode_s": 130.82527710904833,
+        "output_tokens": 512
+      },
+      {
+        "index": 1,
+        "ttft_s": 610.3937323510181,
+        "last_output_after_request_start_s": 741.7048134739744,
+        "decode_s": 131.31108112295624,
+        "output_tokens": 512
+      },
+      {
+        "index": 2,
+        "ttft_s": 683.7310927589424,
+        "last_output_after_request_start_s": 778.1548498040065,
+        "decode_s": 94.42375704506412,
+        "output_tokens": 512
+      },
+      {
+        "index": 3,
+        "ttft_s": 765.940589781967,
+        "last_output_after_request_start_s": 785.3839554849546,
+        "decode_s": 19.44336570298765,
+        "output_tokens": 512
+      }
+    ],
+    "cohort_wall_s": 785.4240305039566
+  },
+  "speculation": {
+    "before": {
+      "vllm:spec_decode_num_drafts_total": 0,
+      "vllm:spec_decode_num_draft_tokens_total": 0,
+      "vllm:spec_decode_num_accepted_tokens_total": 0
+    },
+    "after": {
+      "vllm:spec_decode_num_drafts_total": 718,
+      "vllm:spec_decode_num_draft_tokens_total": 5026,
+      "vllm:spec_decode_num_accepted_tokens_total": 1327
+    },
+    "deltas": {
+      "vllm:spec_decode_num_drafts_total": 718,
+      "vllm:spec_decode_num_draft_tokens_total": 5026,
+      "vllm:spec_decode_num_accepted_tokens_total": 1327
+    },
+    "acceptance_percent": 26.402705929168324,
+    "metrics_before_sha256": "70143d9d882d9c33b7acf7810aa7adcf86b4db622fdc3c24873a9c19617c00cb",
+    "metrics_after_sha256": "32eebb38507651cb97bc53baf6f5b17bf8fbae6afbc24e6e5e05c054fe7a4e34",
+    "scope": "Exact speculative counter delta for the completed four-request growthfix cohort; failed common-decode/capacity gate, not quality admission",
+    "report_sha256": "69704ad7344daf46ea83b7b198e5b40a24fc39e856c30d08357705297cd86eba"
+  },
+  "comparison_limits": [
+    "The same strict fixture source/input/marker/manifest validators and original common-decode gates were retained.",
+    "Both clean launches use a fresh512-token initial seed and no custom observers; only the controller next-quantum growth allowance was changed. One completed timing sample is not a causal speed ranking.",
+    "CPU synthetic cheap feedback proves recovery is possible, not that this native cohort supplied such feedback. Per-step native feedback is not observed in this unprofiled arm.",
+    "250ms latency target/min_tokens0 are source defaults mapped from recorded launch arguments without overrides; not a pure-decode GPU baseline.",
+    "Acceptance recovered after the separate quantization repair, but quality of the original private long conversation remains unverified."
+  ],
+  "receipts": {
+    "report": {
+      "path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-independent/main7ab-w4-fp8-4x130560-clean-growthfix/report.json",
+      "bytes": 624294,
+      "sha256": "69704ad7344daf46ea83b7b198e5b40a24fc39e856c30d08357705297cd86eba"
+    },
+    "input_binding": {
+      "path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-independent/main7ab-w4-fp8-4x130560-clean-growthfix/matched-input-binding.json",
+      "bytes": 2292,
+      "sha256": "2da5220f15522cc84b7a3594d4c0fc3db4c86d3b734de7b539d4f3736510482f"
+    },
+    "speculative_counters": {
+      "path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-independent/main7ab-w4-fp8-4x130560-clean-growthfix/speculative-counter-deltas.json",
+      "bytes": 1003,
+      "sha256": "aa2f5b1ccff57f9a232f042930dba668b2f640725a5dd16d1173580ea8aab31f"
+    },
+    "previous_clean_report": {
+      "path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-independent/main7ab-w4-fp8-4x130560-clean-quantfix/report.json",
+      "bytes": 589785,
+      "sha256": "a1aec3fdf12f18d4e04d17b8412fe4711f950bb72f98adfed2c9eaacd0a92c03"
+    }
+  },
+  "safe_stop": {
+    "tag": "main7ab-w4-fp8-fair2048-clean-growthfix",
+    "identity_verified": true,
+    "owned_processes": 5,
+    "remaining": [],
+    "stopped": true,
+    "supervisor_exit_code": 0
+  },
+  "latest_upstream": {
+    "revision": "c39f53abae51df6bf8ef122e34975a9f3596a93c",
+    "checked_at": "2026-10-10T13:42:01.759256+00:00",
+    "isolated_fetch_completed": true,
+    "runtime_admitted": false,
+    "native_inputs_changed": true
+  },
+  "excluded": "No prompt/token bodies, generated text, request IDs, private argv/environment, raw logs, metric labels, credentials or private failing workload."
+}

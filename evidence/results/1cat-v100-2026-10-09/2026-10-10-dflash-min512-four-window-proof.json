@@ -1,0 +1,314 @@
+{
+  "kind": "Bounded matching7ab DFlash four-window proof with existing512-token minimum mixed-prefill progress floor",
+  "date": "2026-10-10",
+  "tested_source_revision": "7ab8b4477adb4137a1172de0e66c6806e997a49c",
+  "source_files_sha256": {
+    "vllm/model_executor/layers/vocab_parallel_embedding.py": "fa38be8ecc351db309ada13971ed55f2bcea9ef8563981f2758d8ffef66d2d4d",
+    "vllm/model_executor/models/qwen3_dflash.py": "3b24b5c6f68283076593a32d5d945c011217ea28072072faa73cca34f481aa5e",
+    "vllm/sm70_profiles/acceleration.py": "228e56deea89d1a6ecc4e72b6159ad083e7c54ed17239eb51f678beb0633ec52",
+    "vllm/v1/core/sched/mixed_prefill.py": "40668c0baca11bf9d84e295923d2db2e1f2818650aa3c248bf5aa16cef069b53"
+  },
+  "launch_tag": "main7ab-w4-fp8-4x130560-clean-growthfix-min512",
+  "engine_launch_tag": "main7ab-w4-fp8-fair2048-clean-growthfix-min512",
+  "scope": "Four independent public130560-input +512-actual-output windows under the original common-decode/traffic/zero-preemption gates. Lower bound for this min512 profile and split only; not maximum capacity, all-state safety, private quality or deployment choice.",
+  "observer_admission": {
+    "tag": "main7ab-w4-fp8-fair2048-clean-growthfix-min512",
+    "variant": "w4a16",
+    "draft": "fp8",
+    "context": 262144,
+    "sequences": 4,
+    "memory_util": 0.9,
+    "host": "127.0.0.1",
+    "port": 8001,
+    "eager": false,
+    "dense_rejection": false,
+    "compute_nans": false,
+    "profile": false,
+    "unprofiled": true,
+    "prefill_threshold": 2048,
+    "source_revision": "7ab8b4477adb4137a1172de0e66c6806e997a49c",
+    "source_files_sha256": {
+      "vllm/model_executor/layers/vocab_parallel_embedding.py": "fa38be8ecc351db309ada13971ed55f2bcea9ef8563981f2758d8ffef66d2d4d",
+      "vllm/model_executor/models/qwen3_dflash.py": "3b24b5c6f68283076593a32d5d945c011217ea28072072faa73cca34f481aa5e",
+      "vllm/sm70_profiles/acceleration.py": "228e56deea89d1a6ecc4e72b6159ad083e7c54ed17239eb51f678beb0633ec52"
+    },
+    "mixed_prefill_step_latency_ms": {
+      "value": 250,
+      "explicit_in_recorded_argv": false
+    },
+    "mixed_prefill_min_tokens": {
+      "value": 512,
+      "explicit_in_recorded_argv": true
+    },
+    "custom_scheduler_absent": true,
+    "custom_worker_observer_absent": true,
+    "torch_profiler_absent": true,
+    "private_environment_or_argv_exported": false,
+    "verification_basis": "Recorded controlled launch and positive wrapper health readiness; source defaults apply only when not explicitly overridden. Engine was running at capture, no stop or pure-decode timing claim.",
+    "identity_safe_stop_verified_at_capture": false,
+    "ready_health_verified": true,
+    "correction_of": {
+      "path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-independent/main7ab-w4-fp8-4x130560-clean-growthfix-min512/recorded-launch-admission.json",
+      "sha256": "16ed2b402832e25f9279bf253b72c6f1fde0fa2f7ee5783fc8a02718dad89aa9",
+      "reason": "Inherited stop wording belongs to the preceding closed growthfix arm, not this still-running minimum-floor arm. Original receipt retained."
+    }
+  },
+  "initial_mixed_budget_tokens": 512,
+  "input_fixture": {
+    "source_revision": "7ab8b4477adb4137a1172de0e66c6806e997a49c",
+    "partitions": [
+      {
+        "index": 0,
+        "prompt_tokens": 130560,
+        "input_ids_identical": true,
+        "marker_identical": true,
+        "manifest_identical": true,
+        "cache_salt_changed": true,
+        "prompt_ids_sha256": "056a5d20383351e730d7a486518b29d8a7215d841c9f05c38b8697b75ec15e58",
+        "marker_sha256": "6acfcab6897b4910613ccf8c1a1084a8384c9512e5d2746b6511a16705f767f9",
+        "used_manifest_sha256": "93b06f731dfc631358314386efbde5c8a17520033c3e5b55bce666ae59461d71"
+      },
+      {
+        "index": 1,
+        "prompt_tokens": 130560,
+        "input_ids_identical": true,
+        "marker_identical": true,
+        "manifest_identical": true,
+        "cache_salt_changed": true,
+        "prompt_ids_sha256": "4826017cb2a7bef0d965262a0d4a4b50f52dfff4b81d42afd6e7ddeb7566308a",
+        "marker_sha256": "770cfa5595f717b0ca8e6739c8a9eaf851872d28c18b0f5f19123979694efcab",
+        "used_manifest_sha256": "980d1822d325d688865eacc6a228ddc74334d9e5a1afecec2d4806f61a79270c"
+      },
+      {
+        "index": 2,
+        "prompt_tokens": 130560,
+        "input_ids_identical": true,
+        "marker_identical": true,
+        "manifest_identical": true,
+        "cache_salt_changed": true,
+        "prompt_ids_sha256": "06df1fb36a145cf85594af4e53e49fd36431d33c18ff8c742a2c51bdaba755b5",
+        "marker_sha256": "e65381bf9882a2e6ac23aba011998475762afcedebed25a52cdca7ce98cfad05",
+        "used_manifest_sha256": "462574e4d08a1880e3be1bce65e66108b80f35e30adf782545cf545764289a8c"
+      },
+      {
+        "index": 3,
+        "prompt_tokens": 130560,
+        "input_ids_identical": true,
+        "marker_identical": true,
+        "manifest_identical": true,
+        "cache_salt_changed": true,
+        "prompt_ids_sha256": "ee9cc31e1fdc1793e3bcc65067fac7d87b2fb51bb892cce8f436048e1efb1554",
+        "marker_sha256": "3c3b6de5b44fd6dd1e15bb5e1e18388e8b5d7f6b40b76f2fd81c681b41331d83",
+        "used_manifest_sha256": "839bcbbc0f6a2f1ac1b3dba99eaeb465c4fd32bb3a8e2738ae9826e1c91e8a7c"
+      }
+    ],
+    "four_distinct_new_salts": true,
+    "prefix_cache_hits": 0,
+    "private_bodies_exported": false
+  },
+  "result": {
+    "run_passed": true,
+    "capacity_pass": true,
+    "failures": [],
+    "actual_input_tokens_per_request": [
+      130560,
+      130560,
+      130560,
+      130560
+    ],
+    "actual_output_tokens_per_request": [
+      512,
+      512,
+      512,
+      512
+    ],
+    "all_requests_complete": true,
+    "all_markers_found": true,
+    "metric_deltas": {
+      "success": 4,
+      "preemptions": 0,
+      "corrupted": null,
+      "prompt_count": 4,
+      "prompt_sum": 522240,
+      "generation_count": 4,
+      "generation_sum": 2048,
+      "cache_queries": 522240,
+      "cache_hits": 0
+    },
+    "max_running": 4,
+    "max_kv_usage_fraction": 0.9850948509485095,
+    "max_gpu_used_mib": {
+      "0": 30668,
+      "1": 30668
+    },
+    "queue_observation": {
+      "poll_interval_s": 1,
+      "common_decode_window_monotonic_s": [
+        793688.86698058,
+        793706.288042607
+      ],
+      "common_decode_samples": 17,
+      "max_sample_gap_s": 1.0051591219380498,
+      "all_requested_streams_running_during_decode": true,
+      "all_four_running_observed": true,
+      "max_waiting_before_first_output": 0,
+      "max_waiting_after_first_output": 0,
+      "max_waiting_common_decode": 0,
+      "longest_observed_queue_span_common_decode_s": 0,
+      "sustained_queue_common_decode": false,
+      "sustained_definition": "positive waiting on consecutive polls spanning >=0.8 seconds inside common decode",
+      "admission_waiting_is_not_sustained_decode_queueing": true
+    },
+    "first_to_last_output_intervals": [
+      {
+        "index": 0,
+        "ttft_s": 472.72515467298217,
+        "last_output_after_request_start_s": 551.5576639450155,
+        "decode_s": 78.83250927203335,
+        "output_tokens": 512
+      },
+      {
+        "index": 1,
+        "ttft_s": 495.9696688889526,
+        "last_output_after_request_start_s": 552.5857756349724,
+        "decode_s": 56.616106746019796,
+        "output_tokens": 512
+      },
+      {
+        "index": 2,
+        "ttft_s": 512.6101083130343,
+        "last_output_after_request_start_s": 554.0030602640472,
+        "decode_s": 41.39295195101295,
+        "output_tokens": 512
+      },
+      {
+        "index": 3,
+        "ttft_s": 534.105967778014,
+        "last_output_after_request_start_s": 556.5996488130186,
+        "decode_s": 22.493681035004556,
+        "output_tokens": 512
+      }
+    ],
+    "cohort_wall_s": 556.637391936034,
+    "common_output_accounting": {
+      "common_output_seconds": 17.421062026987784,
+      "returned_tokens": 1557,
+      "returned_tokens_per_second": 89.37457415558123,
+      "per_stream": [
+        {
+          "index": 0,
+          "common_window_returned_tokens": 418,
+          "total_returned_tokens": 512
+        },
+        {
+          "index": 1,
+          "common_window_returned_tokens": 421,
+          "total_returned_tokens": 512
+        },
+        {
+          "index": 2,
+          "common_window_returned_tokens": 379,
+          "total_returned_tokens": 512
+        },
+        {
+          "index": 3,
+          "common_window_returned_tokens": 339,
+          "total_returned_tokens": 512
+        }
+      ],
+      "report_sha256": "02064ed9dd71010cd2db6c156c2d10663c9e0b2cf84768278bcfa5275661ea1c",
+      "private_source_sha256": "f4b252381c6e431bfb8a8d5e54de0be8a40a4626b63bd28ec4cd66cec68a43c1",
+      "scope": "Actual client-observed returned token counts in (latest first output, earliest last output]; not sum of unequal per-stream rates, GPU timing or private semantic quality"
+    }
+  },
+  "speculation": {
+    "before": {
+      "vllm:spec_decode_num_drafts_total": 0,
+      "vllm:spec_decode_num_draft_tokens_total": 0,
+      "vllm:spec_decode_num_accepted_tokens_total": 0
+    },
+    "after": {
+      "vllm:spec_decode_num_drafts_total": 696,
+      "vllm:spec_decode_num_draft_tokens_total": 4872,
+      "vllm:spec_decode_num_accepted_tokens_total": 1356
+    },
+    "deltas": {
+      "vllm:spec_decode_num_drafts_total": 696,
+      "vllm:spec_decode_num_draft_tokens_total": 4872,
+      "vllm:spec_decode_num_accepted_tokens_total": 1356
+    },
+    "acceptance_percent": 27.832512315270936,
+    "metrics_before_sha256": "bd3038745e0f3c6e3c4a4513c10bb78de07045b1a7e909e4e0568f5e703a6333",
+    "metrics_after_sha256": "3a324c66ce844fc8b85d410f4aaef8b979f723bd0d30fe0ca2194266f0ea5032",
+    "scope": "Exact speculative counter delta for the completed four-request growthfix cohort; passed unchanged common-decode/capacity gates, not quality admission",
+    "report_sha256": "02064ed9dd71010cd2db6c156c2d10663c9e0b2cf84768278bcfa5275661ea1c"
+  },
+  "comparison_limits": [
+    "Same source/controller/target250ms/TP2/q7/FA+Mamba/KV/graph/threshold2048/public fixture; only existing minimum progress argument changed from default0 to512. New salts and fresh caches retained.",
+    "All original validators and run/capacity gates retained; no replay, warmup requests, hidden probes or weakened overlap criterion.",
+    "The configured floor can exceed the250ms feedback goal and increase resident decode step latency. No per-step GPU latency/SLA measurement was made in this unprofiled arm.",
+    "Measured lower bound at four131072-token total windows with130560+512 split, not maximum useful capacity, synchronized final-token worst-case allocation or full32K output/reasoning.",
+    "The rejected min0 cohorts remain immutable. This one completed native point is not a general timing ranking or proof of the original private repetition repair."
+  ],
+  "receipts": {
+    "report": {
+      "path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-independent/main7ab-w4-fp8-4x130560-clean-growthfix-min512/report.json",
+      "bytes": 445443,
+      "sha256": "02064ed9dd71010cd2db6c156c2d10663c9e0b2cf84768278bcfa5275661ea1c"
+    },
+    "input_binding": {
+      "path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-independent/main7ab-w4-fp8-4x130560-clean-growthfix-min512/matched-input-binding.json",
+      "bytes": 2292,
+      "sha256": "a6e1329b6c281d963668dd1d6b458d705534ddea31c2871b22d7ce522b14f6f4"
+    },
+    "speculative_counters": {
+      "path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-independent/main7ab-w4-fp8-4x130560-clean-growthfix-min512/speculative-counter-deltas.json",
+      "bytes": 1014,
+      "sha256": "cd11635188d357d1b6e78c43d960d93fa72c5399dec8c4a04152dabe1e652582"
+    },
+    "recorded_launch_admission_correction": {
+      "path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-independent/main7ab-w4-fp8-4x130560-clean-growthfix-min512/recorded-launch-admission-correction.json",
+      "bytes": 1880,
+      "sha256": "0edfbd242fc13f4df08389cd98d8582bbfd09edc976ade8571a8e9b06a0008d9"
+    },
+    "common_output_accounting": {
+      "path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-independent/main7ab-w4-fp8-4x130560-clean-growthfix-min512/common-output-token-counts.json",
+      "bytes": 954,
+      "sha256": "d8f8180d32494367b2b2a1a69f177c7b5fd7fc2def0ec550dc620cd62e4a990b"
+    },
+    "previous_min0_report": {
+      "path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-independent/main7ab-w4-fp8-4x130560-clean-growthfix/report.json",
+      "bytes": 624294,
+      "sha256": "69704ad7344daf46ea83b7b198e5b40a24fc39e856c30d08357705297cd86eba"
+    }
+  },
+  "safe_stop": {
+    "tag": "main7ab-w4-fp8-fair2048-clean-growthfix-min512",
+    "identity_verified": true,
+    "owned_processes": 5,
+    "remaining": [],
+    "stopped": true,
+    "supervisor_exit_code": 0
+  },
+  "latest_upstream": {
+    "revision": "c39f53abae51df6bf8ef122e34975a9f3596a93c",
+    "checked_at": "2026-10-10T14:37:06.649569+00:00",
+    "isolated_fetch_completed": true,
+    "runtime_admitted": false,
+    "native_inputs_changed": true
+  },
+  "excluded": "No prompt/token bodies, generated text, request IDs, private argv/environment, raw logs, metric labels, credentials or private failing workload.",
+  "minimum_progress_experiment": {
+    "parent": "/tank/hot/1cat-deploy/repetition-native-20261009/launch-diagnostic-main.py",
+    "parent_sha256": "78f1a4f38720956d0c047acb62c8f08794f2700920595830d0e26d7164bbc7cf",
+    "temporary_launcher": "/tank/hot/1cat-deploy/repetition-native-20261009/launch-main7ab-min512-20261010T141500Z.py",
+    "sha256": "96fc768dcd8c6560a7c1ecabb16add2650fb30801770dd72ec1d53000ec8c5a7",
+    "only_execution_change": {
+      "argument": "--mixed-prefill-min-tokens",
+      "previous": "source default0 with no explicit override",
+      "experiment": 512
+    },
+    "source_controller_sha256": "40668c0baca11bf9d84e295923d2db2e1f2818650aa3c248bf5aa16cef069b53",
+    "scope": "Public-input one-variable minimum progress experiment. Existing250ms feedback goal and all native/source/observer/fixture/acceptance contracts retained; not deployment selection."
+  }
+}
