@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "scope": "Fresh upstream main fetch after renewed user instruction; source retrieval only, not runtime or performance admission.",
+  "fresh_fetch": {
+    "checked_at": "2026-10-10T17:39:58.947379+00:00",
+    "reason": "renewed_user_main_fetch_instruction",
+    "remote": "https://github.com/1CatAI/1Cat-vLLM.git",
+    "requested_ref": "refs/heads/main",
+    "local_ref": "refs/remotes/reminder-20261010T173958947379Z/main",
+    "fetched": true,
+    "working_tree_updated": false,
+    "proxy_credentials_exported": false,
+    "runtime_admitted": false,
+    "previously_fetched_revision": "c39f53abae51df6bf8ef122e34975a9f3596a93c",
+    "proxy_authentication": "router_runtime_in_memory",
+    "requested_revision": "c39f53abae51df6bf8ef122e34975a9f3596a93c",
+    "fetch_exit": 0,
+    "fetched_revision": "c39f53abae51df6bf8ef122e34975a9f3596a93c",
+    "tested_head_preserved": "7ab8b4477adb4137a1172de0e66c6806e997a49c",
+    "owned_source_sha256_preserved": {
+      "vllm/model_executor/models/qwen3_dflash.py": "3b24b5c6f68283076593a32d5d945c011217ea28072072faa73cca34f481aa5e",
+      "vllm/model_executor/layers/vocab_parallel_embedding.py": "fa38be8ecc351db309ada13971ed55f2bcea9ef8563981f2758d8ffef66d2d4d",
+      "vllm/sm70_profiles/acceleration.py": "228e56deea89d1a6ecc4e72b6159ad083e7c54ed17239eb51f678beb0633ec52",
+      "vllm/v1/core/sched/mixed_prefill.py": "40668c0baca11bf9d84e295923d2db2e1f2818650aa3c248bf5aa16cef069b53",
+      "vllm/entrypoints/openai/responses/utils.py": "ad23225a46d7dc17505609ee711404543ae8ee8334a98863ae73f39fbfbe392c",
+      "tests/entrypoints/openai/responses/test_responses_utils.py": "16fee7f72aecd31b8f339498c6a4223eb7c96d500fc8a3ca3e8cfecf5d16b728"
+    },
+    "changed_since_previous_fetch": false
+  },
+  "source_receipt": {
+    "path": "/tank/hot/1cat-deploy/repetition-native-20261009/upstream-fetches/renewed-main-reminder-20261010T173958947379Z.json",
+    "bytes": 1545,
+    "sha256": "a622a4e5be1cc95521ea699894ff42de9159238127bb675fdc73790e1608a94b"
+  },
+  "prior_guard_failure": {
+    "fetched": false,
+    "error_class": "FileNotFoundError",
+    "source_receipt": {
+      "path": "/tank/hot/1cat-deploy/repetition-native-20261009/upstream-fetches/renewed-main-reminder-20261010T173928457826Z.json",
+      "bytes": 533,
+      "sha256": "7f1ee5b9f253a9c9cb5403f6267f82d20f5c5ab289ff8f2471b30493a5fe7a19"
+    }
+  },
+  "limits": {
+    "tested_worktree_unchanged": true,
+    "owned_repairs_unchanged": true,
+    "previously_completed_experiments_not_repeated": true,
+    "new_revision_since_c39_fetch": false,
+    "native_build_or_runtime_admission_performed": false,
+    "production_resumed": false,
+    "life_resumed": false,
+    "credentials_or_raw_stderr_published": false
+  }
+}

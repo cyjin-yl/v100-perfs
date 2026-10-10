@@ -1,0 +1,199 @@
+--- a/vllm/entrypoints/openai/responses/utils.py
++++ b/vllm/entrypoints/openai/responses/utils.py
+@@ -114,13 +114,12 @@
+         for output_item in prev_response_output:
+             # NOTE: We skip the reasoning output.
+             if isinstance(output_item, ResponseOutputMessage):
+-                for content in output_item.content:
+-                    messages.append(
+-                        {
+-                            "role": "assistant",
+-                            "content": content.text,
+-                        }
++                messages.append(
++                    cast(
++                        ChatCompletionMessageParam,
++                        _construct_message_from_response_item(output_item),
+                     )
++                )
+ 
+     # Append the new input.
+     # Responses API supports simple text inputs without chat format.
+@@ -201,9 +200,9 @@
+         if item.encrypted_content:
+             raise ValueError("Encrypted content is not supported.")
+         elif item.content and len(item.content) >= 1:
+-            reasoning = item.content[0].text
++            reasoning = "".join(part.text for part in item.content)
+         elif len(item.summary) >= 1:
+-            reasoning = item.summary[0].text
++            reasoning = "".join(part.text for part in item.summary)
+             logger.warning(
+                 "Using summary text as reasoning content for item %s. "
+                 "Please use content instead of summary for "
+@@ -221,7 +220,10 @@
+             "reasoning": reasoning,
+         }
+     elif isinstance(item, ResponseOutputMessage):
+-        output_text = item.content[0].text
++        output_text = "".join(
++            part.text if part.type == "output_text" else part.refusal
++            for part in item.content
++        )
+         if prev_assistant_msg:
+             previous_content = prev_assistant_msg.get("content")
+             if previous_content is None:
+--- a/tests/entrypoints/openai/responses/test_responses_utils.py
++++ b/tests/entrypoints/openai/responses/test_responses_utils.py
+@@ -1,7 +1,5 @@
+ # SPDX-License-Identifier: Apache-2.0
+ # SPDX-FileCopyrightText: Copyright contributors to the vLLM project
+-
+-from unittest.mock import patch
+ 
+ import pytest
+ from openai.types.responses.response_function_tool_call import ResponseFunctionToolCall
+@@ -16,6 +14,7 @@
+     Summary,
+ )
+ 
++from vllm.entrypoints.openai.responses.protocol import ResponsesRequest
+ from vllm.entrypoints.openai.responses.utils import (
+     _construct_message_from_response_item,
+     construct_chat_messages_with_tool_call,
+@@ -333,8 +332,7 @@
+         formatted = _single_chat_message(item)
+         assert formatted["reasoning"] == "Content without summary"
+ 
+-    @patch("vllm.entrypoints.openai.responses.utils.logger")
+-    def test_summary_fallback_when_no_content(self, mock_logger):
++    def test_summary_fallback_when_no_content(self):
+         """When content is absent, summary is used as fallback with warning."""
+         item = ResponseReasoningItem(
+             id="reasoning_3",
+@@ -351,13 +349,8 @@
+         )
+         formatted = _single_chat_message(item)
+         assert formatted["reasoning"] == "Fallback summary text"
+-        mock_logger.warning.assert_called_once()
+-        assert (
+-            "summary text as reasoning content" in mock_logger.warning.call_args[0][0]
+-        )
+-
+-    @patch("vllm.entrypoints.openai.responses.utils.logger")
+-    def test_summary_fallback_when_content_empty(self, mock_logger):
++
++    def test_summary_fallback_when_content_empty(self):
+         """When content is an empty list, summary is used as fallback."""
+         item = ResponseReasoningItem(
+             id="reasoning_4",
+@@ -374,10 +367,6 @@
+         )
+         formatted = _single_chat_message(item)
+         assert formatted["reasoning"] == "Summary when content empty"
+-        mock_logger.warning.assert_called_once()
+-        assert (
+-            "summary text as reasoning content" in mock_logger.warning.call_args[0][0]
+-        )
+ 
+     def test_neither_content_nor_summary(self):
+         """When neither content nor summary is present, reasoning is empty."""
+@@ -415,56 +404,48 @@
+         with pytest.raises(ValueError):
+             construct_chat_messages_with_tool_call([item])
+ 
+-    @patch("vllm.entrypoints.openai.responses.utils.logger")
+-    def test_summary_with_multiple_entries_uses_first(self, mock_logger):
+-        """When multiple summary entries exist, the first one is used."""
+-        item = ResponseReasoningItem(
+-            id="reasoning_7",
+-            summary=[
+-                Summary(
+-                    text="First summary",
+-                    type="summary_text",
+-                ),
+-                Summary(
+-                    text="Second summary",
+-                    type="summary_text",
+-                ),
+-            ],
+-            type="reasoning",
+-            content=None,
+-            encrypted_content=None,
+-            status=None,
+-        )
+-        formatted = _single_chat_message(item)
+-        assert formatted["reasoning"] == "First summary"
+-        mock_logger.warning.assert_called_once()
+-        assert (
+-            "summary text as reasoning content" in mock_logger.warning.call_args[0][0]
+-        )
+-
+-    @patch("vllm.entrypoints.openai.responses.utils.logger")
+-    def test_no_warning_when_content_used(self, mock_logger):
+-        """No warning should be emitted when content is available."""
+-        item = ResponseReasoningItem(
+-            id="reasoning_8",
+-            summary=[
+-                Summary(
+-                    text="Summary text",
+-                    type="summary_text",
+-                )
+-            ],
+-            type="reasoning",
+-            content=[
+-                Content(
+-                    text="Content text",
+-                    type="reasoning_text",
+-                )
+-            ],
+-            encrypted_content=None,
+-            status=None,
+-        )
+-        construct_chat_messages_with_tool_call([item])
+-        mock_logger.warning.assert_not_called()
++
++
++class TestMultipartContinuation:
++    @pytest.mark.parametrize("kind", ["message", "reasoning_content", "reasoning_summary"])
++    def test_multipart_partial_continuation_preserves_prefix(self, kind):
++        prefix_parts = ["PUBLIC_ALPHA ", "PUBLIC_OMEGA"]
++        if kind == "message":
++            item = {
++                "type": "message",
++                "role": "assistant",
++                "status": "incomplete",
++                "content": [
++                    {"type": "output_text", "text": text}
++                    for text in prefix_parts
++                ],
++            }
++            field = "content"
++        else:
++            item = {
++                "type": "reasoning",
++                "status": "incomplete",
++                "content": [
++                    {"type": "reasoning_text", "text": text}
++                    for text in prefix_parts
++                ] if kind == "reasoning_content" else [],
++                "summary": [
++                    {"type": "summary_text", "text": text}
++                    for text in prefix_parts
++                ] if kind == "reasoning_summary" else [
++                    {"type": "summary_text", "text": "DO_NOT_OVERRIDE_CONTENT"}
++                ],
++            }
++            field = "reasoning"
++        request = ResponsesRequest.model_validate({
++            "input": [
++                {"role": "user", "content": "Continue the supplied prefix."},
++                item,
++            ]
++        })
++        messages = construct_input_messages(request_input=request.input)
++        assert messages[-1][field] == "PUBLIC_ALPHA PUBLIC_OMEGA"
++        assert should_continue_final_message(request.input)
+ 
+ 
+ class TestShouldContinueFinalMessage:

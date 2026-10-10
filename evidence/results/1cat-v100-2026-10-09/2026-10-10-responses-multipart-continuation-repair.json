@@ -1,0 +1,301 @@
+{
+  "schema_version": 1,
+  "tested_source_revision": "7ab8b4477adb4137a1172de0e66c6806e997a49c",
+  "native_abi": 67,
+  "fix": {
+    "source_file": "vllm/entrypoints/openai/responses/utils.py",
+    "before": {
+      "path": "/tank/hot/1cat-deploy/repetition-native-20261009/router-main-refresh-20261010T033712Z/source/vllm/entrypoints/openai/responses/utils.py",
+      "bytes": 10974,
+      "sha256": "03096c1d854abe5d6b70377b380dfa2a868ecd68f04746308a82a0b09be434ed"
+    },
+    "after": {
+      "path": "/tank/hot/1cat-deploy/repetition-native-20261009/router-main-refresh-20261010T033712Z/source/vllm/entrypoints/openai/responses/utils.py",
+      "bytes": 11087,
+      "sha256": "ad23225a46d7dc17505609ee711404543ae8ee8334a98863ae73f39fbfbe392c"
+    },
+    "test_file": "tests/entrypoints/openai/responses/test_responses_utils.py",
+    "test_before": {
+      "path": "/tank/hot/1cat-deploy/repetition-native-20261009/router-main-refresh-20261010T033712Z/source/tests/entrypoints/openai/responses/test_responses_utils.py",
+      "bytes": 31685,
+      "sha256": "882057bf18bc4edf7ab3936ffa3848f725178ecd547084f2c0f3765c9fddfa12"
+    },
+    "test_after": {
+      "path": "/tank/hot/1cat-deploy/repetition-native-20261009/router-main-refresh-20261010T033712Z/source/tests/entrypoints/openai/responses/test_responses_utils.py",
+      "bytes": 31149,
+      "sha256": "16fee7f72aecd31b8f339498c6a4223eb7c96d500fc8a3ca3e8cfecf5d16b728"
+    },
+    "behavior": "Concatenate all ordered assistant output-text/refusal fragments and all reasoning content/summary parts; retain content-over-summary precedence and existing continuation/status/encryption admission."
+  },
+  "cpu": {
+    "before": {
+      "source": {
+        "path": "/tank/hot/1cat-deploy/repetition-native-20261009/responses-prefix-cpu/responses-multipart-before-20261010T160356Z.json",
+        "bytes": 2315,
+        "sha256": "89ecfef8462812303ef51dac0a5e3b569f5c44fb623a47b8daabcc61a71cbf8e"
+      },
+      "records": [
+        {
+          "kind": "message",
+          "split": false,
+          "admitted_type": "ResponseOutputMessage",
+          "full_prefix_preserved": true,
+          "continue_final_message": true,
+          "add_generation_prompt": false,
+          "rendered_prompt_matches_whole_prefix": true
+        },
+        {
+          "kind": "message",
+          "split": true,
+          "admitted_type": "ResponseOutputMessage",
+          "full_prefix_preserved": false,
+          "continue_final_message": true,
+          "add_generation_prompt": false,
+          "rendered_prompt_matches_whole_prefix": false
+        },
+        {
+          "kind": "reasoning_content",
+          "split": false,
+          "admitted_type": "ResponseReasoningItem",
+          "full_prefix_preserved": true,
+          "continue_final_message": true,
+          "add_generation_prompt": false
+        },
+        {
+          "kind": "reasoning_content",
+          "split": true,
+          "admitted_type": "ResponseReasoningItem",
+          "full_prefix_preserved": false,
+          "continue_final_message": true,
+          "add_generation_prompt": false
+        },
+        {
+          "kind": "reasoning_summary",
+          "split": false,
+          "admitted_type": "ResponseReasoningItem",
+          "full_prefix_preserved": true,
+          "continue_final_message": true,
+          "add_generation_prompt": false
+        },
+        {
+          "kind": "reasoning_summary",
+          "split": true,
+          "admitted_type": "ResponseReasoningItem",
+          "full_prefix_preserved": false,
+          "continue_final_message": true,
+          "add_generation_prompt": false
+        }
+      ]
+    },
+    "after": {
+      "source": {
+        "path": "/tank/hot/1cat-deploy/repetition-native-20261009/responses-prefix-cpu/responses-multipart-after-20261010T160356Z.json",
+        "bytes": 2347,
+        "sha256": "419b01ba40826b48db2780a6243e2ad4e297f0edf9d37b00e96d7c9d3fd3ca53"
+      },
+      "records": [
+        {
+          "kind": "message",
+          "split": false,
+          "admitted_type": "ResponseOutputMessage",
+          "full_prefix_preserved": true,
+          "continue_final_message": true,
+          "add_generation_prompt": false,
+          "actual_rendered_tokens": 64,
+          "rendered_prompt_matches_whole_prefix": true
+        },
+        {
+          "kind": "message",
+          "split": true,
+          "admitted_type": "ResponseOutputMessage",
+          "full_prefix_preserved": true,
+          "continue_final_message": true,
+          "add_generation_prompt": false,
+          "actual_rendered_tokens": 64,
+          "rendered_prompt_matches_whole_prefix": true
+        },
+        {
+          "kind": "reasoning_content",
+          "split": false,
+          "admitted_type": "ResponseReasoningItem",
+          "full_prefix_preserved": true,
+          "continue_final_message": true,
+          "add_generation_prompt": false
+        },
+        {
+          "kind": "reasoning_content",
+          "split": true,
+          "admitted_type": "ResponseReasoningItem",
+          "full_prefix_preserved": true,
+          "continue_final_message": true,
+          "add_generation_prompt": false
+        },
+        {
+          "kind": "reasoning_summary",
+          "split": false,
+          "admitted_type": "ResponseReasoningItem",
+          "full_prefix_preserved": true,
+          "continue_final_message": true,
+          "add_generation_prompt": false
+        },
+        {
+          "kind": "reasoning_summary",
+          "split": true,
+          "admitted_type": "ResponseReasoningItem",
+          "full_prefix_preserved": true,
+          "continue_final_message": true,
+          "add_generation_prompt": false
+        }
+      ]
+    },
+    "cuda_initialized": false,
+    "regression_xml": [
+      {
+        "path": "/tank/hot/1cat-deploy/repetition-native-20261009/responses-prefix-cpu/regression-before-deps2-20261010T160356Z.xml",
+        "bytes": 7160,
+        "sha256": "87cd01b735ffcfe1a3d816ad2f8d76bd26134abfeacc1861085d24c5c54e509f",
+        "suites": [
+          {
+            "tests": "3",
+            "failures": "3",
+            "errors": "0",
+            "skipped": "0",
+            "time": "1.458"
+          }
+        ]
+      },
+      {
+        "path": "/tank/hot/1cat-deploy/repetition-native-20261009/responses-prefix-cpu/regression-after-20261010T160356Z.xml",
+        "bytes": 7752,
+        "sha256": "9d35bb91e3ae20c32937f956077a10b56b7b377e60c653f754c34f8d39068950",
+        "suites": [
+          {
+            "tests": "42",
+            "failures": "0",
+            "errors": "0",
+            "skipped": "0",
+            "time": "42.444"
+          }
+        ]
+      }
+    ],
+    "legacy_before_count_correction": "The immutable before probe actual_rendered_tokens=2 counted BatchEncoding mapping keys, not input_ids. Omit that invalid value as token-count evidence. Before rendered equality and missing-tail assertions remain valid; native HTTP before independently measures64 versus61 tokens."
+  },
+  "native_http": {
+    "before": {
+      "data": {
+        "tag": "responses-multipart-http-before-20261010T164125Z",
+        "expected_input_equality": false,
+        "public_fixture_sha256": "b90b1eb71e0063d0afe94d81be78515b4cec3400201776db0d37e058718c0033",
+        "disk_utils_sha256": "ad23225a46d7dc17505609ee711404543ae8ee8334a98863ae73f39fbfbe392c",
+        "engine_tag": "main7ab-w4-fp8-fair2048-min512-capacity-20261010T154513Z",
+        "requests": [
+          {
+            "split": false,
+            "http_status": 200,
+            "status": "completed",
+            "elapsed_s": 0.8101616160711274,
+            "native_input_tokens": 64,
+            "native_input_ids_sha256": "cac91edba58aad389b0eba0ab213b3c0a33391ed8b0cee314c4ec4d34bcde0d2",
+            "native_output_tokens": 1,
+            "usage_input_tokens": 64,
+            "usage_output_tokens": 1
+          },
+          {
+            "split": true,
+            "http_status": 200,
+            "status": "completed",
+            "elapsed_s": 0.5777215549023822,
+            "native_input_tokens": 61,
+            "native_input_ids_sha256": "0e6b5d37f772d88eb31ee99666e9a38366199c9ed9e94060a8172614f8168bb4",
+            "native_output_tokens": 1,
+            "usage_input_tokens": 61,
+            "usage_output_tokens": 1
+          }
+        ],
+        "raw_payloads_exported": false,
+        "generated_tools_executed": false,
+        "scope": "Two public partial-assistant HTTP requests; native input token count/hash equality only. No semantic, numerical or original private repetition admission.",
+        "metric_deltas": {
+          "success": 2,
+          "prompt_sum": 125,
+          "generation_sum": 2,
+          "cache_hits": 0,
+          "preemptions": 0
+        },
+        "idle_boundaries": true,
+        "input_ids_equal": false,
+        "passed": true
+      },
+      "receipt": {
+        "path": "/tank/hot/1cat-deploy/repetition-native-20261009/responses-prefix-http/responses-multipart-http-before-20261010T164125Z/report.json",
+        "bytes": 1554,
+        "sha256": "c094e5396792fea37e9f8de80391a9d7e43ad6b49ec89f7a95f734dc0147d3f9"
+      }
+    },
+    "after": {
+      "data": {
+        "tag": "responses-multipart-http-after-20261010T164125Z",
+        "expected_input_equality": true,
+        "public_fixture_sha256": "b90b1eb71e0063d0afe94d81be78515b4cec3400201776db0d37e058718c0033",
+        "disk_utils_sha256": "ad23225a46d7dc17505609ee711404543ae8ee8334a98863ae73f39fbfbe392c",
+        "engine_tag": "main7ab-w4-fp8-min512-allocation-20261010T164125Z",
+        "requests": [
+          {
+            "split": false,
+            "http_status": 200,
+            "status": "completed",
+            "elapsed_s": 7.7758680790429935,
+            "native_input_tokens": 64,
+            "native_input_ids_sha256": "cac91edba58aad389b0eba0ab213b3c0a33391ed8b0cee314c4ec4d34bcde0d2",
+            "native_output_tokens": 1,
+            "usage_input_tokens": 64,
+            "usage_output_tokens": 1
+          },
+          {
+            "split": true,
+            "http_status": 200,
+            "status": "completed",
+            "elapsed_s": 0.35058421292342246,
+            "native_input_tokens": 64,
+            "native_input_ids_sha256": "cac91edba58aad389b0eba0ab213b3c0a33391ed8b0cee314c4ec4d34bcde0d2",
+            "native_output_tokens": 1,
+            "usage_input_tokens": 64,
+            "usage_output_tokens": 1
+          }
+        ],
+        "raw_payloads_exported": false,
+        "generated_tools_executed": false,
+        "scope": "Two public partial-assistant HTTP requests; native input token count/hash equality only. No semantic, numerical or original private repetition admission.",
+        "metric_deltas": {
+          "success": 2,
+          "prompt_sum": 128,
+          "generation_sum": 2,
+          "cache_hits": 0,
+          "preemptions": 0
+        },
+        "idle_boundaries": true,
+        "input_ids_equal": true,
+        "passed": true
+      },
+      "receipt": {
+        "path": "/tank/hot/1cat-deploy/repetition-native-20261009/responses-prefix-http/responses-multipart-http-after-20261010T164125Z/report.json",
+        "bytes": 1545,
+        "sha256": "d1e756bc5a2df16f7255c795624a51a4de46f362b8e2d13575a3118c832788a1"
+      }
+    },
+    "source_frontend_lifecycle": "Before frontend was launched before disk source repair; after a guarded stop a fresh frontend loaded the repaired source. On-disk before HTTP SHA alone does not describe already-imported before frontend.",
+    "before_after_timing_not_ranked": true
+  },
+  "scope": {
+    "public_fixture_only": true,
+    "raw_payloads_exported": false,
+    "generated_tools_executed": false,
+    "original_private_failure_replayed": false,
+    "original_private_repetition_closed": false,
+    "numerical_quality_admitted": false,
+    "semantic_quality_admitted": false,
+    "production_8000_resumed": false,
+    "life_resumed": false
+  }
+}

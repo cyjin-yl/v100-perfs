@@ -1,0 +1,1150 @@
+{
+  "schema_version": 1,
+  "tested_source_revision": "7ab8b4477adb4137a1172de0e66c6806e997a49c",
+  "native_abi": 67,
+  "source": {
+    "path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-allocation/main7ab-w4-fp8-4x137216-upper-20261010T164125Z/report.json",
+    "bytes": 424439,
+    "sha256": "495e140df7d25a777ee6bf3bb48ef0efd941d479d73dc7041e8071dd3fd217dc"
+  },
+  "ready": {
+    "data": {
+      "tag": "main7ab-w4-fp8-min512-allocation-20261010T164125Z",
+      "child_pid": 2494905,
+      "health_status": 200,
+      "checked_at": "2026-10-10T16:58:15.600878+00:00",
+      "raw_logs_exported": false,
+      "source_sha256": {
+        "vllm/entrypoints/openai/responses/utils.py": "ad23225a46d7dc17505609ee711404543ae8ee8334a98863ae73f39fbfbe392c",
+        "vllm/model_executor/models/qwen3_dflash.py": "3b24b5c6f68283076593a32d5d945c011217ea28072072faa73cca34f481aa5e",
+        "vllm/model_executor/layers/vocab_parallel_embedding.py": "fa38be8ecc351db309ada13971ed55f2bcea9ef8563981f2758d8ffef66d2d4d",
+        "vllm/sm70_profiles/acceleration.py": "228e56deea89d1a6ecc4e72b6159ad083e7c54ed17239eb51f678beb0633ec52",
+        "vllm/v1/core/sched/mixed_prefill.py": "40668c0baca11bf9d84e295923d2db2e1f2818650aa3c248bf5aa16cef069b53"
+      },
+      "launcher_sha256": "51dce1f4b7390c0e68c38742d5bbe681b40afa089ef8887d262826bca4c90c85",
+      "capacity_only": true,
+      "allocation_observer": true,
+      "production_untouched": true
+    },
+    "receipt": {
+      "path": "/tank/hot/1cat-deploy/repetition-native-20261009/launches/main7ab-w4-fp8-min512-allocation-20261010T164125Z.ready.json",
+      "bytes": 983,
+      "sha256": "bc68931b947b8633e5a88282b6c733b579d6f3258486438217d5facf1c1e3f5a"
+    }
+  },
+  "probe": {
+    "tag": "main7ab-w4-fp8-4x137216-upper-20261010T164125Z",
+    "engine_tag": "main7ab-w4-fp8-min512-allocation-20261010T164125Z",
+    "input_tokens_per_request": 137216,
+    "output_budget_per_request": 4096,
+    "deadline_s": 1200,
+    "sampling": {
+      "temperature": 1,
+      "top_p": 0.95,
+      "top_k": 20,
+      "ignore_eos": true
+    },
+    "preparation_s": 17.49701434909366,
+    "elapsed_serving_s": 469.44986665807664,
+    "termination": "first_explained_rejection",
+    "designed_early_cancellation": true,
+    "explained_boundary_observed": false,
+    "idle_after": false,
+    "metric_deltas": {
+      "success": 0,
+      "preemptions": 0,
+      "prompt_sum": 0,
+      "generation_sum": 0,
+      "cache_hits": 0,
+      "corrupted": null
+    },
+    "monitor_errors": [],
+    "max_running": 4,
+    "max_waiting": 0,
+    "necessary_four_full_prompt_bound": {
+      "minimum_blocks": 740,
+      "usable_blocks": 738,
+      "impossible_by_minimum": true,
+      "scope": "Source-derived necessary condition using this run own resolved geometry; not a tight stable maximum."
+    }
+  },
+  "fixture": {
+    "source_revision": "7ab8b4477adb4137a1172de0e66c6806e997a49c",
+    "partitions": [
+      {
+        "index": 0,
+        "prompt_tokens": 137216,
+        "prompt_ids_sha256": "cfa36f4b966006ea7b255e0fdbb90250680476e033233d58663b2eca1d87b77d",
+        "marker_sha256": "019437248901026e0b9117f90b99c4946cfa9aab11329423829c09c1598c1933",
+        "used_manifest_sha256": "eb3758a887d5f786d76cde7c3a4c305ceed2b21c38acb30178ac26f14db30661",
+        "file_count": 50
+      },
+      {
+        "index": 1,
+        "prompt_tokens": 137216,
+        "prompt_ids_sha256": "3c16cff6d41d6b9825e0d7d28494f35d11663f5ca1bb4aad33f3fa02d72498b7",
+        "marker_sha256": "00981a3cf8c0d70c5663cc07434dcf7fcf614cd8868dbe1752e1f418f030d8bd",
+        "used_manifest_sha256": "38f3f8d680c81bf8b08ea63f53be96a49f075a4fceb49be157230e12281e82c7",
+        "file_count": 7
+      },
+      {
+        "index": 2,
+        "prompt_tokens": 137216,
+        "prompt_ids_sha256": "25db08291c64fd8813e43f91866b5e14448b69caa797b186662ae3eda27a2212",
+        "marker_sha256": "0f945ed39a5a418dfb49e50126c8b0f771824d72c3506b1aa77371e62ce47f4a",
+        "used_manifest_sha256": "aa3d0a0a6d09a92ac7a1902af5d402c89fc3cda7f70d960956853e20be6c76af",
+        "file_count": 5
+      },
+      {
+        "index": 3,
+        "prompt_tokens": 137216,
+        "prompt_ids_sha256": "f06b0481f777014b59bcc6adc8944bd56983cfb6cc981ce8daafa73278485437",
+        "marker_sha256": "97eb7ab8ca4eb1122485e2be1472389e4511e0f97ea0cb30dd1ad0d258030d1f",
+        "used_manifest_sha256": "49388ade17dd54435a354ced6a9b87a2e3997072114666f889aef5cc10529e80",
+        "file_count": 41
+      }
+    ],
+    "pairwise_common_prefix_tokens": [
+      {
+        "left": 0,
+        "right": 1,
+        "tokens": 3
+      },
+      {
+        "left": 0,
+        "right": 2,
+        "tokens": 3
+      },
+      {
+        "left": 0,
+        "right": 3,
+        "tokens": 3
+      },
+      {
+        "left": 1,
+        "right": 2,
+        "tokens": 3
+      },
+      {
+        "left": 1,
+        "right": 3,
+        "tokens": 3
+      },
+      {
+        "left": 2,
+        "right": 3,
+        "tokens": 3
+      }
+    ]
+  },
+  "allocation": {
+    "configuration": {
+      "event": "configuration",
+      "scheduler": "CapacityAsyncScheduler",
+      "async_scheduling": true,
+      "target_budget": 8192,
+      "max_num_seqs": 4,
+      "long_prefill_threshold": 2048,
+      "mixed_latency_ms": 250,
+      "mixed_min_tokens": 512,
+      "mamba_block_size": 8192,
+      "mamba_retention_interval": 0,
+      "mamba_dense_on_contention": true,
+      "lookahead_tokens": 8,
+      "reserve_full_input": true,
+      "scope": "bounded scalar diagnostic; timing is perturbed; no tokens/text/request IDs",
+      "extension_observer_ns_so_far": 0,
+      "capacity_allocation_calls_so_far": 0,
+      "monotonic_ns": 802348782434024
+    },
+    "capacity_configuration": {
+      "event": "capacity_configuration",
+      "configured_blocks": 739,
+      "usable_blocks": 738,
+      "max_concurrent_batches": 2,
+      "max_in_flight_tokens": 16384,
+      "groups": [
+        {
+          "group": 0,
+          "spec": "MambaSpec",
+          "layers": 8,
+          "block_size": 8192,
+          "page_bytes": 2097152,
+          "sliding_window": null,
+          "mamba_mode": "align",
+          "scratch_blocks": 7,
+          "admission_cap_blocks": null
+        },
+        {
+          "group": 1,
+          "spec": "MambaSpec",
+          "layers": 8,
+          "block_size": 8192,
+          "page_bytes": 2097152,
+          "sliding_window": null,
+          "mamba_mode": "align",
+          "scratch_blocks": 7,
+          "admission_cap_blocks": null
+        },
+        {
+          "group": 2,
+          "spec": "MambaSpec",
+          "layers": 8,
+          "block_size": 8192,
+          "page_bytes": 2097152,
+          "sliding_window": null,
+          "mamba_mode": "align",
+          "scratch_blocks": 7,
+          "admission_cap_blocks": null
+        },
+        {
+          "group": 3,
+          "spec": "MambaSpec",
+          "layers": 8,
+          "block_size": 8192,
+          "page_bytes": 2097152,
+          "sliding_window": null,
+          "mamba_mode": "align",
+          "scratch_blocks": 7,
+          "admission_cap_blocks": null
+        },
+        {
+          "group": 4,
+          "spec": "MambaSpec",
+          "layers": 8,
+          "block_size": 8192,
+          "page_bytes": 2097152,
+          "sliding_window": null,
+          "mamba_mode": "align",
+          "scratch_blocks": 7,
+          "admission_cap_blocks": null
+        },
+        {
+          "group": 5,
+          "spec": "MambaSpec",
+          "layers": 8,
+          "block_size": 8192,
+          "page_bytes": 2097152,
+          "sliding_window": null,
+          "mamba_mode": "align",
+          "scratch_blocks": 7,
+          "admission_cap_blocks": null
+        },
+        {
+          "group": 6,
+          "spec": "FullAttentionSpec",
+          "layers": 8,
+          "block_size": 2048,
+          "page_bytes": 2097152,
+          "sliding_window": null,
+          "mamba_mode": null,
+          "scratch_blocks": null,
+          "admission_cap_blocks": null
+        },
+        {
+          "group": 7,
+          "spec": "FullAttentionSpec",
+          "layers": 8,
+          "block_size": 2048,
+          "page_bytes": 2097152,
+          "sliding_window": null,
+          "mamba_mode": null,
+          "scratch_blocks": null,
+          "admission_cap_blocks": null
+        },
+        {
+          "group": 8,
+          "spec": "SlidingWindowSpec",
+          "layers": 5,
+          "block_size": 1024,
+          "page_bytes": 2097152,
+          "sliding_window": 2048,
+          "mamba_mode": null,
+          "scratch_blocks": null,
+          "admission_cap_blocks": 19
+        }
+      ],
+      "scope": "Count-only public cohort. No tokens, text, request IDs, block IDs or tables. Observer timings are not speed-ranking evidence.",
+      "extension_observer_ns_so_far": 55203,
+      "capacity_allocation_calls_so_far": 0,
+      "monotonic_ns": 802348782699708
+    },
+    "rows_read": 328,
+    "cohort_allocation_rows": 244,
+    "truncated": false,
+    "first_explained_rejection": {
+      "event": "capacity_allocation",
+      "sequence": 251,
+      "step": 70,
+      "ordinal": 5,
+      "requested_tokens": 2048,
+      "request": {
+        "ordinal": 5,
+        "status": "RUNNING",
+        "prompt_tokens": 137216,
+        "computed_tokens": 122880,
+        "total_tokens": 137216,
+        "output_tokens": 0,
+        "speculative_tokens": 0,
+        "output_placeholders": 0,
+        "decode_eligible_step": 0,
+        "preemptions": 0
+      },
+      "in_flight_tokens": 2048,
+      "lookahead_tokens": 8,
+      "full_input_gate": false,
+      "cohort": [
+        {
+          "ordinal": 2,
+          "status": "RUNNING",
+          "prompt_tokens": 137216,
+          "computed_tokens": 124928,
+          "total_tokens": 137216,
+          "output_tokens": 0,
+          "speculative_tokens": 0,
+          "output_placeholders": 0,
+          "decode_eligible_step": 0,
+          "preemptions": 0
+        },
+        {
+          "ordinal": 3,
+          "status": "RUNNING",
+          "prompt_tokens": 137216,
+          "computed_tokens": 124928,
+          "total_tokens": 137216,
+          "output_tokens": 0,
+          "speculative_tokens": 0,
+          "output_placeholders": 0,
+          "decode_eligible_step": 0,
+          "preemptions": 0
+        },
+        {
+          "ordinal": 4,
+          "status": "RUNNING",
+          "prompt_tokens": 137216,
+          "computed_tokens": 124928,
+          "total_tokens": 137216,
+          "output_tokens": 0,
+          "speculative_tokens": 0,
+          "output_placeholders": 0,
+          "decode_eligible_step": 0,
+          "preemptions": 0
+        },
+        {
+          "ordinal": 5,
+          "status": "RUNNING",
+          "prompt_tokens": 137216,
+          "computed_tokens": 122880,
+          "total_tokens": 137216,
+          "output_tokens": 0,
+          "speculative_tokens": 0,
+          "output_placeholders": 0,
+          "decode_eligible_step": 0,
+          "preemptions": 0
+        }
+      ],
+      "held_before": {
+        "free_blocks": 0,
+        "occupied_non_null_blocks": 738,
+        "distinct_request_held_blocks": 738,
+        "occupied_not_in_request_tables": 0,
+        "groups": [
+          {
+            "group": 0,
+            "distinct_non_null_blocks": 35,
+            "requests": [
+              {
+                "ordinal": 2,
+                "logical_entries": 23,
+                "distinct_non_null_blocks": 9,
+                "pending_state_entries": 1,
+                "distinct_pending_non_null_blocks": 1
+              },
+              {
+                "ordinal": 3,
+                "logical_entries": 23,
+                "distinct_non_null_blocks": 9,
+                "pending_state_entries": 1,
+                "distinct_pending_non_null_blocks": 1
+              },
+              {
+                "ordinal": 4,
+                "logical_entries": 23,
+                "distinct_non_null_blocks": 9,
+                "pending_state_entries": 1,
+                "distinct_pending_non_null_blocks": 1
+              },
+              {
+                "ordinal": 5,
+                "logical_entries": 22,
+                "distinct_non_null_blocks": 8,
+                "pending_state_entries": 0,
+                "distinct_pending_non_null_blocks": 0
+              }
+            ]
+          },
+          {
+            "group": 1,
+            "distinct_non_null_blocks": 35,
+            "requests": [
+              {
+                "ordinal": 2,
+                "logical_entries": 23,
+                "distinct_non_null_blocks": 9,
+                "pending_state_entries": 1,
+                "distinct_pending_non_null_blocks": 1
+              },
+              {
+                "ordinal": 3,
+                "logical_entries": 23,
+                "distinct_non_null_blocks": 9,
+                "pending_state_entries": 1,
+                "distinct_pending_non_null_blocks": 1
+              },
+              {
+                "ordinal": 4,
+                "logical_entries": 23,
+                "distinct_non_null_blocks": 9,
+                "pending_state_entries": 1,
+                "distinct_pending_non_null_blocks": 1
+              },
+              {
+                "ordinal": 5,
+                "logical_entries": 22,
+                "distinct_non_null_blocks": 8,
+                "pending_state_entries": 0,
+                "distinct_pending_non_null_blocks": 0
+              }
+            ]
+          },
+          {
+            "group": 2,
+            "distinct_non_null_blocks": 35,
+            "requests": [
+              {
+                "ordinal": 2,
+                "logical_entries": 23,
+                "distinct_non_null_blocks": 9,
+                "pending_state_entries": 1,
+                "distinct_pending_non_null_blocks": 1
+              },
+              {
+                "ordinal": 3,
+                "logical_entries": 23,
+                "distinct_non_null_blocks": 9,
+                "pending_state_entries": 1,
+                "distinct_pending_non_null_blocks": 1
+              },
+              {
+                "ordinal": 4,
+                "logical_entries": 23,
+                "distinct_non_null_blocks": 9,
+                "pending_state_entries": 1,
+                "distinct_pending_non_null_blocks": 1
+              },
+              {
+                "ordinal": 5,
+                "logical_entries": 22,
+                "distinct_non_null_blocks": 8,
+                "pending_state_entries": 0,
+                "distinct_pending_non_null_blocks": 0
+              }
+            ]
+          },
+          {
+            "group": 3,
+            "distinct_non_null_blocks": 35,
+            "requests": [
+              {
+                "ordinal": 2,
+                "logical_entries": 23,
+                "distinct_non_null_blocks": 9,
+                "pending_state_entries": 1,
+                "distinct_pending_non_null_blocks": 1
+              },
+              {
+                "ordinal": 3,
+                "logical_entries": 23,
+                "distinct_non_null_blocks": 9,
+                "pending_state_entries": 1,
+                "distinct_pending_non_null_blocks": 1
+              },
+              {
+                "ordinal": 4,
+                "logical_entries": 23,
+                "distinct_non_null_blocks": 9,
+                "pending_state_entries": 1,
+                "distinct_pending_non_null_blocks": 1
+              },
+              {
+                "ordinal": 5,
+                "logical_entries": 22,
+                "distinct_non_null_blocks": 8,
+                "pending_state_entries": 0,
+                "distinct_pending_non_null_blocks": 0
+              }
+            ]
+          },
+          {
+            "group": 4,
+            "distinct_non_null_blocks": 35,
+            "requests": [
+              {
+                "ordinal": 2,
+                "logical_entries": 23,
+                "distinct_non_null_blocks": 9,
+                "pending_state_entries": 1,
+                "distinct_pending_non_null_blocks": 1
+              },
+              {
+                "ordinal": 3,
+                "logical_entries": 23,
+                "distinct_non_null_blocks": 9,
+                "pending_state_entries": 1,
+                "distinct_pending_non_null_blocks": 1
+              },
+              {
+                "ordinal": 4,
+                "logical_entries": 23,
+                "distinct_non_null_blocks": 9,
+                "pending_state_entries": 1,
+                "distinct_pending_non_null_blocks": 1
+              },
+              {
+                "ordinal": 5,
+                "logical_entries": 22,
+                "distinct_non_null_blocks": 8,
+                "pending_state_entries": 0,
+                "distinct_pending_non_null_blocks": 0
+              }
+            ]
+          },
+          {
+            "group": 5,
+            "distinct_non_null_blocks": 35,
+            "requests": [
+              {
+                "ordinal": 2,
+                "logical_entries": 23,
+                "distinct_non_null_blocks": 9,
+                "pending_state_entries": 1,
+                "distinct_pending_non_null_blocks": 1
+              },
+              {
+                "ordinal": 3,
+                "logical_entries": 23,
+                "distinct_non_null_blocks": 9,
+                "pending_state_entries": 1,
+                "distinct_pending_non_null_blocks": 1
+              },
+              {
+                "ordinal": 4,
+                "logical_entries": 23,
+                "distinct_non_null_blocks": 9,
+                "pending_state_entries": 1,
+                "distinct_pending_non_null_blocks": 1
+              },
+              {
+                "ordinal": 5,
+                "logical_entries": 22,
+                "distinct_non_null_blocks": 8,
+                "pending_state_entries": 0,
+                "distinct_pending_non_null_blocks": 0
+              }
+            ]
+          },
+          {
+            "group": 6,
+            "distinct_non_null_blocks": 250,
+            "requests": [
+              {
+                "ordinal": 2,
+                "logical_entries": 63,
+                "distinct_non_null_blocks": 63,
+                "pending_state_entries": 0,
+                "distinct_pending_non_null_blocks": 0
+              },
+              {
+                "ordinal": 3,
+                "logical_entries": 63,
+                "distinct_non_null_blocks": 63,
+                "pending_state_entries": 0,
+                "distinct_pending_non_null_blocks": 0
+              },
+              {
+                "ordinal": 4,
+                "logical_entries": 63,
+                "distinct_non_null_blocks": 63,
+                "pending_state_entries": 0,
+                "distinct_pending_non_null_blocks": 0
+              },
+              {
+                "ordinal": 5,
+                "logical_entries": 61,
+                "distinct_non_null_blocks": 61,
+                "pending_state_entries": 0,
+                "distinct_pending_non_null_blocks": 0
+              }
+            ]
+          },
+          {
+            "group": 7,
+            "distinct_non_null_blocks": 250,
+            "requests": [
+              {
+                "ordinal": 2,
+                "logical_entries": 63,
+                "distinct_non_null_blocks": 63,
+                "pending_state_entries": 0,
+                "distinct_pending_non_null_blocks": 0
+              },
+              {
+                "ordinal": 3,
+                "logical_entries": 63,
+                "distinct_non_null_blocks": 63,
+                "pending_state_entries": 0,
+                "distinct_pending_non_null_blocks": 0
+              },
+              {
+                "ordinal": 4,
+                "logical_entries": 63,
+                "distinct_non_null_blocks": 63,
+                "pending_state_entries": 0,
+                "distinct_pending_non_null_blocks": 0
+              },
+              {
+                "ordinal": 5,
+                "logical_entries": 61,
+                "distinct_non_null_blocks": 61,
+                "pending_state_entries": 0,
+                "distinct_pending_non_null_blocks": 0
+              }
+            ]
+          },
+          {
+            "group": 8,
+            "distinct_non_null_blocks": 28,
+            "requests": [
+              {
+                "ordinal": 2,
+                "logical_entries": 125,
+                "distinct_non_null_blocks": 7,
+                "pending_state_entries": 0,
+                "distinct_pending_non_null_blocks": 0
+              },
+              {
+                "ordinal": 3,
+                "logical_entries": 125,
+                "distinct_non_null_blocks": 7,
+                "pending_state_entries": 0,
+                "distinct_pending_non_null_blocks": 0
+              },
+              {
+                "ordinal": 4,
+                "logical_entries": 125,
+                "distinct_non_null_blocks": 7,
+                "pending_state_entries": 0,
+                "distinct_pending_non_null_blocks": 0
+              },
+              {
+                "ordinal": 5,
+                "logical_entries": 121,
+                "distinct_non_null_blocks": 7,
+                "pending_state_entries": 0,
+                "distinct_pending_non_null_blocks": 0
+              }
+            ]
+          }
+        ]
+      },
+      "group_predictions": [
+        {
+          "group": 0,
+          "admission_gate": false,
+          "slot_frontier": 124936,
+          "main_frontier": 124928,
+          "computed_frontier": 122880,
+          "new_computed_blocks": 0,
+          "predicted_blocks": 1,
+          "free_blocks": 2,
+          "same_step_mamba_dependency": false
+        },
+        {
+          "group": 1,
+          "admission_gate": false,
+          "slot_frontier": 124936,
+          "main_frontier": 124928,
+          "computed_frontier": 122880,
+          "new_computed_blocks": 0,
+          "predicted_blocks": 1,
+          "free_blocks": 2,
+          "same_step_mamba_dependency": false
+        },
+        {
+          "group": 2,
+          "admission_gate": false,
+          "slot_frontier": 124936,
+          "main_frontier": 124928,
+          "computed_frontier": 122880,
+          "new_computed_blocks": 0,
+          "predicted_blocks": 1,
+          "free_blocks": 2,
+          "same_step_mamba_dependency": false
+        },
+        {
+          "group": 3,
+          "admission_gate": false,
+          "slot_frontier": 124936,
+          "main_frontier": 124928,
+          "computed_frontier": 122880,
+          "new_computed_blocks": 0,
+          "predicted_blocks": 1,
+          "free_blocks": 2,
+          "same_step_mamba_dependency": false
+        },
+        {
+          "group": 4,
+          "admission_gate": false,
+          "slot_frontier": 124936,
+          "main_frontier": 124928,
+          "computed_frontier": 122880,
+          "new_computed_blocks": 0,
+          "predicted_blocks": 1,
+          "free_blocks": 2,
+          "same_step_mamba_dependency": false
+        },
+        {
+          "group": 5,
+          "admission_gate": false,
+          "slot_frontier": 124936,
+          "main_frontier": 124928,
+          "computed_frontier": 122880,
+          "new_computed_blocks": 0,
+          "predicted_blocks": 1,
+          "free_blocks": 2,
+          "same_step_mamba_dependency": false
+        },
+        {
+          "group": 6,
+          "admission_gate": false,
+          "slot_frontier": 124936,
+          "main_frontier": 124928,
+          "computed_frontier": 122880,
+          "new_computed_blocks": 0,
+          "predicted_blocks": 1,
+          "free_blocks": 2,
+          "same_step_mamba_dependency": false
+        },
+        {
+          "group": 7,
+          "admission_gate": false,
+          "slot_frontier": 124936,
+          "main_frontier": 124928,
+          "computed_frontier": 122880,
+          "new_computed_blocks": 0,
+          "predicted_blocks": 1,
+          "free_blocks": 2,
+          "same_step_mamba_dependency": false
+        },
+        {
+          "group": 8,
+          "admission_gate": false,
+          "slot_frontier": 124936,
+          "main_frontier": 124928,
+          "computed_frontier": 122880,
+          "new_computed_blocks": 0,
+          "predicted_blocks": 2,
+          "free_blocks": 2,
+          "same_step_mamba_dependency": false
+        }
+      ],
+      "admitted": false,
+      "held_after": {
+        "free_blocks": 2,
+        "occupied_non_null_blocks": 736,
+        "distinct_request_held_blocks": 736,
+        "occupied_not_in_request_tables": 0,
+        "groups": [
+          {
+            "group": 0,
+            "distinct_non_null_blocks": 35,
+            "requests": [
+              {
+                "ordinal": 2,
+                "logical_entries": 23,
+                "distinct_non_null_blocks": 9,
+                "pending_state_entries": 1,
+                "distinct_pending_non_null_blocks": 1
+              },
+              {
+                "ordinal": 3,
+                "logical_entries": 23,
+                "distinct_non_null_blocks": 9,
+                "pending_state_entries": 1,
+                "distinct_pending_non_null_blocks": 1
+              },
+              {
+                "ordinal": 4,
+                "logical_entries": 23,
+                "distinct_non_null_blocks": 9,
+                "pending_state_entries": 1,
+                "distinct_pending_non_null_blocks": 1
+              },
+              {
+                "ordinal": 5,
+                "logical_entries": 22,
+                "distinct_non_null_blocks": 8,
+                "pending_state_entries": 0,
+                "distinct_pending_non_null_blocks": 0
+              }
+            ]
+          },
+          {
+            "group": 1,
+            "distinct_non_null_blocks": 35,
+            "requests": [
+              {
+                "ordinal": 2,
+                "logical_entries": 23,
+                "distinct_non_null_blocks": 9,
+                "pending_state_entries": 1,
+                "distinct_pending_non_null_blocks": 1
+              },
+              {
+                "ordinal": 3,
+                "logical_entries": 23,
+                "distinct_non_null_blocks": 9,
+                "pending_state_entries": 1,
+                "distinct_pending_non_null_blocks": 1
+              },
+              {
+                "ordinal": 4,
+                "logical_entries": 23,
+                "distinct_non_null_blocks": 9,
+                "pending_state_entries": 1,
+                "distinct_pending_non_null_blocks": 1
+              },
+              {
+                "ordinal": 5,
+                "logical_entries": 22,
+                "distinct_non_null_blocks": 8,
+                "pending_state_entries": 0,
+                "distinct_pending_non_null_blocks": 0
+              }
+            ]
+          },
+          {
+            "group": 2,
+            "distinct_non_null_blocks": 35,
+            "requests": [
+              {
+                "ordinal": 2,
+                "logical_entries": 23,
+                "distinct_non_null_blocks": 9,
+                "pending_state_entries": 1,
+                "distinct_pending_non_null_blocks": 1
+              },
+              {
+                "ordinal": 3,
+                "logical_entries": 23,
+                "distinct_non_null_blocks": 9,
+                "pending_state_entries": 1,
+                "distinct_pending_non_null_blocks": 1
+              },
+              {
+                "ordinal": 4,
+                "logical_entries": 23,
+                "distinct_non_null_blocks": 9,
+                "pending_state_entries": 1,
+                "distinct_pending_non_null_blocks": 1
+              },
+              {
+                "ordinal": 5,
+                "logical_entries": 22,
+                "distinct_non_null_blocks": 8,
+                "pending_state_entries": 0,
+                "distinct_pending_non_null_blocks": 0
+              }
+            ]
+          },
+          {
+            "group": 3,
+            "distinct_non_null_blocks": 35,
+            "requests": [
+              {
+                "ordinal": 2,
+                "logical_entries": 23,
+                "distinct_non_null_blocks": 9,
+                "pending_state_entries": 1,
+                "distinct_pending_non_null_blocks": 1
+              },
+              {
+                "ordinal": 3,
+                "logical_entries": 23,
+                "distinct_non_null_blocks": 9,
+                "pending_state_entries": 1,
+                "distinct_pending_non_null_blocks": 1
+              },
+              {
+                "ordinal": 4,
+                "logical_entries": 23,
+                "distinct_non_null_blocks": 9,
+                "pending_state_entries": 1,
+                "distinct_pending_non_null_blocks": 1
+              },
+              {
+                "ordinal": 5,
+                "logical_entries": 22,
+                "distinct_non_null_blocks": 8,
+                "pending_state_entries": 0,
+                "distinct_pending_non_null_blocks": 0
+              }
+            ]
+          },
+          {
+            "group": 4,
+            "distinct_non_null_blocks": 35,
+            "requests": [
+              {
+                "ordinal": 2,
+                "logical_entries": 23,
+                "distinct_non_null_blocks": 9,
+                "pending_state_entries": 1,
+                "distinct_pending_non_null_blocks": 1
+              },
+              {
+                "ordinal": 3,
+                "logical_entries": 23,
+                "distinct_non_null_blocks": 9,
+                "pending_state_entries": 1,
+                "distinct_pending_non_null_blocks": 1
+              },
+              {
+                "ordinal": 4,
+                "logical_entries": 23,
+                "distinct_non_null_blocks": 9,
+                "pending_state_entries": 1,
+                "distinct_pending_non_null_blocks": 1
+              },
+              {
+                "ordinal": 5,
+                "logical_entries": 22,
+                "distinct_non_null_blocks": 8,
+                "pending_state_entries": 0,
+                "distinct_pending_non_null_blocks": 0
+              }
+            ]
+          },
+          {
+            "group": 5,
+            "distinct_non_null_blocks": 35,
+            "requests": [
+              {
+                "ordinal": 2,
+                "logical_entries": 23,
+                "distinct_non_null_blocks": 9,
+                "pending_state_entries": 1,
+                "distinct_pending_non_null_blocks": 1
+              },
+              {
+                "ordinal": 3,
+                "logical_entries": 23,
+                "distinct_non_null_blocks": 9,
+                "pending_state_entries": 1,
+                "distinct_pending_non_null_blocks": 1
+              },
+              {
+                "ordinal": 4,
+                "logical_entries": 23,
+                "distinct_non_null_blocks": 9,
+                "pending_state_entries": 1,
+                "distinct_pending_non_null_blocks": 1
+              },
+              {
+                "ordinal": 5,
+                "logical_entries": 22,
+                "distinct_non_null_blocks": 8,
+                "pending_state_entries": 0,
+                "distinct_pending_non_null_blocks": 0
+              }
+            ]
+          },
+          {
+            "group": 6,
+            "distinct_non_null_blocks": 250,
+            "requests": [
+              {
+                "ordinal": 2,
+                "logical_entries": 63,
+                "distinct_non_null_blocks": 63,
+                "pending_state_entries": 0,
+                "distinct_pending_non_null_blocks": 0
+              },
+              {
+                "ordinal": 3,
+                "logical_entries": 63,
+                "distinct_non_null_blocks": 63,
+                "pending_state_entries": 0,
+                "distinct_pending_non_null_blocks": 0
+              },
+              {
+                "ordinal": 4,
+                "logical_entries": 63,
+                "distinct_non_null_blocks": 63,
+                "pending_state_entries": 0,
+                "distinct_pending_non_null_blocks": 0
+              },
+              {
+                "ordinal": 5,
+                "logical_entries": 61,
+                "distinct_non_null_blocks": 61,
+                "pending_state_entries": 0,
+                "distinct_pending_non_null_blocks": 0
+              }
+            ]
+          },
+          {
+            "group": 7,
+            "distinct_non_null_blocks": 250,
+            "requests": [
+              {
+                "ordinal": 2,
+                "logical_entries": 63,
+                "distinct_non_null_blocks": 63,
+                "pending_state_entries": 0,
+                "distinct_pending_non_null_blocks": 0
+              },
+              {
+                "ordinal": 3,
+                "logical_entries": 63,
+                "distinct_non_null_blocks": 63,
+                "pending_state_entries": 0,
+                "distinct_pending_non_null_blocks": 0
+              },
+              {
+                "ordinal": 4,
+                "logical_entries": 63,
+                "distinct_non_null_blocks": 63,
+                "pending_state_entries": 0,
+                "distinct_pending_non_null_blocks": 0
+              },
+              {
+                "ordinal": 5,
+                "logical_entries": 61,
+                "distinct_non_null_blocks": 61,
+                "pending_state_entries": 0,
+                "distinct_pending_non_null_blocks": 0
+              }
+            ]
+          },
+          {
+            "group": 8,
+            "distinct_non_null_blocks": 26,
+            "requests": [
+              {
+                "ordinal": 2,
+                "logical_entries": 125,
+                "distinct_non_null_blocks": 7,
+                "pending_state_entries": 0,
+                "distinct_pending_non_null_blocks": 0
+              },
+              {
+                "ordinal": 3,
+                "logical_entries": 125,
+                "distinct_non_null_blocks": 7,
+                "pending_state_entries": 0,
+                "distinct_pending_non_null_blocks": 0
+              },
+              {
+                "ordinal": 4,
+                "logical_entries": 125,
+                "distinct_non_null_blocks": 7,
+                "pending_state_entries": 0,
+                "distinct_pending_non_null_blocks": 0
+              },
+              {
+                "ordinal": 5,
+                "logical_entries": 121,
+                "distinct_non_null_blocks": 5,
+                "pending_state_entries": 0,
+                "distinct_pending_non_null_blocks": 0
+              }
+            ]
+          }
+        ]
+      },
+      "final_gate": "step",
+      "predicted_blocks": 10,
+      "free_blocks_at_gate": 2,
+      "rejection_reason": "predicted_demand_exceeds_free",
+      "extension_observer_ns_so_far": 136478895,
+      "capacity_allocation_calls_so_far": 251,
+      "monotonic_ns": 803742947711791
+    }
+  },
+  "requests": [
+    {
+      "index": 0,
+      "http_status": 200,
+      "error": "deadline_or_cancellation",
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "generated_token_count": null,
+      "actual_output_complete": false
+    },
+    {
+      "index": 1,
+      "http_status": 200,
+      "error": "deadline_or_cancellation",
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "generated_token_count": null,
+      "actual_output_complete": false
+    },
+    {
+      "index": 2,
+      "http_status": 200,
+      "error": "deadline_or_cancellation",
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "generated_token_count": null,
+      "actual_output_complete": false
+    },
+    {
+      "index": 3,
+      "http_status": 200,
+      "error": "deadline_or_cancellation",
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "generated_token_count": null,
+      "actual_output_complete": false
+    }
+  ],
+  "cleanup": {
+    "identity_verified": true,
+    "owned_processes": 5,
+    "remaining": [],
+    "stopped": true,
+    "supervisor_exit_code": 0
+  },
+  "collector_limit": "Collector exited1: explained rejection captured, but its bounded cancellation drain still reported4 running, so explained_boundary_observed remainsfalse. The unconsumed first asyncio gather raised a CancelledError diagnostic warning; it is not a native allocator exception. Preserve this failed-cleanup outcome; guarded owner shutdown was separate.",
+  "scope": {
+    "only_metadata_exported": true,
+    "original_cohort_aborted": true,
+    "four_outputs_completed": false,
+    "actual_4096_outputs_not_verified": true,
+    "tight_maximum_not_established": true,
+    "OOM_not_observed": true,
+    "clean_stream_cancellation_not_admitted": true,
+    "observer_timings_not_speed_ranking": true,
+    "private_repetition_not_admitted": true,
+    "production_8000_resumed": false,
+    "life_resumed": false
+  },
+  "latest_completed_upstream_check": {
+    "checked_at": "2026-10-10T17:21:52.374266+00:00",
+    "upstream_revision": "c39f53abae51df6bf8ef122e34975a9f3596a93c",
+    "isolated_fetch_previously_completed": true,
+    "runtime_admitted": false
+  }
+}
