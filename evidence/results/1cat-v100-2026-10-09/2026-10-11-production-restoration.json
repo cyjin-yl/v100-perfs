@@ -1,0 +1,784 @@
+{
+  "schema_version": 1,
+  "scope": "Actual authorized production restoration, real gateway handoff, preserved life session and requested new production C1/C4 speed captures",
+  "tested_source_revision": "c39f53abae51df6bf8ef122e34975a9f3596a93c",
+  "prior_native_runtime_admission": "evidence/results/1cat-v100-2026-10-09/2026-10-11-current-main-c39-admission.json",
+  "authority": "User explicitly prioritized early production restoration and waived historical different-compute-path incident as blocker",
+  "binding": {
+    "observed_at": "2026-10-11T05:01:48.000360+00:00",
+    "tag": "production-c39-w4-fp8-min512-20261011T0450Z",
+    "identity_verified": true,
+    "pid": 2749169,
+    "starttime": "84525844",
+    "health_ready": true,
+    "startup_seconds": 426.97241693898104,
+    "profile": {
+      "source_revision": "c39f53abae51df6bf8ef122e34975a9f3596a93c",
+      "source": "/tank/hot/1cat-deploy/repetition-native-20261009/fastpath-main-c39f53ab",
+      "model": "/tank/hot/models/Merkyor-Coder390-NVFP4-W4A16-3e644f23",
+      "host": "10.10.10.11",
+      "port": 8000,
+      "context": 262144,
+      "sequences": 4,
+      "memory_util": 0.9,
+      "prefill_threshold": 2048,
+      "mixed_prefill_min_tokens": 512,
+      "mixed_prefill_step_latency_ms": 250,
+      "observers": false,
+      "diagnostic_only": false,
+      "service_role": "production"
+    },
+    "engine_auth_argv_env_and_raw_logs_exported": false
+  },
+  "permanent_launcher": {
+    "path": "/tank/hot/1cat-deploy/production-c39f53ab/launch.py",
+    "bytes": 6400,
+    "sha256": "31386feefd23a8d418b7c387dc35b58d23dc3665a838da6a2fe5ce5e8de53457"
+  },
+  "phase_sources": {
+    "decision": {
+      "source": {
+        "path": "/tank/hot/1cat-deploy/production-c39f53ab/restoration-decision.json",
+        "bytes": 1807,
+        "sha256": "3fb67a68fefe128a08906c7efbf3513eaf5a0b6a444d69db38b57eaad209c7df"
+      },
+      "observed": {
+        "at": "2026-10-11T04:57:21.026Z",
+        "authority": "User explicitly prioritized early production restoration and waived historical different-compute-path incident as blocker",
+        "historical_replay_required_for_handoff": false,
+        "historical_evidence_deleted": false,
+        "causal_repair_claimed": false,
+        "production_tag": "production-c39-w4-fp8-min512-20261011T0450Z",
+        "source_revision": "c39f53abae51df6bf8ef122e34975a9f3596a93c",
+        "profile": {
+          "target": "W4A16",
+          "draft": "FP8 DFlash2",
+          "TP": 2,
+          "q": 7,
+          "sequences": 4,
+          "engine_context": 262144,
+          "client_context": 131072,
+          "client_output_cap": 32768,
+          "min_mixed_prefill": 512,
+          "feedback_latency_ms": 250,
+          "batched_tokens": 8192,
+          "fair_prefill_tokens": 2048
+        },
+        "gateway_upstream": "http://10.10.10.11:8000",
+        "restore_in_progress": true,
+        "life_resumed": false,
+        "rollback": {
+          "new_owner_stop": [
+            "/tank/hot/1cat-deploy/.venv/bin/python",
+            "/tank/hot/1cat-deploy/repetition-native-20261009/stop-main.py",
+            "--tag",
+            "production-c39-w4-fp8-min512-20261011T0450Z"
+          ],
+          "old_environment_preserved": "/tank/hot/1cat-deploy/merkyor-deploy-20261009/production-private.json",
+          "historical_restore_launcher": "/tank/hot/1cat-deploy/merkyor-deploy-20261009/launch.py",
+          "old_failure_not_certified_fixed": true
+        },
+        "life_identity": {
+          "pane": "%6",
+          "pane_pid": 26007,
+          "pane_dead": false,
+          "session_name": "life",
+          "cwd": "/tank/shared/projects/life",
+          "process_state": "S",
+          "process_starttime": "128028",
+          "command_sha256": "ad32acec06bdebc4355089c29ca0e0523e850c9f57f5efce22d717268120eb69",
+          "is_omp": true,
+          "stored_session_prefix_matches": true,
+          "bound_session_flags": {},
+          "raw_argv_env_and_pane_text_exported": false
+        }
+      }
+    },
+    "gateway": {
+      "source": {
+        "path": "/tank/hot/1cat-deploy/production-c39f53ab/gateway-handoff.json",
+        "bytes": 4158,
+        "sha256": "51afab4365fe257643df14f645682b93e965ec1cf99df17cc5f2b767f2786f3f"
+      },
+      "observed": {
+        "tag": "production-c39-w4-fp8-min512-20261011T0450Z",
+        "source_revision": "c39f53abae51df6bf8ef122e34975a9f3596a93c",
+        "gateway_upstream_unchanged": true,
+        "requests": [
+          {
+            "name": "ordinary_top20",
+            "origin": "https://doesvm.icefish-exponential.ts.net:8446",
+            "http_status": 200,
+            "response_status": "completed",
+            "answer_correct": true,
+            "usage": {
+              "input_tokens": 26,
+              "input_tokens_details": {
+                "cached_tokens": 0,
+                "input_tokens_per_turn": [],
+                "cached_tokens_per_turn": []
+              },
+              "output_tokens": 3,
+              "output_tokens_details": {
+                "reasoning_tokens": 0,
+                "tool_output_tokens": 0,
+                "output_tokens_per_turn": [],
+                "tool_output_tokens_per_turn": []
+              },
+              "total_tokens": 29
+            },
+            "elapsed_s": 21.554788165027276,
+            "output_sha256": "73475cb40a568e8da8a045ced110137e159f890ac4da883b6b17dc651b3a8049"
+          },
+          {
+            "name": "dense_topk_disabled",
+            "origin": "https://doesvm.icefish-exponential.ts.net:8446",
+            "http_status": 200,
+            "response_status": "completed",
+            "answer_correct": true,
+            "usage": {
+              "input_tokens": 26,
+              "input_tokens_details": {
+                "cached_tokens": 0,
+                "input_tokens_per_turn": [],
+                "cached_tokens_per_turn": []
+              },
+              "output_tokens": 3,
+              "output_tokens_details": {
+                "reasoning_tokens": 0,
+                "tool_output_tokens": 0,
+                "output_tokens_per_turn": [],
+                "tool_output_tokens_per_turn": []
+              },
+              "total_tokens": 29
+            },
+            "elapsed_s": 0.40143647405784577,
+            "output_sha256": "73475cb40a568e8da8a045ced110137e159f890ac4da883b6b17dc651b3a8049"
+          },
+          {
+            "name": "structured_json",
+            "origin": "https://doesvm.icefish-exponential.ts.net:8446",
+            "http_status": 200,
+            "response_status": "completed",
+            "answer_correct": true,
+            "usage": {
+              "input_tokens": 28,
+              "input_tokens_details": {
+                "cached_tokens": 0,
+                "input_tokens_per_turn": [],
+                "cached_tokens_per_turn": []
+              },
+              "output_tokens": 12,
+              "output_tokens_details": {
+                "reasoning_tokens": 0,
+                "tool_output_tokens": 0,
+                "output_tokens_per_turn": [],
+                "tool_output_tokens_per_turn": []
+              },
+              "total_tokens": 40
+            },
+            "elapsed_s": 5.476119171013124,
+            "output_sha256": "2607badb8436d9f69df4152a5f040467e5498d2cd3c05a7ea627404532204ed6"
+          }
+        ],
+        "failures": [],
+        "private_failure_replay_required": false,
+        "scope": "New actual production/gateway handoff only; not capacity maximum or a benchmark.",
+        "entrances": [
+          {
+            "origin": "http://10.10.10.12:18080",
+            "ready_http_status": 200,
+            "models_http_status": 200,
+            "model_alias_present": true
+          },
+          {
+            "origin": "https://doesvm.icefish-exponential.ts.net:8446",
+            "ready_http_status": 200,
+            "models_http_status": 200,
+            "model_alias_present": true
+          }
+        ],
+        "admission_before_streams": {
+          "capacity": 4,
+          "in_use": 0,
+          "background_in_use": 0,
+          "rejected_total": 403
+        },
+        "four_slot_gate": {
+          "accepted_statuses": [
+            200,
+            200,
+            200,
+            200
+          ],
+          "admission": {
+            "capacity": 4,
+            "in_use": 4,
+            "background_in_use": 0,
+            "rejected_total": 403
+          },
+          "fifth_http_status": 429,
+          "fifth_error_code": "kv_slots_exhausted"
+        },
+        "stream_content_observed_before_cancellation": true,
+        "admission_after_cancellation": {
+          "capacity": 4,
+          "in_use": 0,
+          "background_in_use": 0,
+          "rejected_total": 404
+        },
+        "cancelled_owned_streams": 4,
+        "slots_released": true,
+        "post_cancellation_request": {
+          "origin": "https://doesvm.icefish-exponential.ts.net:8446",
+          "http_status": 200,
+          "answer_correct": true,
+          "usage": {
+            "prompt_tokens": 26,
+            "total_tokens": 29,
+            "completion_tokens": 3,
+            "prompt_tokens_details": null
+          },
+          "output_sha256": "73475cb40a568e8da8a045ced110137e159f890ac4da883b6b17dc651b3a8049"
+        },
+        "passed": true
+      }
+    },
+    "performance_run": {
+      "source": {
+        "path": "/tank/hot/1cat-deploy/production-c39f53ab/performance-run.json",
+        "bytes": 988,
+        "sha256": "4826d8d3c848f47544b73f4a05dc7ba5abed341cb0e21dd4b26c3463410e7d56"
+      },
+      "observed": {
+        "at": "2026-10-11T05:12:23.701110+00:00",
+        "new_production_experiment": true,
+        "old_experiments_repeated": false,
+        "production_restarted_or_reconfigured": false,
+        "life_identity_verified": true,
+        "life_temporarily_held": true,
+        "life_released": true,
+        "cohorts": [
+          {
+            "tag": "prodc39-speed-c1-8192-512-20261011T0510Z",
+            "exit_code": 0,
+            "summary": {
+              "report": "/tank/hot/1cat-deploy/repetition-native-20261009/results-independent/prodc39-speed-c1-8192-512-20261011T0510Z/report.json",
+              "capacity_pass": false,
+              "run_passed": true,
+              "failures": []
+            }
+          },
+          {
+            "tag": "prodc39-speed-c4-8192-512-20261011T0510Z",
+            "exit_code": 0,
+            "summary": {
+              "report": "/tank/hot/1cat-deploy/repetition-native-20261009/results-independent/prodc39-speed-c4-8192-512-20261011T0510Z/report.json",
+              "capacity_pass": true,
+              "run_passed": true,
+              "failures": []
+            }
+          }
+        ],
+        "passed": true
+      }
+    },
+    "performance": {
+      "source": {
+        "path": "/tank/hot/1cat-deploy/production-c39f53ab/performance-summary.json",
+        "bytes": 7542,
+        "sha256": "fc72ee09306fd8772beb3fadb819d7bbf176c1f47d18630d99550bd179579c4e"
+      },
+      "observed": {
+        "rows": [
+          {
+            "tag": "prodc39-speed-c1-8192-512-20261011T0510Z",
+            "streams": 1,
+            "actual_input_tokens_each": [
+              8192
+            ],
+            "actual_output_tokens_each": [
+              512
+            ],
+            "backend_prefill_seconds_sum": 5.936152134090662,
+            "backend_prefill_tokens_per_s_weighted_request": 1380.0185397800462,
+            "backend_decode_seconds_sum": 6.557814038940705,
+            "backend_decode_tokens_per_s_weighted_request": 77.92230718432246,
+            "client_decode_tokens_excluding_first_sse_chunks": 511,
+            "client_decode_seconds_sum": 6.551023798063397,
+            "client_decode_tokens_per_s_weighted_stream": 78.00307490121787,
+            "per_stream_client_decode_tokens_per_s": [
+              78.00307490121787
+            ],
+            "ttft_seconds": [
+              5.960630037938245
+            ],
+            "batch": {
+              "wall_s": 12.516608832986094,
+              "actual_output_tokens": 512,
+              "aggregate_end_to_end_tokens_per_s": 40.905648393411674,
+              "aggregate_input_tokens": 8192
+            },
+            "aggregate_common_output_tokens": 511,
+            "aggregate_common_output_seconds": 6.551023798063397,
+            "aggregate_common_output_tokens_per_s": 78.00307490121787,
+            "common_samples": 7,
+            "all_common_samples_running_requested": true,
+            "all_common_samples_waiting0": true,
+            "metric_deltas": {
+              "success": 1,
+              "preemptions": 0,
+              "corrupted": null,
+              "prompt_count": 1,
+              "prompt_sum": 8192,
+              "generation_count": 1,
+              "generation_sum": 512,
+              "cache_queries": 8192,
+              "cache_hits": 0
+            },
+            "backend_timing_deltas": {
+              "vllm:request_prefill_time_seconds_sum": 5.936152134090662,
+              "vllm:request_prefill_time_seconds_count": 1,
+              "vllm:request_decode_time_seconds_sum": 6.557814038940705,
+              "vllm:request_decode_time_seconds_count": 1,
+              "vllm:request_queue_time_seconds_sum": 0.00004270195495337248,
+              "vllm:time_to_first_token_seconds_sum": 5.939849376678467
+            },
+            "peak_kv_fraction": 0.09066305818673881,
+            "peak_gpu_mib": {
+              "0": 30404,
+              "1": 30404
+            },
+            "bounded_flags": [
+              []
+            ],
+            "sources": {
+              "report.json": {
+                "path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-independent/prodc39-speed-c1-8192-512-20261011T0510Z/report.json",
+                "bytes": 19882,
+                "sha256": "56012bafe0595551608cf48d38c7134d6105e1a96218af6e69e70878283add3d"
+              },
+              "stream-phase-summary.json": {
+                "path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-independent/prodc39-speed-c1-8192-512-20261011T0510Z/stream-phase-summary.json",
+                "bytes": 2246,
+                "sha256": "c5e059d764b347a60c692479d34469e133431495501b88f7980334f5021cf23a"
+              },
+              "metrics-before.private.txt": {
+                "path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-independent/prodc39-speed-c1-8192-512-20261011T0510Z/metrics-before.private.txt",
+                "bytes": 63689,
+                "sha256": "527169aa901b611b36f6c8f529beb442936110c42bc33342b1dc79657d1036a5"
+              },
+              "metrics-after.private.txt": {
+                "path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-independent/prodc39-speed-c1-8192-512-20261011T0510Z/metrics-after.private.txt",
+                "bytes": 64916,
+                "sha256": "2e9aab78cc6df2d9c51213889c914067ab64ad114ffb41b5e47335c9fedd97e2"
+              }
+            }
+          },
+          {
+            "tag": "prodc39-speed-c4-8192-512-20261011T0510Z",
+            "streams": 4,
+            "actual_input_tokens_each": [
+              8192,
+              8192,
+              8192,
+              8192
+            ],
+            "actual_output_tokens_each": [
+              512,
+              512,
+              512,
+              512
+            ],
+            "backend_prefill_seconds_sum": 104.04619570274372,
+            "backend_prefill_tokens_per_s_weighted_request": 314.93703137034447,
+            "backend_decode_seconds_sum": 156.2412946651457,
+            "backend_decode_tokens_per_s_weighted_request": 13.082328870742362,
+            "client_decode_tokens_excluding_first_sse_chunks": 2044,
+            "client_decode_seconds_sum": 156.18739611806814,
+            "client_decode_tokens_per_s_weighted_stream": 13.086843438089337,
+            "per_stream_client_decode_tokens_per_s": [
+              9.695503298159277,
+              9.749642204628923,
+              19.337961181927017,
+              20.73387192597633
+            ],
+            "ttft_seconds": [
+              20.484167839051224,
+              20.48567806801293,
+              35.52768463199027,
+              42.73110746394377
+            ],
+            "batch": {
+              "wall_s": 73.19143258605618,
+              "actual_output_tokens": 2048,
+              "aggregate_end_to_end_tokens_per_s": 27.981417054407647,
+              "aggregate_input_tokens": 32768
+            },
+            "aggregate_common_output_tokens": 1926,
+            "aggregate_common_output_seconds": 19.219173870049417,
+            "aggregate_common_output_tokens_per_s": 100.21242395862917,
+            "common_samples": 19,
+            "all_common_samples_running_requested": true,
+            "all_common_samples_waiting0": true,
+            "metric_deltas": {
+              "success": 4,
+              "preemptions": 0,
+              "corrupted": null,
+              "prompt_count": 4,
+              "prompt_sum": 32768,
+              "generation_count": 4,
+              "generation_sum": 2048,
+              "cache_queries": 32768,
+              "cache_hits": 0
+            },
+            "backend_timing_deltas": {
+              "vllm:request_prefill_time_seconds_sum": 104.04619570274372,
+              "vllm:request_prefill_time_seconds_count": 4,
+              "vllm:request_decode_time_seconds_sum": 156.2412946651457,
+              "vllm:request_decode_time_seconds_count": 4,
+              "vllm:request_queue_time_seconds_sum": 0.00010269531048834324,
+              "vllm:time_to_first_token_seconds_sum": 119.10467290878296
+            },
+            "peak_kv_fraction": 0.3572395128552097,
+            "peak_gpu_mib": {
+              "0": 30404,
+              "1": 30404
+            },
+            "bounded_flags": [
+              [],
+              [],
+              [],
+              []
+            ],
+            "sources": {
+              "report.json": {
+                "path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-independent/prodc39-speed-c4-8192-512-20261011T0510Z/report.json",
+                "bytes": 72265,
+                "sha256": "800a2791d490f6082f48a8e302303743fc6b0c65da4230656f4efa2da78df4b0"
+              },
+              "stream-phase-summary.json": {
+                "path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-independent/prodc39-speed-c4-8192-512-20261011T0510Z/stream-phase-summary.json",
+                "bytes": 2417,
+                "sha256": "1236eb6f47369e8a4bc26438579fceb01fbceccd9c4427428f8992b059f8fdfc"
+              },
+              "metrics-before.private.txt": {
+                "path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-independent/prodc39-speed-c4-8192-512-20261011T0510Z/metrics-before.private.txt",
+                "bytes": 64928,
+                "sha256": "c68551493f861d308c740ccbe3533b26484f9a26f13e524b39b282e580318b51"
+              },
+              "metrics-after.private.txt": {
+                "path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-independent/prodc39-speed-c4-8192-512-20261011T0510Z/metrics-after.private.txt",
+                "bytes": 65050,
+                "sha256": "19374c463fc5d26491675f0b34bebe6f18e8a2231ad5116a25857068c3fc5c54"
+              }
+            }
+          }
+        ],
+        "input_fixture_source_revision": "c39f53abae51df6bf8ef122e34975a9f3596a93c",
+        "four_partitions_bound_between_new_C1_C4": true,
+        "c4_new_cache_salts": true,
+        "scope": "User-requested NEW production speed cohorts; cold inputs, ignored EOS, warmed deployment code; no GPU-kernel rate, maximum capacity, semantic-quality or old-run confirmation claim"
+      }
+    },
+    "life": {
+      "source": {
+        "path": "/tank/hot/1cat-deploy/production-c39f53ab/life-continuation.json",
+        "bytes": 814,
+        "sha256": "4f127c786d63dad94adce0e641cf3ed8def54c5fcbd5f02b3181206a8d280bdb"
+      },
+      "observed": {
+        "pane": "%6",
+        "pid": 26007,
+        "process_starttime": "128028",
+        "session": "01a0c738-3f34-77fa-9b9c-7e174fad9e81",
+        "same_process_and_session_preserved": true,
+        "initial_continue_message_not_admitted_until_native_inspector_closed": true,
+        "inspector_closed_with_escape": true,
+        "continuation_user_event": {
+          "id": "bf0c0385",
+          "timestamp": "2026-10-11T05:20:40.965Z"
+        },
+        "actual_assistant_event": {
+          "id": "905bce7e",
+          "timestamp": "2026-10-11T05:21:12.362Z",
+          "stop_reason": "toolUse",
+          "error_present": false,
+          "input_tokens": 97481,
+          "output_tokens": 720,
+          "model": "gpt-6.1-sol",
+          "provider": "yvxi"
+        },
+        "current_model_unchanged": true,
+        "qwen_gateway_handoff_proven_separately": true,
+        "life_resumed": true,
+        "private_payload_and_raw_pane_not_exported": true
+      }
+    },
+    "upstream": {
+      "source": {
+        "path": "/tank/hot/1cat-deploy/repetition-native-20261009/upstream-checks/prodc39-speed-completed-20261011T0521Z.json",
+        "bytes": 528,
+        "sha256": "3f82110ec96f2fc3195ce8aee6b3eb179a78ae2bee10835be218f65504f74ca7"
+      },
+      "observed": {
+        "checked_at": "2026-10-11T05:23:45.092106+00:00",
+        "after_experiment": "prodc39-speed-completed-20261011T0521Z",
+        "tested_revision": "c39f53abae51df6bf8ef122e34975a9f3596a93c",
+        "remote": "https://github.com/1CatAI/1Cat-vLLM.git",
+        "ref": "refs/heads/main",
+        "transport_proxy": "http://10.20.0.1:7893",
+        "upstream_revision": "be3722bc095b9792bf9833068595f0b1ef70ad37",
+        "update_available": true,
+        "worktree_changed": false,
+        "checked": true,
+        "proxy_authentication": "router_runtime_in_memory",
+        "exit_code": 0
+      }
+    },
+    "permanent_launcher": {
+      "path": "/tank/hot/1cat-deploy/production-c39f53ab/launch.py",
+      "bytes": 6400,
+      "sha256": "31386feefd23a8d418b7c387dc35b58d23dc3665a838da6a2fe5ce5e8de53457"
+    }
+  },
+  "performance_definitions": {
+    "prefill": "Uncached actual input tokens divided by the sum of backend SCHEDULED-to-first-NEW_TOKEN intervals. A request-weighted effective rate, including mixed scheduling/interleaving; not aggregate GPU-prefill kernel throughput.",
+    "decode": "Actual SSE token counts excluding each first output chunk divided by the sum of that stream first-to-last output intervals. Full stream intervals can include waiting while other requests prefill.",
+    "aggregate_decode": "Actual SSE token IDs returned in (latest first output, earliest last output] across all streams divided by that common interval; not the sum of unequal per-stream rates.",
+    "end_to_end": "All actual output tokens divided by first-request-start to last-request-end batch wall.",
+    "cold_input_contract": "New salts, no prefix hits; deployed compilation caches already warmed. 8192 actual inputs and512 forced outputs per request, T1/top_p.95/top_k20/ignoredEOS; not natural completion/quality."
+  },
+  "life_continuation": {
+    "pane": "%6",
+    "pid": 26007,
+    "process_starttime": "128028",
+    "session": "01a0c738-3f34-77fa-9b9c-7e174fad9e81",
+    "same_process_and_session_preserved": true,
+    "initial_continue_message_not_admitted_until_native_inspector_closed": true,
+    "inspector_closed_with_escape": true,
+    "continuation_user_event": {
+      "id": "bf0c0385",
+      "timestamp": "2026-10-11T05:20:40.965Z"
+    },
+    "actual_assistant_event": {
+      "id": "905bce7e",
+      "timestamp": "2026-10-11T05:21:12.362Z",
+      "stop_reason": "toolUse",
+      "error_present": false,
+      "input_tokens": 97481,
+      "output_tokens": 720,
+      "model": "gpt-6.1-sol",
+      "provider": "yvxi"
+    },
+    "current_model_unchanged": true,
+    "qwen_gateway_handoff_proven_separately": true,
+    "life_resumed": true,
+    "private_payload_and_raw_pane_not_exported": true
+  },
+  "performance": {
+    "rows": [
+      {
+        "tag": "prodc39-speed-c1-8192-512-20261011T0510Z",
+        "streams": 1,
+        "actual_input_tokens_each": [
+          8192
+        ],
+        "actual_output_tokens_each": [
+          512
+        ],
+        "backend_prefill_seconds_sum": 5.936152134090662,
+        "backend_prefill_tokens_per_s_weighted_request": 1380.0185397800462,
+        "backend_decode_seconds_sum": 6.557814038940705,
+        "backend_decode_tokens_per_s_weighted_request": 77.92230718432246,
+        "client_decode_tokens_excluding_first_sse_chunks": 511,
+        "client_decode_seconds_sum": 6.551023798063397,
+        "client_decode_tokens_per_s_weighted_stream": 78.00307490121787,
+        "per_stream_client_decode_tokens_per_s": [
+          78.00307490121787
+        ],
+        "ttft_seconds": [
+          5.960630037938245
+        ],
+        "batch": {
+          "wall_s": 12.516608832986094,
+          "actual_output_tokens": 512,
+          "aggregate_end_to_end_tokens_per_s": 40.905648393411674,
+          "aggregate_input_tokens": 8192
+        },
+        "aggregate_common_output_tokens": 511,
+        "aggregate_common_output_seconds": 6.551023798063397,
+        "aggregate_common_output_tokens_per_s": 78.00307490121787,
+        "common_samples": 7,
+        "all_common_samples_running_requested": true,
+        "all_common_samples_waiting0": true,
+        "metric_deltas": {
+          "success": 1,
+          "preemptions": 0,
+          "corrupted": null,
+          "prompt_count": 1,
+          "prompt_sum": 8192,
+          "generation_count": 1,
+          "generation_sum": 512,
+          "cache_queries": 8192,
+          "cache_hits": 0
+        },
+        "backend_timing_deltas": {
+          "vllm:request_prefill_time_seconds_sum": 5.936152134090662,
+          "vllm:request_prefill_time_seconds_count": 1,
+          "vllm:request_decode_time_seconds_sum": 6.557814038940705,
+          "vllm:request_decode_time_seconds_count": 1,
+          "vllm:request_queue_time_seconds_sum": 0.00004270195495337248,
+          "vllm:time_to_first_token_seconds_sum": 5.939849376678467
+        },
+        "peak_kv_fraction": 0.09066305818673881,
+        "peak_gpu_mib": {
+          "0": 30404,
+          "1": 30404
+        },
+        "bounded_flags": [
+          []
+        ],
+        "sources": {
+          "report.json": {
+            "path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-independent/prodc39-speed-c1-8192-512-20261011T0510Z/report.json",
+            "bytes": 19882,
+            "sha256": "56012bafe0595551608cf48d38c7134d6105e1a96218af6e69e70878283add3d"
+          },
+          "stream-phase-summary.json": {
+            "path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-independent/prodc39-speed-c1-8192-512-20261011T0510Z/stream-phase-summary.json",
+            "bytes": 2246,
+            "sha256": "c5e059d764b347a60c692479d34469e133431495501b88f7980334f5021cf23a"
+          },
+          "metrics-before.private.txt": {
+            "path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-independent/prodc39-speed-c1-8192-512-20261011T0510Z/metrics-before.private.txt",
+            "bytes": 63689,
+            "sha256": "527169aa901b611b36f6c8f529beb442936110c42bc33342b1dc79657d1036a5"
+          },
+          "metrics-after.private.txt": {
+            "path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-independent/prodc39-speed-c1-8192-512-20261011T0510Z/metrics-after.private.txt",
+            "bytes": 64916,
+            "sha256": "2e9aab78cc6df2d9c51213889c914067ab64ad114ffb41b5e47335c9fedd97e2"
+          }
+        }
+      },
+      {
+        "tag": "prodc39-speed-c4-8192-512-20261011T0510Z",
+        "streams": 4,
+        "actual_input_tokens_each": [
+          8192,
+          8192,
+          8192,
+          8192
+        ],
+        "actual_output_tokens_each": [
+          512,
+          512,
+          512,
+          512
+        ],
+        "backend_prefill_seconds_sum": 104.04619570274372,
+        "backend_prefill_tokens_per_s_weighted_request": 314.93703137034447,
+        "backend_decode_seconds_sum": 156.2412946651457,
+        "backend_decode_tokens_per_s_weighted_request": 13.082328870742362,
+        "client_decode_tokens_excluding_first_sse_chunks": 2044,
+        "client_decode_seconds_sum": 156.18739611806814,
+        "client_decode_tokens_per_s_weighted_stream": 13.086843438089337,
+        "per_stream_client_decode_tokens_per_s": [
+          9.695503298159277,
+          9.749642204628923,
+          19.337961181927017,
+          20.73387192597633
+        ],
+        "ttft_seconds": [
+          20.484167839051224,
+          20.48567806801293,
+          35.52768463199027,
+          42.73110746394377
+        ],
+        "batch": {
+          "wall_s": 73.19143258605618,
+          "actual_output_tokens": 2048,
+          "aggregate_end_to_end_tokens_per_s": 27.981417054407647,
+          "aggregate_input_tokens": 32768
+        },
+        "aggregate_common_output_tokens": 1926,
+        "aggregate_common_output_seconds": 19.219173870049417,
+        "aggregate_common_output_tokens_per_s": 100.21242395862917,
+        "common_samples": 19,
+        "all_common_samples_running_requested": true,
+        "all_common_samples_waiting0": true,
+        "metric_deltas": {
+          "success": 4,
+          "preemptions": 0,
+          "corrupted": null,
+          "prompt_count": 4,
+          "prompt_sum": 32768,
+          "generation_count": 4,
+          "generation_sum": 2048,
+          "cache_queries": 32768,
+          "cache_hits": 0
+        },
+        "backend_timing_deltas": {
+          "vllm:request_prefill_time_seconds_sum": 104.04619570274372,
+          "vllm:request_prefill_time_seconds_count": 4,
+          "vllm:request_decode_time_seconds_sum": 156.2412946651457,
+          "vllm:request_decode_time_seconds_count": 4,
+          "vllm:request_queue_time_seconds_sum": 0.00010269531048834324,
+          "vllm:time_to_first_token_seconds_sum": 119.10467290878296
+        },
+        "peak_kv_fraction": 0.3572395128552097,
+        "peak_gpu_mib": {
+          "0": 30404,
+          "1": 30404
+        },
+        "bounded_flags": [
+          [],
+          [],
+          [],
+          []
+        ],
+        "sources": {
+          "report.json": {
+            "path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-independent/prodc39-speed-c4-8192-512-20261011T0510Z/report.json",
+            "bytes": 72265,
+            "sha256": "800a2791d490f6082f48a8e302303743fc6b0c65da4230656f4efa2da78df4b0"
+          },
+          "stream-phase-summary.json": {
+            "path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-independent/prodc39-speed-c4-8192-512-20261011T0510Z/stream-phase-summary.json",
+            "bytes": 2417,
+            "sha256": "1236eb6f47369e8a4bc26438579fceb01fbceccd9c4427428f8992b059f8fdfc"
+          },
+          "metrics-before.private.txt": {
+            "path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-independent/prodc39-speed-c4-8192-512-20261011T0510Z/metrics-before.private.txt",
+            "bytes": 64928,
+            "sha256": "c68551493f861d308c740ccbe3533b26484f9a26f13e524b39b282e580318b51"
+          },
+          "metrics-after.private.txt": {
+            "path": "/tank/hot/1cat-deploy/repetition-native-20261009/results-independent/prodc39-speed-c4-8192-512-20261011T0510Z/metrics-after.private.txt",
+            "bytes": 65050,
+            "sha256": "19374c463fc5d26491675f0b34bebe6f18e8a2231ad5116a25857068c3fc5c54"
+          }
+        }
+      }
+    ],
+    "input_fixture_source_revision": "c39f53abae51df6bf8ef122e34975a9f3596a93c",
+    "four_partitions_bound_between_new_C1_C4": true,
+    "c4_new_cache_salts": true,
+    "scope": "User-requested NEW production speed cohorts; cold inputs, ignored EOS, warmed deployment code; no GPU-kernel rate, maximum capacity, semantic-quality or old-run confirmation claim"
+  },
+  "production_restored": true,
+  "life_resumed": true,
+  "rollback_executed": false,
+  "limits": {
+    "historical_failure_waived_as_blocker": true,
+    "historical_failure_deleted": false,
+    "historical_causal_repair_claimed": false,
+    "stable_maximum_established": false,
+    "full_32768_generation_proven": false,
+    "broader_semantic_or_numerical_quality_certified": false,
+    "new_upstream_runtime_admitted": false,
+    "gateway_routing_or_client_budgets_changed": false,
+    "any_old_generation_cohort_repeated_for_confirmation": false
+  }
+}

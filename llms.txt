@@ -323,6 +323,7 @@
 - https://cyjin-yl.github.io/v100-perfs/evidence/results/1cat-v100-2026-10-09/2026-10-10-upstream-refetch-173958.json/
 - https://cyjin-yl.github.io/v100-perfs/evidence/results/1cat-v100-2026-10-09/2026-10-11-current-main-c39-admission.json/
 - https://cyjin-yl.github.io/v100-perfs/evidence/results/1cat-v100-2026-10-09/2026-10-11-post-c39-main-refresh.json/
+- https://cyjin-yl.github.io/v100-perfs/evidence/results/1cat-v100-2026-10-09/2026-10-11-production-restoration.json/
 - https://cyjin-yl.github.io/v100-perfs/evidence/results/1cat-v100-2026-10-09/historical-decisions.json/
 - https://cyjin-yl.github.io/v100-perfs/evidence/results/1cat-v100-2026-10-09/historical-provenance.json/
 - https://cyjin-yl.github.io/v100-perfs/evidence/results/legacy/deepseek_q2_split_verification.json/
