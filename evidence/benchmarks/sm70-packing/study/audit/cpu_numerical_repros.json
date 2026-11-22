@@ -1,0 +1,24 @@
+{
+  "execution": "CPU numpy.float16, not CUDA",
+  "gemm_operand": {
+    "max_abs": 1,
+    "min_abs": 9.38598532229662e-10,
+    "ratio": 1065418243.9689922,
+    "guard_limit": 1073217536.0,
+    "passes_guard": true,
+    "scale": 2048.0,
+    "scaled_fp32": 1.9222497940063477e-06,
+    "scaled_fp16": 1.9073486328125e-06,
+    "restored": 9.313225746154785e-10,
+    "relative_error": -0.007751937955617905,
+    "input_bits": "0x30810000",
+    "restored_bits": "0x30800000"
+  },
+  "attention_operand": {
+    "max_abs": 1,
+    "min_abs": 7.275957614183426e-12,
+    "passes_guard": true,
+    "scaled_fp32": 1.4901161193847656e-08,
+    "scaled_fp16": 0.0
+  }
+}

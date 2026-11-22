@@ -1,0 +1,51 @@
+{
+  "commit": "6fd0520850164bdd1c37f901954e27ec63eada56",
+  "files": {
+    "LICENCE": {
+      "bytes": 1349,
+      "sha256": "1fb3b38cdcc2483e81bcd8422321d25553f76f540f1c3089e04114e398363a8c"
+    },
+    "README.md": {
+      "bytes": 7273,
+      "sha256": "0d2f9a5bf76f6fb9927a4c26ee739476e8b9835e3914901f995b64b646a98d91"
+    },
+    "model_validation/V100/fp16/a_V100_fp16.txt": {
+      "bytes": 185000,
+      "sha256": "53d8534fd1106f7e9a23e902b918e59108f9e1b05843d20a36b3049a61bf8204"
+    },
+    "model_validation/V100/fp16/b_V100_fp16.txt": {
+      "bytes": 185000,
+      "sha256": "1a019e8dcec2a44a741e691268e4c4a9eb9eb9ebc128be097f9921b813d4c6f9"
+    },
+    "model_validation/V100/fp16/c_V100_fp32.txt": {
+      "bytes": 165000,
+      "sha256": "d38097e1e4d5547234e7be1c6daabeb4ba8fe24e99367391a3f7b5c600001848"
+    },
+    "model_validation/V100/fp16/d_V100_fp32.txt": {
+      "bytes": 165000,
+      "sha256": "1cfbb62768f303c90aff43458afe386e297b99df7a4e69ab4b0cde26dbcbac83"
+    },
+    "model_validation/readHexFloatFile.m": {
+      "bytes": 1277,
+      "sha256": "3a73792439c503b1551fcdaa1c6865f80d1dd204e9083c8271085701e2a58553"
+    },
+    "model_validation/readIeeeFloatsFromFile.m": {
+      "bytes": 794,
+      "sha256": "5cdfd3fb1cce2484ab6159e7a95ac820cc052c072e9a8100aa3385a05636ff23"
+    },
+    "models/V100TC.m": {
+      "bytes": 4065,
+      "sha256": "f72056b0af60b249516078b45a110dab16a5542808d73f4bd158efca51ec18d7"
+    },
+    "models/tools/GEMM.m": {
+      "bytes": 14664,
+      "sha256": "ea4ec5348a2d92c995e812bf7216283a48d0270edc15c8d2c5d11166281e67d8"
+    },
+    "models/tools/Generic_BFMA_TC.m": {
+      "bytes": 38254,
+      "sha256": "98c79251eb48f4d70b14c94f0ab11e7150f87c149dac36a69784a3b2ccb9ce51"
+    }
+  },
+  "kind": "minimal_unmodified_upstream_export",
+  "repository": "https://github.com/north-numerical-computing/MATLAB-tensor-core"
+}

@@ -1,0 +1,151 @@
+{
+  "fixture": {
+    "ported_v100": 0,
+    "ieee_serial_fp32": 2104,
+    "once_rounded_reference": 1885
+  },
+  "schemes": [
+    {
+      "name": "shared_rhs_q3_r512_k16",
+      "domain_q": [
+        -3,
+        -2,
+        -1,
+        0,
+        1,
+        2,
+        3
+      ],
+      "k": 16,
+      "radix": 512,
+      "independent_two_sided": false,
+      "random_cases": 4096,
+      "constant_extreme_cases": 343,
+      "alternating_cases": 27,
+      "total_cases": 4466,
+      "v100_decode_failures": 0,
+      "packed_value_vs_exact_integer_mismatches": 0,
+      "packed_value_vs_ieee_serial_mismatches": 0,
+      "bfma_groups_that_discarded_alignment_bits": 0,
+      "observed_max_abs_packed_operand": 1539.0,
+      "observed_max_abs_accumulator": 73872.0
+    },
+    {
+      "name": "independent_ternary_r128_k16",
+      "domain_q": [
+        -1,
+        0,
+        1
+      ],
+      "k": 16,
+      "radix": 128,
+      "independent_two_sided": true,
+      "random_cases": 4096,
+      "constant_extreme_cases": 81,
+      "alternating_cases": 81,
+      "total_cases": 4258,
+      "v100_decode_failures": 0,
+      "packed_value_vs_exact_integer_mismatches": 0,
+      "packed_value_vs_ieee_serial_mismatches": 0,
+      "bfma_groups_that_discarded_alignment_bits": 0,
+      "observed_max_abs_packed_operand": 129.0,
+      "observed_max_abs_accumulator": 266256.0
+    },
+    {
+      "name": "independent_ternary_r256_k32",
+      "domain_q": [
+        -1,
+        0,
+        1
+      ],
+      "k": 32,
+      "radix": 256,
+      "independent_two_sided": true,
+      "random_cases": 4096,
+      "constant_extreme_cases": 81,
+      "alternating_cases": 81,
+      "total_cases": 4258,
+      "v100_decode_failures": 0,
+      "packed_value_vs_exact_integer_mismatches": 0,
+      "packed_value_vs_ieee_serial_mismatches": 0,
+      "bfma_groups_that_discarded_alignment_bits": 0,
+      "observed_max_abs_packed_operand": 257.0,
+      "observed_max_abs_accumulator": 2113568.0
+    },
+    {
+      "name": "independent_q3_r512_k4",
+      "domain_q": [
+        -3,
+        -2,
+        -1,
+        0,
+        1,
+        2,
+        3
+      ],
+      "k": 4,
+      "radix": 512,
+      "independent_two_sided": true,
+      "random_cases": 4096,
+      "constant_extreme_cases": 2401,
+      "alternating_cases": 81,
+      "total_cases": 6578,
+      "v100_decode_failures": 0,
+      "packed_value_vs_exact_integer_mismatches": 0,
+      "packed_value_vs_ieee_serial_mismatches": 0,
+      "bfma_groups_that_discarded_alignment_bits": 0,
+      "observed_max_abs_packed_operand": 1539.0,
+      "observed_max_abs_accumulator": 9474084.0
+    },
+    {
+      "name": "independent_q2_r256_k8",
+      "domain_q": [
+        -2,
+        -1,
+        0,
+        1,
+        2
+      ],
+      "k": 8,
+      "radix": 256,
+      "independent_two_sided": true,
+      "random_cases": 4096,
+      "constant_extreme_cases": 625,
+      "alternating_cases": 81,
+      "total_cases": 4802,
+      "v100_decode_failures": 0,
+      "packed_value_vs_exact_integer_mismatches": 0,
+      "packed_value_vs_ieee_serial_mismatches": 0,
+      "bfma_groups_that_discarded_alignment_bits": 0,
+      "observed_max_abs_packed_operand": 514.0,
+      "observed_max_abs_accumulator": 2113568.0
+    },
+    {
+      "name": "independent_q3_r256_k4",
+      "domain_q": [
+        -3,
+        -2,
+        -1,
+        0,
+        1,
+        2,
+        3
+      ],
+      "k": 4,
+      "radix": 256,
+      "independent_two_sided": true,
+      "random_cases": 4096,
+      "constant_extreme_cases": 2401,
+      "alternating_cases": 81,
+      "total_cases": 6578,
+      "v100_decode_failures": 0,
+      "packed_value_vs_exact_integer_mismatches": 0,
+      "packed_value_vs_ieee_serial_mismatches": 0,
+      "bfma_groups_that_discarded_alignment_bits": 0,
+      "observed_max_abs_packed_operand": 771.0,
+      "observed_max_abs_accumulator": 2377764.0
+    }
+  ],
+  "original_cases": 885,
+  "elapsed_seconds": 1.573555677998229
+}

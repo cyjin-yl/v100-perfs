@@ -1,0 +1,26 @@
+{
+  "cpu_fragment_validation": "passed",
+  "host_header_mapping": "passed",
+  "sm70_object_compile": "passed",
+  "linked_gpu_executable": false,
+  "gpu_executed": false,
+  "hardware_status": "pending",
+  "hardware_time_results": null,
+  "cublas_comparison": "implemented, pending actual GPU run",
+  "full_E2M1_by_full_E2M1": "explicitly rejected by all packed candidates",
+  "scope": "Three restricted candidates, independent block32 E8M0 scales with finite exponent test range [-2,2].",
+  "hardware_commands": [
+    "./run_hardware.sh --device 0 --correctness-only",
+    "./run_hardware.sh --device 0 --warmup 10 --iters 100"
+  ],
+  "cpu_command": "python3 validate_fragments.py",
+  "source_sha256": {
+    "mapped_packing.cu": "07d6e6821318270a01a84ab5abeb1b12a060eaa5f098bd8529e9950a66d65838",
+    "fragment_mapping.hpp": "78ca809cc6606912724982559c31ed82b6141ec74651cf65324015ecd901f4b1",
+    "emit_header_map.cpp": "a460a370d9deb78643f1c639999d1a2e25d030b9697c05b350906752e2c037df",
+    "validate_fragments.py": "b22513d84447a25f41174ecc18f7451ebd8f974ae6c1494bafe7754d759aa095",
+    "summarize_sass.py": "3b4e285a0140cdcd73791232bce8f8a89e368e6cae7ab7df4c08a4026099f21c",
+    "compile_only.sh": "9f342e797a02ea6cd0abcfe403df862ed31b087bc595a6dd74bbacd563c66add",
+    "run_hardware.sh": "2a0fdf5a39a0e2b50454bbb731295f7fba385904557c0ae1ce3c0c08bb974b3f"
+  }
+}

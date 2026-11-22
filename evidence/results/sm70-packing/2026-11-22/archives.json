@@ -1,0 +1,16 @@
+{
+  "archives": [
+    {
+      "file": "v100-fp16-packing-study-20261122.zip",
+      "bytes": 133691,
+      "sha256": "e2330e8a0af1c2edfbf0818f05f38a3317a5cb8123550bbc03ccebe4966d9b6d",
+      "scope": "immutable historical experiment bundle; no new hardware execution"
+    },
+    {
+      "file": "v100-sm70-simulation-20261122.zip",
+      "bytes": 2966918,
+      "sha256": "fdf9bfd8c25c3e011654f638f7caaeb3373d17a8f8acc0bc3cbdf5cc007a6c3a",
+      "scope": "immutable historical experiment bundle; no new hardware execution"
+    }
+  ]
+}

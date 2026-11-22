@@ -1,0 +1,54 @@
+{
+  "review_complete": true,
+  "all_16_checks_passed": true,
+  "new_round3_checks": 7,
+  "source_files_verified_unchanged": 69,
+  "gpu_executed": false,
+  "new_cycle_simulation_executed_by_this_final_runner": false,
+  "new_cublas_executed": false,
+  "runner_wall_seconds": 10.196004299999913,
+  "upstream_research_sources_frozen": true,
+  "runner_for_tools_path": {
+    "source": "simulation/round3/review/run_cpu_validation.py",
+    "target": "tools/sm70_packing/run_cpu_validation.py",
+    "sha256": "3b1ecd635d40fd9592eadcdd2797e0d8e527e8c9c7bd41f8c86ef05a4419ecce"
+  },
+  "review_files_for_study": [
+    "README.md",
+    "preparation_review.py",
+    "preparation-review-results.json",
+    "check_layout_contract.py",
+    "layout-contract-results.json",
+    "ci-checks.json",
+    "validation-summary.json",
+    "logs/compile-isolated-half-formula.log",
+    "logs/exact-integer-and-ieee-model.log",
+    "logs/linear-family-sufficient-bound-search.log",
+    "logs/magic-decoder.log",
+    "logs/published-v100-numerical-model.log",
+    "logs/recorded-official-trace-log-parser.log",
+    "logs/recorded-sm70-static-cost.log",
+    "logs/round3-cuda-fragment-cpu-contract.log",
+    "logs/round3-independent-preparation-review.log",
+    "logs/round3-independent-rectangular-layout-review.log",
+    "logs/round3-math-model-and-admission.log",
+    "logs/round3-middle-decoder-coefficient-box.log",
+    "logs/round3-middle-recorded-static-cost.log",
+    "logs/round3-recorded-sm70-static-cost.log",
+    "logs/run-isolated-half-formula.log",
+    "logs/synthetic-trace-generator.log"
+  ],
+  "excluded_from_repo": [
+    "ci-local-run/",
+    "ci-round3-run/",
+    "ci-final-run/",
+    "run_cpu_validation.py (copy only to tools/sm70_packing)"
+  ],
+  "notes": [
+    "Original historical artifacts were not modified.",
+    "Source outputs and hashes remain separate from GPU runtime evidence.",
+    "Host CUDA harness checks are prerequisite restrictions; device functions are not a general public API.",
+    "Vector stores reduce instruction count, not bytes.",
+    "Bitfield tests apply to asymmetric and middle candidates; shared candidates use different decoders."
+  ]
+}

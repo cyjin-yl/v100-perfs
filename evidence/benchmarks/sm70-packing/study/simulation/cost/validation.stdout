@@ -1,0 +1,93 @@
+{
+  "gpu_executed": false,
+  "cycle_simulation": false,
+  "validation": [
+    {
+      "K": 32,
+      "qmax": 1,
+      "radix": 256,
+      "cases": 545025,
+      "low_errors": 0,
+      "high_errors": 0,
+      "max_abs_Z": 2113568,
+      "arithmetic": "CPU NumPy float32 / int32"
+    },
+    {
+      "K": 48,
+      "qmax": 1,
+      "radix": 256,
+      "cases": 1815937,
+      "low_errors": 0,
+      "high_errors": 0,
+      "max_abs_Z": 3170352,
+      "arithmetic": "CPU NumPy float32 / int32"
+    },
+    {
+      "K": 4,
+      "qmax": 3,
+      "radix": 256,
+      "cases": 772705,
+      "low_errors": 0,
+      "high_errors": 0,
+      "max_abs_Z": 2377764,
+      "arithmetic": "CPU NumPy float32 / int32"
+    }
+  ],
+  "sufficient_bound_search": [
+    {
+      "radix": 4,
+      "operand_exact": true,
+      "sufficient_max_K": 0,
+      "max_multiple_16": 0
+    },
+    {
+      "radix": 8,
+      "operand_exact": true,
+      "sufficient_max_K": 1,
+      "max_multiple_16": 0
+    },
+    {
+      "radix": 16,
+      "operand_exact": true,
+      "sufficient_max_K": 3,
+      "max_multiple_16": 0
+    },
+    {
+      "radix": 32,
+      "operand_exact": true,
+      "sufficient_max_K": 7,
+      "max_multiple_16": 0
+    },
+    {
+      "radix": 64,
+      "operand_exact": true,
+      "sufficient_max_K": 15,
+      "max_multiple_16": 0
+    },
+    {
+      "radix": 128,
+      "operand_exact": true,
+      "sufficient_max_K": 31,
+      "max_multiple_16": 16
+    },
+    {
+      "radix": 256,
+      "operand_exact": true,
+      "sufficient_max_K": 63,
+      "max_multiple_16": 48
+    },
+    {
+      "radix": 512,
+      "operand_exact": true,
+      "sufficient_max_K": 63,
+      "max_multiple_16": 48
+    },
+    {
+      "radix": 1024,
+      "operand_exact": true,
+      "sufficient_max_K": 15,
+      "max_multiple_16": 0
+    }
+  ],
+  "note": "All independently bounded L,H,cross tuples tested, a superset of reachable ternary dot products. Power-of-two quarter scaling and subtraction are exact here; no general FMA emulation claim."
+}

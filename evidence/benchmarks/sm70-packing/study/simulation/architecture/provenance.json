@@ -1,0 +1,80 @@
+{
+  "date_utc": "2026-11-22",
+  "scope": "Actual CPU-run cycle simulation. No physical GPU execution; synthetic traces contain no numerical outputs.",
+  "repos": [
+    {
+      "name": "accel-sim-framework",
+      "url": "https://github.com/accel-sim/accel-sim-framework.git",
+      "commit": "7ba54ded60c4ba0083410c37d22d719166acd6dc",
+      "worktree_clean": true
+    },
+    {
+      "name": "gpgpu-sim_distribution",
+      "url": "https://github.com/accel-sim/gpgpu-sim_distribution.git",
+      "commit": "4195dd4f229cbf03f4f38c49139ae94d01d23f03",
+      "worktree_clean": true
+    },
+    {
+      "name": "pybind11",
+      "url": "https://github.com/pybind/pybind11.git",
+      "commit": "b783ee9464f216dd8444c1902933bb941363676e",
+      "worktree_clean": true
+    }
+  ],
+  "environment": {
+    "os": "Debian 13 Linux x86-64",
+    "compiler": "GCC/G++ 14.2.0",
+    "cmake": "4.4.5",
+    "cuda_nvcc": "12.8.93",
+    "cuda_cudart_headers": "12.8.90",
+    "cuda_profiler_api_headers": "12.8.90",
+    "build_parallelism": 2
+  },
+  "binary": {
+    "path": "build/accel-sim.out",
+    "bytes": 4514568,
+    "sha256": "5de36dc76df77270f05893cc4c37c0f6249b20d3fee89a2c508a49def83f1711"
+  },
+  "official_trace_archive": {
+    "url": "https://engineering.purdue.edu/tgrogers/accel-sim/traces/tesla-v100/latest/rodinia_2.0-ft.tgz",
+    "bytes": 21011152,
+    "sha256": "aeb7de478785856e4ac834d12be0e71ab0df297f43fc02650e2ca90dea66d8b1"
+  },
+  "source_evidence": {
+    "half.hpp": {
+      "upstream_path": "accel-sim-framework/gpu-simulator/gpgpu-sim/src/cuda-sim/half.hpp",
+      "sha256": "ccd824d6931413fe992688750550bdea24860ff26cf98c9acc8362970603e355"
+    },
+    "instructions.cc": {
+      "upstream_path": "accel-sim-framework/gpu-simulator/gpgpu-sim/src/cuda-sim/instructions.cc",
+      "sha256": "6201b96c27a071f4043a9c0777a9ac244d93843e1df67b94ad19c0e68ddc66bb"
+    },
+    "volta_opcode.h": {
+      "upstream_path": "accel-sim-framework/gpu-simulator/ISA_Def/volta_opcode.h",
+      "sha256": "dc88c632ab09210faf8239bd9eb988056641e0643642d622dc43304c4b787da4"
+    },
+    "trace_driven.cc": {
+      "upstream_path": "accel-sim-framework/gpu-simulator/trace-driven/trace_driven.cc",
+      "sha256": "48d071e7fdccbeeddefbdf092a7de3c48abafacfca647e01b8a5f15528a6286e"
+    },
+    "tracer_tool.cu": {
+      "upstream_path": "accel-sim-framework/util/tracer_nvbit/tracer_tool/tracer_tool.cu",
+      "sha256": "92b55d50e8cfafa447ede1cd2f008e7e0b399751f3e9c13364c8e9e734979e95"
+    }
+  },
+  "config_source": {
+    "configs/qv100-upstream.config": "gpgpu-sim_distribution/configs/tested-cfgs/SM7_QV100/gpgpusim.config",
+    "configs/qv100-upstream-trace.config": "accel-sim-framework/gpu-simulator/configs/tested-cfgs/SM7_QV100/trace.config",
+    "configs/latency8-whatif.config": "local explicit hypothetical override"
+  },
+  "build_commands": [
+    "source ./environment.sh",
+    "\"$SIM_CMAKE\" -S accel-sim-framework/gpu-simulator -B build -DCMAKE_BUILD_TYPE=Release -DOPENGL_gl_LIBRARY=/usr/lib/x86_64-linux-gnu/libGL.so.1 -DOPENGL_INCLUDE_DIR=\"$ARCH_ROOT/build-deps/debian/usr/include\"",
+    "\"$SIM_CMAKE\" --build build --target accel-sim.out -j2"
+  ],
+  "run_commands": [
+    "bash run_existing_binary.sh",
+    "g++ -O2 -std=c++17 -Isource-evidence ptx_accumulator_formula_check.cpp -o ptx_accumulator_formula_check",
+    "./ptx_accumulator_formula_check > ptx_accumulator_formula_check.json"
+  ]
+}

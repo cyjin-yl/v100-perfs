@@ -1,0 +1,121 @@
+{
+  "scope": "Actual CUDA 12.8.93 SM70 compilation and static SASS only",
+  "gpu_executed": false,
+  "cycle_simulation": false,
+  "kernel_timing_ms": null,
+  "compile_success": true,
+  "all_spills_zero": true,
+  "kernels": {
+    "middle_shift_integer_output": {
+      "decoder_sass_instructions": [
+        "F2I.TRUNC.NTZ R0, R2",
+        "LEA R0, R0, 0x400000, 0xe",
+        "SHF.R.S32.HI R7, RZ, 0x17, R0"
+      ],
+      "decoder_instruction_count": 3,
+      "decoder_opcode_counts": {
+        "F2I": 1,
+        "LEA": 1,
+        "SHF": 1
+      },
+      "registers": 10,
+      "stack_bytes": 0,
+      "shared_bytes": 0,
+      "local_bytes": 0
+    },
+    "middle_bfe_integer_output": {
+      "decoder_sass_instructions": [
+        "F2I.TRUNC.NTZ R0, R2",
+        "IADD3 R0, R0, 0x100, RZ",
+        "SHF.R.S32.HI R0, RZ, 0x9, R0",
+        "SGXT R7, R0, 0x9"
+      ],
+      "decoder_instruction_count": 4,
+      "decoder_opcode_counts": {
+        "F2I": 1,
+        "IADD3": 1,
+        "SHF": 1,
+        "SGXT": 1
+      },
+      "registers": 10,
+      "stack_bytes": 0,
+      "shared_bytes": 0,
+      "local_bytes": 0
+    },
+    "middle_shift_float_output": {
+      "decoder_sass_instructions": [
+        "F2I.TRUNC.NTZ R0, R2",
+        "LEA R0, R0, 0x400000, 0xe",
+        "SHF.R.S32.HI R0, RZ, 0x17, R0",
+        "I2F R7, R0"
+      ],
+      "decoder_instruction_count": 4,
+      "decoder_opcode_counts": {
+        "F2I": 1,
+        "LEA": 1,
+        "SHF": 1,
+        "I2F": 1
+      },
+      "registers": 10,
+      "stack_bytes": 0,
+      "shared_bytes": 0,
+      "local_bytes": 0
+    },
+    "middle_bfe_float_output": {
+      "decoder_sass_instructions": [
+        "F2I.TRUNC.NTZ R0, R2",
+        "IADD3 R0, R0, 0x100, RZ",
+        "SHF.R.S32.HI R0, RZ, 0x9, R0",
+        "SGXT R0, R0, 0x9",
+        "I2F R7, R0"
+      ],
+      "decoder_instruction_count": 5,
+      "decoder_opcode_counts": {
+        "F2I": 1,
+        "IADD3": 1,
+        "SHF": 1,
+        "SGXT": 1,
+        "I2F": 1
+      },
+      "registers": 10,
+      "stack_bytes": 0,
+      "shared_bytes": 0,
+      "local_bytes": 0
+    },
+    "middle_float_output": {
+      "decoder_sass_instructions": [
+        "FMUL R0, R2, 3.814697265625e-06",
+        "FRND R5, R0",
+        "FFMA R5, R5, -262144, R2",
+        "FMUL R6, R5, 0.001953125",
+        "FRND R7, R6"
+      ],
+      "decoder_instruction_count": 5,
+      "decoder_opcode_counts": {
+        "FMUL": 2,
+        "FRND": 2,
+        "FFMA": 1
+      },
+      "registers": 12,
+      "stack_bytes": 0,
+      "shared_bytes": 0,
+      "local_bytes": 0
+    }
+  },
+  "sha256": {
+    "sm70-sass.txt": "82b6f233d00d73eabb925b1cb4de40126fd41e698d82c4b87586da33b5f57d1c",
+    "resources.txt": "480250681f246fefe90ba9329942f733704b64aa8367dfff341ca001f063c899",
+    "middle_decode.cu": "250b466fa345a1f801c1a53ef4428ad4f531f70d7fa99797041e7503560b9051",
+    "middle_decode.o": "7320de8d14ae09e70ae4d5a7644ea9da11002b4e201f598cac5af0bb0715baa4"
+  },
+  "matched_float_output_decoder_counts": {
+    "original_round": 5,
+    "ptx_bfe": 5,
+    "shift_lea": 4
+  },
+  "integer_output_endpoint_counts": {
+    "ptx_bfe": 4,
+    "shift_lea": 3
+  },
+  "warning": "Counts exclude identical launch, addressing, global load/store and control; no speedup is measured."
+}

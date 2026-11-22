@@ -1,0 +1,3888 @@
+{
+  "metadata": {
+    "created_utc": "2026-11-22T15:55:03.928724+00:00",
+    "upstream_commit": "6fd0520850164bdd1c37f901954e27ec63eada56",
+    "model_provenance": {
+      "commit": "6fd0520850164bdd1c37f901954e27ec63eada56",
+      "verification_mode": "snapshot_frozen_file_hashes",
+      "manifest_sha256": "ca1ecccb9eb760606b789ab740cb4fc314955a34eefb1933469f24da4373a165",
+      "verified_files": 11,
+      "git_metadata_present": false
+    },
+    "model_sha256": "8a5ca4507c4309a21f849e2e441076db3de6b8e0d1330704bc450412a8e97956",
+    "script_sha256": "97a2f6f41f2443e6219a8da95096f35bb903883ed7b467c2d3b06d2a87b1f5ad",
+    "seed": 20261123,
+    "gpu_execution": false,
+    "performance_measured": false,
+    "argv": [
+      "/workspace/scratch/f8d9571c451b/simulation/round3/math/round3_math.py"
+    ],
+    "elapsed_seconds": 2.4211099889944308
+  },
+  "search": {
+    "candidates_checked": 47040,
+    "summaries": [
+      {
+        "kind": "shared",
+        "amax": 1,
+        "bmax": 1,
+        "best_by_k_then_abs_bound": {
+          "kind": "shared",
+          "amax": 1,
+          "bmax": 1,
+          "radix_a": 256,
+          "radix_b": 256,
+          "compressed_k": 64,
+          "operand_encodings_exact": true,
+          "sum_absolute_products_bound": 16448,
+          "coefficient_outer_bound": 64,
+          "model_packed_sum_error_bound": 0,
+          "low_or_middle_extraction_bound_pass": true,
+          "high_extraction_bound_pass": true,
+          "precision_bound_pass": true,
+          "sufficient_conditions_pass": true
+        }
+      },
+      {
+        "kind": "shared",
+        "amax": 1,
+        "bmax": 2,
+        "best_by_k_then_abs_bound": {
+          "kind": "shared",
+          "amax": 1,
+          "bmax": 2,
+          "radix_a": 512,
+          "radix_b": 512,
+          "compressed_k": 64,
+          "operand_encodings_exact": true,
+          "sum_absolute_products_bound": 65664,
+          "coefficient_outer_bound": 128,
+          "model_packed_sum_error_bound": 0,
+          "low_or_middle_extraction_bound_pass": true,
+          "high_extraction_bound_pass": true,
+          "precision_bound_pass": true,
+          "sufficient_conditions_pass": true
+        }
+      },
+      {
+        "kind": "shared",
+        "amax": 1,
+        "bmax": 3,
+        "best_by_k_then_abs_bound": {
+          "kind": "shared",
+          "amax": 1,
+          "bmax": 3,
+          "radix_a": 512,
+          "radix_b": 512,
+          "compressed_k": 64,
+          "operand_encodings_exact": true,
+          "sum_absolute_products_bound": 98496,
+          "coefficient_outer_bound": 192,
+          "model_packed_sum_error_bound": 0,
+          "low_or_middle_extraction_bound_pass": true,
+          "high_extraction_bound_pass": true,
+          "precision_bound_pass": true,
+          "sufficient_conditions_pass": true
+        }
+      },
+      {
+        "kind": "shared",
+        "amax": 1,
+        "bmax": 4,
+        "best_by_k_then_abs_bound": {
+          "kind": "shared",
+          "amax": 1,
+          "bmax": 4,
+          "radix_a": 1024,
+          "radix_b": 1024,
+          "compressed_k": 64,
+          "operand_encodings_exact": true,
+          "sum_absolute_products_bound": 262400,
+          "coefficient_outer_bound": 256,
+          "model_packed_sum_error_bound": 0,
+          "low_or_middle_extraction_bound_pass": true,
+          "high_extraction_bound_pass": true,
+          "precision_bound_pass": true,
+          "sufficient_conditions_pass": true
+        }
+      },
+      {
+        "kind": "shared",
+        "amax": 1,
+        "bmax": 6,
+        "best_by_k_then_abs_bound": {
+          "kind": "shared",
+          "amax": 1,
+          "bmax": 6,
+          "radix_a": 1024,
+          "radix_b": 1024,
+          "compressed_k": 64,
+          "operand_encodings_exact": true,
+          "sum_absolute_products_bound": 393600,
+          "coefficient_outer_bound": 384,
+          "model_packed_sum_error_bound": 0,
+          "low_or_middle_extraction_bound_pass": true,
+          "high_extraction_bound_pass": true,
+          "precision_bound_pass": true,
+          "sufficient_conditions_pass": true
+        }
+      },
+      {
+        "kind": "shared",
+        "amax": 1,
+        "bmax": 8,
+        "best_by_k_then_abs_bound": {
+          "kind": "shared",
+          "amax": 1,
+          "bmax": 8,
+          "radix_a": 1024,
+          "radix_b": 1024,
+          "compressed_k": 48,
+          "operand_encodings_exact": true,
+          "sum_absolute_products_bound": 393600,
+          "coefficient_outer_bound": 384,
+          "model_packed_sum_error_bound": 0,
+          "low_or_middle_extraction_bound_pass": true,
+          "high_extraction_bound_pass": true,
+          "precision_bound_pass": true,
+          "sufficient_conditions_pass": true
+        }
+      },
+      {
+        "kind": "shared",
+        "amax": 1,
+        "bmax": 12,
+        "best_by_k_then_abs_bound": {
+          "kind": "shared",
+          "amax": 1,
+          "bmax": 12,
+          "radix_a": 1024,
+          "radix_b": 1024,
+          "compressed_k": 32,
+          "operand_encodings_exact": true,
+          "sum_absolute_products_bound": 393600,
+          "coefficient_outer_bound": 384,
+          "model_packed_sum_error_bound": 0,
+          "low_or_middle_extraction_bound_pass": true,
+          "high_extraction_bound_pass": true,
+          "precision_bound_pass": true,
+          "sufficient_conditions_pass": true
+        }
+      },
+      {
+        "kind": "shared",
+        "amax": 2,
+        "bmax": 1,
+        "best_by_k_then_abs_bound": {
+          "kind": "shared",
+          "amax": 2,
+          "bmax": 1,
+          "radix_a": 512,
+          "radix_b": 512,
+          "compressed_k": 64,
+          "operand_encodings_exact": true,
+          "sum_absolute_products_bound": 65664,
+          "coefficient_outer_bound": 128,
+          "model_packed_sum_error_bound": 0,
+          "low_or_middle_extraction_bound_pass": true,
+          "high_extraction_bound_pass": true,
+          "precision_bound_pass": true,
+          "sufficient_conditions_pass": true
+        }
+      },
+      {
+        "kind": "shared",
+        "amax": 2,
+        "bmax": 2,
+        "best_by_k_then_abs_bound": {
+          "kind": "shared",
+          "amax": 2,
+          "bmax": 2,
+          "radix_a": 512,
+          "radix_b": 512,
+          "compressed_k": 48,
+          "operand_encodings_exact": true,
+          "sum_absolute_products_bound": 98496,
+          "coefficient_outer_bound": 192,
+          "model_packed_sum_error_bound": 0,
+          "low_or_middle_extraction_bound_pass": true,
+          "high_extraction_bound_pass": true,
+          "precision_bound_pass": true,
+          "sufficient_conditions_pass": true
+        }
+      },
+      {
+        "kind": "shared",
+        "amax": 2,
+        "bmax": 3,
+        "best_by_k_then_abs_bound": {
+          "kind": "shared",
+          "amax": 2,
+          "bmax": 3,
+          "radix_a": 512,
+          "radix_b": 512,
+          "compressed_k": 32,
+          "operand_encodings_exact": true,
+          "sum_absolute_products_bound": 98496,
+          "coefficient_outer_bound": 192,
+          "model_packed_sum_error_bound": 0,
+          "low_or_middle_extraction_bound_pass": true,
+          "high_extraction_bound_pass": true,
+          "precision_bound_pass": true,
+          "sufficient_conditions_pass": true
+        }
+      },
+      {
+        "kind": "shared",
+        "amax": 2,
+        "bmax": 4,
+        "best_by_k_then_abs_bound": {
+          "kind": "shared",
+          "amax": 2,
+          "bmax": 4,
+          "radix_a": 512,
+          "radix_b": 512,
+          "compressed_k": 24,
+          "operand_encodings_exact": true,
+          "sum_absolute_products_bound": 98496,
+          "coefficient_outer_bound": 192,
+          "model_packed_sum_error_bound": 0,
+          "low_or_middle_extraction_bound_pass": true,
+          "high_extraction_bound_pass": true,
+          "precision_bound_pass": true,
+          "sufficient_conditions_pass": true
+        }
+      },
+      {
+        "kind": "shared",
+        "amax": 2,
+        "bmax": 6,
+        "best_by_k_then_abs_bound": {
+          "kind": "shared",
+          "amax": 2,
+          "bmax": 6,
+          "radix_a": 512,
+          "radix_b": 512,
+          "compressed_k": 16,
+          "operand_encodings_exact": true,
+          "sum_absolute_products_bound": 98496,
+          "coefficient_outer_bound": 192,
+          "model_packed_sum_error_bound": 0,
+          "low_or_middle_extraction_bound_pass": true,
+          "high_extraction_bound_pass": true,
+          "precision_bound_pass": true,
+          "sufficient_conditions_pass": true
+        }
+      },
+      {
+        "kind": "shared",
+        "amax": 2,
+        "bmax": 8,
+        "best_by_k_then_abs_bound": {
+          "kind": "shared",
+          "amax": 2,
+          "bmax": 8,
+          "radix_a": 512,
+          "radix_b": 512,
+          "compressed_k": 12,
+          "operand_encodings_exact": true,
+          "sum_absolute_products_bound": 98496,
+          "coefficient_outer_bound": 192,
+          "model_packed_sum_error_bound": 0,
+          "low_or_middle_extraction_bound_pass": true,
+          "high_extraction_bound_pass": true,
+          "precision_bound_pass": true,
+          "sufficient_conditions_pass": true
+        }
+      },
+      {
+        "kind": "shared",
+        "amax": 2,
+        "bmax": 12,
+        "best_by_k_then_abs_bound": {
+          "kind": "shared",
+          "amax": 2,
+          "bmax": 12,
+          "radix_a": 512,
+          "radix_b": 512,
+          "compressed_k": 8,
+          "operand_encodings_exact": true,
+          "sum_absolute_products_bound": 98496,
+          "coefficient_outer_bound": 192,
+          "model_packed_sum_error_bound": 0,
+          "low_or_middle_extraction_bound_pass": true,
+          "high_extraction_bound_pass": true,
+          "precision_bound_pass": true,
+          "sufficient_conditions_pass": true
+        }
+      },
+      {
+        "kind": "shared",
+        "amax": 3,
+        "bmax": 1,
+        "best_by_k_then_abs_bound": {
+          "kind": "shared",
+          "amax": 3,
+          "bmax": 1,
+          "radix_a": 512,
+          "radix_b": 512,
+          "compressed_k": 64,
+          "operand_encodings_exact": true,
+          "sum_absolute_products_bound": 98496,
+          "coefficient_outer_bound": 192,
+          "model_packed_sum_error_bound": 0,
+          "low_or_middle_extraction_bound_pass": true,
+          "high_extraction_bound_pass": true,
+          "precision_bound_pass": true,
+          "sufficient_conditions_pass": true
+        }
+      },
+      {
+        "kind": "shared",
+        "amax": 3,
+        "bmax": 2,
+        "best_by_k_then_abs_bound": {
+          "kind": "shared",
+          "amax": 3,
+          "bmax": 2,
+          "radix_a": 512,
+          "radix_b": 512,
+          "compressed_k": 32,
+          "operand_encodings_exact": true,
+          "sum_absolute_products_bound": 98496,
+          "coefficient_outer_bound": 192,
+          "model_packed_sum_error_bound": 0,
+          "low_or_middle_extraction_bound_pass": true,
+          "high_extraction_bound_pass": true,
+          "precision_bound_pass": true,
+          "sufficient_conditions_pass": true
+        }
+      },
+      {
+        "kind": "shared",
+        "amax": 3,
+        "bmax": 3,
+        "best_by_k_then_abs_bound": {
+          "kind": "shared",
+          "amax": 3,
+          "bmax": 3,
+          "radix_a": 512,
+          "radix_b": 512,
+          "compressed_k": 24,
+          "operand_encodings_exact": true,
+          "sum_absolute_products_bound": 110808,
+          "coefficient_outer_bound": 216,
+          "model_packed_sum_error_bound": 0,
+          "low_or_middle_extraction_bound_pass": true,
+          "high_extraction_bound_pass": true,
+          "precision_bound_pass": true,
+          "sufficient_conditions_pass": true
+        }
+      },
+      {
+        "kind": "shared",
+        "amax": 3,
+        "bmax": 4,
+        "best_by_k_then_abs_bound": {
+          "kind": "shared",
+          "amax": 3,
+          "bmax": 4,
+          "radix_a": 512,
+          "radix_b": 512,
+          "compressed_k": 16,
+          "operand_encodings_exact": true,
+          "sum_absolute_products_bound": 98496,
+          "coefficient_outer_bound": 192,
+          "model_packed_sum_error_bound": 0,
+          "low_or_middle_extraction_bound_pass": true,
+          "high_extraction_bound_pass": true,
+          "precision_bound_pass": true,
+          "sufficient_conditions_pass": true
+        }
+      },
+      {
+        "kind": "shared",
+        "amax": 3,
+        "bmax": 6,
+        "best_by_k_then_abs_bound": {
+          "kind": "shared",
+          "amax": 3,
+          "bmax": 6,
+          "radix_a": 512,
+          "radix_b": 512,
+          "compressed_k": 12,
+          "operand_encodings_exact": true,
+          "sum_absolute_products_bound": 110808,
+          "coefficient_outer_bound": 216,
+          "model_packed_sum_error_bound": 0,
+          "low_or_middle_extraction_bound_pass": true,
+          "high_extraction_bound_pass": true,
+          "precision_bound_pass": true,
+          "sufficient_conditions_pass": true
+        }
+      },
+      {
+        "kind": "shared",
+        "amax": 3,
+        "bmax": 8,
+        "best_by_k_then_abs_bound": {
+          "kind": "shared",
+          "amax": 3,
+          "bmax": 8,
+          "radix_a": 512,
+          "radix_b": 512,
+          "compressed_k": 8,
+          "operand_encodings_exact": true,
+          "sum_absolute_products_bound": 98496,
+          "coefficient_outer_bound": 192,
+          "model_packed_sum_error_bound": 0,
+          "low_or_middle_extraction_bound_pass": true,
+          "high_extraction_bound_pass": true,
+          "precision_bound_pass": true,
+          "sufficient_conditions_pass": true
+        }
+      },
+      {
+        "kind": "shared",
+        "amax": 3,
+        "bmax": 12,
+        "best_by_k_then_abs_bound": {
+          "kind": "shared",
+          "amax": 3,
+          "bmax": 12,
+          "radix_a": 512,
+          "radix_b": 512,
+          "compressed_k": 4,
+          "operand_encodings_exact": true,
+          "sum_absolute_products_bound": 73872,
+          "coefficient_outer_bound": 144,
+          "model_packed_sum_error_bound": 0,
+          "low_or_middle_extraction_bound_pass": true,
+          "high_extraction_bound_pass": true,
+          "precision_bound_pass": true,
+          "sufficient_conditions_pass": true
+        }
+      },
+      {
+        "kind": "shared",
+        "amax": 4,
+        "bmax": 1,
+        "best_by_k_then_abs_bound": {
+          "kind": "shared",
+          "amax": 4,
+          "bmax": 1,
+          "radix_a": 256,
+          "radix_b": 256,
+          "compressed_k": 24,
+          "operand_encodings_exact": true,
+          "sum_absolute_products_bound": 24672,
+          "coefficient_outer_bound": 96,
+          "model_packed_sum_error_bound": 0,
+          "low_or_middle_extraction_bound_pass": true,
+          "high_extraction_bound_pass": true,
+          "precision_bound_pass": true,
+          "sufficient_conditions_pass": true
+        }
+      },
+      {
+        "kind": "shared",
+        "amax": 4,
+        "bmax": 2,
+        "best_by_k_then_abs_bound": {
+          "kind": "shared",
+          "amax": 4,
+          "bmax": 2,
+          "radix_a": 256,
+          "radix_b": 256,
+          "compressed_k": 12,
+          "operand_encodings_exact": true,
+          "sum_absolute_products_bound": 24672,
+          "coefficient_outer_bound": 96,
+          "model_packed_sum_error_bound": 0,
+          "low_or_middle_extraction_bound_pass": true,
+          "high_extraction_bound_pass": true,
+          "precision_bound_pass": true,
+          "sufficient_conditions_pass": true
+        }
+      },
+      {
+        "kind": "shared",
+        "amax": 4,
+        "bmax": 3,
+        "best_by_k_then_abs_bound": {
+          "kind": "shared",
+          "amax": 4,
+          "bmax": 3,
+          "radix_a": 256,
+          "radix_b": 256,
+          "compressed_k": 8,
+          "operand_encodings_exact": true,
+          "sum_absolute_products_bound": 24672,
+          "coefficient_outer_bound": 96,
+          "model_packed_sum_error_bound": 0,
+          "low_or_middle_extraction_bound_pass": true,
+          "high_extraction_bound_pass": true,
+          "precision_bound_pass": true,
+          "sufficient_conditions_pass": true
+        }
+      },
+      {
+        "kind": "shared",
+        "amax": 4,
+        "bmax": 4,
+        "best_by_k_then_abs_bound": {
+          "kind": "shared",
+          "amax": 4,
+          "bmax": 4,
+          "radix_a": 256,
+          "radix_b": 256,
+          "compressed_k": 4,
+          "operand_encodings_exact": true,
+          "sum_absolute_products_bound": 16448,
+          "coefficient_outer_bound": 64,
+          "model_packed_sum_error_bound": 0,
+          "low_or_middle_extraction_bound_pass": true,
+          "high_extraction_bound_pass": true,
+          "precision_bound_pass": true,
+          "sufficient_conditions_pass": true
+        }
+      },
+      {
+        "kind": "shared",
+        "amax": 4,
+        "bmax": 6,
+        "best_by_k_then_abs_bound": {
+          "kind": "shared",
+          "amax": 4,
+          "bmax": 6,
+          "radix_a": 256,
+          "radix_b": 256,
+          "compressed_k": 4,
+          "operand_encodings_exact": true,
+          "sum_absolute_products_bound": 24672,
+          "coefficient_outer_bound": 96,
+          "model_packed_sum_error_bound": 0,
+          "low_or_middle_extraction_bound_pass": true,
+          "high_extraction_bound_pass": true,
+          "precision_bound_pass": true,
+          "sufficient_conditions_pass": true
+        }
+      },
+      {
+        "kind": "shared",
+        "amax": 4,
+        "bmax": 8,
+        "best_by_k_then_abs_bound": null
+      },
+      {
+        "kind": "shared",
+        "amax": 4,
+        "bmax": 12,
+        "best_by_k_then_abs_bound": null
+      },
+      {
+        "kind": "shared",
+        "amax": 6,
+        "bmax": 1,
+        "best_by_k_then_abs_bound": {
+          "kind": "shared",
+          "amax": 6,
+          "bmax": 1,
+          "radix_a": 256,
+          "radix_b": 256,
+          "compressed_k": 16,
+          "operand_encodings_exact": true,
+          "sum_absolute_products_bound": 24672,
+          "coefficient_outer_bound": 96,
+          "model_packed_sum_error_bound": 0,
+          "low_or_middle_extraction_bound_pass": true,
+          "high_extraction_bound_pass": true,
+          "precision_bound_pass": true,
+          "sufficient_conditions_pass": true
+        }
+      },
+      {
+        "kind": "shared",
+        "amax": 6,
+        "bmax": 2,
+        "best_by_k_then_abs_bound": {
+          "kind": "shared",
+          "amax": 6,
+          "bmax": 2,
+          "radix_a": 256,
+          "radix_b": 256,
+          "compressed_k": 8,
+          "operand_encodings_exact": true,
+          "sum_absolute_products_bound": 24672,
+          "coefficient_outer_bound": 96,
+          "model_packed_sum_error_bound": 0,
+          "low_or_middle_extraction_bound_pass": true,
+          "high_extraction_bound_pass": true,
+          "precision_bound_pass": true,
+          "sufficient_conditions_pass": true
+        }
+      },
+      {
+        "kind": "shared",
+        "amax": 6,
+        "bmax": 3,
+        "best_by_k_then_abs_bound": {
+          "kind": "shared",
+          "amax": 6,
+          "bmax": 3,
+          "radix_a": 256,
+          "radix_b": 256,
+          "compressed_k": 4,
+          "operand_encodings_exact": true,
+          "sum_absolute_products_bound": 18504,
+          "coefficient_outer_bound": 72,
+          "model_packed_sum_error_bound": 0,
+          "low_or_middle_extraction_bound_pass": true,
+          "high_extraction_bound_pass": true,
+          "precision_bound_pass": true,
+          "sufficient_conditions_pass": true
+        }
+      },
+      {
+        "kind": "shared",
+        "amax": 6,
+        "bmax": 4,
+        "best_by_k_then_abs_bound": {
+          "kind": "shared",
+          "amax": 6,
+          "bmax": 4,
+          "radix_a": 256,
+          "radix_b": 256,
+          "compressed_k": 4,
+          "operand_encodings_exact": true,
+          "sum_absolute_products_bound": 24672,
+          "coefficient_outer_bound": 96,
+          "model_packed_sum_error_bound": 0,
+          "low_or_middle_extraction_bound_pass": true,
+          "high_extraction_bound_pass": true,
+          "precision_bound_pass": true,
+          "sufficient_conditions_pass": true
+        }
+      },
+      {
+        "kind": "shared",
+        "amax": 6,
+        "bmax": 6,
+        "best_by_k_then_abs_bound": null
+      },
+      {
+        "kind": "shared",
+        "amax": 6,
+        "bmax": 8,
+        "best_by_k_then_abs_bound": null
+      },
+      {
+        "kind": "shared",
+        "amax": 6,
+        "bmax": 12,
+        "best_by_k_then_abs_bound": null
+      },
+      {
+        "kind": "shared",
+        "amax": 8,
+        "bmax": 1,
+        "best_by_k_then_abs_bound": {
+          "kind": "shared",
+          "amax": 8,
+          "bmax": 1,
+          "radix_a": 128,
+          "radix_b": 128,
+          "compressed_k": 4,
+          "operand_encodings_exact": true,
+          "sum_absolute_products_bound": 4128,
+          "coefficient_outer_bound": 32,
+          "model_packed_sum_error_bound": 0,
+          "low_or_middle_extraction_bound_pass": true,
+          "high_extraction_bound_pass": true,
+          "precision_bound_pass": true,
+          "sufficient_conditions_pass": true
+        }
+      },
+      {
+        "kind": "shared",
+        "amax": 8,
+        "bmax": 2,
+        "best_by_k_then_abs_bound": null
+      },
+      {
+        "kind": "shared",
+        "amax": 8,
+        "bmax": 3,
+        "best_by_k_then_abs_bound": null
+      },
+      {
+        "kind": "shared",
+        "amax": 8,
+        "bmax": 4,
+        "best_by_k_then_abs_bound": null
+      },
+      {
+        "kind": "shared",
+        "amax": 8,
+        "bmax": 6,
+        "best_by_k_then_abs_bound": null
+      },
+      {
+        "kind": "shared",
+        "amax": 8,
+        "bmax": 8,
+        "best_by_k_then_abs_bound": null
+      },
+      {
+        "kind": "shared",
+        "amax": 8,
+        "bmax": 12,
+        "best_by_k_then_abs_bound": null
+      },
+      {
+        "kind": "shared",
+        "amax": 12,
+        "bmax": 1,
+        "best_by_k_then_abs_bound": {
+          "kind": "shared",
+          "amax": 12,
+          "bmax": 1,
+          "radix_a": 128,
+          "radix_b": 128,
+          "compressed_k": 4,
+          "operand_encodings_exact": true,
+          "sum_absolute_products_bound": 6192,
+          "coefficient_outer_bound": 48,
+          "model_packed_sum_error_bound": 0,
+          "low_or_middle_extraction_bound_pass": true,
+          "high_extraction_bound_pass": true,
+          "precision_bound_pass": true,
+          "sufficient_conditions_pass": true
+        }
+      },
+      {
+        "kind": "shared",
+        "amax": 12,
+        "bmax": 2,
+        "best_by_k_then_abs_bound": null
+      },
+      {
+        "kind": "shared",
+        "amax": 12,
+        "bmax": 3,
+        "best_by_k_then_abs_bound": null
+      },
+      {
+        "kind": "shared",
+        "amax": 12,
+        "bmax": 4,
+        "best_by_k_then_abs_bound": null
+      },
+      {
+        "kind": "shared",
+        "amax": 12,
+        "bmax": 6,
+        "best_by_k_then_abs_bound": null
+      },
+      {
+        "kind": "shared",
+        "amax": 12,
+        "bmax": 8,
+        "best_by_k_then_abs_bound": null
+      },
+      {
+        "kind": "shared",
+        "amax": 12,
+        "bmax": 12,
+        "best_by_k_then_abs_bound": null
+      },
+      {
+        "kind": "independent",
+        "amax": 1,
+        "bmax": 1,
+        "best_by_k_then_abs_bound": {
+          "kind": "independent",
+          "amax": 1,
+          "bmax": 1,
+          "radix_a": 256,
+          "radix_b": 512,
+          "compressed_k": 64,
+          "operand_encodings_exact": true,
+          "sum_absolute_products_bound": 8437824,
+          "coefficient_outer_bound": 64,
+          "model_packed_sum_error_bound": 0,
+          "low_or_middle_extraction_bound_pass": true,
+          "high_extraction_bound_pass": true,
+          "precision_bound_pass": true,
+          "sufficient_conditions_pass": true
+        }
+      },
+      {
+        "kind": "independent",
+        "amax": 1,
+        "bmax": 2,
+        "best_by_k_then_abs_bound": {
+          "kind": "independent",
+          "amax": 1,
+          "bmax": 2,
+          "radix_a": 256,
+          "radix_b": 512,
+          "compressed_k": 32,
+          "operand_encodings_exact": true,
+          "sum_absolute_products_bound": 8437824,
+          "coefficient_outer_bound": 64,
+          "model_packed_sum_error_bound": 0,
+          "low_or_middle_extraction_bound_pass": true,
+          "high_extraction_bound_pass": true,
+          "precision_bound_pass": true,
+          "sufficient_conditions_pass": true
+        }
+      },
+      {
+        "kind": "independent",
+        "amax": 1,
+        "bmax": 3,
+        "best_by_k_then_abs_bound": {
+          "kind": "independent",
+          "amax": 1,
+          "bmax": 3,
+          "radix_a": 256,
+          "radix_b": 512,
+          "compressed_k": 24,
+          "operand_encodings_exact": true,
+          "sum_absolute_products_bound": 9492552,
+          "coefficient_outer_bound": 72,
+          "model_packed_sum_error_bound": 0,
+          "low_or_middle_extraction_bound_pass": true,
+          "high_extraction_bound_pass": true,
+          "precision_bound_pass": true,
+          "sufficient_conditions_pass": true
+        }
+      },
+      {
+        "kind": "independent",
+        "amax": 1,
+        "bmax": 4,
+        "best_by_k_then_abs_bound": {
+          "kind": "independent",
+          "amax": 1,
+          "bmax": 4,
+          "radix_a": 512,
+          "radix_b": 256,
+          "compressed_k": 16,
+          "operand_encodings_exact": true,
+          "sum_absolute_products_bound": 8437824,
+          "coefficient_outer_bound": 64,
+          "model_packed_sum_error_bound": 0,
+          "low_or_middle_extraction_bound_pass": true,
+          "high_extraction_bound_pass": true,
+          "precision_bound_pass": true,
+          "sufficient_conditions_pass": true
+        }
+      },
+      {
+        "kind": "independent",
+        "amax": 1,
+        "bmax": 6,
+        "best_by_k_then_abs_bound": {
+          "kind": "independent",
+          "amax": 1,
+          "bmax": 6,
+          "radix_a": 512,
+          "radix_b": 256,
+          "compressed_k": 12,
+          "operand_encodings_exact": true,
+          "sum_absolute_products_bound": 9492552,
+          "coefficient_outer_bound": 72,
+          "model_packed_sum_error_bound": 0,
+          "low_or_middle_extraction_bound_pass": true,
+          "high_extraction_bound_pass": true,
+          "precision_bound_pass": true,
+          "sufficient_conditions_pass": true
+        }
+      },
+      {
+        "kind": "independent",
+        "amax": 1,
+        "bmax": 8,
+        "best_by_k_then_abs_bound": {
+          "kind": "independent",
+          "amax": 1,
+          "bmax": 8,
+          "radix_a": 256,
+          "radix_b": 128,
+          "compressed_k": 4,
+          "operand_encodings_exact": true,
+          "sum_absolute_products_bound": 1060896,
+          "coefficient_outer_bound": 32,
+          "model_packed_sum_error_bound": 0,
+          "low_or_middle_extraction_bound_pass": true,
+          "high_extraction_bound_pass": true,
+          "precision_bound_pass": true,
+          "sufficient_conditions_pass": true
+        }
+      },
+      {
+        "kind": "independent",
+        "amax": 1,
+        "bmax": 12,
+        "best_by_k_then_abs_bound": {
+          "kind": "independent",
+          "amax": 1,
+          "bmax": 12,
+          "radix_a": 512,
+          "radix_b": 128,
+          "compressed_k": 4,
+          "operand_encodings_exact": true,
+          "sum_absolute_products_bound": 3176496,
+          "coefficient_outer_bound": 48,
+          "model_packed_sum_error_bound": 0,
+          "low_or_middle_extraction_bound_pass": true,
+          "high_extraction_bound_pass": true,
+          "precision_bound_pass": true,
+          "sufficient_conditions_pass": true
+        }
+      },
+      {
+        "kind": "independent",
+        "amax": 2,
+        "bmax": 1,
+        "best_by_k_then_abs_bound": {
+          "kind": "independent",
+          "amax": 2,
+          "bmax": 1,
+          "radix_a": 256,
+          "radix_b": 512,
+          "compressed_k": 32,
+          "operand_encodings_exact": true,
+          "sum_absolute_products_bound": 8437824,
+          "coefficient_outer_bound": 64,
+          "model_packed_sum_error_bound": 0,
+          "low_or_middle_extraction_bound_pass": true,
+          "high_extraction_bound_pass": true,
+          "precision_bound_pass": true,
+          "sufficient_conditions_pass": true
+        }
+      },
+      {
+        "kind": "independent",
+        "amax": 2,
+        "bmax": 2,
+        "best_by_k_then_abs_bound": {
+          "kind": "independent",
+          "amax": 2,
+          "bmax": 2,
+          "radix_a": 256,
+          "radix_b": 512,
+          "compressed_k": 16,
+          "operand_encodings_exact": true,
+          "sum_absolute_products_bound": 8437824,
+          "coefficient_outer_bound": 64,
+          "model_packed_sum_error_bound": 0,
+          "low_or_middle_extraction_bound_pass": true,
+          "high_extraction_bound_pass": true,
+          "precision_bound_pass": true,
+          "sufficient_conditions_pass": true
+        }
+      },
+      {
+        "kind": "independent",
+        "amax": 2,
+        "bmax": 3,
+        "best_by_k_then_abs_bound": {
+          "kind": "independent",
+          "amax": 2,
+          "bmax": 3,
+          "radix_a": 256,
+          "radix_b": 512,
+          "compressed_k": 12,
+          "operand_encodings_exact": true,
+          "sum_absolute_products_bound": 9492552,
+          "coefficient_outer_bound": 72,
+          "model_packed_sum_error_bound": 0,
+          "low_or_middle_extraction_bound_pass": true,
+          "high_extraction_bound_pass": true,
+          "precision_bound_pass": true,
+          "sufficient_conditions_pass": true
+        }
+      },
+      {
+        "kind": "independent",
+        "amax": 2,
+        "bmax": 4,
+        "best_by_k_then_abs_bound": {
+          "kind": "independent",
+          "amax": 2,
+          "bmax": 4,
+          "radix_a": 512,
+          "radix_b": 256,
+          "compressed_k": 8,
+          "operand_encodings_exact": true,
+          "sum_absolute_products_bound": 8437824,
+          "coefficient_outer_bound": 64,
+          "model_packed_sum_error_bound": 0,
+          "low_or_middle_extraction_bound_pass": true,
+          "high_extraction_bound_pass": true,
+          "precision_bound_pass": true,
+          "sufficient_conditions_pass": true
+        }
+      },
+      {
+        "kind": "independent",
+        "amax": 2,
+        "bmax": 6,
+        "best_by_k_then_abs_bound": {
+          "kind": "independent",
+          "amax": 2,
+          "bmax": 6,
+          "radix_a": 256,
+          "radix_b": 256,
+          "compressed_k": 4,
+          "operand_encodings_exact": true,
+          "sum_absolute_products_bound": 3170352,
+          "coefficient_outer_bound": 48,
+          "model_packed_sum_error_bound": 0,
+          "low_or_middle_extraction_bound_pass": true,
+          "high_extraction_bound_pass": true,
+          "precision_bound_pass": true,
+          "sufficient_conditions_pass": true
+        }
+      },
+      {
+        "kind": "independent",
+        "amax": 2,
+        "bmax": 8,
+        "best_by_k_then_abs_bound": null
+      },
+      {
+        "kind": "independent",
+        "amax": 2,
+        "bmax": 12,
+        "best_by_k_then_abs_bound": null
+      },
+      {
+        "kind": "independent",
+        "amax": 3,
+        "bmax": 1,
+        "best_by_k_then_abs_bound": {
+          "kind": "independent",
+          "amax": 3,
+          "bmax": 1,
+          "radix_a": 256,
+          "radix_b": 512,
+          "compressed_k": 24,
+          "operand_encodings_exact": true,
+          "sum_absolute_products_bound": 9492552,
+          "coefficient_outer_bound": 72,
+          "model_packed_sum_error_bound": 0,
+          "low_or_middle_extraction_bound_pass": true,
+          "high_extraction_bound_pass": true,
+          "precision_bound_pass": true,
+          "sufficient_conditions_pass": true
+        }
+      },
+      {
+        "kind": "independent",
+        "amax": 3,
+        "bmax": 2,
+        "best_by_k_then_abs_bound": {
+          "kind": "independent",
+          "amax": 3,
+          "bmax": 2,
+          "radix_a": 256,
+          "radix_b": 512,
+          "compressed_k": 12,
+          "operand_encodings_exact": true,
+          "sum_absolute_products_bound": 9492552,
+          "coefficient_outer_bound": 72,
+          "model_packed_sum_error_bound": 0,
+          "low_or_middle_extraction_bound_pass": true,
+          "high_extraction_bound_pass": true,
+          "precision_bound_pass": true,
+          "sufficient_conditions_pass": true
+        }
+      },
+      {
+        "kind": "independent",
+        "amax": 3,
+        "bmax": 3,
+        "best_by_k_then_abs_bound": {
+          "kind": "independent",
+          "amax": 3,
+          "bmax": 3,
+          "radix_a": 256,
+          "radix_b": 512,
+          "compressed_k": 8,
+          "operand_encodings_exact": true,
+          "sum_absolute_products_bound": 9492552,
+          "coefficient_outer_bound": 72,
+          "model_packed_sum_error_bound": 0,
+          "low_or_middle_extraction_bound_pass": true,
+          "high_extraction_bound_pass": true,
+          "precision_bound_pass": true,
+          "sufficient_conditions_pass": true
+        }
+      },
+      {
+        "kind": "independent",
+        "amax": 3,
+        "bmax": 4,
+        "best_by_k_then_abs_bound": {
+          "kind": "independent",
+          "amax": 3,
+          "bmax": 4,
+          "radix_a": 256,
+          "radix_b": 256,
+          "compressed_k": 4,
+          "operand_encodings_exact": true,
+          "sum_absolute_products_bound": 3170352,
+          "coefficient_outer_bound": 48,
+          "model_packed_sum_error_bound": 0,
+          "low_or_middle_extraction_bound_pass": true,
+          "high_extraction_bound_pass": true,
+          "precision_bound_pass": true,
+          "sufficient_conditions_pass": true
+        }
+      },
+      {
+        "kind": "independent",
+        "amax": 3,
+        "bmax": 6,
+        "best_by_k_then_abs_bound": {
+          "kind": "independent",
+          "amax": 3,
+          "bmax": 6,
+          "radix_a": 512,
+          "radix_b": 256,
+          "compressed_k": 4,
+          "operand_encodings_exact": true,
+          "sum_absolute_products_bound": 9492552,
+          "coefficient_outer_bound": 72,
+          "model_packed_sum_error_bound": 0,
+          "low_or_middle_extraction_bound_pass": true,
+          "high_extraction_bound_pass": true,
+          "precision_bound_pass": true,
+          "sufficient_conditions_pass": true
+        }
+      },
+      {
+        "kind": "independent",
+        "amax": 3,
+        "bmax": 8,
+        "best_by_k_then_abs_bound": null
+      },
+      {
+        "kind": "independent",
+        "amax": 3,
+        "bmax": 12,
+        "best_by_k_then_abs_bound": null
+      },
+      {
+        "kind": "independent",
+        "amax": 4,
+        "bmax": 1,
+        "best_by_k_then_abs_bound": {
+          "kind": "independent",
+          "amax": 4,
+          "bmax": 1,
+          "radix_a": 256,
+          "radix_b": 512,
+          "compressed_k": 16,
+          "operand_encodings_exact": true,
+          "sum_absolute_products_bound": 8437824,
+          "coefficient_outer_bound": 64,
+          "model_packed_sum_error_bound": 0,
+          "low_or_middle_extraction_bound_pass": true,
+          "high_extraction_bound_pass": true,
+          "precision_bound_pass": true,
+          "sufficient_conditions_pass": true
+        }
+      },
+      {
+        "kind": "independent",
+        "amax": 4,
+        "bmax": 2,
+        "best_by_k_then_abs_bound": {
+          "kind": "independent",
+          "amax": 4,
+          "bmax": 2,
+          "radix_a": 256,
+          "radix_b": 512,
+          "compressed_k": 8,
+          "operand_encodings_exact": true,
+          "sum_absolute_products_bound": 8437824,
+          "coefficient_outer_bound": 64,
+          "model_packed_sum_error_bound": 0,
+          "low_or_middle_extraction_bound_pass": true,
+          "high_extraction_bound_pass": true,
+          "precision_bound_pass": true,
+          "sufficient_conditions_pass": true
+        }
+      },
+      {
+        "kind": "independent",
+        "amax": 4,
+        "bmax": 3,
+        "best_by_k_then_abs_bound": {
+          "kind": "independent",
+          "amax": 4,
+          "bmax": 3,
+          "radix_a": 256,
+          "radix_b": 256,
+          "compressed_k": 4,
+          "operand_encodings_exact": true,
+          "sum_absolute_products_bound": 3170352,
+          "coefficient_outer_bound": 48,
+          "model_packed_sum_error_bound": 0,
+          "low_or_middle_extraction_bound_pass": true,
+          "high_extraction_bound_pass": true,
+          "precision_bound_pass": true,
+          "sufficient_conditions_pass": true
+        }
+      },
+      {
+        "kind": "independent",
+        "amax": 4,
+        "bmax": 4,
+        "best_by_k_then_abs_bound": null
+      },
+      {
+        "kind": "independent",
+        "amax": 4,
+        "bmax": 6,
+        "best_by_k_then_abs_bound": null
+      },
+      {
+        "kind": "independent",
+        "amax": 4,
+        "bmax": 8,
+        "best_by_k_then_abs_bound": null
+      },
+      {
+        "kind": "independent",
+        "amax": 4,
+        "bmax": 12,
+        "best_by_k_then_abs_bound": null
+      },
+      {
+        "kind": "independent",
+        "amax": 6,
+        "bmax": 1,
+        "best_by_k_then_abs_bound": {
+          "kind": "independent",
+          "amax": 6,
+          "bmax": 1,
+          "radix_a": 256,
+          "radix_b": 512,
+          "compressed_k": 12,
+          "operand_encodings_exact": true,
+          "sum_absolute_products_bound": 9492552,
+          "coefficient_outer_bound": 72,
+          "model_packed_sum_error_bound": 0,
+          "low_or_middle_extraction_bound_pass": true,
+          "high_extraction_bound_pass": true,
+          "precision_bound_pass": true,
+          "sufficient_conditions_pass": true
+        }
+      },
+      {
+        "kind": "independent",
+        "amax": 6,
+        "bmax": 2,
+        "best_by_k_then_abs_bound": {
+          "kind": "independent",
+          "amax": 6,
+          "bmax": 2,
+          "radix_a": 256,
+          "radix_b": 256,
+          "compressed_k": 4,
+          "operand_encodings_exact": true,
+          "sum_absolute_products_bound": 3170352,
+          "coefficient_outer_bound": 48,
+          "model_packed_sum_error_bound": 0,
+          "low_or_middle_extraction_bound_pass": true,
+          "high_extraction_bound_pass": true,
+          "precision_bound_pass": true,
+          "sufficient_conditions_pass": true
+        }
+      },
+      {
+        "kind": "independent",
+        "amax": 6,
+        "bmax": 3,
+        "best_by_k_then_abs_bound": {
+          "kind": "independent",
+          "amax": 6,
+          "bmax": 3,
+          "radix_a": 256,
+          "radix_b": 512,
+          "compressed_k": 4,
+          "operand_encodings_exact": true,
+          "sum_absolute_products_bound": 9492552,
+          "coefficient_outer_bound": 72,
+          "model_packed_sum_error_bound": 0,
+          "low_or_middle_extraction_bound_pass": true,
+          "high_extraction_bound_pass": true,
+          "precision_bound_pass": true,
+          "sufficient_conditions_pass": true
+        }
+      },
+      {
+        "kind": "independent",
+        "amax": 6,
+        "bmax": 4,
+        "best_by_k_then_abs_bound": null
+      },
+      {
+        "kind": "independent",
+        "amax": 6,
+        "bmax": 6,
+        "best_by_k_then_abs_bound": null
+      },
+      {
+        "kind": "independent",
+        "amax": 6,
+        "bmax": 8,
+        "best_by_k_then_abs_bound": null
+      },
+      {
+        "kind": "independent",
+        "amax": 6,
+        "bmax": 12,
+        "best_by_k_then_abs_bound": null
+      },
+      {
+        "kind": "independent",
+        "amax": 8,
+        "bmax": 1,
+        "best_by_k_then_abs_bound": {
+          "kind": "independent",
+          "amax": 8,
+          "bmax": 1,
+          "radix_a": 128,
+          "radix_b": 256,
+          "compressed_k": 4,
+          "operand_encodings_exact": true,
+          "sum_absolute_products_bound": 1060896,
+          "coefficient_outer_bound": 32,
+          "model_packed_sum_error_bound": 0,
+          "low_or_middle_extraction_bound_pass": true,
+          "high_extraction_bound_pass": true,
+          "precision_bound_pass": true,
+          "sufficient_conditions_pass": true
+        }
+      },
+      {
+        "kind": "independent",
+        "amax": 8,
+        "bmax": 2,
+        "best_by_k_then_abs_bound": null
+      },
+      {
+        "kind": "independent",
+        "amax": 8,
+        "bmax": 3,
+        "best_by_k_then_abs_bound": null
+      },
+      {
+        "kind": "independent",
+        "amax": 8,
+        "bmax": 4,
+        "best_by_k_then_abs_bound": null
+      },
+      {
+        "kind": "independent",
+        "amax": 8,
+        "bmax": 6,
+        "best_by_k_then_abs_bound": null
+      },
+      {
+        "kind": "independent",
+        "amax": 8,
+        "bmax": 8,
+        "best_by_k_then_abs_bound": null
+      },
+      {
+        "kind": "independent",
+        "amax": 8,
+        "bmax": 12,
+        "best_by_k_then_abs_bound": null
+      },
+      {
+        "kind": "independent",
+        "amax": 12,
+        "bmax": 1,
+        "best_by_k_then_abs_bound": {
+          "kind": "independent",
+          "amax": 12,
+          "bmax": 1,
+          "radix_a": 128,
+          "radix_b": 512,
+          "compressed_k": 4,
+          "operand_encodings_exact": true,
+          "sum_absolute_products_bound": 3176496,
+          "coefficient_outer_bound": 48,
+          "model_packed_sum_error_bound": 0,
+          "low_or_middle_extraction_bound_pass": true,
+          "high_extraction_bound_pass": true,
+          "precision_bound_pass": true,
+          "sufficient_conditions_pass": true
+        }
+      },
+      {
+        "kind": "independent",
+        "amax": 12,
+        "bmax": 2,
+        "best_by_k_then_abs_bound": null
+      },
+      {
+        "kind": "independent",
+        "amax": 12,
+        "bmax": 3,
+        "best_by_k_then_abs_bound": null
+      },
+      {
+        "kind": "independent",
+        "amax": 12,
+        "bmax": 4,
+        "best_by_k_then_abs_bound": null
+      },
+      {
+        "kind": "independent",
+        "amax": 12,
+        "bmax": 6,
+        "best_by_k_then_abs_bound": null
+      },
+      {
+        "kind": "independent",
+        "amax": 12,
+        "bmax": 8,
+        "best_by_k_then_abs_bound": null
+      },
+      {
+        "kind": "independent",
+        "amax": 12,
+        "bmax": 12,
+        "best_by_k_then_abs_bound": null
+      },
+      {
+        "kind": "middle",
+        "amax": 1,
+        "bmax": 1,
+        "best_by_k_then_abs_bound": {
+          "kind": "middle",
+          "amax": 1,
+          "bmax": 1,
+          "radix_a": 512,
+          "radix_b": 512,
+          "compressed_k": 64,
+          "operand_encodings_exact": true,
+          "sum_absolute_products_bound": 16842816,
+          "coefficient_outer_bound": 64,
+          "model_packed_sum_error_bound": 96,
+          "low_or_middle_extraction_bound_pass": true,
+          "high_extraction_bound_pass": true,
+          "precision_bound_pass": true,
+          "sufficient_conditions_pass": true
+        }
+      },
+      {
+        "kind": "middle",
+        "amax": 1,
+        "bmax": 2,
+        "best_by_k_then_abs_bound": {
+          "kind": "middle",
+          "amax": 1,
+          "bmax": 2,
+          "radix_a": 512,
+          "radix_b": 512,
+          "compressed_k": 48,
+          "operand_encodings_exact": true,
+          "sum_absolute_products_bound": 25264224,
+          "coefficient_outer_bound": 96,
+          "model_packed_sum_error_bound": 72,
+          "low_or_middle_extraction_bound_pass": true,
+          "high_extraction_bound_pass": true,
+          "precision_bound_pass": true,
+          "sufficient_conditions_pass": true
+        }
+      },
+      {
+        "kind": "middle",
+        "amax": 1,
+        "bmax": 3,
+        "best_by_k_then_abs_bound": {
+          "kind": "middle",
+          "amax": 1,
+          "bmax": 3,
+          "radix_a": 512,
+          "radix_b": 512,
+          "compressed_k": 32,
+          "operand_encodings_exact": true,
+          "sum_absolute_products_bound": 25264224,
+          "coefficient_outer_bound": 96,
+          "model_packed_sum_error_bound": 48,
+          "low_or_middle_extraction_bound_pass": true,
+          "high_extraction_bound_pass": true,
+          "precision_bound_pass": true,
+          "sufficient_conditions_pass": true
+        }
+      },
+      {
+        "kind": "middle",
+        "amax": 1,
+        "bmax": 4,
+        "best_by_k_then_abs_bound": {
+          "kind": "middle",
+          "amax": 1,
+          "bmax": 4,
+          "radix_a": 256,
+          "radix_b": 256,
+          "compressed_k": 12,
+          "operand_encodings_exact": true,
+          "sum_absolute_products_bound": 3170352,
+          "coefficient_outer_bound": 48,
+          "model_packed_sum_error_bound": 0,
+          "low_or_middle_extraction_bound_pass": true,
+          "high_extraction_bound_pass": true,
+          "precision_bound_pass": true,
+          "sufficient_conditions_pass": true
+        }
+      },
+      {
+        "kind": "middle",
+        "amax": 1,
+        "bmax": 6,
+        "best_by_k_then_abs_bound": {
+          "kind": "middle",
+          "amax": 1,
+          "bmax": 6,
+          "radix_a": 256,
+          "radix_b": 256,
+          "compressed_k": 8,
+          "operand_encodings_exact": true,
+          "sum_absolute_products_bound": 3170352,
+          "coefficient_outer_bound": 48,
+          "model_packed_sum_error_bound": 0,
+          "low_or_middle_extraction_bound_pass": true,
+          "high_extraction_bound_pass": true,
+          "precision_bound_pass": true,
+          "sufficient_conditions_pass": true
+        }
+      },
+      {
+        "kind": "middle",
+        "amax": 1,
+        "bmax": 8,
+        "best_by_k_then_abs_bound": null
+      },
+      {
+        "kind": "middle",
+        "amax": 1,
+        "bmax": 12,
+        "best_by_k_then_abs_bound": null
+      },
+      {
+        "kind": "middle",
+        "amax": 2,
+        "bmax": 1,
+        "best_by_k_then_abs_bound": {
+          "kind": "middle",
+          "amax": 2,
+          "bmax": 1,
+          "radix_a": 512,
+          "radix_b": 512,
+          "compressed_k": 48,
+          "operand_encodings_exact": true,
+          "sum_absolute_products_bound": 25264224,
+          "coefficient_outer_bound": 96,
+          "model_packed_sum_error_bound": 72,
+          "low_or_middle_extraction_bound_pass": true,
+          "high_extraction_bound_pass": true,
+          "precision_bound_pass": true,
+          "sufficient_conditions_pass": true
+        }
+      },
+      {
+        "kind": "middle",
+        "amax": 2,
+        "bmax": 2,
+        "best_by_k_then_abs_bound": {
+          "kind": "middle",
+          "amax": 2,
+          "bmax": 2,
+          "radix_a": 512,
+          "radix_b": 512,
+          "compressed_k": 24,
+          "operand_encodings_exact": true,
+          "sum_absolute_products_bound": 25264224,
+          "coefficient_outer_bound": 96,
+          "model_packed_sum_error_bound": 36,
+          "low_or_middle_extraction_bound_pass": true,
+          "high_extraction_bound_pass": true,
+          "precision_bound_pass": true,
+          "sufficient_conditions_pass": true
+        }
+      },
+      {
+        "kind": "middle",
+        "amax": 2,
+        "bmax": 3,
+        "best_by_k_then_abs_bound": {
+          "kind": "middle",
+          "amax": 2,
+          "bmax": 3,
+          "radix_a": 512,
+          "radix_b": 512,
+          "compressed_k": 16,
+          "operand_encodings_exact": true,
+          "sum_absolute_products_bound": 25264224,
+          "coefficient_outer_bound": 96,
+          "model_packed_sum_error_bound": 24,
+          "low_or_middle_extraction_bound_pass": true,
+          "high_extraction_bound_pass": true,
+          "precision_bound_pass": true,
+          "sufficient_conditions_pass": true
+        }
+      },
+      {
+        "kind": "middle",
+        "amax": 2,
+        "bmax": 4,
+        "best_by_k_then_abs_bound": {
+          "kind": "middle",
+          "amax": 2,
+          "bmax": 4,
+          "radix_a": 256,
+          "radix_b": 256,
+          "compressed_k": 4,
+          "operand_encodings_exact": true,
+          "sum_absolute_products_bound": 2113568,
+          "coefficient_outer_bound": 32,
+          "model_packed_sum_error_bound": 0,
+          "low_or_middle_extraction_bound_pass": true,
+          "high_extraction_bound_pass": true,
+          "precision_bound_pass": true,
+          "sufficient_conditions_pass": true
+        }
+      },
+      {
+        "kind": "middle",
+        "amax": 2,
+        "bmax": 6,
+        "best_by_k_then_abs_bound": {
+          "kind": "middle",
+          "amax": 2,
+          "bmax": 6,
+          "radix_a": 256,
+          "radix_b": 256,
+          "compressed_k": 4,
+          "operand_encodings_exact": true,
+          "sum_absolute_products_bound": 3170352,
+          "coefficient_outer_bound": 48,
+          "model_packed_sum_error_bound": 0,
+          "low_or_middle_extraction_bound_pass": true,
+          "high_extraction_bound_pass": true,
+          "precision_bound_pass": true,
+          "sufficient_conditions_pass": true
+        }
+      },
+      {
+        "kind": "middle",
+        "amax": 2,
+        "bmax": 8,
+        "best_by_k_then_abs_bound": null
+      },
+      {
+        "kind": "middle",
+        "amax": 2,
+        "bmax": 12,
+        "best_by_k_then_abs_bound": null
+      },
+      {
+        "kind": "middle",
+        "amax": 3,
+        "bmax": 1,
+        "best_by_k_then_abs_bound": {
+          "kind": "middle",
+          "amax": 3,
+          "bmax": 1,
+          "radix_a": 512,
+          "radix_b": 512,
+          "compressed_k": 32,
+          "operand_encodings_exact": true,
+          "sum_absolute_products_bound": 25264224,
+          "coefficient_outer_bound": 96,
+          "model_packed_sum_error_bound": 48,
+          "low_or_middle_extraction_bound_pass": true,
+          "high_extraction_bound_pass": true,
+          "precision_bound_pass": true,
+          "sufficient_conditions_pass": true
+        }
+      },
+      {
+        "kind": "middle",
+        "amax": 3,
+        "bmax": 2,
+        "best_by_k_then_abs_bound": {
+          "kind": "middle",
+          "amax": 3,
+          "bmax": 2,
+          "radix_a": 512,
+          "radix_b": 512,
+          "compressed_k": 16,
+          "operand_encodings_exact": true,
+          "sum_absolute_products_bound": 25264224,
+          "coefficient_outer_bound": 96,
+          "model_packed_sum_error_bound": 24,
+          "low_or_middle_extraction_bound_pass": true,
+          "high_extraction_bound_pass": true,
+          "precision_bound_pass": true,
+          "sufficient_conditions_pass": true
+        }
+      },
+      {
+        "kind": "middle",
+        "amax": 3,
+        "bmax": 3,
+        "best_by_k_then_abs_bound": {
+          "kind": "middle",
+          "amax": 3,
+          "bmax": 3,
+          "radix_a": 512,
+          "radix_b": 512,
+          "compressed_k": 12,
+          "operand_encodings_exact": true,
+          "sum_absolute_products_bound": 28422252,
+          "coefficient_outer_bound": 108,
+          "model_packed_sum_error_bound": 18,
+          "low_or_middle_extraction_bound_pass": true,
+          "high_extraction_bound_pass": true,
+          "precision_bound_pass": true,
+          "sufficient_conditions_pass": true
+        }
+      },
+      {
+        "kind": "middle",
+        "amax": 3,
+        "bmax": 4,
+        "best_by_k_then_abs_bound": {
+          "kind": "middle",
+          "amax": 3,
+          "bmax": 4,
+          "radix_a": 256,
+          "radix_b": 256,
+          "compressed_k": 4,
+          "operand_encodings_exact": true,
+          "sum_absolute_products_bound": 3170352,
+          "coefficient_outer_bound": 48,
+          "model_packed_sum_error_bound": 0,
+          "low_or_middle_extraction_bound_pass": true,
+          "high_extraction_bound_pass": true,
+          "precision_bound_pass": true,
+          "sufficient_conditions_pass": true
+        }
+      },
+      {
+        "kind": "middle",
+        "amax": 3,
+        "bmax": 6,
+        "best_by_k_then_abs_bound": null
+      },
+      {
+        "kind": "middle",
+        "amax": 3,
+        "bmax": 8,
+        "best_by_k_then_abs_bound": null
+      },
+      {
+        "kind": "middle",
+        "amax": 3,
+        "bmax": 12,
+        "best_by_k_then_abs_bound": null
+      },
+      {
+        "kind": "middle",
+        "amax": 4,
+        "bmax": 1,
+        "best_by_k_then_abs_bound": {
+          "kind": "middle",
+          "amax": 4,
+          "bmax": 1,
+          "radix_a": 256,
+          "radix_b": 256,
+          "compressed_k": 12,
+          "operand_encodings_exact": true,
+          "sum_absolute_products_bound": 3170352,
+          "coefficient_outer_bound": 48,
+          "model_packed_sum_error_bound": 0,
+          "low_or_middle_extraction_bound_pass": true,
+          "high_extraction_bound_pass": true,
+          "precision_bound_pass": true,
+          "sufficient_conditions_pass": true
+        }
+      },
+      {
+        "kind": "middle",
+        "amax": 4,
+        "bmax": 2,
+        "best_by_k_then_abs_bound": {
+          "kind": "middle",
+          "amax": 4,
+          "bmax": 2,
+          "radix_a": 256,
+          "radix_b": 256,
+          "compressed_k": 4,
+          "operand_encodings_exact": true,
+          "sum_absolute_products_bound": 2113568,
+          "coefficient_outer_bound": 32,
+          "model_packed_sum_error_bound": 0,
+          "low_or_middle_extraction_bound_pass": true,
+          "high_extraction_bound_pass": true,
+          "precision_bound_pass": true,
+          "sufficient_conditions_pass": true
+        }
+      },
+      {
+        "kind": "middle",
+        "amax": 4,
+        "bmax": 3,
+        "best_by_k_then_abs_bound": {
+          "kind": "middle",
+          "amax": 4,
+          "bmax": 3,
+          "radix_a": 256,
+          "radix_b": 256,
+          "compressed_k": 4,
+          "operand_encodings_exact": true,
+          "sum_absolute_products_bound": 3170352,
+          "coefficient_outer_bound": 48,
+          "model_packed_sum_error_bound": 0,
+          "low_or_middle_extraction_bound_pass": true,
+          "high_extraction_bound_pass": true,
+          "precision_bound_pass": true,
+          "sufficient_conditions_pass": true
+        }
+      },
+      {
+        "kind": "middle",
+        "amax": 4,
+        "bmax": 4,
+        "best_by_k_then_abs_bound": null
+      },
+      {
+        "kind": "middle",
+        "amax": 4,
+        "bmax": 6,
+        "best_by_k_then_abs_bound": null
+      },
+      {
+        "kind": "middle",
+        "amax": 4,
+        "bmax": 8,
+        "best_by_k_then_abs_bound": null
+      },
+      {
+        "kind": "middle",
+        "amax": 4,
+        "bmax": 12,
+        "best_by_k_then_abs_bound": null
+      },
+      {
+        "kind": "middle",
+        "amax": 6,
+        "bmax": 1,
+        "best_by_k_then_abs_bound": {
+          "kind": "middle",
+          "amax": 6,
+          "bmax": 1,
+          "radix_a": 256,
+          "radix_b": 256,
+          "compressed_k": 8,
+          "operand_encodings_exact": true,
+          "sum_absolute_products_bound": 3170352,
+          "coefficient_outer_bound": 48,
+          "model_packed_sum_error_bound": 0,
+          "low_or_middle_extraction_bound_pass": true,
+          "high_extraction_bound_pass": true,
+          "precision_bound_pass": true,
+          "sufficient_conditions_pass": true
+        }
+      },
+      {
+        "kind": "middle",
+        "amax": 6,
+        "bmax": 2,
+        "best_by_k_then_abs_bound": {
+          "kind": "middle",
+          "amax": 6,
+          "bmax": 2,
+          "radix_a": 256,
+          "radix_b": 256,
+          "compressed_k": 4,
+          "operand_encodings_exact": true,
+          "sum_absolute_products_bound": 3170352,
+          "coefficient_outer_bound": 48,
+          "model_packed_sum_error_bound": 0,
+          "low_or_middle_extraction_bound_pass": true,
+          "high_extraction_bound_pass": true,
+          "precision_bound_pass": true,
+          "sufficient_conditions_pass": true
+        }
+      },
+      {
+        "kind": "middle",
+        "amax": 6,
+        "bmax": 3,
+        "best_by_k_then_abs_bound": null
+      },
+      {
+        "kind": "middle",
+        "amax": 6,
+        "bmax": 4,
+        "best_by_k_then_abs_bound": null
+      },
+      {
+        "kind": "middle",
+        "amax": 6,
+        "bmax": 6,
+        "best_by_k_then_abs_bound": null
+      },
+      {
+        "kind": "middle",
+        "amax": 6,
+        "bmax": 8,
+        "best_by_k_then_abs_bound": null
+      },
+      {
+        "kind": "middle",
+        "amax": 6,
+        "bmax": 12,
+        "best_by_k_then_abs_bound": null
+      },
+      {
+        "kind": "middle",
+        "amax": 8,
+        "bmax": 1,
+        "best_by_k_then_abs_bound": null
+      },
+      {
+        "kind": "middle",
+        "amax": 8,
+        "bmax": 2,
+        "best_by_k_then_abs_bound": null
+      },
+      {
+        "kind": "middle",
+        "amax": 8,
+        "bmax": 3,
+        "best_by_k_then_abs_bound": null
+      },
+      {
+        "kind": "middle",
+        "amax": 8,
+        "bmax": 4,
+        "best_by_k_then_abs_bound": null
+      },
+      {
+        "kind": "middle",
+        "amax": 8,
+        "bmax": 6,
+        "best_by_k_then_abs_bound": null
+      },
+      {
+        "kind": "middle",
+        "amax": 8,
+        "bmax": 8,
+        "best_by_k_then_abs_bound": null
+      },
+      {
+        "kind": "middle",
+        "amax": 8,
+        "bmax": 12,
+        "best_by_k_then_abs_bound": null
+      },
+      {
+        "kind": "middle",
+        "amax": 12,
+        "bmax": 1,
+        "best_by_k_then_abs_bound": null
+      },
+      {
+        "kind": "middle",
+        "amax": 12,
+        "bmax": 2,
+        "best_by_k_then_abs_bound": null
+      },
+      {
+        "kind": "middle",
+        "amax": 12,
+        "bmax": 3,
+        "best_by_k_then_abs_bound": null
+      },
+      {
+        "kind": "middle",
+        "amax": 12,
+        "bmax": 4,
+        "best_by_k_then_abs_bound": null
+      },
+      {
+        "kind": "middle",
+        "amax": 12,
+        "bmax": 6,
+        "best_by_k_then_abs_bound": null
+      },
+      {
+        "kind": "middle",
+        "amax": 12,
+        "bmax": 8,
+        "best_by_k_then_abs_bound": null
+      },
+      {
+        "kind": "middle",
+        "amax": 12,
+        "bmax": 12,
+        "best_by_k_then_abs_bound": null
+      }
+    ],
+    "scope": "Linear radix families and sufficient bounds only; failed bounds are not impossibility proofs.",
+    "middle_scope": "One same-scale dot's two K subsequences, not two separately recoverable outputs."
+  },
+  "candidates": [
+    {
+      "label": "asymmetric_ternary_by_full_e2m1",
+      "proof": {
+        "kind": "independent",
+        "amax": 1,
+        "bmax": 12,
+        "radix_a": 512,
+        "radix_b": 128,
+        "compressed_k": 4,
+        "operand_encodings_exact": true,
+        "sum_absolute_products_bound": 3176496,
+        "coefficient_outer_bound": 48,
+        "model_packed_sum_error_bound": 0,
+        "low_or_middle_extraction_bound_pass": true,
+        "high_extraction_bound_pass": true,
+        "precision_bound_pass": true,
+        "sufficient_conditions_pass": true
+      },
+      "random_cases": 2048,
+      "constant_cases": 2025,
+      "alternating_cases": 81,
+      "total_cases": 4154,
+      "decoded_failures": 0,
+      "packed_sum_not_exact_cases": 0,
+      "maximum_observed_packed_sum_error": 0,
+      "groups_discarding_alignment_bits": 0,
+      "independent_scale_failures": 0,
+      "bitfield_decoder_failures": 0,
+      "first_loss_with_correct_output": null,
+      "first_failure": null
+    },
+    {
+      "label": "shared_q3_by_full_e2m1",
+      "proof": {
+        "kind": "shared",
+        "amax": 3,
+        "bmax": 12,
+        "radix_a": 512,
+        "radix_b": 512,
+        "compressed_k": 4,
+        "operand_encodings_exact": true,
+        "sum_absolute_products_bound": 73872,
+        "coefficient_outer_bound": 144,
+        "model_packed_sum_error_bound": 0,
+        "low_or_middle_extraction_bound_pass": true,
+        "high_extraction_bound_pass": true,
+        "precision_bound_pass": true,
+        "sufficient_conditions_pass": true
+      },
+      "random_cases": 2048,
+      "constant_cases": 735,
+      "alternating_cases": 27,
+      "total_cases": 2810,
+      "decoded_failures": 0,
+      "packed_sum_not_exact_cases": 0,
+      "maximum_observed_packed_sum_error": 0,
+      "groups_discarding_alignment_bits": 0,
+      "independent_scale_failures": 0,
+      "bitfield_decoder_failures": 0,
+      "first_loss_with_correct_output": null,
+      "first_failure": null
+    },
+    {
+      "label": "shared_ternary_by_full_e2m1_longer_k",
+      "proof": {
+        "kind": "shared",
+        "amax": 1,
+        "bmax": 12,
+        "radix_a": 1024,
+        "radix_b": 1024,
+        "compressed_k": 32,
+        "operand_encodings_exact": true,
+        "sum_absolute_products_bound": 393600,
+        "coefficient_outer_bound": 384,
+        "model_packed_sum_error_bound": 0,
+        "low_or_middle_extraction_bound_pass": true,
+        "high_extraction_bound_pass": true,
+        "precision_bound_pass": true,
+        "sufficient_conditions_pass": true
+      },
+      "random_cases": 2048,
+      "constant_cases": 135,
+      "alternating_cases": 27,
+      "total_cases": 2210,
+      "decoded_failures": 0,
+      "packed_sum_not_exact_cases": 0,
+      "maximum_observed_packed_sum_error": 0,
+      "groups_discarding_alignment_bits": 0,
+      "independent_scale_failures": 0,
+      "bitfield_decoder_failures": 0,
+      "first_loss_with_correct_output": null,
+      "first_failure": null
+    },
+    {
+      "label": "middle_q3_compressed_k8",
+      "proof": {
+        "kind": "middle",
+        "amax": 3,
+        "bmax": 3,
+        "radix_a": 512,
+        "radix_b": 512,
+        "compressed_k": 8,
+        "operand_encodings_exact": true,
+        "sum_absolute_products_bound": 18948168,
+        "coefficient_outer_bound": 72,
+        "model_packed_sum_error_bound": 12,
+        "low_or_middle_extraction_bound_pass": true,
+        "high_extraction_bound_pass": true,
+        "precision_bound_pass": true,
+        "sufficient_conditions_pass": true
+      },
+      "random_cases": 2048,
+      "constant_cases": 2401,
+      "alternating_cases": 81,
+      "total_cases": 4531,
+      "decoded_failures": 0,
+      "packed_sum_not_exact_cases": 1,
+      "maximum_observed_packed_sum_error": 1.0,
+      "groups_discarding_alignment_bits": 0,
+      "independent_scale_failures": 0,
+      "bitfield_decoder_failures": 0,
+      "first_loss_with_correct_output": {
+        "wanted": [
+          6
+        ],
+        "decoded": [
+          6
+        ],
+        "bitfield_decoded": [
+          6
+        ],
+        "packed_result": 18877440.0,
+        "exact_integer_packed_result": 18877441,
+        "packed_error": -1.0,
+        "dropped_alignment_groups": 0,
+        "inputs_q": [
+          [
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3
+          ],
+          [
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3
+          ],
+          [
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        ],
+        "packed_a": [
+          1537.0,
+          1536.0,
+          1536.0,
+          1536.0,
+          1536.0,
+          1536.0,
+          1536.0,
+          1536.0
+        ],
+        "packed_b": [
+          1537.0,
+          1536.0,
+          1536.0,
+          1536.0,
+          1536.0,
+          1536.0,
+          1536.0,
+          1536.0
+        ],
+        "traces": [
+          {
+            "start": 0,
+            "result": 9440257.0,
+            "trace": {
+              "terms_signed_significand_exponent": [
+                [
+                  18898952,
+                  20
+                ],
+                [
+                  18874368,
+                  20
+                ],
+                [
+                  18874368,
+                  20
+                ],
+                [
+                  18874368,
+                  20
+                ]
+              ],
+              "max_exponent": 20,
+              "aligned_signed_significands": [
+                18898952,
+                18874368,
+                18874368,
+                18874368
+              ],
+              "discarded_magnitude_bits": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "integer_sum": 75522056,
+              "output_bits_hex": "4b100c01"
+            }
+          },
+          {
+            "start": 4,
+            "result": 18877440.0,
+            "trace": {
+              "terms_signed_significand_exponent": [
+                [
+                  18874368,
+                  20
+                ],
+                [
+                  18874368,
+                  20
+                ],
+                [
+                  18874368,
+                  20
+                ],
+                [
+                  18874368,
+                  20
+                ],
+                [
+                  9440257,
+                  23
+                ]
+              ],
+              "max_exponent": 23,
+              "aligned_signed_significands": [
+                2359296,
+                2359296,
+                2359296,
+                2359296,
+                9440257
+              ],
+              "discarded_magnitude_bits": [
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              "integer_sum": 18877441,
+              "output_bits_hex": "4b900600"
+            }
+          }
+        ]
+      },
+      "first_failure": null
+    },
+    {
+      "label": "middle_q3_compressed_k12",
+      "proof": {
+        "kind": "middle",
+        "amax": 3,
+        "bmax": 3,
+        "radix_a": 512,
+        "radix_b": 512,
+        "compressed_k": 12,
+        "operand_encodings_exact": true,
+        "sum_absolute_products_bound": 28422252,
+        "coefficient_outer_bound": 108,
+        "model_packed_sum_error_bound": 18,
+        "low_or_middle_extraction_bound_pass": true,
+        "high_extraction_bound_pass": true,
+        "precision_bound_pass": true,
+        "sufficient_conditions_pass": true
+      },
+      "random_cases": 2048,
+      "constant_cases": 2401,
+      "alternating_cases": 81,
+      "total_cases": 4531,
+      "decoded_failures": 0,
+      "packed_sum_not_exact_cases": 81,
+      "maximum_observed_packed_sum_error": 4.0,
+      "groups_discarding_alignment_bits": 80,
+      "independent_scale_failures": 0,
+      "bitfield_decoder_failures": 0,
+      "first_loss_with_correct_output": {
+        "wanted": [
+          216
+        ],
+        "decoded": [
+          216
+        ],
+        "bitfield_decoded": [
+          216
+        ],
+        "packed_result": 28422248.0,
+        "exact_integer_packed_result": 28422252,
+        "packed_error": -4.0,
+        "dropped_alignment_groups": 1,
+        "inputs_q": [
+          [
+            -3,
+            -3,
+            -3,
+            -3,
+            -3,
+            -3,
+            -3,
+            -3,
+            -3,
+            -3,
+            -3,
+            -3
+          ],
+          [
+            -3,
+            -3,
+            -3,
+            -3,
+            -3,
+            -3,
+            -3,
+            -3,
+            -3,
+            -3,
+            -3,
+            -3
+          ],
+          [
+            -3,
+            -3,
+            -3,
+            -3,
+            -3,
+            -3,
+            -3,
+            -3,
+            -3,
+            -3,
+            -3,
+            -3
+          ],
+          [
+            -3,
+            -3,
+            -3,
+            -3,
+            -3,
+            -3,
+            -3,
+            -3,
+            -3,
+            -3,
+            -3,
+            -3
+          ]
+        ],
+        "packed_a": [
+          -1539.0,
+          -1539.0,
+          -1539.0,
+          -1539.0,
+          -1539.0,
+          -1539.0,
+          -1539.0,
+          -1539.0,
+          -1539.0,
+          -1539.0,
+          -1539.0,
+          -1539.0
+        ],
+        "packed_b": [
+          -1539.0,
+          -1539.0,
+          -1539.0,
+          -1539.0,
+          -1539.0,
+          -1539.0,
+          -1539.0,
+          -1539.0,
+          -1539.0,
+          -1539.0,
+          -1539.0,
+          -1539.0
+        ],
+        "traces": [
+          {
+            "start": 0,
+            "result": 9474084.0,
+            "trace": {
+              "terms_signed_significand_exponent": [
+                [
+                  18948168,
+                  20
+                ],
+                [
+                  18948168,
+                  20
+                ],
+                [
+                  18948168,
+                  20
+                ],
+                [
+                  18948168,
+                  20
+                ]
+              ],
+              "max_exponent": 20,
+              "aligned_signed_significands": [
+                18948168,
+                18948168,
+                18948168,
+                18948168
+              ],
+              "discarded_magnitude_bits": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "integer_sum": 75792672,
+              "output_bits_hex": "4b109024"
+            }
+          },
+          {
+            "start": 4,
+            "result": 18948168.0,
+            "trace": {
+              "terms_signed_significand_exponent": [
+                [
+                  18948168,
+                  20
+                ],
+                [
+                  18948168,
+                  20
+                ],
+                [
+                  18948168,
+                  20
+                ],
+                [
+                  18948168,
+                  20
+                ],
+                [
+                  9474084,
+                  23
+                ]
+              ],
+              "max_exponent": 23,
+              "aligned_signed_significands": [
+                2368521,
+                2368521,
+                2368521,
+                2368521,
+                9474084
+              ],
+              "discarded_magnitude_bits": [
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              "integer_sum": 18948168,
+              "output_bits_hex": "4b909024"
+            }
+          },
+          {
+            "start": 8,
+            "result": 28422248.0,
+            "trace": {
+              "terms_signed_significand_exponent": [
+                [
+                  18948168,
+                  20
+                ],
+                [
+                  18948168,
+                  20
+                ],
+                [
+                  18948168,
+                  20
+                ],
+                [
+                  18948168,
+                  20
+                ],
+                [
+                  9474084,
+                  24
+                ]
+              ],
+              "max_exponent": 24,
+              "aligned_signed_significands": [
+                1184260,
+                1184260,
+                1184260,
+                1184260,
+                9474084
+              ],
+              "discarded_magnitude_bits": [
+                8,
+                8,
+                8,
+                8,
+                0
+              ],
+              "integer_sum": 14211124,
+              "output_bits_hex": "4bd8d834"
+            }
+          }
+        ]
+      },
+      "first_failure": null
+    }
+  ],
+  "same_scale_mx32_middle_pipeline": {
+    "original_k": 32,
+    "packed_k_total": 16,
+    "packed_k_per_decode": 8,
+    "decodes_per_original_block": 2,
+    "bfma4_groups_per_decode": 2,
+    "packed_bfma4_groups_total": 4,
+    "ordinary_bfma4_groups_total": 8,
+    "cases": 2049,
+    "failures": 0,
+    "maximum_intermediate_packed_error": 0,
+    "scale_rule": "Both halves belong to the same original MX32 scale product; multiply decoded sum by scaleA*scaleB/4.",
+    "qualification": "Arithmetic operation counts only. Packing, epilogue, memory and register costs are not timed."
+  },
+  "failure_examples": {
+    "asymmetric_k8_exact_collision": [
+      {
+        "wanted": [
+          96,
+          0
+        ],
+        "decoded": [
+          -32,
+          0
+        ],
+        "bitfield_decoded": [
+          -32,
+          0
+        ],
+        "packed_result": 96.0,
+        "exact_integer_packed_result": 96,
+        "packed_error": 0.0,
+        "dropped_alignment_groups": 0,
+        "inputs_q": [
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            12,
+            12,
+            12,
+            12,
+            12,
+            12,
+            12,
+            12
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        ],
+        "packed_a": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "packed_b": [
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0,
+          12.0
+        ],
+        "traces": [
+          {
+            "start": 0,
+            "result": 48.0,
+            "trace": {
+              "terms_signed_significand_exponent": [
+                [
+                  12582912,
+                  3
+                ],
+                [
+                  12582912,
+                  3
+                ],
+                [
+                  12582912,
+                  3
+                ],
+                [
+                  12582912,
+                  3
+                ]
+              ],
+              "max_exponent": 3,
+              "aligned_signed_significands": [
+                12582912,
+                12582912,
+                12582912,
+                12582912
+              ],
+              "discarded_magnitude_bits": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "integer_sum": 50331648,
+              "output_bits_hex": "42400000"
+            }
+          },
+          {
+            "start": 4,
+            "result": 96.0,
+            "trace": {
+              "terms_signed_significand_exponent": [
+                [
+                  12582912,
+                  3
+                ],
+                [
+                  12582912,
+                  3
+                ],
+                [
+                  12582912,
+                  3
+                ],
+                [
+                  12582912,
+                  3
+                ],
+                [
+                  12582912,
+                  5
+                ]
+              ],
+              "max_exponent": 5,
+              "aligned_signed_significands": [
+                3145728,
+                3145728,
+                3145728,
+                3145728,
+                12582912
+              ],
+              "discarded_magnitude_bits": [
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              "integer_sum": 25165824,
+              "output_bits_hex": "42c00000"
+            }
+          }
+        ]
+      },
+      {
+        "wanted": [
+          -32,
+          0
+        ],
+        "decoded": [
+          -32,
+          0
+        ],
+        "bitfield_decoded": [
+          -32,
+          0
+        ],
+        "packed_result": 96.0,
+        "exact_integer_packed_result": 96,
+        "packed_error": 0.0,
+        "dropped_alignment_groups": 0,
+        "inputs_q": [
+          [
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            -4,
+            -4,
+            -4,
+            -4,
+            -4,
+            -4,
+            -4,
+            -4
+          ],
+          [
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        ],
+        "packed_a": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "packed_b": [
+          124.0,
+          -4.0,
+          -4.0,
+          -4.0,
+          -4.0,
+          -4.0,
+          -4.0,
+          -4.0
+        ],
+        "traces": [
+          {
+            "start": 0,
+            "result": 112.0,
+            "trace": {
+              "terms_signed_significand_exponent": [
+                [
+                  16252928,
+                  6
+                ],
+                [
+                  -8388608,
+                  2
+                ],
+                [
+                  -8388608,
+                  2
+                ],
+                [
+                  -8388608,
+                  2
+                ]
+              ],
+              "max_exponent": 6,
+              "aligned_signed_significands": [
+                16252928,
+                -524288,
+                -524288,
+                -524288
+              ],
+              "discarded_magnitude_bits": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "integer_sum": 14680064,
+              "output_bits_hex": "42e00000"
+            }
+          },
+          {
+            "start": 4,
+            "result": 96.0,
+            "trace": {
+              "terms_signed_significand_exponent": [
+                [
+                  -8388608,
+                  2
+                ],
+                [
+                  -8388608,
+                  2
+                ],
+                [
+                  -8388608,
+                  2
+                ],
+                [
+                  -8388608,
+                  2
+                ],
+                [
+                  14680064,
+                  6
+                ]
+              ],
+              "max_exponent": 6,
+              "aligned_signed_significands": [
+                -524288,
+                -524288,
+                -524288,
+                -524288,
+                14680064
+              ],
+              "discarded_magnitude_bits": [
+                0,
+                0,
+                0,
+                0,
+                0
+              ],
+              "integer_sum": 12582912,
+              "output_bits_hex": "42c00000"
+            }
+          }
+        ]
+      }
+    ],
+    "signed_int2_by_full_e2m1_k4_exact_collision": [
+      {
+        "wanted": [
+          64,
+          0
+        ],
+        "decoded": [
+          64,
+          0
+        ],
+        "bitfield_decoded": [
+          -64,
+          0
+        ],
+        "packed_result": 64.0,
+        "exact_integer_packed_result": 64,
+        "packed_error": 0.0,
+        "dropped_alignment_groups": 0,
+        "inputs_q": [
+          [
+            -2,
+            -2,
+            -2,
+            -1
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            -12,
+            -12,
+            -8,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ]
+        ],
+        "packed_a": [
+          -2.0,
+          -2.0,
+          -2.0,
+          -1.0
+        ],
+        "packed_b": [
+          -12.0,
+          -12.0,
+          -8.0,
+          0.0
+        ],
+        "traces": [
+          {
+            "start": 0,
+            "result": 64.0,
+            "trace": {
+              "terms_signed_significand_exponent": [
+                [
+                  12582912,
+                  4
+                ],
+                [
+                  12582912,
+                  4
+                ],
+                [
+                  8388608,
+                  4
+                ]
+              ],
+              "max_exponent": 4,
+              "aligned_signed_significands": [
+                12582912,
+                12582912,
+                8388608
+              ],
+              "discarded_magnitude_bits": [
+                0,
+                0,
+                0
+              ],
+              "integer_sum": 33554432,
+              "output_bits_hex": "42800000"
+            }
+          }
+        ]
+      },
+      {
+        "wanted": [
+          -64,
+          0
+        ],
+        "decoded": [
+          64,
+          0
+        ],
+        "bitfield_decoded": [
+          -64,
+          0
+        ],
+        "packed_result": 64.0,
+        "exact_integer_packed_result": 64,
+        "packed_error": 0.0,
+        "dropped_alignment_groups": 0,
+        "inputs_q": [
+          [
+            -2,
+            -2,
+            -2,
+            -1
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            12,
+            12,
+            8,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            -1
+          ]
+        ],
+        "packed_a": [
+          -2.0,
+          -2.0,
+          -2.0,
+          -1.0
+        ],
+        "packed_b": [
+          12.0,
+          12.0,
+          8.0,
+          -128.0
+        ],
+        "traces": [
+          {
+            "start": 0,
+            "result": 64.0,
+            "trace": {
+              "terms_signed_significand_exponent": [
+                [
+                  -12582912,
+                  4
+                ],
+                [
+                  -12582912,
+                  4
+                ],
+                [
+                  -8388608,
+                  4
+                ],
+                [
+                  8388608,
+                  7
+                ]
+              ],
+              "max_exponent": 7,
+              "aligned_signed_significands": [
+                -1572864,
+                -1572864,
+                -1048576,
+                8388608
+              ],
+              "discarded_magnitude_bits": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "integer_sum": 4194304,
+              "output_bits_hex": "42800000"
+            }
+          }
+        ]
+      }
+    ],
+    "middle_q3_k16_carry_failure": {
+      "wanted": [
+        288
+      ],
+      "decoded": [
+        -224
+      ],
+      "bitfield_decoded": [
+        -224
+      ],
+      "packed_result": 37896328.0,
+      "exact_integer_packed_result": 37896336,
+      "packed_error": -8.0,
+      "dropped_alignment_groups": 2,
+      "inputs_q": [
+        [
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3
+        ],
+        [
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3
+        ],
+        [
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3
+        ],
+        [
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3
+        ]
+      ],
+      "packed_a": [
+        1539.0,
+        1539.0,
+        1539.0,
+        1539.0,
+        1539.0,
+        1539.0,
+        1539.0,
+        1539.0,
+        1539.0,
+        1539.0,
+        1539.0,
+        1539.0,
+        1539.0,
+        1539.0,
+        1539.0,
+        1539.0
+      ],
+      "packed_b": [
+        1539.0,
+        1539.0,
+        1539.0,
+        1539.0,
+        1539.0,
+        1539.0,
+        1539.0,
+        1539.0,
+        1539.0,
+        1539.0,
+        1539.0,
+        1539.0,
+        1539.0,
+        1539.0,
+        1539.0,
+        1539.0
+      ],
+      "traces": [
+        {
+          "start": 0,
+          "result": 9474084.0,
+          "trace": {
+            "terms_signed_significand_exponent": [
+              [
+                18948168,
+                20
+              ],
+              [
+                18948168,
+                20
+              ],
+              [
+                18948168,
+                20
+              ],
+              [
+                18948168,
+                20
+              ]
+            ],
+            "max_exponent": 20,
+            "aligned_signed_significands": [
+              18948168,
+              18948168,
+              18948168,
+              18948168
+            ],
+            "discarded_magnitude_bits": [
+              0,
+              0,
+              0,
+              0
+            ],
+            "integer_sum": 75792672,
+            "output_bits_hex": "4b109024"
+          }
+        },
+        {
+          "start": 4,
+          "result": 18948168.0,
+          "trace": {
+            "terms_signed_significand_exponent": [
+              [
+                18948168,
+                20
+              ],
+              [
+                18948168,
+                20
+              ],
+              [
+                18948168,
+                20
+              ],
+              [
+                18948168,
+                20
+              ],
+              [
+                9474084,
+                23
+              ]
+            ],
+            "max_exponent": 23,
+            "aligned_signed_significands": [
+              2368521,
+              2368521,
+              2368521,
+              2368521,
+              9474084
+            ],
+            "discarded_magnitude_bits": [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "integer_sum": 18948168,
+            "output_bits_hex": "4b909024"
+          }
+        },
+        {
+          "start": 8,
+          "result": 28422248.0,
+          "trace": {
+            "terms_signed_significand_exponent": [
+              [
+                18948168,
+                20
+              ],
+              [
+                18948168,
+                20
+              ],
+              [
+                18948168,
+                20
+              ],
+              [
+                18948168,
+                20
+              ],
+              [
+                9474084,
+                24
+              ]
+            ],
+            "max_exponent": 24,
+            "aligned_signed_significands": [
+              1184260,
+              1184260,
+              1184260,
+              1184260,
+              9474084
+            ],
+            "discarded_magnitude_bits": [
+              8,
+              8,
+              8,
+              8,
+              0
+            ],
+            "integer_sum": 14211124,
+            "output_bits_hex": "4bd8d834"
+          }
+        },
+        {
+          "start": 12,
+          "result": 37896328.0,
+          "trace": {
+            "terms_signed_significand_exponent": [
+              [
+                18948168,
+                20
+              ],
+              [
+                18948168,
+                20
+              ],
+              [
+                18948168,
+                20
+              ],
+              [
+                18948168,
+                20
+              ],
+              [
+                14211124,
+                24
+              ]
+            ],
+            "max_exponent": 24,
+            "aligned_signed_significands": [
+              1184260,
+              1184260,
+              1184260,
+              1184260,
+              14211124
+            ],
+            "discarded_magnitude_bits": [
+              8,
+              8,
+              8,
+              8,
+              0
+            ],
+            "integer_sum": 18948164,
+            "output_bits_hex": "4c109022"
+          }
+        }
+      ]
+    },
+    "different_scale_products_collision": {
+      "case_a": {
+        "wanted": [
+          1
+        ],
+        "decoded": [
+          1
+        ],
+        "bitfield_decoded": [
+          1
+        ],
+        "packed_result": 512.0,
+        "exact_integer_packed_result": 512,
+        "packed_error": 0.0,
+        "dropped_alignment_groups": 0,
+        "inputs_q": [
+          [
+            1
+          ],
+          [
+            0
+          ],
+          [
+            1
+          ],
+          [
+            0
+          ]
+        ],
+        "packed_a": [
+          1.0
+        ],
+        "packed_b": [
+          512.0
+        ],
+        "traces": [
+          {
+            "start": 0,
+            "result": 512.0,
+            "trace": {
+              "terms_signed_significand_exponent": [
+                [
+                  8388608,
+                  9
+                ]
+              ],
+              "max_exponent": 9,
+              "aligned_signed_significands": [
+                8388608
+              ],
+              "discarded_magnitude_bits": [
+                0
+              ],
+              "integer_sum": 8388608,
+              "output_bits_hex": "44000000"
+            }
+          }
+        ]
+      },
+      "case_b": {
+        "wanted": [
+          1
+        ],
+        "decoded": [
+          1
+        ],
+        "bitfield_decoded": [
+          1
+        ],
+        "packed_result": 512.0,
+        "exact_integer_packed_result": 512,
+        "packed_error": 0.0,
+        "dropped_alignment_groups": 0,
+        "inputs_q": [
+          [
+            0
+          ],
+          [
+            1
+          ],
+          [
+            0
+          ],
+          [
+            1
+          ]
+        ],
+        "packed_a": [
+          512.0
+        ],
+        "packed_b": [
+          1.0
+        ],
+        "traces": [
+          {
+            "start": 0,
+            "result": 512.0,
+            "trace": {
+              "terms_signed_significand_exponent": [
+                [
+                  8388608,
+                  9
+                ]
+              ],
+              "max_exponent": 9,
+              "aligned_signed_significands": [
+                8388608
+              ],
+              "discarded_magnitude_bits": [
+                0
+              ],
+              "integer_sum": 8388608,
+              "output_bits_hex": "44000000"
+            }
+          }
+        ]
+      },
+      "scale_products": [
+        2,
+        4
+      ],
+      "actual_e2m1_outputs": [
+        0.5,
+        1.0
+      ],
+      "reason": "A single middle coefficient cannot retain differently weighted diagonal terms."
+    }
+  },
+  "admission_and_repair": {
+    "quantizer": "OCP-style max scaling: scale=2**(floor(log2(maxabs))-2), nearest-even E2M1 with saturation.",
+    "synthetic_only": true,
+    "datasets": [
+      {
+        "distribution": "gaussian",
+        "blocks32": 2048,
+        "chunks4": 16384,
+        "full_block_max_q_histogram": {
+          "8": 898,
+          "12": 1150
+        },
+        "normalization_admission": {
+          "none": {
+            "q3_chunk_fraction": 0.11444091796875,
+            "ternary_chunk_fraction": 0.005615234375,
+            "shared_two_rows_q3_pair_fraction": 0.0145263671875,
+            "asymmetric_two_ternary_A_lanes_pair_fraction": 0.0,
+            "middle_original_k16_operand_fraction": 0.000244140625,
+            "middle_original_k16_two_operands_pair_fraction": 0.0,
+            "factored_chunks": 0
+          },
+          "power2": {
+            "q3_chunk_fraction": 0.22943115234375,
+            "ternary_chunk_fraction": 0.01513671875,
+            "shared_two_rows_q3_pair_fraction": 0.0543212890625,
+            "asymmetric_two_ternary_A_lanes_pair_fraction": 0.0001220703125,
+            "middle_original_k16_operand_fraction": 0.000244140625,
+            "middle_original_k16_two_operands_pair_fraction": 0.0,
+            "factored_chunks": 3931
+          },
+          "gcd": {
+            "q3_chunk_fraction": 0.24603271484375,
+            "ternary_chunk_fraction": 0.02093505859375,
+            "shared_two_rows_q3_pair_fraction": 0.0621337890625,
+            "asymmetric_two_ternary_A_lanes_pair_fraction": 0.00048828125,
+            "middle_original_k16_operand_fraction": 0.000244140625,
+            "middle_original_k16_two_operands_pair_fraction": 0.0,
+            "factored_chunks": 4305
+          }
+        },
+        "residual_value_fraction": 0.444488525390625,
+        "residual_scalar_products_per_two_outputs_mean": 3.555908203125,
+        "residual_count_histogram": {
+          "0": 119,
+          "1": 557,
+          "2": 1333,
+          "3": 2056,
+          "4": 1961,
+          "5": 1338,
+          "6": 629,
+          "7": 161,
+          "8": 38
+        },
+        "pair_fraction_requiring_at_most_one_scalar_product": 0.08251953125,
+        "repair_model_cases": 512,
+        "repair_failures": 0,
+        "nonempty_exponent_bins_per_pair_mean": 2.6011962890625,
+        "nonempty_exponent_bins_histogram": {
+          "0": 0,
+          "1": 124,
+          "2": 3019,
+          "3": 5049
+        }
+      },
+      {
+        "distribution": "laplace",
+        "blocks32": 2048,
+        "chunks4": 16384,
+        "full_block_max_q_histogram": {
+          "8": 601,
+          "12": 1447
+        },
+        "normalization_admission": {
+          "none": {
+            "q3_chunk_fraction": 0.2528076171875,
+            "ternary_chunk_fraction": 0.0386962890625,
+            "shared_two_rows_q3_pair_fraction": 0.067138671875,
+            "asymmetric_two_ternary_A_lanes_pair_fraction": 0.0010986328125,
+            "middle_original_k16_operand_fraction": 0.0146484375,
+            "middle_original_k16_two_operands_pair_fraction": 0.00048828125,
+            "factored_chunks": 0
+          },
+          "power2": {
+            "q3_chunk_fraction": 0.33416748046875,
+            "ternary_chunk_fraction": 0.0584716796875,
+            "shared_two_rows_q3_pair_fraction": 0.114501953125,
+            "asymmetric_two_ternary_A_lanes_pair_fraction": 0.0020751953125,
+            "middle_original_k16_operand_fraction": 0.0146484375,
+            "middle_original_k16_two_operands_pair_fraction": 0.00048828125,
+            "factored_chunks": 2912
+          },
+          "gcd": {
+            "q3_chunk_fraction": 0.3450927734375,
+            "ternary_chunk_fraction": 0.06793212890625,
+            "shared_two_rows_q3_pair_fraction": 0.122314453125,
+            "asymmetric_two_ternary_A_lanes_pair_fraction": 0.0035400390625,
+            "middle_original_k16_operand_fraction": 0.0146484375,
+            "middle_original_k16_two_operands_pair_fraction": 0.00048828125,
+            "factored_chunks": 3258
+          }
+        },
+        "residual_value_fraction": 0.3170318603515625,
+        "residual_scalar_products_per_two_outputs_mean": 2.5362548828125,
+        "residual_count_histogram": {
+          "0": 550,
+          "1": 1526,
+          "2": 2166,
+          "3": 1906,
+          "4": 1244,
+          "5": 599,
+          "6": 180,
+          "7": 18,
+          "8": 3
+        },
+        "pair_fraction_requiring_at_most_one_scalar_product": 0.25341796875,
+        "repair_model_cases": 512,
+        "repair_failures": 0,
+        "nonempty_exponent_bins_per_pair_mean": 2.4241943359375,
+        "nonempty_exponent_bins_histogram": {
+          "0": 0,
+          "1": 553,
+          "2": 3611,
+          "3": 4028
+        }
+      },
+      {
+        "distribution": "student_t3",
+        "blocks32": 2048,
+        "chunks4": 16384,
+        "full_block_max_q_histogram": {
+          "8": 625,
+          "12": 1423
+        },
+        "normalization_admission": {
+          "none": {
+            "q3_chunk_fraction": 0.3382568359375,
+            "ternary_chunk_fraction": 0.07708740234375,
+            "shared_two_rows_q3_pair_fraction": 0.1136474609375,
+            "asymmetric_two_ternary_A_lanes_pair_fraction": 0.0064697265625,
+            "middle_original_k16_operand_fraction": 0.05224609375,
+            "middle_original_k16_two_operands_pair_fraction": 0.001953125,
+            "factored_chunks": 0
+          },
+          "power2": {
+            "q3_chunk_fraction": 0.40692138671875,
+            "ternary_chunk_fraction": 0.099853515625,
+            "shared_two_rows_q3_pair_fraction": 0.1689453125,
+            "asymmetric_two_ternary_A_lanes_pair_fraction": 0.0106201171875,
+            "middle_original_k16_operand_fraction": 0.052490234375,
+            "middle_original_k16_two_operands_pair_fraction": 0.001953125,
+            "factored_chunks": 2499
+          },
+          "gcd": {
+            "q3_chunk_fraction": 0.4150390625,
+            "ternary_chunk_fraction": 0.109130859375,
+            "shared_two_rows_q3_pair_fraction": 0.17578125,
+            "asymmetric_two_ternary_A_lanes_pair_fraction": 0.0133056640625,
+            "middle_original_k16_operand_fraction": 0.052490234375,
+            "middle_original_k16_two_operands_pair_fraction": 0.001953125,
+            "factored_chunks": 2809
+          }
+        },
+        "residual_value_fraction": 0.272674560546875,
+        "residual_scalar_products_per_two_outputs_mean": 2.181396484375,
+        "residual_count_histogram": {
+          "0": 931,
+          "1": 1921,
+          "2": 2220,
+          "3": 1670,
+          "4": 919,
+          "5": 392,
+          "6": 110,
+          "7": 29,
+          "8": 0
+        },
+        "pair_fraction_requiring_at_most_one_scalar_product": 0.34814453125,
+        "repair_model_cases": 512,
+        "repair_failures": 0,
+        "nonempty_exponent_bins_per_pair_mean": 2.2962646484375,
+        "nonempty_exponent_bins_histogram": {
+          "0": 0,
+          "1": 931,
+          "2": 3903,
+          "3": 3358
+        }
+      },
+      {
+        "distribution": "sparse90_gaussian",
+        "blocks32": 2048,
+        "chunks4": 16384,
+        "full_block_max_q_histogram": {
+          "0": 69,
+          "8": 627,
+          "12": 1352
+        },
+        "normalization_admission": {
+          "none": {
+            "q3_chunk_fraction": 0.74298095703125,
+            "ternary_chunk_fraction": 0.69146728515625,
+            "shared_two_rows_q3_pair_fraction": 0.55322265625,
+            "asymmetric_two_ternary_A_lanes_pair_fraction": 0.479248046875,
+            "middle_original_k16_operand_fraction": 0.279296875,
+            "middle_original_k16_two_operands_pair_fraction": 0.083984375,
+            "factored_chunks": 0
+          },
+          "power2": {
+            "q3_chunk_fraction": 0.97491455078125,
+            "ternary_chunk_fraction": 0.81683349609375,
+            "shared_two_rows_q3_pair_fraction": 0.950439453125,
+            "asymmetric_two_ternary_A_lanes_pair_fraction": 0.66650390625,
+            "middle_original_k16_operand_fraction": 0.709228515625,
+            "middle_original_k16_two_operands_pair_fraction": 0.4951171875,
+            "factored_chunks": 4399
+          },
+          "gcd": {
+            "q3_chunk_fraction": 0.97930908203125,
+            "ternary_chunk_fraction": 0.959228515625,
+            "shared_two_rows_q3_pair_fraction": 0.958984375,
+            "asymmetric_two_ternary_A_lanes_pair_fraction": 0.92041015625,
+            "middle_original_k16_operand_fraction": 0.743896484375,
+            "middle_original_k16_two_operands_pair_fraction": 0.546875,
+            "factored_chunks": 4833
+          }
+        },
+        "residual_value_fraction": 0.070709228515625,
+        "residual_scalar_products_per_two_outputs_mean": 0.565673828125,
+        "residual_count_histogram": {
+          "0": 4532,
+          "1": 2818,
+          "2": 724,
+          "3": 105,
+          "4": 12,
+          "5": 1,
+          "6": 0,
+          "7": 0,
+          "8": 0
+        },
+        "pair_fraction_requiring_at_most_one_scalar_product": 0.897216796875,
+        "repair_model_cases": 512,
+        "repair_failures": 0,
+        "nonempty_exponent_bins_per_pair_mean": 0.6793212890625,
+        "nonempty_exponent_bins_histogram": {
+          "0": 3687,
+          "1": 3505,
+          "2": 940,
+          "3": 60
+        }
+      },
+      {
+        "distribution": "ternary_positive_control",
+        "blocks32": 2048,
+        "chunks4": 16384,
+        "full_block_max_q_histogram": {
+          "8": 2048
+        },
+        "normalization_admission": {
+          "none": {
+            "q3_chunk_fraction": 0.01275634765625,
+            "ternary_chunk_fraction": 0.01275634765625,
+            "shared_two_rows_q3_pair_fraction": 0.0,
+            "asymmetric_two_ternary_A_lanes_pair_fraction": 0.0,
+            "middle_original_k16_operand_fraction": 0.0,
+            "middle_original_k16_two_operands_pair_fraction": 0.0,
+            "factored_chunks": 0
+          },
+          "power2": {
+            "q3_chunk_fraction": 1.0,
+            "ternary_chunk_fraction": 1.0,
+            "shared_two_rows_q3_pair_fraction": 1.0,
+            "asymmetric_two_ternary_A_lanes_pair_fraction": 1.0,
+            "middle_original_k16_operand_fraction": 1.0,
+            "middle_original_k16_two_operands_pair_fraction": 1.0,
+            "factored_chunks": 16175
+          },
+          "gcd": {
+            "q3_chunk_fraction": 1.0,
+            "ternary_chunk_fraction": 1.0,
+            "shared_two_rows_q3_pair_fraction": 1.0,
+            "asymmetric_two_ternary_A_lanes_pair_fraction": 1.0,
+            "middle_original_k16_operand_fraction": 1.0,
+            "middle_original_k16_two_operands_pair_fraction": 1.0,
+            "factored_chunks": 16175
+          }
+        },
+        "residual_value_fraction": 0.6641387939453125,
+        "residual_scalar_products_per_two_outputs_mean": 5.3131103515625,
+        "residual_count_histogram": {
+          "0": 0,
+          "1": 20,
+          "2": 159,
+          "3": 570,
+          "4": 1414,
+          "5": 2229,
+          "6": 2230,
+          "7": 1264,
+          "8": 306
+        },
+        "pair_fraction_requiring_at_most_one_scalar_product": 0.00244140625,
+        "repair_model_cases": 512,
+        "repair_failures": 0,
+        "nonempty_exponent_bins_per_pair_mean": 1.0,
+        "nonempty_exponent_bins_histogram": {
+          "0": 0,
+          "1": 8192,
+          "2": 0,
+          "3": 0
+        }
+      }
+    ],
+    "cost_accounting": {
+      "dense_one_sided_residual": "For two shared-B outputs, baseline is 2 dot products. Packed core costs 1; two dense residual dots add 2, total 3 versus 2 (1.5x arithmetic), before packing overhead.",
+      "dense_two_sided_residual": "AB=AcBc+ArB+AcBr; packing the two core outputs gives 1 packed core plus 4 residual products versus 2 baselines, or 2.5x dense arithmetic if residuals use dense GEMM.",
+      "sparse_residual": "Additional scalar products are counted, not equated to Tensor Core cycles. Indices, gathers, zeros, predication and scheduling are not timed.",
+      "exponent_bins": "q=2**e*m with e=0/1/2 and |m|<=3. Up to three packed shared-B products versus two baseline products; only one active bin gives a raw arithmetic reduction.",
+      "normalization": "Common powers of two or gcd factors are exact internal refactorizations. Gcd factors including 3 require a postscale multiplication; this is not evidence for free MX format conversion."
+    }
+  },
+  "proof_scope": "Published V100 BFMA4 numerical model, sequential blocks of four; no theorem for arbitrary future hardware or every nonlinear encoding."
+}

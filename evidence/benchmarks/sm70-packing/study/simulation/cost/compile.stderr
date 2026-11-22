@@ -1,0 +1,47 @@
+nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+ptxas info    : 0 bytes gmem
+ptxas info    : Compiling entry function 'shared_B_int_K16' for 'sm_70'
+ptxas info    : Function properties for shared_B_int_K16
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 32 registers, used 0 barriers, 388 bytes cmem[0]
+ptxas info    : Compile time = 8.183 ms
+ptxas info    : Compiling entry function 'shared_B_float_K16' for 'sm_70'
+ptxas info    : Function properties for shared_B_float_K16
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 32 registers, used 0 barriers, 388 bytes cmem[0]
+ptxas info    : Compile time = 5.053 ms
+ptxas info    : Compiling entry function 'two_sided_magic_K32_w4' for 'sm_70'
+ptxas info    : Function properties for two_sided_magic_K32_w4
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 40 registers, used 0 barriers, 388 bytes cmem[0]
+ptxas info    : Compile time = 6.630 ms
+ptxas info    : Compiling entry function 'two_sided_int_K32_w4' for 'sm_70'
+ptxas info    : Function properties for two_sided_int_K32_w4
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 38 registers, used 0 barriers, 388 bytes cmem[0]
+ptxas info    : Compile time = 7.243 ms
+ptxas info    : Compiling entry function 'two_sided_int_K32_w1' for 'sm_70'
+ptxas info    : Function properties for two_sided_int_K32_w1
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 38 registers, used 0 barriers, 388 bytes cmem[0]
+ptxas info    : Compile time = 5.870 ms
+ptxas info    : Compiling entry function 'two_sided_float_K32_w4' for 'sm_70'
+ptxas info    : Function properties for two_sided_float_K32_w4
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 40 registers, used 0 barriers, 388 bytes cmem[0]
+ptxas info    : Compile time = 5.644 ms
+ptxas info    : Compiling entry function 'two_sided_float_K32_w1' for 'sm_70'
+ptxas info    : Function properties for two_sided_float_K32_w1
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 40 registers, used 0 barriers, 388 bytes cmem[0]
+ptxas info    : Compile time = 6.380 ms
+ptxas info    : Compiling entry function 'baseline_two_K32_w4' for 'sm_70'
+ptxas info    : Function properties for baseline_two_K32_w4
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 56 registers, used 0 barriers, 404 bytes cmem[0]
+ptxas info    : Compile time = 8.817 ms
+ptxas info    : Compiling entry function 'baseline_two_K32' for 'sm_70'
+ptxas info    : Function properties for baseline_two_K32
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 56 registers, used 0 barriers, 404 bytes cmem[0]
+ptxas info    : Compile time = 8.355 ms

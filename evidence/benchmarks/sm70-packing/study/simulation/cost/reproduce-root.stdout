@@ -1,0 +1,176 @@
+{
+  "gpu_executed": false,
+  "cycle_simulation": false,
+  "validation": [
+    {
+      "K": 32,
+      "qmax": 1,
+      "radix": 256,
+      "cases": 545025,
+      "low_errors": 0,
+      "high_errors": 0,
+      "max_abs_Z": 2113568,
+      "arithmetic": "CPU NumPy float32 / int32"
+    },
+    {
+      "K": 48,
+      "qmax": 1,
+      "radix": 256,
+      "cases": 1815937,
+      "low_errors": 0,
+      "high_errors": 0,
+      "max_abs_Z": 3170352,
+      "arithmetic": "CPU NumPy float32 / int32"
+    },
+    {
+      "K": 4,
+      "qmax": 3,
+      "radix": 256,
+      "cases": 772705,
+      "low_errors": 0,
+      "high_errors": 0,
+      "max_abs_Z": 2377764,
+      "arithmetic": "CPU NumPy float32 / int32"
+    }
+  ],
+  "sufficient_bound_search": [
+    {
+      "radix": 4,
+      "operand_exact": true,
+      "sufficient_max_K": 0,
+      "max_multiple_16": 0
+    },
+    {
+      "radix": 8,
+      "operand_exact": true,
+      "sufficient_max_K": 1,
+      "max_multiple_16": 0
+    },
+    {
+      "radix": 16,
+      "operand_exact": true,
+      "sufficient_max_K": 3,
+      "max_multiple_16": 0
+    },
+    {
+      "radix": 32,
+      "operand_exact": true,
+      "sufficient_max_K": 7,
+      "max_multiple_16": 0
+    },
+    {
+      "radix": 64,
+      "operand_exact": true,
+      "sufficient_max_K": 15,
+      "max_multiple_16": 0
+    },
+    {
+      "radix": 128,
+      "operand_exact": true,
+      "sufficient_max_K": 31,
+      "max_multiple_16": 16
+    },
+    {
+      "radix": 256,
+      "operand_exact": true,
+      "sufficient_max_K": 63,
+      "max_multiple_16": 48
+    },
+    {
+      "radix": 512,
+      "operand_exact": true,
+      "sufficient_max_K": 63,
+      "max_multiple_16": 48
+    },
+    {
+      "radix": 1024,
+      "operand_exact": true,
+      "sufficient_max_K": 15,
+      "max_multiple_16": 0
+    }
+  ],
+  "note": "All independently bounded L,H,cross tuples tested, a superset of reachable ternary dot products. Power-of-two quarter scaling and subtraction are exact here; no general FMA emulation claim."
+}
+shared_B_int_K16 32 184 16 0.5 46.0
+shared_B_float_K16 32 152 16 0.5 38.0
+two_sided_magic_K32_w4 40 215 32 0.75 53.75
+two_sided_int_K32_w4 38 230 32 0.75 57.5
+two_sided_int_K32_w1 38 229 32 0.5 57.25
+two_sided_float_K32_w4 40 214 32 0.75 53.5
+two_sided_float_K32_w1 40 213 32 0.5 53.25
+baseline_two_K32_w4 56 233 64 0.5625 58.25
+baseline_two_K32 56 232 64 0.5 58.0
+[
+  {
+    "M": 16,
+    "N": 16,
+    "K": 32,
+    "useful_flops": 32768,
+    "baseline_min_HBM_bytes": 6144,
+    "prepacked_fused_min_HBM_bytes": 4096,
+    "materialized_pack_then_fused_min_HBM_bytes": 10240,
+    "ideal_prepacked_bandwidth_ratio": 1.5,
+    "ideal_with_pack_bandwidth_ratio": 0.6,
+    "caveat": "Read each matrix exactly once, two FP32 outputs, no alpha/beta C read. Long K requires repeated decode and compatible scales; no predicted execution time."
+  },
+  {
+    "M": 64,
+    "N": 64,
+    "K": 32,
+    "useful_flops": 524288,
+    "baseline_min_HBM_bytes": 49152,
+    "prepacked_fused_min_HBM_bytes": 40960,
+    "materialized_pack_then_fused_min_HBM_bytes": 65536,
+    "ideal_prepacked_bandwidth_ratio": 1.2,
+    "ideal_with_pack_bandwidth_ratio": 0.75,
+    "caveat": "Read each matrix exactly once, two FP32 outputs, no alpha/beta C read. Long K requires repeated decode and compatible scales; no predicted execution time."
+  },
+  {
+    "M": 512,
+    "N": 512,
+    "K": 32,
+    "useful_flops": 33554432,
+    "baseline_min_HBM_bytes": 2228224,
+    "prepacked_fused_min_HBM_bytes": 2162688,
+    "materialized_pack_then_fused_min_HBM_bytes": 2359296,
+    "ideal_prepacked_bandwidth_ratio": 1.0303030303030303,
+    "ideal_with_pack_bandwidth_ratio": 0.9444444444444444,
+    "caveat": "Read each matrix exactly once, two FP32 outputs, no alpha/beta C read. Long K requires repeated decode and compatible scales; no predicted execution time."
+  },
+  {
+    "M": 4096,
+    "N": 4096,
+    "K": 32,
+    "useful_flops": 2147483648,
+    "baseline_min_HBM_bytes": 135266304,
+    "prepacked_fused_min_HBM_bytes": 134742016,
+    "materialized_pack_then_fused_min_HBM_bytes": 136314880,
+    "ideal_prepacked_bandwidth_ratio": 1.0038910505836576,
+    "ideal_with_pack_bandwidth_ratio": 0.9923076923076923,
+    "caveat": "Read each matrix exactly once, two FP32 outputs, no alpha/beta C read. Long K requires repeated decode and compatible scales; no predicted execution time."
+  },
+  {
+    "M": 512,
+    "N": 512,
+    "K": 512,
+    "useful_flops": 536870912,
+    "baseline_min_HBM_bytes": 4194304,
+    "prepacked_fused_min_HBM_bytes": 3145728,
+    "materialized_pack_then_fused_min_HBM_bytes": 6291456,
+    "ideal_prepacked_bandwidth_ratio": 1.3333333333333333,
+    "ideal_with_pack_bandwidth_ratio": 0.6666666666666666,
+    "caveat": "Read each matrix exactly once, two FP32 outputs, no alpha/beta C read. Long K requires repeated decode and compatible scales; no predicted execution time."
+  },
+  {
+    "M": 512,
+    "N": 512,
+    "K": 4096,
+    "useful_flops": 4294967296,
+    "baseline_min_HBM_bytes": 18874368,
+    "prepacked_fused_min_HBM_bytes": 10485760,
+    "materialized_pack_then_fused_min_HBM_bytes": 35651584,
+    "ideal_prepacked_bandwidth_ratio": 1.8,
+    "ideal_with_pack_bandwidth_ratio": 0.5294117647058824,
+    "caveat": "Read each matrix exactly once, two FP32 outputs, no alpha/beta C read. Long K requires repeated decode and compatible scales; no predicted execution time."
+  }
+]

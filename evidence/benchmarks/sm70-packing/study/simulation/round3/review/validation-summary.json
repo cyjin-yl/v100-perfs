@@ -1,0 +1,322 @@
+{
+  "passed": true,
+  "new_gpu_execution": false,
+  "fresh_architecture_cycle_simulation": false,
+  "fresh_original_octave_model": false,
+  "extra_round3_checks": 7,
+  "random_cases_per_scheme": 64,
+  "source_files_verified_unchanged": 69,
+  "source_sha256": {
+    "math/packing_results.json": "dfc23dfba63afce1580d853bd0b990031687961cdcbc63c6c5e0c0fe2c796521",
+    "simulation/numerics/numerical_results.json": "038bb8703af97397def0e587cb428b7c4b372ae127460a1cf9f0d7f36bba0eb6",
+    "simulation/numerics/original_model_cases.json": "970eeec671775f8cf2c4559cbef0b866b6c81a0f3ae3f4191da45d0a6a347a46",
+    "simulation/numerics/fixture_comparison.csv": "272a8903b6311df4459728567eecdb9015ad7c058f976d3af7712460a7e7b712",
+    "simulation/numerics/original_octave_results.json": "a08820bbe74a5b1a25fd9965b5698e24cc9f335027e49c5a305764c246bbc732",
+    "simulation/search/structural-search-results.json": "00c4f2b2cc7c37e9ac99bd956aa92f9f8c90b2e90702adb6d51ea5c982cc8be6",
+    "simulation/cost/magic-decode-validation.json": "38ce8ccab0714532289b4c0fbf887b16171c5720d1fd9b5808e987d0762849ec",
+    "simulation/cost/static-cost-results.json": "2656f65bc2d7967f3ce048da918c3aff580982979e788dd0fe5cce53eee9560a",
+    "simulation/architecture/synthetic-results.json": "c697629a5811d5448b7769ad11014ea565fba08a8c9c7f3a31c7be2adc2dd893",
+    "simulation/architecture/official-lud64-results.json": "50be90ba30706cf7988776697f2898e12f8f575e377c21e6a9c0fef95316c981",
+    "simulation/round3/math/round3_math_results.json": "7b6558688ecc760c655af1b32cace307b300fdc096606553a934711d8c937c24",
+    "simulation/round3/cuda/cpu-fragment-validation.json": "9c9be6f64bbb6013e1cc5b3a630db3e0cacbe8e76a2d474c9a8c8b4bca5bc58c",
+    "simulation/round3/cuda/fragment-map.json": "43e2f6986c700e36d75789399e984946cb9cc03c4ff79c66e97137d299bdc556",
+    "simulation/round3/cuda/compile-evidence.json": "716910c20c2322bd4acb15dced83315f643dc5d0fefdaf12efc209f96d3c0d77",
+    "simulation/round3/middle_decode/cpu-decoder-validation.json": "291071022e9161ee4ea51dc84402f0e0bca1d77d65438a2295ebfb6dfd967303",
+    "simulation/round3/middle_decode/compile-evidence.json": "92ccf1682f9761dc6511239b8803bd932b14b39d092d3553c98f42682679d79e",
+    "simulation/round3/review/preparation-review-results.json": "34f4b89e976ae51b6077c5e3ed9af7ebf63ab1e24e93233e10b5e5d8ca8d7b1a",
+    "simulation/round3/review/layout-contract-results.json": "e35e991f2be0367f6db31ca953fdf363365b08e274449a07119fc3de32054bbb",
+    "math/packing_exhaustive.py": "4e2c3eb67b76d57f6dc7ab2d944b382550779a27a69d3789e860bce3fec1699a",
+    "simulation/numerics/run_numerical_study.py": "922aa3e7b3a188b6e4e15c620a6a49aa449f8b9ffcbea0eba8695bd5f42d6262",
+    "simulation/numerics/v100_model.py": "8a5ca4507c4309a21f849e2e441076db3de6b8e0d1330704bc450412a8e97956",
+    "simulation/numerics/run_original_octave.m": "1c80ba67d9c10406ff8f43ade67a649a0c348a2ed589ffa4fb5c5cb32df0e347",
+    "simulation/numerics/upstream-snapshot/LICENCE": "1fb3b38cdcc2483e81bcd8422321d25553f76f540f1c3089e04114e398363a8c",
+    "simulation/numerics/upstream-snapshot/README.md": "0d2f9a5bf76f6fb9927a4c26ee739476e8b9835e3914901f995b64b646a98d91",
+    "simulation/numerics/upstream-snapshot/SNAPSHOT.json": "ca1ecccb9eb760606b789ab740cb4fc314955a34eefb1933469f24da4373a165",
+    "simulation/numerics/upstream-snapshot/model_validation/V100/fp16/a_V100_fp16.txt": "53d8534fd1106f7e9a23e902b918e59108f9e1b05843d20a36b3049a61bf8204",
+    "simulation/numerics/upstream-snapshot/model_validation/V100/fp16/b_V100_fp16.txt": "1a019e8dcec2a44a741e691268e4c4a9eb9eb9ebc128be097f9921b813d4c6f9",
+    "simulation/numerics/upstream-snapshot/model_validation/V100/fp16/c_V100_fp32.txt": "d38097e1e4d5547234e7be1c6daabeb4ba8fe24e99367391a3f7b5c600001848",
+    "simulation/numerics/upstream-snapshot/model_validation/V100/fp16/d_V100_fp32.txt": "1cfbb62768f303c90aff43458afe386e297b99df7a4e69ab4b0cde26dbcbac83",
+    "simulation/numerics/upstream-snapshot/model_validation/readHexFloatFile.m": "3a73792439c503b1551fcdaa1c6865f80d1dd204e9083c8271085701e2a58553",
+    "simulation/numerics/upstream-snapshot/model_validation/readIeeeFloatsFromFile.m": "5cdfd3fb1cce2484ab6159e7a95ac820cc052c072e9a8100aa3385a05636ff23",
+    "simulation/numerics/upstream-snapshot/models/V100TC.m": "f72056b0af60b249516078b45a110dab16a5542808d73f4bd158efca51ec18d7",
+    "simulation/numerics/upstream-snapshot/models/tools/GEMM.m": "ea4ec5348a2d92c995e812bf7216283a48d0270edc15c8d2c5d11166281e67d8",
+    "simulation/numerics/upstream-snapshot/models/tools/Generic_BFMA_TC.m": "98c79251eb48f4d70b14c94f0ab11e7150f87c149dac36a69784a3b2ccb9ce51",
+    "simulation/search/structural_search.py": "09394f3ac6536a92c320713841e5cec5c3fbef6234c30b779a8e4b1a681b5be3",
+    "simulation/cost/validate_magic_decode.py": "b78b07804cee1a50af3563cfd921886b00c57973fb0862067cae791c7f5302c5",
+    "simulation/cost/analyze_cost.py": "2cad290eb12bc72da343315b843cdd713e6e4b9cd924214db741401011f44552",
+    "simulation/cost/resources.txt": "8bf3525cc443c5a1f3c9af56dc2ab57a4a91d5bb367696cf3c6a438f29dac089",
+    "simulation/cost/sm70-sass.txt": "acd40fa39fc79d8341dd1b15da686f2f61e050b8026462be9ac6a0d721b09a14",
+    "simulation/cost/packing_cost_kernels.cu": "25973020ff9ea62f8b75b63f31642a14841876648c5f49ed1db125aea1010583",
+    "simulation/cost/packing_cost_kernels.o": "cc3438f4ee3148b78cf15c21fa5433522ef091b327e468fe471c4acc7e34927f",
+    "simulation/cost/m8n8k4_probe.cu": "ea29648de0dd784909972be227bdc7e870ef8411d6d11d8fda501cb47ed4c9e8",
+    "simulation/cost/m8n8k4_probe.o": "948eede265b7f4bffea60d804871ee5d12ff89ad4f5a1c2813167ae0b5691207",
+    "simulation/cost/m8n8k4-sass.txt": "1e664ea59be47deb9eab19cb9943c3a063d8f1f36a07ef4298dfd52074dfd8db",
+    "simulation/architecture/make_synthetic_traces.py": "4cde76ae298f403f876d500a46dfcf7f3698af1caeecf4327a7d16e3240d3178",
+    "simulation/architecture/synthetic/manifest.json": "f3dc9d06c05a2643bc9bcab1f4e9909135c6295eced941dca9d41d1151e70867",
+    "simulation/architecture/summarize_evidence.py": "f05def6c80680e43fcf0a74130db762801f97ae94b257b1235c7839705accc4f",
+    "simulation/architecture/logs/official-lud64-qv100.log": "87c22cc21fb99de67c4a9370a9d6eacb70784a560f5415c0241369ef9bff9e96",
+    "simulation/architecture/ptx_accumulator_formula_check.cpp": "ec2b617c4cda097e283720a8dd6f76883a34e0a01f63ed2ba5e8d0e9878bcc2a",
+    "simulation/architecture/source-evidence/half.hpp": "ccd824d6931413fe992688750550bdea24860ff26cf98c9acc8362970603e355",
+    "simulation/round3/review/ci-checks.json": "cdef2f1f0c9b3c686589a071502471494473327cca166b2809d66246e2f64792",
+    "simulation/round3/math/round3_math.py": "97a2f6f41f2443e6219a8da95096f35bb903883ed7b467c2d3b06d2a87b1f5ad",
+    "simulation/round3/cuda/validate_fragments.py": "b22513d84447a25f41174ecc18f7451ebd8f974ae6c1494bafe7754d759aa095",
+    "simulation/round3/cuda/fragment_mapping.hpp": "78ca809cc6606912724982559c31ed82b6141ec74651cf65324015ecd901f4b1",
+    "simulation/round3/cuda/emit_header_map.cpp": "a460a370d9deb78643f1c639999d1a2e25d030b9697c05b350906752e2c037df",
+    "simulation/round3/cuda/summarize_sass.py": "3b4e285a0140cdcd73791232bce8f8a89e368e6cae7ab7df4c08a4026099f21c",
+    "simulation/round3/cuda/mapped_packing.cu": "07d6e6821318270a01a84ab5abeb1b12a060eaa5f098bd8529e9950a66d65838",
+    "simulation/round3/cuda/mapped_packing.o": "7bd3fb9592664137522a7718c322e24e65cf8109a07ac0877d6a33c1293105a2",
+    "simulation/round3/cuda/sm70-sass.txt": "ebf681db982aee725a58b125a2423b066b6e2e363b9d38609d804c0b5e94bbc5",
+    "simulation/round3/cuda/resources.txt": "fa0d2020b0e65e3792e536ed91e61299ac5205ed2ccc0053fe14b4299e21aa40",
+    "simulation/round3/review/preparation_review.py": "cff1be721fb29dddb1be5038f526c84fd5925f95c3bab4232322745a0e687329",
+    "simulation/round3/review/check_layout_contract.py": "7c2e7b2102ac7e0b04a0a80eb801d19dd1319cb56d809c0409a128213a127c01",
+    "simulation/round3/middle_decode/validate_decoders.py": "ceefb74acdee3c67d4af323e8cafb02645710f0e290f6626d454131f94ad5cf2",
+    "simulation/round3/middle_decode/summarize_sass.py": "21ffb1181d07d095df0df3b08344b2caf81561bcb415ed18e3c8b42a8e057ff3",
+    "simulation/round3/middle_decode/middle_decode.cu": "250b466fa345a1f801c1a53ef4428ad4f531f70d7fa99797041e7503560b9051",
+    "simulation/round3/middle_decode/middle_decode.o": "7320de8d14ae09e70ae4d5a7644ea9da11002b4e201f598cac5af0bb0715baa4",
+    "simulation/round3/middle_decode/sm70-sass.txt": "82b6f233d00d73eabb925b1cb4de40126fd41e698d82c4b87586da33b5f57d1c",
+    "simulation/round3/middle_decode/resources.txt": "480250681f246fefe90ba9329942f733704b64aa8367dfff341ca001f063c899",
+    "simulation/round3/middle_decode/compile.stderr": "8158516473841177a87c09708488fb4e649decb43cef5c94036e03da4e0cba59"
+  },
+  "steps": [
+    {
+      "name": "exact-integer-and-ieee-model",
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "/workspace/scratch/f8d9571c451b/simulation/round3/review/ci-final-run/isolated-study/math/packing_exhaustive.py"
+      ],
+      "log": "logs/exact-integer-and-ieee-model.log",
+      "returncode": 0,
+      "wall_seconds": 0.8195391620029113,
+      "log_sha256": "cd29ad3eb912cccaf568780ae35af2203e7979b8788bcd98807ad91ff512dce5",
+      "scope": "CPU integer proof boxes, scalar IEEE model, and negative controls",
+      "passed": true
+    },
+    {
+      "name": "published-v100-numerical-model",
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "/workspace/scratch/f8d9571c451b/simulation/round3/review/ci-final-run/isolated-study/simulation/numerics/run_numerical_study.py",
+        "--random-cases",
+        "64",
+        "--upstream",
+        "/workspace/scratch/f8d9571c451b/simulation/round3/review/ci-final-run/isolated-study/simulation/numerics/upstream-snapshot"
+      ],
+      "log": "logs/published-v100-numerical-model.log",
+      "returncode": 0,
+      "wall_seconds": 0.5176236580009572,
+      "log_sha256": "1faeb046e3f4e31040661e48048ca48590f48c2edff52948a5bc797aff6ee83c",
+      "scope": "Fresh CPU numerical-model execution against published hardware fixtures; no new GPU run",
+      "passed": true,
+      "published_fixture_count": 5000,
+      "packing_cases": 6748
+    },
+    {
+      "name": "linear-family-sufficient-bound-search",
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "/workspace/scratch/f8d9571c451b/simulation/round3/review/ci-final-run/isolated-study/simulation/search/structural_search.py"
+      ],
+      "log": "logs/linear-family-sufficient-bound-search.log",
+      "returncode": 0,
+      "wall_seconds": 0.8884006060034153,
+      "log_sha256": "940e15d792c881c8aeaa90ac7bae92c0a58270fbdd53751f6d9aac9a17d7cc45",
+      "scope": "Sufficient-bound search only; failed bounds are not impossibility proofs",
+      "passed": true,
+      "candidates_checked": 21504
+    },
+    {
+      "name": "magic-decoder",
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "/workspace/scratch/f8d9571c451b/simulation/round3/review/ci-final-run/isolated-study/simulation/cost/validate_magic_decode.py"
+      ],
+      "log": "logs/magic-decoder.log",
+      "returncode": 0,
+      "wall_seconds": 0.1688329589960631,
+      "log_sha256": "38ce8ccab0714532289b4c0fbf887b16171c5720d1fd9b5808e987d0762849ec",
+      "scope": "CPU float32/int32 coefficient-box checks",
+      "passed": true,
+      "coefficient_cases": 3133667
+    },
+    {
+      "name": "recorded-sm70-static-cost",
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "/workspace/scratch/f8d9571c451b/simulation/round3/review/ci-final-run/isolated-study/simulation/cost/analyze_cost.py"
+      ],
+      "log": "logs/recorded-sm70-static-cost.log",
+      "returncode": 0,
+      "wall_seconds": 0.0645604329984053,
+      "log_sha256": "d079c1dba07299b7a10de125bdab87c8fe5ad3b4e3f11294995b401f2247a0f8",
+      "scope": "Reparse recorded SASS/resource evidence; no recompilation or GPU timing",
+      "passed": true,
+      "kernels": 9
+    },
+    {
+      "name": "synthetic-trace-generator",
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "/workspace/scratch/f8d9571c451b/simulation/round3/review/ci-final-run/isolated-study/simulation/architecture/make_synthetic_traces.py"
+      ],
+      "log": "logs/synthetic-trace-generator.log",
+      "returncode": 0,
+      "wall_seconds": 0.06469786899833707,
+      "log_sha256": "f3dc9d06c05a2643bc9bcab1f4e9909135c6295eced941dca9d41d1151e70867",
+      "scope": "Fresh generation of artificial dependency graphs only; no simulation",
+      "passed": true,
+      "traces": 6
+    },
+    {
+      "name": "recorded-official-trace-log-parser",
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "/workspace/scratch/f8d9571c451b/simulation/round3/review/ci-final-run/isolated-study/simulation/architecture/summarize_evidence.py"
+      ],
+      "log": "logs/recorded-official-trace-log-parser.log",
+      "returncode": 0,
+      "wall_seconds": 0.06454080299590714,
+      "log_sha256": "844a6536c07ace0015e5290da6029bdbca9ce4a1d3b24a4762e61233293ee089",
+      "scope": "Parse a recorded simulation log; not a new cycle simulation",
+      "passed": true
+    },
+    {
+      "name": "compile-isolated-half-formula",
+      "argv": [
+        "/usr/bin/g++",
+        "-O2",
+        "-std=c++17",
+        "-I/workspace/scratch/f8d9571c451b/simulation/round3/review/ci-final-run/isolated-study/simulation/architecture/source-evidence",
+        "/workspace/scratch/f8d9571c451b/simulation/round3/review/ci-final-run/isolated-study/simulation/architecture/ptx_accumulator_formula_check.cpp",
+        "-o",
+        "/workspace/scratch/f8d9571c451b/simulation/round3/review/ci-final-run/isolated-study/simulation/architecture/ptx_accumulator_formula_check"
+      ],
+      "log": "logs/compile-isolated-half-formula.log",
+      "returncode": 0,
+      "wall_seconds": 0.6162909339982434,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "scope": "Compile isolated upstream half expression",
+      "passed": true
+    },
+    {
+      "name": "run-isolated-half-formula",
+      "argv": [
+        "/workspace/scratch/f8d9571c451b/simulation/round3/review/ci-final-run/isolated-study/simulation/architecture/ptx_accumulator_formula_check"
+      ],
+      "log": "logs/run-isolated-half-formula.log",
+      "returncode": 0,
+      "wall_seconds": 0.004353860997071024,
+      "log_sha256": "e4d6c2d8fd5d0170f211dc1b9601d95a37bb32b712c2e35b9a33b7bd7983db69",
+      "scope": "Isolated arithmetic expression only, not a full PTX/GPU run",
+      "passed": true
+    },
+    {
+      "name": "round3-math-model-and-admission",
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "/workspace/scratch/f8d9571c451b/simulation/round3/review/ci-final-run/isolated-study/simulation/round3/math/round3_math.py"
+      ],
+      "log": "logs/round3-math-model-and-admission.log",
+      "returncode": 0,
+      "wall_seconds": 2.736987725002109,
+      "log_sha256": "5b00509b39a4cdb63620dc37ba09474c2e7cb969876dee8ff41c382922e6d941",
+      "scope": "Fresh round-three bound/model/admission experiments, not GPU timing",
+      "passed": true,
+      "result_json": "simulation/round3/math/round3_math_results.json",
+      "manifest_sha256": "cdef2f1f0c9b3c686589a071502471494473327cca166b2809d66246e2f64792"
+    },
+    {
+      "name": "round3-cuda-fragment-cpu-contract",
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "/workspace/scratch/f8d9571c451b/simulation/round3/review/ci-final-run/isolated-study/simulation/round3/cuda/validate_fragments.py"
+      ],
+      "log": "logs/round3-cuda-fragment-cpu-contract.log",
+      "returncode": 0,
+      "wall_seconds": 2.965494616997603,
+      "log_sha256": "129bad72055ca23a88ef330ef8d7c0d64bbdc5e0539cb1ac3781dbb3ae73c7a6",
+      "scope": "Fresh CPU fragment/scale/decode checks plus actual host-compiled header, not CUDA execution",
+      "passed": true,
+      "result_json": "simulation/round3/cuda/cpu-fragment-validation.json",
+      "manifest_sha256": "cdef2f1f0c9b3c686589a071502471494473327cca166b2809d66246e2f64792"
+    },
+    {
+      "name": "round3-recorded-sm70-static-cost",
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "/workspace/scratch/f8d9571c451b/simulation/round3/review/ci-final-run/isolated-study/simulation/round3/cuda/summarize_sass.py"
+      ],
+      "log": "logs/round3-recorded-sm70-static-cost.log",
+      "returncode": 0,
+      "wall_seconds": 0.06557592500030296,
+      "log_sha256": "f55ccb9a34e53d4e90ae68003296db09210abb8731035454ab35454a44fbbc85",
+      "scope": "Reparse recorded round-three SASS and enforce magic/vector-store counts, no GPU timing",
+      "passed": true,
+      "result_json": "simulation/round3/cuda/compile-evidence.json",
+      "manifest_sha256": "cdef2f1f0c9b3c686589a071502471494473327cca166b2809d66246e2f64792"
+    },
+    {
+      "name": "round3-independent-preparation-review",
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "/workspace/scratch/f8d9571c451b/simulation/round3/review/ci-final-run/isolated-study/simulation/round3/review/preparation_review.py"
+      ],
+      "log": "logs/round3-independent-preparation-review.log",
+      "returncode": 0,
+      "wall_seconds": 0.11760816299647558,
+      "log_sha256": "92978e68ac64b53cf13b34144cbd6008a636e0d037e8980b4b25f93d1964f762",
+      "scope": "Fresh CPU nibble/LUT/scale counterexample and byte-accounting checks, not measured preparation speed",
+      "passed": true,
+      "result_json": "simulation/round3/review/preparation-review-results.json",
+      "manifest_sha256": "cdef2f1f0c9b3c686589a071502471494473327cca166b2809d66246e2f64792"
+    },
+    {
+      "name": "round3-independent-rectangular-layout-review",
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "/workspace/scratch/f8d9571c451b/simulation/round3/review/ci-final-run/isolated-study/simulation/round3/review/check_layout_contract.py",
+        "--cuda-dir",
+        "/workspace/scratch/f8d9571c451b/simulation/round3/review/ci-final-run/isolated-study/simulation/round3/cuda"
+      ],
+      "log": "logs/round3-independent-rectangular-layout-review.log",
+      "returncode": 0,
+      "wall_seconds": 0.46931393900013063,
+      "log_sha256": "c64d34292c602aabb90118bf0976fc6bcc46400b8d409d9e1a5144bdfa0a3e8d",
+      "scope": "Fresh CPU C++ header/scale-reuse/vector-store and non-square cuBLAS storage contract, not actual cuBLAS execution",
+      "passed": true,
+      "result_json": "simulation/round3/review/layout-contract-results.json",
+      "manifest_sha256": "cdef2f1f0c9b3c686589a071502471494473327cca166b2809d66246e2f64792"
+    },
+    {
+      "name": "round3-middle-decoder-coefficient-box",
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "/workspace/scratch/f8d9571c451b/simulation/round3/review/ci-final-run/isolated-study/simulation/round3/middle_decode/validate_decoders.py"
+      ],
+      "log": "logs/round3-middle-decoder-coefficient-box.log",
+      "returncode": 0,
+      "wall_seconds": 0.41694489200017415,
+      "log_sha256": "69090c56ddc06333c819fb7195dfd71bc5ef3964f5fea721872e45d9211f7e43",
+      "scope": "Fresh CPU decoder identities on admissible FP32 coefficient box, not GPU or new BFMA simulation",
+      "passed": true,
+      "result_json": "simulation/round3/middle_decode/cpu-decoder-validation.json",
+      "manifest_sha256": "cdef2f1f0c9b3c686589a071502471494473327cca166b2809d66246e2f64792"
+    },
+    {
+      "name": "round3-middle-recorded-static-cost",
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "/workspace/scratch/f8d9571c451b/simulation/round3/review/ci-final-run/isolated-study/simulation/round3/middle_decode/summarize_sass.py"
+      ],
+      "log": "logs/round3-middle-recorded-static-cost.log",
+      "returncode": 0,
+      "wall_seconds": 0.03260557199973846,
+      "log_sha256": "577cb3767c547b942dd062eddd41ccd8f32c98019ae42ba208c43d22c51c5e41",
+      "scope": "Reparse historical compiler output for matched middle decoder endpoints; no compilation rerun or measured speedup",
+      "passed": true,
+      "result_json": "simulation/round3/middle_decode/compile-evidence.json",
+      "manifest_sha256": "cdef2f1f0c9b3c686589a071502471494473327cca166b2809d66246e2f64792"
+    }
+  ],
+  "runner_wall_seconds": 10.196004299999913,
+  "runner_sha256": "3b1ecd635d40fd9592eadcdd2797e0d8e527e8c9c7bd41f8c86ef05a4419ecce"
+}

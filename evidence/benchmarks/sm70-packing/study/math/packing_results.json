@@ -1,0 +1,1248 @@
+{
+  "metadata": {
+    "created_utc": "2026-11-22T12:29:55.904179+00:00",
+    "execution_kind": "CPU NumPy scalar numerical model and exact integer reasoning",
+    "gpu_executed": false,
+    "volta_internal_arithmetic_emulated": false,
+    "python": "3.12.14",
+    "numpy": "2.3.5",
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+    "script_sha256": "4e2c3eb67b76d57f6dc7ab2d944b382550779a27a69d3789e860bce3fec1699a"
+  },
+  "format": {
+    "q_equals": "2 times the E2M1 numerical value",
+    "full_q_values": [
+      -12,
+      -8,
+      -6,
+      -4,
+      -3,
+      -2,
+      -1,
+      0,
+      1,
+      2,
+      3,
+      4,
+      6,
+      8,
+      12
+    ],
+    "e2m1_values": [
+      -6.0,
+      -4.0,
+      -3.0,
+      -2.0,
+      -1.5,
+      -1.0,
+      -0.5,
+      0.0,
+      0.5,
+      1.0,
+      1.5,
+      2.0,
+      3.0,
+      4.0,
+      6.0
+    ],
+    "signed_zero_handling": "positive and negative zero are one numerical value; bitwise sign-of-zero preservation is outside this experiment",
+    "mxfp4_scales": "Not modeled in the scalar searches. Apply per-block scales after decoding normalized q dot products, divided by 4."
+  },
+  "full_e2m1_scalar_shared_rhs_radix_sweep": [
+    {
+      "shift": 0,
+      "radix": 1,
+      "operand_pairs": 225,
+      "operand_pairs_rounded_by_fp16": 0,
+      "distinct_packed_operands": 39,
+      "input_triples": 3375,
+      "distinct_encoded_products": 125,
+      "encoded_products_with_conflicting_targets": 123,
+      "output_only_lookup_is_unambiguous": false,
+      "nearest_radix_decoder_wrong_triples": 2940,
+      "nearest_radix_decoder_max_abs_error": 144,
+      "first_lookup_collision": {
+        "encoded_product": 144.0,
+        "first_input_a0_a1_b": [
+          -12,
+          -12,
+          -6
+        ],
+        "first_outputs": [
+          72,
+          72
+        ],
+        "second_input_a0_a1_b": [
+          -12,
+          -6,
+          -8
+        ],
+        "second_outputs": [
+          96,
+          48
+        ]
+      }
+    },
+    {
+      "shift": 1,
+      "radix": 2,
+      "operand_pairs": 225,
+      "operand_pairs_rounded_by_fp16": 0,
+      "distinct_packed_operands": 63,
+      "input_triples": 3375,
+      "distinct_encoded_products": 213,
+      "encoded_products_with_conflicting_targets": 133,
+      "output_only_lookup_is_unambiguous": false,
+      "nearest_radix_decoder_wrong_triples": 2896,
+      "nearest_radix_decoder_max_abs_error": 144,
+      "first_lookup_collision": {
+        "encoded_product": 288.0,
+        "first_input_a0_a1_b": [
+          -12,
+          -12,
+          -8
+        ],
+        "first_outputs": [
+          96,
+          96
+        ],
+        "second_input_a0_a1_b": [
+          -12,
+          -6,
+          -12
+        ],
+        "second_outputs": [
+          144,
+          72
+        ]
+      }
+    },
+    {
+      "shift": 2,
+      "radix": 4,
+      "operand_pairs": 225,
+      "operand_pairs_rounded_by_fp16": 0,
+      "distinct_packed_operands": 103,
+      "input_triples": 3375,
+      "distinct_encoded_products": 341,
+      "encoded_products_with_conflicting_targets": 153,
+      "output_only_lookup_is_unambiguous": false,
+      "nearest_radix_decoder_wrong_triples": 2776,
+      "nearest_radix_decoder_max_abs_error": 144,
+      "first_lookup_collision": {
+        "encoded_product": 288.0,
+        "first_input_a0_a1_b": [
+          -12,
+          -6,
+          -8
+        ],
+        "first_outputs": [
+          96,
+          48
+        ],
+        "second_input_a0_a1_b": [
+          -12,
+          -3,
+          -12
+        ],
+        "second_outputs": [
+          144,
+          36
+        ]
+      }
+    },
+    {
+      "shift": 3,
+      "radix": 8,
+      "operand_pairs": 225,
+      "operand_pairs_rounded_by_fp16": 0,
+      "distinct_packed_operands": 157,
+      "input_triples": 3375,
+      "distinct_encoded_products": 491,
+      "encoded_products_with_conflicting_targets": 153,
+      "output_only_lookup_is_unambiguous": false,
+      "nearest_radix_decoder_wrong_triples": 2476,
+      "nearest_radix_decoder_max_abs_error": 144,
+      "first_lookup_collision": {
+        "encoded_product": 432.0,
+        "first_input_a0_a1_b": [
+          -12,
+          -12,
+          -4
+        ],
+        "first_outputs": [
+          48,
+          48
+        ],
+        "second_input_a0_a1_b": [
+          -12,
+          -3,
+          -12
+        ],
+        "second_outputs": [
+          144,
+          36
+        ]
+      }
+    },
+    {
+      "shift": 4,
+      "radix": 16,
+      "operand_pairs": 225,
+      "operand_pairs_rounded_by_fp16": 0,
+      "distinct_packed_operands": 201,
+      "input_triples": 3375,
+      "distinct_encoded_products": 641,
+      "encoded_products_with_conflicting_targets": 122,
+      "output_only_lookup_is_unambiguous": false,
+      "nearest_radix_decoder_wrong_triples": 1996,
+      "nearest_radix_decoder_max_abs_error": 144,
+      "first_lookup_collision": {
+        "encoded_product": -48.0,
+        "first_input_a0_a1_b": [
+          -12,
+          0,
+          4
+        ],
+        "first_outputs": [
+          -48,
+          0
+        ],
+        "second_input_a0_a1_b": [
+          -12,
+          1,
+          -12
+        ],
+        "second_outputs": [
+          144,
+          -12
+        ]
+      }
+    },
+    {
+      "shift": 5,
+      "radix": 32,
+      "operand_pairs": 225,
+      "operand_pairs_rounded_by_fp16": 0,
+      "distinct_packed_operands": 225,
+      "input_triples": 3375,
+      "distinct_encoded_products": 767,
+      "encoded_products_with_conflicting_targets": 66,
+      "output_only_lookup_is_unambiguous": false,
+      "nearest_radix_decoder_wrong_triples": 1380,
+      "nearest_radix_decoder_max_abs_error": 128,
+      "first_lookup_collision": {
+        "encoded_product": 528.0,
+        "first_input_a0_a1_b": [
+          -12,
+          -1,
+          -12
+        ],
+        "first_outputs": [
+          144,
+          12
+        ],
+        "second_input_a0_a1_b": [
+          -8,
+          -8,
+          -2
+        ],
+        "second_outputs": [
+          16,
+          16
+        ]
+      }
+    },
+    {
+      "shift": 6,
+      "radix": 64,
+      "operand_pairs": 225,
+      "operand_pairs_rounded_by_fp16": 0,
+      "distinct_packed_operands": 225,
+      "input_triples": 3375,
+      "distinct_encoded_products": 841,
+      "encoded_products_with_conflicting_targets": 8,
+      "output_only_lookup_is_unambiguous": false,
+      "nearest_radix_decoder_wrong_triples": 780,
+      "nearest_radix_decoder_max_abs_error": 128,
+      "first_lookup_collision": {
+        "encoded_product": 144.0,
+        "first_input_a0_a1_b": [
+          -12,
+          0,
+          -12
+        ],
+        "first_outputs": [
+          144,
+          0
+        ],
+        "second_input_a0_a1_b": [
+          -8,
+          -1,
+          -2
+        ],
+        "second_outputs": [
+          16,
+          2
+        ]
+      }
+    },
+    {
+      "shift": 7,
+      "radix": 128,
+      "operand_pairs": 225,
+      "operand_pairs_rounded_by_fp16": 0,
+      "distinct_packed_operands": 225,
+      "input_triples": 3375,
+      "distinct_encoded_products": 849,
+      "encoded_products_with_conflicting_targets": 0,
+      "output_only_lookup_is_unambiguous": true,
+      "nearest_radix_decoder_wrong_triples": 300,
+      "nearest_radix_decoder_max_abs_error": 128,
+      "first_lookup_collision": null
+    },
+    {
+      "shift": 8,
+      "radix": 256,
+      "operand_pairs": 225,
+      "operand_pairs_rounded_by_fp16": 12,
+      "distinct_packed_operands": 213,
+      "input_triples": 3375,
+      "distinct_encoded_products": 781,
+      "encoded_products_with_conflicting_targets": 64,
+      "output_only_lookup_is_unambiguous": false,
+      "nearest_radix_decoder_wrong_triples": 228,
+      "nearest_radix_decoder_max_abs_error": 256,
+      "first_lookup_collision": {
+        "encoded_product": 36912.0,
+        "first_input_a0_a1_b": [
+          -4,
+          -12,
+          -12
+        ],
+        "first_outputs": [
+          48,
+          144
+        ],
+        "second_input_a0_a1_b": [
+          -3,
+          -12,
+          -12
+        ],
+        "second_outputs": [
+          36,
+          144
+        ]
+      }
+    },
+    {
+      "shift": 9,
+      "radix": 512,
+      "operand_pairs": 225,
+      "operand_pairs_rounded_by_fp16": 40,
+      "distinct_packed_operands": 185,
+      "input_triples": 3375,
+      "distinct_encoded_products": 665,
+      "encoded_products_with_conflicting_targets": 138,
+      "output_only_lookup_is_unambiguous": false,
+      "nearest_radix_decoder_wrong_triples": 560,
+      "nearest_radix_decoder_max_abs_error": 24,
+      "first_lookup_collision": {
+        "encoded_product": 73824.0,
+        "first_input_a0_a1_b": [
+          -8,
+          -12,
+          -12
+        ],
+        "first_outputs": [
+          96,
+          144
+        ],
+        "second_input_a0_a1_b": [
+          -6,
+          -12,
+          -12
+        ],
+        "second_outputs": [
+          72,
+          144
+        ]
+      }
+    },
+    {
+      "shift": 10,
+      "radix": 1024,
+      "operand_pairs": 225,
+      "operand_pairs_rounded_by_fp16": 84,
+      "distinct_packed_operands": 147,
+      "input_triples": 3375,
+      "distinct_encoded_products": 533,
+      "encoded_products_with_conflicting_targets": 174,
+      "output_only_lookup_is_unambiguous": false,
+      "nearest_radix_decoder_wrong_triples": 1176,
+      "nearest_radix_decoder_max_abs_error": 48,
+      "first_lookup_collision": {
+        "encoded_product": 49248.0,
+        "first_input_a0_a1_b": [
+          -12,
+          -8,
+          -6
+        ],
+        "first_outputs": [
+          72,
+          48
+        ],
+        "second_input_a0_a1_b": [
+          -12,
+          -6,
+          -8
+        ],
+        "second_outputs": [
+          96,
+          48
+        ]
+      }
+    },
+    {
+      "shift": 11,
+      "radix": 2048,
+      "operand_pairs": 225,
+      "operand_pairs_rounded_by_fp16": 130,
+      "distinct_packed_operands": 109,
+      "input_triples": 3375,
+      "distinct_encoded_products": 397,
+      "encoded_products_with_conflicting_targets": 172,
+      "output_only_lookup_is_unambiguous": false,
+      "nearest_radix_decoder_wrong_triples": 1820,
+      "nearest_radix_decoder_max_abs_error": 96,
+      "first_lookup_collision": {
+        "encoded_product": 49248.0,
+        "first_input_a0_a1_b": [
+          -12,
+          -4,
+          -6
+        ],
+        "first_outputs": [
+          72,
+          24
+        ],
+        "second_input_a0_a1_b": [
+          -12,
+          -3,
+          -8
+        ],
+        "second_outputs": [
+          96,
+          24
+        ]
+      }
+    },
+    {
+      "shift": 12,
+      "radix": 4096,
+      "operand_pairs": 225,
+      "operand_pairs_rounded_by_fp16": 166,
+      "distinct_packed_operands": 75,
+      "input_triples": 3375,
+      "distinct_encoded_products": 285,
+      "encoded_products_with_conflicting_targets": 132,
+      "output_only_lookup_is_unambiguous": false,
+      "nearest_radix_decoder_wrong_triples": 2324,
+      "nearest_radix_decoder_max_abs_error": 144,
+      "first_lookup_collision": {
+        "encoded_product": 393216.0,
+        "first_input_a0_a1_b": [
+          -12,
+          -12,
+          -8
+        ],
+        "first_outputs": [
+          96,
+          96
+        ],
+        "second_input_a0_a1_b": [
+          -12,
+          -8,
+          -12
+        ],
+        "second_outputs": [
+          144,
+          96
+        ]
+      }
+    }
+  ],
+  "narrow_e2m1_exact_k16": {
+    "domain_q": [
+      -3,
+      -2,
+      -1,
+      0,
+      1,
+      2,
+      3
+    ],
+    "domain_e2m1_values": [
+      -1.5,
+      -1.0,
+      -0.5,
+      0.0,
+      0.5,
+      1.0,
+      1.5
+    ],
+    "k": 16,
+    "radix": 512,
+    "max_abs_packed_operand": 1539,
+    "max_abs_individual_product": 4617,
+    "max_abs_any_partial_accumulator": 73872,
+    "max_abs_unpacked_dot": 144,
+    "half_radix_guard_bound": 256,
+    "superset_integer_output_pairs_tested": 83521,
+    "wrong_output_pairs": 0,
+    "fp32_rounded_accumulators": 0,
+    "proof": [
+      "All packed operands are integers with magnitude <=1539, exactly representable in binary16.",
+      "Every product and every possible partial sum has magnitude <=73872, exactly representable in binary32.",
+      "The low dot is an integer in [-144,144], strictly inside (-256,256).",
+      "Therefore nearest(z/512) recovers the high dot, and subtraction recovers the low dot.",
+      "The output-pair enumeration is a superset of all actual K=16 possibilities, not an enumeration of all input sequences."
+    ]
+  },
+  "two_sided_ternary_exact_k16": {
+    "domain_q": [
+      -1,
+      0,
+      1
+    ],
+    "radix": 128,
+    "k": 16,
+    "target": "Two independent dot products sum(a0*b0) and sum(a1*b1), not just a shared RHS.",
+    "packed_operands": "A=a0+128*a1, B=b0+128*b1",
+    "polynomial": "z=L+128*C+16384*H, with C=sum(a0*b1+a1*b0)",
+    "max_abs_packed_operand": 129,
+    "max_abs_any_partial_accumulator": 266256,
+    "low_high_bound": 16,
+    "cross_bound": 32,
+    "scalar_quadruples_tested": 81,
+    "scalar_product_mismatches": 0,
+    "superset_integer_coefficient_triples_tested": 70785,
+    "wrong_coefficient_triples": 0,
+    "fp32_rounded_accumulators": 0,
+    "proof": [
+      "All operands are exactly representable binary16 integers with magnitude <=129.",
+      "Every product and every possible partial sum is an integer of magnitude <=266256, exactly representable in binary32.",
+      "abs(128*C+L)<=4112<8192 so rounding z/16384 recovers H.",
+      "After removing H, abs(L)<=16<64 so rounding the residual/128 recovers C.",
+      "Subtracting the cross term recovers L; C is discarded, yielding both independent dot products.",
+      "This is a mathematical and CPU numerical result; actual Volta execution and performance remain to be measured."
+    ]
+  },
+  "two_sided_ternary_exact_k32": {
+    "domain_q": [
+      -1,
+      0,
+      1
+    ],
+    "radix": 256,
+    "k": 32,
+    "target": "Two independent dot products sum(a0*b0) and sum(a1*b1), not just a shared RHS.",
+    "packed_operands": "A=a0+256*a1, B=b0+256*b1",
+    "polynomial": "z=L+256*C+65536*H, with C=sum(a0*b1+a1*b0)",
+    "max_abs_packed_operand": 257,
+    "max_abs_any_partial_accumulator": 2113568,
+    "low_high_bound": 32,
+    "cross_bound": 64,
+    "scalar_quadruples_tested": 81,
+    "scalar_product_mismatches": 0,
+    "superset_integer_coefficient_triples_tested": 545025,
+    "wrong_coefficient_triples": 0,
+    "fp32_rounded_accumulators": 0,
+    "proof": [
+      "All operands are exactly representable binary16 integers with magnitude <=257.",
+      "Every product and every possible partial sum is an integer of magnitude <=2113568, exactly representable in binary32.",
+      "abs(256*C+L)<=16416<32768 so rounding z/65536 recovers H.",
+      "After removing H, abs(L)<=32<128 so rounding the residual/256 recovers C.",
+      "Subtracting the cross term recovers L; C is discarded, yielding both independent dot products.",
+      "This is a mathematical and CPU numerical result; actual Volta execution and performance remain to be measured."
+    ]
+  },
+  "narrow_e2m1_scalar_exhaustive": {
+    "shift": 9,
+    "radix": 512,
+    "operand_pairs": 49,
+    "operand_pairs_rounded_by_fp16": 0,
+    "distinct_packed_operands": 49,
+    "input_triples": 343,
+    "distinct_encoded_products": 121,
+    "encoded_products_with_conflicting_targets": 0,
+    "output_only_lookup_is_unambiguous": true,
+    "nearest_radix_decoder_wrong_triples": 0,
+    "nearest_radix_decoder_max_abs_error": 0,
+    "first_lookup_collision": null
+  },
+  "full_e2m1_k2_lookup_collision": {
+    "case_a": {
+      "a0_q": [
+        8,
+        0
+      ],
+      "a1_q": [
+        0,
+        0
+      ],
+      "b_q": [
+        8,
+        1
+      ],
+      "radix": 128,
+      "fp16_packed_operands": [
+        8.0,
+        0.0
+      ],
+      "fp32_products": [
+        64.0,
+        0.0
+      ],
+      "fp32_accumulator": 64.0,
+      "target_q_dots": [
+        64,
+        0
+      ],
+      "nearest_radix_decoded_q_dots": [
+        64,
+        0
+      ],
+      "packed_operand_rounding_count": 0
+    },
+    "case_b": {
+      "a0_q": [
+        -8,
+        0
+      ],
+      "a1_q": [
+        0,
+        1
+      ],
+      "b_q": [
+        8,
+        1
+      ],
+      "radix": 128,
+      "fp16_packed_operands": [
+        -8.0,
+        128.0
+      ],
+      "fp32_products": [
+        -64.0,
+        128.0
+      ],
+      "fp32_accumulator": 64.0,
+      "target_q_dots": [
+        -64,
+        1
+      ],
+      "nearest_radix_decoded_q_dots": [
+        64,
+        0
+      ],
+      "packed_operand_rounding_count": 0
+    },
+    "zero_padding_to_k16_preserves_collision": true
+  },
+  "narrow_k32_constructed_carry_failure": {
+    "a0_q": [
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3
+    ],
+    "a1_q": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "b_q": [
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3
+    ],
+    "radix": 512,
+    "fp16_packed_operands": [
+      3.0,
+      3.0,
+      3.0,
+      3.0,
+      3.0,
+      3.0,
+      3.0,
+      3.0,
+      3.0,
+      3.0,
+      3.0,
+      3.0,
+      3.0,
+      3.0,
+      3.0,
+      3.0,
+      3.0,
+      3.0,
+      3.0,
+      3.0,
+      3.0,
+      3.0,
+      3.0,
+      3.0,
+      3.0,
+      3.0,
+      3.0,
+      3.0,
+      3.0,
+      3.0,
+      3.0,
+      3.0
+    ],
+    "fp32_products": [
+      9.0,
+      9.0,
+      9.0,
+      9.0,
+      9.0,
+      9.0,
+      9.0,
+      9.0,
+      9.0,
+      9.0,
+      9.0,
+      9.0,
+      9.0,
+      9.0,
+      9.0,
+      9.0,
+      9.0,
+      9.0,
+      9.0,
+      9.0,
+      9.0,
+      9.0,
+      9.0,
+      9.0,
+      9.0,
+      9.0,
+      9.0,
+      9.0,
+      9.0,
+      9.0,
+      9.0,
+      9.0
+    ],
+    "fp32_accumulator": 288.0,
+    "target_q_dots": [
+      288,
+      0
+    ],
+    "nearest_radix_decoded_q_dots": [
+      -224,
+      1
+    ],
+    "packed_operand_rounding_count": 0
+  },
+  "full_e2m1_radix512_operand_collision": {
+    "case_a": {
+      "a0_q": [
+        0
+      ],
+      "a1_q": [
+        12
+      ],
+      "b_q": [
+        1
+      ],
+      "radix": 512,
+      "fp16_packed_operands": [
+        6144.0
+      ],
+      "fp32_products": [
+        6144.0
+      ],
+      "fp32_accumulator": 6144.0,
+      "target_q_dots": [
+        0,
+        12
+      ],
+      "nearest_radix_decoded_q_dots": [
+        0,
+        12
+      ],
+      "packed_operand_rounding_count": 0
+    },
+    "case_b": {
+      "a0_q": [
+        1
+      ],
+      "a1_q": [
+        12
+      ],
+      "b_q": [
+        1
+      ],
+      "radix": 512,
+      "fp16_packed_operands": [
+        6144.0
+      ],
+      "fp32_products": [
+        6144.0
+      ],
+      "fp32_accumulator": 6144.0,
+      "target_q_dots": [
+        1,
+        12
+      ],
+      "nearest_radix_decoded_q_dots": [
+        0,
+        12
+      ],
+      "packed_operand_rounding_count": 1
+    }
+  },
+  "random_dot_model": [
+    {
+      "domain": "ternary",
+      "radix": 256,
+      "k": 1,
+      "trials": 4096,
+      "seed": 20261122,
+      "wrong_dot_pairs": 0,
+      "max_abs_error_either_q_dot": 0,
+      "packed_operand_rounding_count": 0,
+      "decoder": "nearest_radix"
+    },
+    {
+      "domain": "ternary",
+      "radix": 256,
+      "k": 2,
+      "trials": 4096,
+      "seed": 20261122,
+      "wrong_dot_pairs": 0,
+      "max_abs_error_either_q_dot": 0,
+      "packed_operand_rounding_count": 0,
+      "decoder": "nearest_radix"
+    },
+    {
+      "domain": "ternary",
+      "radix": 256,
+      "k": 16,
+      "trials": 4096,
+      "seed": 20261122,
+      "wrong_dot_pairs": 0,
+      "max_abs_error_either_q_dot": 0,
+      "packed_operand_rounding_count": 0,
+      "decoder": "nearest_radix"
+    },
+    {
+      "domain": "ternary",
+      "radix": 256,
+      "k": 32,
+      "trials": 4096,
+      "seed": 20261122,
+      "wrong_dot_pairs": 0,
+      "max_abs_error_either_q_dot": 0,
+      "packed_operand_rounding_count": 0,
+      "decoder": "nearest_radix"
+    },
+    {
+      "domain": "ternary",
+      "radix": 256,
+      "k": 64,
+      "trials": 4096,
+      "seed": 20261122,
+      "wrong_dot_pairs": 0,
+      "max_abs_error_either_q_dot": 0,
+      "packed_operand_rounding_count": 0,
+      "decoder": "nearest_radix"
+    },
+    {
+      "domain": "ternary",
+      "radix": 256,
+      "k": 128,
+      "trials": 4096,
+      "seed": 20261122,
+      "wrong_dot_pairs": 0,
+      "max_abs_error_either_q_dot": 0,
+      "packed_operand_rounding_count": 0,
+      "decoder": "nearest_radix"
+    },
+    {
+      "domain": "ternary",
+      "radix": 256,
+      "k": 512,
+      "trials": 4096,
+      "seed": 20261122,
+      "wrong_dot_pairs": 0,
+      "max_abs_error_either_q_dot": 0,
+      "packed_operand_rounding_count": 0,
+      "decoder": "nearest_radix"
+    },
+    {
+      "domain": "e2m1_abs_le_1p5",
+      "radix": 512,
+      "k": 1,
+      "trials": 4096,
+      "seed": 20261122,
+      "wrong_dot_pairs": 0,
+      "max_abs_error_either_q_dot": 0,
+      "packed_operand_rounding_count": 0,
+      "decoder": "nearest_radix"
+    },
+    {
+      "domain": "e2m1_abs_le_1p5",
+      "radix": 512,
+      "k": 2,
+      "trials": 4096,
+      "seed": 20261122,
+      "wrong_dot_pairs": 0,
+      "max_abs_error_either_q_dot": 0,
+      "packed_operand_rounding_count": 0,
+      "decoder": "nearest_radix"
+    },
+    {
+      "domain": "e2m1_abs_le_1p5",
+      "radix": 512,
+      "k": 16,
+      "trials": 4096,
+      "seed": 20261122,
+      "wrong_dot_pairs": 0,
+      "max_abs_error_either_q_dot": 0,
+      "packed_operand_rounding_count": 0,
+      "decoder": "nearest_radix"
+    },
+    {
+      "domain": "e2m1_abs_le_1p5",
+      "radix": 512,
+      "k": 32,
+      "trials": 4096,
+      "seed": 20261122,
+      "wrong_dot_pairs": 0,
+      "max_abs_error_either_q_dot": 0,
+      "packed_operand_rounding_count": 0,
+      "decoder": "nearest_radix"
+    },
+    {
+      "domain": "e2m1_abs_le_1p5",
+      "radix": 512,
+      "k": 64,
+      "trials": 4096,
+      "seed": 20261122,
+      "wrong_dot_pairs": 0,
+      "max_abs_error_either_q_dot": 0,
+      "packed_operand_rounding_count": 0,
+      "decoder": "nearest_radix"
+    },
+    {
+      "domain": "e2m1_abs_le_1p5",
+      "radix": 512,
+      "k": 128,
+      "trials": 4096,
+      "seed": 20261122,
+      "wrong_dot_pairs": 0,
+      "max_abs_error_either_q_dot": 0,
+      "packed_operand_rounding_count": 0,
+      "decoder": "nearest_radix"
+    },
+    {
+      "domain": "e2m1_abs_le_1p5",
+      "radix": 512,
+      "k": 512,
+      "trials": 4096,
+      "seed": 20261122,
+      "wrong_dot_pairs": 16,
+      "max_abs_error_either_q_dot": 512,
+      "packed_operand_rounding_count": 0,
+      "decoder": "nearest_radix"
+    },
+    {
+      "domain": "full_e2m1",
+      "radix": 128,
+      "k": 1,
+      "trials": 4096,
+      "seed": 20261122,
+      "wrong_dot_pairs": 363,
+      "max_abs_error_either_q_dot": 128,
+      "packed_operand_rounding_count": 0,
+      "decoder": "nearest_radix"
+    },
+    {
+      "domain": "full_e2m1",
+      "radix": 128,
+      "k": 2,
+      "trials": 4096,
+      "seed": 20261122,
+      "wrong_dot_pairs": 756,
+      "max_abs_error_either_q_dot": 256,
+      "packed_operand_rounding_count": 0,
+      "decoder": "nearest_radix"
+    },
+    {
+      "domain": "full_e2m1",
+      "radix": 128,
+      "k": 16,
+      "trials": 4096,
+      "seed": 20261122,
+      "wrong_dot_pairs": 2653,
+      "max_abs_error_either_q_dot": 640,
+      "packed_operand_rounding_count": 0,
+      "decoder": "nearest_radix"
+    },
+    {
+      "domain": "full_e2m1",
+      "radix": 128,
+      "k": 32,
+      "trials": 4096,
+      "seed": 20261122,
+      "wrong_dot_pairs": 3106,
+      "max_abs_error_either_q_dot": 768,
+      "packed_operand_rounding_count": 0,
+      "decoder": "nearest_radix"
+    },
+    {
+      "domain": "full_e2m1",
+      "radix": 128,
+      "k": 64,
+      "trials": 4096,
+      "seed": 20261122,
+      "wrong_dot_pairs": 3370,
+      "max_abs_error_either_q_dot": 1024,
+      "packed_operand_rounding_count": 0,
+      "decoder": "nearest_radix"
+    },
+    {
+      "domain": "full_e2m1",
+      "radix": 128,
+      "k": 128,
+      "trials": 4096,
+      "seed": 20261122,
+      "wrong_dot_pairs": 3602,
+      "max_abs_error_either_q_dot": 1536,
+      "packed_operand_rounding_count": 0,
+      "decoder": "nearest_radix"
+    },
+    {
+      "domain": "full_e2m1",
+      "radix": 128,
+      "k": 512,
+      "trials": 4096,
+      "seed": 20261122,
+      "wrong_dot_pairs": 3863,
+      "max_abs_error_either_q_dot": 3072,
+      "packed_operand_rounding_count": 0,
+      "decoder": "nearest_radix"
+    }
+  ],
+  "bilateral_polynomial_scalar": {
+    "narrow": [
+      {
+        "radix": 16,
+        "input_quadruples": 2401,
+        "wrong_middle_coefficients": 528,
+        "max_abs_middle_error": 17,
+        "rounded_packed_operands": 0,
+        "scope": "Two-term scalar dot only. This test alone says nothing about accumulating several packed products."
+      },
+      {
+        "radix": 32,
+        "input_quadruples": 2401,
+        "wrong_middle_coefficients": 8,
+        "max_abs_middle_error": 32,
+        "rounded_packed_operands": 0,
+        "scope": "Two-term scalar dot only. This test alone says nothing about accumulating several packed products."
+      },
+      {
+        "radix": 64,
+        "input_quadruples": 2401,
+        "wrong_middle_coefficients": 0,
+        "max_abs_middle_error": 0,
+        "rounded_packed_operands": 0,
+        "scope": "Two-term scalar dot only. This test alone says nothing about accumulating several packed products."
+      },
+      {
+        "radix": 128,
+        "input_quadruples": 2401,
+        "wrong_middle_coefficients": 0,
+        "max_abs_middle_error": 0,
+        "rounded_packed_operands": 0,
+        "scope": "Two-term scalar dot only. This test alone says nothing about accumulating several packed products."
+      },
+      {
+        "radix": 256,
+        "input_quadruples": 2401,
+        "wrong_middle_coefficients": 0,
+        "max_abs_middle_error": 0,
+        "rounded_packed_operands": 0,
+        "scope": "Two-term scalar dot only. This test alone says nothing about accumulating several packed products."
+      },
+      {
+        "radix": 512,
+        "input_quadruples": 2401,
+        "wrong_middle_coefficients": 0,
+        "max_abs_middle_error": 0,
+        "rounded_packed_operands": 0,
+        "scope": "Two-term scalar dot only. This test alone says nothing about accumulating several packed products."
+      }
+    ],
+    "full": [
+      {
+        "radix": 16,
+        "input_quadruples": 50625,
+        "wrong_middle_coefficients": 43876,
+        "max_abs_middle_error": 295,
+        "rounded_packed_operands": 0,
+        "scope": "Two-term scalar dot only. This test alone says nothing about accumulating several packed products."
+      },
+      {
+        "radix": 32,
+        "input_quadruples": 50625,
+        "wrong_middle_coefficients": 36312,
+        "max_abs_middle_error": 292,
+        "rounded_packed_operands": 0,
+        "scope": "Two-term scalar dot only. This test alone says nothing about accumulating several packed products."
+      },
+      {
+        "radix": 64,
+        "input_quadruples": 50625,
+        "wrong_middle_coefficients": 24732,
+        "max_abs_middle_error": 318,
+        "rounded_packed_operands": 0,
+        "scope": "Two-term scalar dot only. This test alone says nothing about accumulating several packed products."
+      },
+      {
+        "radix": 128,
+        "input_quadruples": 50625,
+        "wrong_middle_coefficients": 11604,
+        "max_abs_middle_error": 257,
+        "rounded_packed_operands": 0,
+        "scope": "Two-term scalar dot only. This test alone says nothing about accumulating several packed products."
+      },
+      {
+        "radix": 256,
+        "input_quadruples": 50625,
+        "wrong_middle_coefficients": 6984,
+        "max_abs_middle_error": 268,
+        "rounded_packed_operands": 5400,
+        "scope": "Two-term scalar dot only. This test alone says nothing about accumulating several packed products."
+      },
+      {
+        "radix": 512,
+        "input_quadruples": 50625,
+        "wrong_middle_coefficients": 14984,
+        "max_abs_middle_error": 512,
+        "rounded_packed_operands": 18000,
+        "scope": "Two-term scalar dot only. This test alone says nothing about accumulating several packed products."
+      }
+    ]
+  },
+  "prime_nonlinear_scalar_existence_proof": {
+    "purpose": "Existence counterexample to a blanket information-theoretic impossibility claim about scalar FP16-input/FP32-output multiplication.",
+    "encoding": "Map the sorted 225 numerical E2M1 pairs to the first 225 primes.",
+    "input_pair_count": 225,
+    "max_prime": 1427,
+    "max_exact_product": 2036329,
+    "independent_four_value_combinations_tested": 50625,
+    "distinct_product_keys": 25425,
+    "conflicting_target_products": 0,
+    "fp32_product_rounding_count": 0,
+    "caveat": "Decoding requires a large table/factorization and products cannot simply be accumulated. No performance or training benefit is claimed."
+  },
+  "not_established": [
+    "Actual V100 correctness, throughput, latency or speedup",
+    "Any advantage over a tuned full-size cuBLAS FP16 GEMM after packing and unpacking",
+    "A general exact full-domain MXFP4 dot-product packing scheme",
+    "Training convergence, quantization error or gradient behavior",
+    "Impossibility of other encodings, sparse/block-specialized algorithms or approximate methods"
+  ]
+}

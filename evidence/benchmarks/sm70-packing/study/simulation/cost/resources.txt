@@ -1,0 +1,40 @@
+
+Fatbin ptx code:
+================
+arch = sm_70
+code version = [8,7]
+host = linux
+compile_size = 64bit
+compressed
+identifier = /workspace/scratch/f8d9571c451b/simulation/cost/packing_cost_kernels.cu
+ptxasOptions = -v  --generate-line-info 
+
+Fatbin elf code:
+================
+arch = sm_70
+code version = [1,7]
+host = linux
+compile_size = 64bit
+identifier = /workspace/scratch/f8d9571c451b/simulation/cost/packing_cost_kernels.cu
+
+Resource usage:
+ Common:
+  GLOBAL:0
+ Function shared_B_int_K16:
+  REG:32 STACK:0 SHARED:0 LOCAL:0 CONSTANT[0]:388 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function shared_B_float_K16:
+  REG:32 STACK:0 SHARED:0 LOCAL:0 CONSTANT[0]:388 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function two_sided_magic_K32_w4:
+  REG:40 STACK:0 SHARED:0 LOCAL:0 CONSTANT[0]:388 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function two_sided_int_K32_w4:
+  REG:38 STACK:0 SHARED:0 LOCAL:0 CONSTANT[0]:388 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function two_sided_int_K32_w1:
+  REG:38 STACK:0 SHARED:0 LOCAL:0 CONSTANT[0]:388 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function two_sided_float_K32_w4:
+  REG:40 STACK:0 SHARED:0 LOCAL:0 CONSTANT[0]:388 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function two_sided_float_K32_w1:
+  REG:40 STACK:0 SHARED:0 LOCAL:0 CONSTANT[0]:388 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function baseline_two_K32_w4:
+  REG:56 STACK:0 SHARED:0 LOCAL:0 CONSTANT[0]:404 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function baseline_two_K32:
+  REG:56 STACK:0 SHARED:0 LOCAL:0 CONSTANT[0]:404 TEXTURE:0 SURFACE:0 SAMPLER:0

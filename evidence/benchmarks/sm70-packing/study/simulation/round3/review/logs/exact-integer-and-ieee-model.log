@@ -1,0 +1,95 @@
+{
+  "output": "/workspace/scratch/f8d9571c451b/simulation/round3/review/ci-final-run/isolated-study/math/packing_results.json",
+  "full_scalar_r128": {
+    "shift": 7,
+    "radix": 128,
+    "operand_pairs": 225,
+    "operand_pairs_rounded_by_fp16": 0,
+    "distinct_packed_operands": 225,
+    "input_triples": 3375,
+    "distinct_encoded_products": 849,
+    "encoded_products_with_conflicting_targets": 0,
+    "output_only_lookup_is_unambiguous": true,
+    "nearest_radix_decoder_wrong_triples": 300,
+    "nearest_radix_decoder_max_abs_error": 128,
+    "first_lookup_collision": null
+  },
+  "narrow_k16": {
+    "domain_q": [
+      -3,
+      -2,
+      -1,
+      0,
+      1,
+      2,
+      3
+    ],
+    "domain_e2m1_values": [
+      -1.5,
+      -1.0,
+      -0.5,
+      0.0,
+      0.5,
+      1.0,
+      1.5
+    ],
+    "k": 16,
+    "radix": 512,
+    "max_abs_packed_operand": 1539,
+    "max_abs_individual_product": 4617,
+    "max_abs_any_partial_accumulator": 73872,
+    "max_abs_unpacked_dot": 144,
+    "half_radix_guard_bound": 256,
+    "superset_integer_output_pairs_tested": 83521,
+    "wrong_output_pairs": 0,
+    "fp32_rounded_accumulators": 0,
+    "proof": [
+      "All packed operands are integers with magnitude <=1539, exactly representable in binary16.",
+      "Every product and every possible partial sum has magnitude <=73872, exactly representable in binary32.",
+      "The low dot is an integer in [-144,144], strictly inside (-256,256).",
+      "Therefore nearest(z/512) recovers the high dot, and subtraction recovers the low dot.",
+      "The output-pair enumeration is a superset of all actual K=16 possibilities, not an enumeration of all input sequences."
+    ]
+  },
+  "two_sided_ternary": {
+    "domain_q": [
+      -1,
+      0,
+      1
+    ],
+    "radix": 128,
+    "k": 16,
+    "target": "Two independent dot products sum(a0*b0) and sum(a1*b1), not just a shared RHS.",
+    "packed_operands": "A=a0+128*a1, B=b0+128*b1",
+    "polynomial": "z=L+128*C+16384*H, with C=sum(a0*b1+a1*b0)",
+    "max_abs_packed_operand": 129,
+    "max_abs_any_partial_accumulator": 266256,
+    "low_high_bound": 16,
+    "cross_bound": 32,
+    "scalar_quadruples_tested": 81,
+    "scalar_product_mismatches": 0,
+    "superset_integer_coefficient_triples_tested": 70785,
+    "wrong_coefficient_triples": 0,
+    "fp32_rounded_accumulators": 0,
+    "proof": [
+      "All operands are exactly representable binary16 integers with magnitude <=129.",
+      "Every product and every possible partial sum is an integer of magnitude <=266256, exactly representable in binary32.",
+      "abs(128*C+L)<=4112<8192 so rounding z/16384 recovers H.",
+      "After removing H, abs(L)<=16<64 so rounding the residual/128 recovers C.",
+      "Subtracting the cross term recovers L; C is discarded, yielding both independent dot products.",
+      "This is a mathematical and CPU numerical result; actual Volta execution and performance remain to be measured."
+    ]
+  },
+  "prime": {
+    "purpose": "Existence counterexample to a blanket information-theoretic impossibility claim about scalar FP16-input/FP32-output multiplication.",
+    "encoding": "Map the sorted 225 numerical E2M1 pairs to the first 225 primes.",
+    "input_pair_count": 225,
+    "max_prime": 1427,
+    "max_exact_product": 2036329,
+    "independent_four_value_combinations_tested": 50625,
+    "distinct_product_keys": 25425,
+    "conflicting_target_products": 0,
+    "fp32_product_rounding_count": 0,
+    "caveat": "Decoding requires a large table/factorization and products cannot simply be accumulated. No performance or training benefit is claimed."
+  }
+}

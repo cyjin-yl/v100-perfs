@@ -1,0 +1,18 @@
+{
+  "kind": "static_sm70_compilation_evidence",
+  "gpu_executed": false,
+  "compiler": "CUDA 12.8.93",
+  "source_files": {
+    "packing_cost_kernels.cu": "25973020ff9ea62f8b75b63f31642a14841876648c5f49ed1db125aea1010583",
+    "m8n8k4_probe.cu": "ea29648de0dd784909972be227bdc7e870ef8411d6d11d8fda501cb47ed4c9e8",
+    "analyze_cost.py": "2cad290eb12bc72da343315b843cdd713e6e4b9cd924214db741401011f44552",
+    "validate_magic_decode.py": "b78b07804cee1a50af3563cfd921886b00c57973fb0862067cae791c7f5302c5",
+    "reproduce_compile.sh": "0ae7587e546749d1e55bc3abb5e1b289e5de5aa293097b5c71344f87581822a0"
+  },
+  "sources": [
+    "https://docs.nvidia.com/cuda/volta-tuning-guide/index.html",
+    "https://arxiv.org/pdf/1804.06826",
+    "https://docs.nvidia.com/cuda/archive/11.4.0/parallel-thread-execution/index.html"
+  ],
+  "private_sdk_compat_note": "Reused parent toolchain containing 4 unused sinpi/cospi declarations adjusted for glibc2.41; no system changes."
+}

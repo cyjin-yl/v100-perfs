@@ -1,0 +1,10 @@
+{"variant": "upstream_qv100", "name": "hmma256_chains1_warps1", "completed": true, "gpu_sim_cycle": 6818, "gpu_sim_insn": 8544, "simulator_wall_seconds": 1.4760885190007684}
+{"variant": "upstream_qv100", "name": "hmma256_chains4_warps1", "completed": true, "gpu_sim_cycle": 5543, "gpu_sim_insn": 8544, "simulator_wall_seconds": 0.7174806160001026}
+{"variant": "upstream_qv100", "name": "hmma256_chains8_warps1", "completed": true, "gpu_sim_cycle": 5658, "gpu_sim_insn": 8544, "simulator_wall_seconds": 0.7660859689967765}
+{"variant": "upstream_qv100", "name": "hmma256_chains1_warps4", "completed": true, "gpu_sim_cycle": 6819, "gpu_sim_insn": 34176, "simulator_wall_seconds": 0.7167749000000185}
+{"variant": "upstream_qv100", "name": "hmma256_chains1_warps16", "completed": true, "gpu_sim_cycle": 7134, "gpu_sim_insn": 136704, "simulator_wall_seconds": 0.7187088730024698}
+{"variant": "upstream_qv100", "name": "no_hmma_warps1", "completed": true, "gpu_sim_cycle": 5028, "gpu_sim_insn": 352, "simulator_wall_seconds": 0.5659941689991683}
+{"variant": "whatif_hmma_latency8_init2", "name": "hmma256_chains1_warps1", "completed": true, "gpu_sim_cycle": 8098, "gpu_sim_insn": 8544, "simulator_wall_seconds": 0.8798128149974218}
+{"variant": "whatif_hmma_latency8_init2", "name": "hmma256_chains4_warps1", "completed": true, "gpu_sim_cycle": 5800, "gpu_sim_insn": 8544, "simulator_wall_seconds": 0.6168301659999997}
+{"variant": "whatif_hmma_latency8_init2", "name": "hmma256_chains8_warps1", "completed": true, "gpu_sim_cycle": 5778, "gpu_sim_insn": 8544, "simulator_wall_seconds": 0.565736365999328}
+{"variant": "whatif_hmma_latency8_init2", "name": "no_hmma_warps1", "completed": true, "gpu_sim_cycle": 5028, "gpu_sim_insn": 352, "simulator_wall_seconds": 0.5717416529987531}

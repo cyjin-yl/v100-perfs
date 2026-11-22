@@ -1,0 +1,10 @@
+{
+  "all_checks_passed": true,
+  "physical_byte_pairs_checked": 131072,
+  "safe_all_E2M1_half_scale_exponents": [
+    -23,
+    13
+  ],
+  "middle_scale_collision_confirmed": true,
+  "gpu_executed": false
+}

@@ -1,0 +1,30 @@
+-kernel name = SYNTHETIC_NOT_HARDWARE_no_hmma_warps1
+-kernel id = 1
+-grid dim = (1,1,1)
+-block dim = (32,1,1)
+-shmem = 0
+-nregs = 80
+-binary version = 70
+-cuda stream id = 0
+-enable lineinfo = 0
+-nvbit version = NONE_SYNTHETIC
+-accelsim tracer version = 3
+-shmem base_addr = 0x0
+-local mem base_addr = 0x0
+# SYNTHETIC register-dependency probe, no hardware execution
+#BEGIN_TB
+thread block = 0,0,0
+warp = 0
+insts = 11
+0000 ffffffff 1 R0 MOV 0 0 0
+0010 ffffffff 1 R2 MOV 0 0 0
+0020 ffffffff 1 R4 MOV 0 0 0
+0030 ffffffff 1 R6 MOV 0 0 0
+0040 ffffffff 1 R8 MOV 0 0 0
+0050 ffffffff 1 R10 MOV 0 0 0
+0060 ffffffff 1 R12 MOV 0 0 0
+0070 ffffffff 1 R14 MOV 0 0 0
+0080 ffffffff 1 R64 MOV 0 0 0
+0090 ffffffff 1 R66 MOV 0 0 0
+00a0 ffffffff 0 EXIT 0 0 0
+#END_TB

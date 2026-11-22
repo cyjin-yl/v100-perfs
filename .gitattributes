@@ -1,0 +1,4 @@
+# Preserve hashed research inputs and raw experiment evidence byte for byte,
+# including upstream CRLF files, when a checkout enables core.autocrlf.
+evidence/benchmarks/sm70-packing/study/** -text
+evidence/results/sm70-packing/** -text

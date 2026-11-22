@@ -1,0 +1,10 @@
+Collecting cmake
+  Downloading cmake-4.4.5-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (7.0 kB)
+Collecting pybind11
+  Downloading pybind11-3.1.0-py3-none-any.whl.metadata (10 kB)
+Downloading cmake-4.4.5-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (30.2 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 30.2/30.2 MB 60.2 MB/s  0:00:00
+Downloading pybind11-3.1.0-py3-none-any.whl (319 kB)
+Installing collected packages: pybind11, cmake
+
+Successfully installed cmake-4.4.5 pybind11-3.1.0

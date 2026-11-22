@@ -1,0 +1,102 @@
+{
+  "files": {
+    "README.md": {
+      "bytes": 11663,
+      "sha256": "36546d34342096c91136cfb38942e474cd9510eb08c7c8bd1363e34d21093cd6"
+    },
+    "preparation_review.py": {
+      "bytes": 8752,
+      "sha256": "cff1be721fb29dddb1be5038f526c84fd5925f95c3bab4232322745a0e687329"
+    },
+    "preparation-review-results.json": {
+      "bytes": 18404,
+      "sha256": "34f4b89e976ae51b6077c5e3ed9af7ebf63ab1e24e93233e10b5e5d8ca8d7b1a"
+    },
+    "check_layout_contract.py": {
+      "bytes": 6825,
+      "sha256": "7c2e7b2102ac7e0b04a0a80eb801d19dd1319cb56d809c0409a128213a127c01"
+    },
+    "layout-contract-results.json": {
+      "bytes": 1784,
+      "sha256": "e35e991f2be0367f6db31ca953fdf363365b08e274449a07119fc3de32054bbb"
+    },
+    "ci-checks.json": {
+      "bytes": 14327,
+      "sha256": "cdef2f1f0c9b3c686589a071502471494473327cca166b2809d66246e2f64792"
+    },
+    "validation-summary.json": {
+      "bytes": 20997,
+      "sha256": "f6351db318cb64f33b5127679154a09fa1d34b317a5b560e4c62910f9444ebb6"
+    },
+    "logs/compile-isolated-half-formula.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "logs/exact-integer-and-ieee-model.log": {
+      "bytes": 3608,
+      "sha256": "cd29ad3eb912cccaf568780ae35af2203e7979b8788bcd98807ad91ff512dce5"
+    },
+    "logs/linear-family-sufficient-bound-search.log": {
+      "bytes": 1853,
+      "sha256": "940e15d792c881c8aeaa90ac7bae92c0a58270fbdd53751f6d9aac9a17d7cc45"
+    },
+    "logs/magic-decoder.log": {
+      "bytes": 2014,
+      "sha256": "38ce8ccab0714532289b4c0fbf887b16171c5720d1fd9b5808e987d0762849ec"
+    },
+    "logs/published-v100-numerical-model.log": {
+      "bytes": 3931,
+      "sha256": "1faeb046e3f4e31040661e48048ca48590f48c2edff52948a5bc797aff6ee83c"
+    },
+    "logs/recorded-official-trace-log-parser.log": {
+      "bytes": 574,
+      "sha256": "844a6536c07ace0015e5290da6029bdbca9ce4a1d3b24a4762e61233293ee089"
+    },
+    "logs/recorded-sm70-static-cost.log": {
+      "bytes": 3368,
+      "sha256": "d079c1dba07299b7a10de125bdab87c8fe5ad3b4e3f11294995b401f2247a0f8"
+    },
+    "logs/round3-cuda-fragment-cpu-contract.log": {
+      "bytes": 535,
+      "sha256": "129bad72055ca23a88ef330ef8d7c0d64bbdc5e0539cb1ac3781dbb3ae73c7a6"
+    },
+    "logs/round3-independent-preparation-review.log": {
+      "bytes": 205,
+      "sha256": "92978e68ac64b53cf13b34144cbd6008a636e0d037e8980b4b25f93d1964f762"
+    },
+    "logs/round3-independent-rectangular-layout-review.log": {
+      "bytes": 135,
+      "sha256": "c64d34292c602aabb90118bf0976fc6bcc46400b8d409d9e1a5144bdfa0a3e8d"
+    },
+    "logs/round3-math-model-and-admission.log": {
+      "bytes": 1667,
+      "sha256": "5b00509b39a4cdb63620dc37ba09474c2e7cb969876dee8ff41c382922e6d941"
+    },
+    "logs/round3-middle-decoder-coefficient-box.log": {
+      "bytes": 430,
+      "sha256": "69090c56ddc06333c819fb7195dfd71bc5ef3964f5fea721872e45d9211f7e43"
+    },
+    "logs/round3-middle-recorded-static-cost.log": {
+      "bytes": 330,
+      "sha256": "577cb3767c547b942dd062eddd41ccd8f32c98019ae42ba208c43d22c51c5e41"
+    },
+    "logs/round3-recorded-sm70-static-cost.log": {
+      "bytes": 821,
+      "sha256": "f55ccb9a34e53d4e90ae68003296db09210abb8731035454ab35454a44fbbc85"
+    },
+    "logs/run-isolated-half-formula.log": {
+      "bytes": 177,
+      "sha256": "e4d6c2d8fd5d0170f211dc1b9601d95a37bb32b712c2e35b9a33b7bd7983db69"
+    },
+    "logs/synthetic-trace-generator.log": {
+      "bytes": 1976,
+      "sha256": "f3dc9d06c05a2643bc9bcab1f4e9909135c6295eced941dca9d41d1151e70867"
+    },
+    "REVIEW_STATUS.json": {
+      "bytes": 2162,
+      "sha256": "e2546c86c2c0c3e307a9f188253984b34c339215bf8f3b2e6918a107db356ec9"
+    }
+  },
+  "runner_sha256": "3b1ecd635d40fd9592eadcdd2797e0d8e527e8c9c7bd41f8c86ef05a4419ecce",
+  "freeze": "2026-11-22; review code and evidence frozen after successful 16-step isolated run"
+}

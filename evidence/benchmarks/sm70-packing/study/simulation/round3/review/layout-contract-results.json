@@ -1,0 +1,77 @@
+{
+  "all_checks_passed": true,
+  "gpu_executed": false,
+  "actual_cublas_executed": false,
+  "cpp_header_executed_on_cpu": true,
+  "cpp_python_lane_mapping_mismatches": 0,
+  "accumulator_coordinates_checked": 256,
+  "scale_reuse_indices_checked": 256,
+  "float2_pairs_checked": 128,
+  "partial_cta_grids": [
+    {
+      "M": 16,
+      "N": 48,
+      "covered_outputs": 768
+    },
+    {
+      "M": 32,
+      "N": 16,
+      "covered_outputs": 512
+    },
+    {
+      "M": 48,
+      "N": 48,
+      "covered_outputs": 2304
+    },
+    {
+      "M": 80,
+      "N": 32,
+      "covered_outputs": 2560
+    }
+  ],
+  "rectangular_cublas_storage_contract_cases": [
+    {
+      "M": 16,
+      "N": 48,
+      "K": 4,
+      "independent_lanes": 2,
+      "variable_scale_exponents": [
+        -2,
+        2
+      ],
+      "mismatches": 0
+    },
+    {
+      "M": 48,
+      "N": 16,
+      "K": 36,
+      "independent_lanes": 2,
+      "variable_scale_exponents": [
+        -2,
+        2
+      ],
+      "mismatches": 0
+    },
+    {
+      "M": 32,
+      "N": 80,
+      "K": 64,
+      "independent_lanes": 2,
+      "variable_scale_exponents": [
+        -2,
+        2
+      ],
+      "mismatches": 0
+    }
+  ],
+  "sources_sha256": {
+    "fragment_mapping.hpp": "78ca809cc6606912724982559c31ed82b6141ec74651cf65324015ecd901f4b1",
+    "mapped_packing.cu": "07d6e6821318270a01a84ab5abeb1b12a060eaa5f098bd8529e9950a66d65838",
+    "fragment-map.json": "43e2f6986c700e36d75789399e984946cb9cc03c4ff79c66e97137d299bdc556"
+  },
+  "limits": [
+    "No CUDA instruction was executed.",
+    "The rectangular check reconstructs the reviewed cuBLAS parameter contract; it does not dynamically intercept a cuBLAS call.",
+    "This validates layout/scale bookkeeping, not arbitrary floating-point rounding or GPU speed."
+  ]
+}

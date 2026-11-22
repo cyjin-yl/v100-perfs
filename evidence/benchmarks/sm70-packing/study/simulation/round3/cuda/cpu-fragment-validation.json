@@ -1,0 +1,629 @@
+{
+  "gpu_executed": false,
+  "cycle_simulation": false,
+  "official_layout_source": "https://docs.nvidia.com/cuda/archive/11.4.0/parallel-thread-execution/index.html#warp-level-matrix-fragment-mma-884-f16",
+  "host_compiled_header_map_verified": true,
+  "impulse_cases": 1024,
+  "cases": [
+    {
+      "candidate": "ternary_k32",
+      "K": 32,
+      "scales": "all one",
+      "extreme": false,
+      "seed": 20261122,
+      "output_values": 512,
+      "errors": {
+        "float": 0,
+        "integer": 0,
+        "magic": 0
+      },
+      "baseline_half_conversion_exact": true
+    },
+    {
+      "candidate": "ternary_k32",
+      "K": 32,
+      "scales": "all one",
+      "extreme": true,
+      "seed": 20261123,
+      "output_values": 512,
+      "errors": {
+        "float": 0,
+        "integer": 0,
+        "magic": 0
+      },
+      "baseline_half_conversion_exact": true
+    },
+    {
+      "candidate": "ternary_k32",
+      "K": 32,
+      "scales": "E8M0 exponents [-2,2]",
+      "extreme": false,
+      "seed": 20261124,
+      "output_values": 512,
+      "errors": {
+        "float": 0,
+        "integer": 0,
+        "magic": 0
+      },
+      "baseline_half_conversion_exact": true
+    },
+    {
+      "candidate": "ternary_k32",
+      "K": 32,
+      "scales": "E8M0 exponents [-2,2]",
+      "extreme": true,
+      "seed": 20261125,
+      "output_values": 512,
+      "errors": {
+        "float": 0,
+        "integer": 0,
+        "magic": 0
+      },
+      "baseline_half_conversion_exact": true
+    },
+    {
+      "candidate": "ternary_k32",
+      "K": 64,
+      "scales": "all one",
+      "extreme": false,
+      "seed": 20261126,
+      "output_values": 512,
+      "errors": {
+        "float": 0,
+        "integer": 0,
+        "magic": 0
+      },
+      "baseline_half_conversion_exact": true
+    },
+    {
+      "candidate": "ternary_k32",
+      "K": 64,
+      "scales": "all one",
+      "extreme": true,
+      "seed": 20261127,
+      "output_values": 512,
+      "errors": {
+        "float": 0,
+        "integer": 0,
+        "magic": 0
+      },
+      "baseline_half_conversion_exact": true
+    },
+    {
+      "candidate": "ternary_k32",
+      "K": 64,
+      "scales": "E8M0 exponents [-2,2]",
+      "extreme": false,
+      "seed": 20261128,
+      "output_values": 512,
+      "errors": {
+        "float": 0,
+        "integer": 0,
+        "magic": 0
+      },
+      "baseline_half_conversion_exact": true
+    },
+    {
+      "candidate": "ternary_k32",
+      "K": 64,
+      "scales": "E8M0 exponents [-2,2]",
+      "extreme": true,
+      "seed": 20261129,
+      "output_values": 512,
+      "errors": {
+        "float": 0,
+        "integer": 0,
+        "magic": 0
+      },
+      "baseline_half_conversion_exact": true
+    },
+    {
+      "candidate": "ternary_k32",
+      "K": 128,
+      "scales": "all one",
+      "extreme": false,
+      "seed": 20261130,
+      "output_values": 512,
+      "errors": {
+        "float": 0,
+        "integer": 0,
+        "magic": 0
+      },
+      "baseline_half_conversion_exact": true
+    },
+    {
+      "candidate": "ternary_k32",
+      "K": 128,
+      "scales": "all one",
+      "extreme": true,
+      "seed": 20261131,
+      "output_values": 512,
+      "errors": {
+        "float": 0,
+        "integer": 0,
+        "magic": 0
+      },
+      "baseline_half_conversion_exact": true
+    },
+    {
+      "candidate": "ternary_k32",
+      "K": 128,
+      "scales": "E8M0 exponents [-2,2]",
+      "extreme": false,
+      "seed": 20261132,
+      "output_values": 512,
+      "errors": {
+        "float": 0,
+        "integer": 0,
+        "magic": 0
+      },
+      "baseline_half_conversion_exact": true
+    },
+    {
+      "candidate": "ternary_k32",
+      "K": 128,
+      "scales": "E8M0 exponents [-2,2]",
+      "extreme": true,
+      "seed": 20261133,
+      "output_values": 512,
+      "errors": {
+        "float": 0,
+        "integer": 0,
+        "magic": 0
+      },
+      "baseline_half_conversion_exact": true
+    },
+    {
+      "candidate": "seven_k4",
+      "K": 4,
+      "scales": "all one",
+      "extreme": false,
+      "seed": 20261134,
+      "output_values": 512,
+      "errors": {
+        "float": 0,
+        "integer": 0,
+        "magic": 0
+      },
+      "baseline_half_conversion_exact": true
+    },
+    {
+      "candidate": "seven_k4",
+      "K": 4,
+      "scales": "all one",
+      "extreme": true,
+      "seed": 20261135,
+      "output_values": 512,
+      "errors": {
+        "float": 0,
+        "integer": 0,
+        "magic": 0
+      },
+      "baseline_half_conversion_exact": true
+    },
+    {
+      "candidate": "seven_k4",
+      "K": 4,
+      "scales": "E8M0 exponents [-2,2]",
+      "extreme": false,
+      "seed": 20261136,
+      "output_values": 512,
+      "errors": {
+        "float": 0,
+        "integer": 0,
+        "magic": 0
+      },
+      "baseline_half_conversion_exact": true
+    },
+    {
+      "candidate": "seven_k4",
+      "K": 4,
+      "scales": "E8M0 exponents [-2,2]",
+      "extreme": true,
+      "seed": 20261137,
+      "output_values": 512,
+      "errors": {
+        "float": 0,
+        "integer": 0,
+        "magic": 0
+      },
+      "baseline_half_conversion_exact": true
+    },
+    {
+      "candidate": "seven_k4",
+      "K": 32,
+      "scales": "all one",
+      "extreme": false,
+      "seed": 20261138,
+      "output_values": 512,
+      "errors": {
+        "float": 0,
+        "integer": 0,
+        "magic": 0
+      },
+      "baseline_half_conversion_exact": true
+    },
+    {
+      "candidate": "seven_k4",
+      "K": 32,
+      "scales": "all one",
+      "extreme": true,
+      "seed": 20261139,
+      "output_values": 512,
+      "errors": {
+        "float": 0,
+        "integer": 0,
+        "magic": 0
+      },
+      "baseline_half_conversion_exact": true
+    },
+    {
+      "candidate": "seven_k4",
+      "K": 32,
+      "scales": "E8M0 exponents [-2,2]",
+      "extreme": false,
+      "seed": 20261140,
+      "output_values": 512,
+      "errors": {
+        "float": 0,
+        "integer": 0,
+        "magic": 0
+      },
+      "baseline_half_conversion_exact": true
+    },
+    {
+      "candidate": "seven_k4",
+      "K": 32,
+      "scales": "E8M0 exponents [-2,2]",
+      "extreme": true,
+      "seed": 20261141,
+      "output_values": 512,
+      "errors": {
+        "float": 0,
+        "integer": 0,
+        "magic": 0
+      },
+      "baseline_half_conversion_exact": true
+    },
+    {
+      "candidate": "seven_k4",
+      "K": 64,
+      "scales": "all one",
+      "extreme": false,
+      "seed": 20261142,
+      "output_values": 512,
+      "errors": {
+        "float": 0,
+        "integer": 0,
+        "magic": 0
+      },
+      "baseline_half_conversion_exact": true
+    },
+    {
+      "candidate": "seven_k4",
+      "K": 64,
+      "scales": "all one",
+      "extreme": true,
+      "seed": 20261143,
+      "output_values": 512,
+      "errors": {
+        "float": 0,
+        "integer": 0,
+        "magic": 0
+      },
+      "baseline_half_conversion_exact": true
+    },
+    {
+      "candidate": "seven_k4",
+      "K": 64,
+      "scales": "E8M0 exponents [-2,2]",
+      "extreme": false,
+      "seed": 20261144,
+      "output_values": 512,
+      "errors": {
+        "float": 0,
+        "integer": 0,
+        "magic": 0
+      },
+      "baseline_half_conversion_exact": true
+    },
+    {
+      "candidate": "seven_k4",
+      "K": 64,
+      "scales": "E8M0 exponents [-2,2]",
+      "extreme": true,
+      "seed": 20261145,
+      "output_values": 512,
+      "errors": {
+        "float": 0,
+        "integer": 0,
+        "magic": 0
+      },
+      "baseline_half_conversion_exact": true
+    },
+    {
+      "candidate": "seven_k4",
+      "K": 128,
+      "scales": "all one",
+      "extreme": false,
+      "seed": 20261146,
+      "output_values": 512,
+      "errors": {
+        "float": 0,
+        "integer": 0,
+        "magic": 0
+      },
+      "baseline_half_conversion_exact": true
+    },
+    {
+      "candidate": "seven_k4",
+      "K": 128,
+      "scales": "all one",
+      "extreme": true,
+      "seed": 20261147,
+      "output_values": 512,
+      "errors": {
+        "float": 0,
+        "integer": 0,
+        "magic": 0
+      },
+      "baseline_half_conversion_exact": true
+    },
+    {
+      "candidate": "seven_k4",
+      "K": 128,
+      "scales": "E8M0 exponents [-2,2]",
+      "extreme": false,
+      "seed": 20261148,
+      "output_values": 512,
+      "errors": {
+        "float": 0,
+        "integer": 0,
+        "magic": 0
+      },
+      "baseline_half_conversion_exact": true
+    },
+    {
+      "candidate": "seven_k4",
+      "K": 128,
+      "scales": "E8M0 exponents [-2,2]",
+      "extreme": true,
+      "seed": 20261149,
+      "output_values": 512,
+      "errors": {
+        "float": 0,
+        "integer": 0,
+        "magic": 0
+      },
+      "baseline_half_conversion_exact": true
+    },
+    {
+      "candidate": "ternary_full_k4",
+      "K": 4,
+      "scales": "all one",
+      "extreme": false,
+      "seed": 20261150,
+      "output_values": 512,
+      "errors": {
+        "float": 0,
+        "integer": 0,
+        "magic": 0
+      },
+      "baseline_half_conversion_exact": true
+    },
+    {
+      "candidate": "ternary_full_k4",
+      "K": 4,
+      "scales": "all one",
+      "extreme": true,
+      "seed": 20261151,
+      "output_values": 512,
+      "errors": {
+        "float": 0,
+        "integer": 0,
+        "magic": 0
+      },
+      "baseline_half_conversion_exact": true
+    },
+    {
+      "candidate": "ternary_full_k4",
+      "K": 4,
+      "scales": "E8M0 exponents [-2,2]",
+      "extreme": false,
+      "seed": 20261152,
+      "output_values": 512,
+      "errors": {
+        "float": 0,
+        "integer": 0,
+        "magic": 0
+      },
+      "baseline_half_conversion_exact": true
+    },
+    {
+      "candidate": "ternary_full_k4",
+      "K": 4,
+      "scales": "E8M0 exponents [-2,2]",
+      "extreme": true,
+      "seed": 20261153,
+      "output_values": 512,
+      "errors": {
+        "float": 0,
+        "integer": 0,
+        "magic": 0
+      },
+      "baseline_half_conversion_exact": true
+    },
+    {
+      "candidate": "ternary_full_k4",
+      "K": 32,
+      "scales": "all one",
+      "extreme": false,
+      "seed": 20261154,
+      "output_values": 512,
+      "errors": {
+        "float": 0,
+        "integer": 0,
+        "magic": 0
+      },
+      "baseline_half_conversion_exact": true
+    },
+    {
+      "candidate": "ternary_full_k4",
+      "K": 32,
+      "scales": "all one",
+      "extreme": true,
+      "seed": 20261155,
+      "output_values": 512,
+      "errors": {
+        "float": 0,
+        "integer": 0,
+        "magic": 0
+      },
+      "baseline_half_conversion_exact": true
+    },
+    {
+      "candidate": "ternary_full_k4",
+      "K": 32,
+      "scales": "E8M0 exponents [-2,2]",
+      "extreme": false,
+      "seed": 20261156,
+      "output_values": 512,
+      "errors": {
+        "float": 0,
+        "integer": 0,
+        "magic": 0
+      },
+      "baseline_half_conversion_exact": true
+    },
+    {
+      "candidate": "ternary_full_k4",
+      "K": 32,
+      "scales": "E8M0 exponents [-2,2]",
+      "extreme": true,
+      "seed": 20261157,
+      "output_values": 512,
+      "errors": {
+        "float": 0,
+        "integer": 0,
+        "magic": 0
+      },
+      "baseline_half_conversion_exact": true
+    },
+    {
+      "candidate": "ternary_full_k4",
+      "K": 64,
+      "scales": "all one",
+      "extreme": false,
+      "seed": 20261158,
+      "output_values": 512,
+      "errors": {
+        "float": 0,
+        "integer": 0,
+        "magic": 0
+      },
+      "baseline_half_conversion_exact": true
+    },
+    {
+      "candidate": "ternary_full_k4",
+      "K": 64,
+      "scales": "all one",
+      "extreme": true,
+      "seed": 20261159,
+      "output_values": 512,
+      "errors": {
+        "float": 0,
+        "integer": 0,
+        "magic": 0
+      },
+      "baseline_half_conversion_exact": true
+    },
+    {
+      "candidate": "ternary_full_k4",
+      "K": 64,
+      "scales": "E8M0 exponents [-2,2]",
+      "extreme": false,
+      "seed": 20261160,
+      "output_values": 512,
+      "errors": {
+        "float": 0,
+        "integer": 0,
+        "magic": 0
+      },
+      "baseline_half_conversion_exact": true
+    },
+    {
+      "candidate": "ternary_full_k4",
+      "K": 64,
+      "scales": "E8M0 exponents [-2,2]",
+      "extreme": true,
+      "seed": 20261161,
+      "output_values": 512,
+      "errors": {
+        "float": 0,
+        "integer": 0,
+        "magic": 0
+      },
+      "baseline_half_conversion_exact": true
+    },
+    {
+      "candidate": "ternary_full_k4",
+      "K": 128,
+      "scales": "all one",
+      "extreme": false,
+      "seed": 20261162,
+      "output_values": 512,
+      "errors": {
+        "float": 0,
+        "integer": 0,
+        "magic": 0
+      },
+      "baseline_half_conversion_exact": true
+    },
+    {
+      "candidate": "ternary_full_k4",
+      "K": 128,
+      "scales": "all one",
+      "extreme": true,
+      "seed": 20261163,
+      "output_values": 512,
+      "errors": {
+        "float": 0,
+        "integer": 0,
+        "magic": 0
+      },
+      "baseline_half_conversion_exact": true
+    },
+    {
+      "candidate": "ternary_full_k4",
+      "K": 128,
+      "scales": "E8M0 exponents [-2,2]",
+      "extreme": false,
+      "seed": 20261164,
+      "output_values": 512,
+      "errors": {
+        "float": 0,
+        "integer": 0,
+        "magic": 0
+      },
+      "baseline_half_conversion_exact": true
+    },
+    {
+      "candidate": "ternary_full_k4",
+      "K": 128,
+      "scales": "E8M0 exponents [-2,2]",
+      "extreme": true,
+      "seed": 20261165,
+      "output_values": 512,
+      "errors": {
+        "float": 0,
+        "integer": 0,
+        "magic": 0
+      },
+      "baseline_half_conversion_exact": true
+    }
+  ],
+  "case_count": 44,
+  "full_E2M1_by_full_E2M1_rejected_candidates": 3,
+  "errors_total": 0,
+  "scope": "Documented fragment map, exact bounded-integer arithmetic, E2M1 nibbles, finite small E8M0 scales; not general Volta rounding or training convergence."
+}
