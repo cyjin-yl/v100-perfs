@@ -117,7 +117,7 @@ def main() -> int:
     parser.add_argument("--steps", type=int, default=40)
     parser.add_argument("--seed", type=int, default=20261123)
     parser.add_argument("--lr", type=float, default=0.005)
-    parser.add_argument("--backend", choices=["reference", "cuda"], default="reference")
+    parser.add_argument("--backend", choices=["reference", "cuda", "cuda_tiled"], default="reference")
     parser.add_argument("--device", default="cpu")
     args = parser.parse_args()
     if args.output.exists():
@@ -128,7 +128,7 @@ def main() -> int:
         parser.error("reference requires CPU; CUDA requires an explicit CUDA device")
     torch.set_num_threads(2)
     torch.manual_seed(args.seed)
-    if args.backend == "cuda":
+    if args.backend != "reference":
         free, _ = torch.cuda.mem_get_info(args.device)
         if free < 512 * 1024 * 1024:
             raise RuntimeError("CUDA smoke needs at least 512 MiB free after context creation")
@@ -150,7 +150,7 @@ def main() -> int:
                   "parameter_count": sum(p.numel() for p in prototype.parameters())},
         "seed": args.seed, "learning_rate": args.lr, "optimizer": "AdamW FP32",
         "backend": args.backend, "device": args.device,
-        "gpu_executed": args.backend == "cuda", "llm_convergence_validated": False,
+        "gpu_executed": args.backend != "reference", "llm_convergence_validated": False,
         "performance_claim": None, "python": platform.python_version(),
         "torch": torch.__version__, "numpy": np.__version__,
         "source_sha256": {p.name: hashlib.sha256(p.read_bytes()).hexdigest()

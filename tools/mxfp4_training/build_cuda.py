@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build the CUDA ABI and tiny standalone checks; never execute a GPU kernel.
+"""Build both CUDA backends and standalone checks; never execute a GPU kernel.
 
 Example:
   python3 tools/mxfp4_training/build_cuda.py --output-dir /tmp/mxfp4-cuda-build
@@ -29,7 +29,16 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--nvcc", help="CUDA 12.x nvcc path (default: CUDA_HOME/bin/nvcc or PATH)")
-    parser.add_argument("--library-only", action="store_true")
+    parser.add_argument("--library-only", action="store_true",
+                        help="omit standalone correctness executables")
+    parser.add_argument("--with-benchmark", action="store_true",
+                        help="also build the packed-input/cuBLAS benchmark (requires cuBLAS)")
+    parser.add_argument("--with-certified", action="store_true",
+                        help="include the conditional exact cuBLAS backend and its checks")
+    parser.add_argument("--tiled-variant", type=int, choices=(0, 1, 2), default=1,
+                        help="0: MX32; 1: MX32 with normal-scale gate; 2: two MX32 blocks per stage")
+    parser.add_argument("--certified-variant", type=int, choices=(0, 1, 2), default=2,
+                        help="0: scalar prepare; 1: vector prepare; 2: vector prepare and epilogue")
     args = parser.parse_args()
     cuda_home = os.environ.get("CUDA_HOME") or os.environ.get("CUDA_PATH")
     nvcc = args.nvcc or (str(Path(cuda_home) / "bin/nvcc") if cuda_home else shutil.which("nvcc"))
@@ -41,15 +50,41 @@ def main() -> int:
     mapping = source.parents[2] / "evidence/benchmarks/sm70-packing/study/simulation/round3/cuda/fragment_mapping.hpp"
     version = subprocess.run([nvcc, "--version"], check=True, capture_output=True, text=True).stdout
     common = [nvcc, "-O3", "-std=c++17", "--ftz=false", "-lineinfo", "-Xptxas=-v",
-              "-gencode=arch=compute_70,code=[sm_70,compute_70]"]
-    jobs = [("shared_library", common + ["-shared", "-Xcompiler=-fPIC", str(source / "mxfp4_gemm.cu"),
-                                       "-o", str(output / "libmxfp4_sm70.so")])]
+              "-gencode=arch=compute_70,code=[sm_70,compute_70]",
+              f"-DMXFP4_TILED_VARIANT={args.tiled_variant}",
+              f"-DMXFP4_CERTIFIED_VARIANT={args.certified_variant}"]
+    kernels = [str(source / "mxfp4_gemm.cu"), str(source / "mxfp4_gemm_tiled.cu")]
+    certified_sources = [str(source / "mxfp4_gemm_certified.cu")] if args.with_certified else []
+    certified_links = ["-lcublas"] if args.with_certified else []
+    jobs = [("shared_library", common + ["-shared", "-Xcompiler=-fPIC"] + kernels +
+             certified_sources + certified_links +
+             ["-o", str(output / "libmxfp4_sm70.so")])]
     if not args.library_only:
         jobs.append(("standalone_harness", common + [str(source / "mxfp4_gemm.cu"),
                                                     str(source / "check_mxfp4.cu"), "-o",
                                                     str(output / "check_mxfp4")]))
+        jobs.append(("tiled_harness", common + [
+            "-Dmxfp4_gemm_cuda=mxfp4_gemm_tiled_cuda",
+            "-Dmxfp4_cuda_abi_version=mxfp4_tiled_cuda_abi_version",
+            "-Dmxfp4_cuda_backend=mxfp4_tiled_cuda_backend",
+            str(source / "mxfp4_gemm_tiled.cu"), str(source / "check_mxfp4.cu"),
+            "-o", str(output / "check_mxfp4_tiled")]))
+        if args.with_certified:
+            jobs.append(("certified_harness", common + [str(source / "mxfp4_gemm_tiled.cu")] +
+                         certified_sources + [str(source / "check_mxfp4_certified.cu"), "-lcublas",
+                                              "-o", str(output / "check_mxfp4_certified")]))
+    if args.with_benchmark:
+        jobs.append(("performance_benchmark", common + ["-DMXFP4_BENCH_TILED"] + kernels +
+                     (["-DMXFP4_BENCH_CERTIFIED"] if args.with_certified else []) + certified_sources +
+                     [str(source / "bench_mxfp4.cu"), "-lcublas", "-ldl", "-o",
+                      str(output / "bench_mxfp4")]))
     record = {
-        "schema_version": 1, "evidence_type": "cuda_compilation", "gpu_executed": False,
+        "schema_version": 2, "evidence_type": "cuda_compilation", "gpu_executed": False,
+        "backends": ["sm70_mx32_baseline", "sm70_mx32_tiled"] +
+                    (["sm70_mx32_certified_cublas_or_tiled"] if args.with_certified else []),
+        "tiled_variant": args.tiled_variant,
+        "certified_enabled": args.with_certified,
+        "certified_variant": args.certified_variant if args.with_certified else None,
         "full_training_executed": False, "nvcc_version": version.strip(),
         "source_sha256": {str(p.relative_to(source.parent)): sha256(p)
                           for p in sorted(source.glob("*")) if p.is_file()},

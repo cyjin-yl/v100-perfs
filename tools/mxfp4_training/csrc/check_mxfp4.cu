@@ -17,6 +17,11 @@
 
 namespace {
 
+int reserve_mib = 128;
+#ifndef MXFP4_CHECK_EXTRA_BYTES
+#define MXFP4_CHECK_EXTRA_BYTES(m, n, k) uint64_t(0)
+#endif
+
 void checked(cudaError_t status, const char* operation) {
   if (status != cudaSuccess)
     throw std::runtime_error(std::string(operation) + ": " + cudaGetErrorString(status));
@@ -57,6 +62,8 @@ constexpr int qtable[16] = {0, 1, 2, 3, 4, 6, 8, 12,
                            0, -1, -2, -3, -4, -6, -8, -12};
 
 struct Case {
+  int input_byte_offset = 0;
+  int output_float_offset = 0;
   std::string name;
   int m, n, logical_k, padded_k, blocks;
   std::vector<uint8_t> a, as, b, bs;
@@ -107,15 +114,18 @@ bool equal(float actual, float expected) {
 
 uint64_t required_bytes(const Case& c) {
   return uint64_t(c.a.size()) + c.as.size() + c.b.size() + c.bs.size()
-      + uint64_t(c.m) * c.n * sizeof(float);
+      + uint64_t(c.m) * c.n * sizeof(float) + 2 * c.input_byte_offset
+      + sizeof(float) * c.output_float_offset
+      + MXFP4_CHECK_EXTRA_BYTES(c.m, c.n, c.padded_k);
 }
 
 void require_free_memory(uint64_t bytes) {
   size_t available = 0, total = 0;
   CUDA_CHECK(cudaMemGetInfo(&available, &total));
-  constexpr uint64_t reserve = 128ull * 1024 * 1024;
+  const uint64_t reserve = uint64_t(reserve_mib) << 20;
   if (available < reserve || bytes > uint64_t(available) - reserve)
-    throw std::runtime_error("Insufficient free VRAM: need case allocations plus 128 MiB reserve; no services are stopped");
+    throw std::runtime_error("Insufficient free VRAM: need case allocations plus "
+        + std::to_string(reserve_mib) + " MiB reserve; no services are stopped");
 }
 
 struct Totals {
@@ -132,20 +142,24 @@ void run_case(const Case& c, cudaStream_t stream, Totals& totals,
   require_free_memory(required_bytes(c));
   const std::vector<float> expected = reference(c);
   std::vector<float> actual(expected.size());
-  Buffer<uint8_t> a(c.a.size()), as(c.as.size()), b(c.b.size()), bs(c.bs.size());
-  Buffer<float> out(expected.size());
+  Buffer<uint8_t> a(c.a.size() + c.input_byte_offset), as(c.as.size()),
+                  b(c.b.size() + c.input_byte_offset), bs(c.bs.size());
+  uint8_t* a_codes = a.data ? a.data + c.input_byte_offset : nullptr;
+  uint8_t* b_codes = b.data ? b.data + c.input_byte_offset : nullptr;
+  Buffer<float> out(expected.size() + c.output_float_offset);
+  float* output = out.data + c.output_float_offset;
   auto copy = [&](uint8_t* target, const std::vector<uint8_t>& source) {
     if (!source.empty()) CUDA_CHECK(cudaMemcpyAsync(target, source.data(), source.size(), cudaMemcpyHostToDevice, stream));
   };
-  copy(a.data, c.a); copy(as.data, c.as); copy(b.data, c.b); copy(bs.data, c.bs);
+  copy(a_codes, c.a); copy(as.data, c.as); copy(b_codes, c.b); copy(bs.data, c.bs);
   auto launch = [&]() {
     totals.kernel_launch_attempted = true;
-    CUDA_CHECK(cudaError_t(mxfp4_gemm_cuda(a.data, as.data, b.data, bs.data, out.data,
+    CUDA_CHECK(cudaError_t(mxfp4_gemm_cuda(a_codes, as.data, b_codes, bs.data, output,
                                          c.m, c.n, c.padded_k, stream)));
     totals.kernel_launch_submitted = true;
   };
   launch();
-  CUDA_CHECK(cudaMemcpyAsync(actual.data(), out.data, actual.size() * sizeof(float), cudaMemcpyDeviceToHost, stream));
+  CUDA_CHECK(cudaMemcpyAsync(actual.data(), output, actual.size() * sizeof(float), cudaMemcpyDeviceToHost, stream));
   CUDA_CHECK(cudaStreamSynchronize(stream));
   totals.kernel_execution_completed = true;
   size_t mismatches = 0;
@@ -170,6 +184,9 @@ void run_case(const Case& c, cudaStream_t stream, Totals& totals,
             << ",\"M\":" << c.m << ",\"N\":" << c.n << ",\"logical_K\":" << c.logical_k
             << ",\"padded_K\":" << c.padded_k << ",\"values\":" << actual.size()
             << ",\"mismatches\":0,\"allocation_bytes\":" << required_bytes(c)
+            << ",\"packed_input_byte_offset\":" << c.input_byte_offset
+            << ",\"output_float_offset\":" << c.output_float_offset
+            << ",\"reserve_mib\":" << reserve_mib
             << ",\"gpu_executed\":true,\"nondefault_stream\":true";
   if (benchmark) {
     for (int i = 0; i < warmup; ++i) launch();
@@ -230,8 +247,9 @@ Options parse(int argc, char** argv) {
     else if (arg == "--correctness-only") options.benchmark = false;
     else if (arg == "--help") {
       std::cout << "check_mxfp4 [--device N] [--correctness-only] [--allow-other-gpu]\n"
+                   "             [--reserve-mib N (default 128, minimum 64)]\n"
                    "             [--benchmark --warmup N --iters N --m N --n N --k N]\n"
-                   "Default: tiny correctness cases only; max M/N=64, logical K=97.\n";
+                   "Default: bounded correctness cases, including multiple CTA tiles and odd-address inputs.\n";
       std::exit(0);
     } else {
       if (i + 1 >= argc) throw std::runtime_error("Missing value for " + arg);
@@ -241,6 +259,10 @@ Options parse(int argc, char** argv) {
       if (consumed != text.size() || value < 0 || value > 1048576)
         throw std::runtime_error("Invalid nonnegative bounded integer for " + arg);
       if (arg == "--device") options.device = int(value);
+      else if (arg == "--reserve-mib") {
+        if (value < 64) throw std::runtime_error("reserve-mib must be at least 64");
+        reserve_mib = int(value);
+      }
       else if (arg == "--warmup") options.warmup = int(value);
       else if (arg == "--iters") options.iters = int(value);
       else if (arg == "--m") options.m = int(value);
@@ -332,9 +354,14 @@ int main(int argc, char** argv) {
     run_case(overflow_cancel, stream.value, totals);
 
     for (const auto shape : {std::vector<int>{1, 1, 1}, {7, 13, 31}, {17, 19, 33},
-                             {33, 49, 65}, {64, 64, 97}})
+                             {33, 49, 65}, {64, 64, 97}, {65, 97, 65},
+                             {129, 67, 97}, {128, 128, 128}})
       run_case(random_case(shape[0], shape[1], shape[2], 20261123u + unsigned(shape[2])),
                stream.value, totals);
+    Case odd_address = random_case(65, 97, 65, 20261124);
+    odd_address.name = "odd_address_multitile_tail_inputs";
+    odd_address.input_byte_offset = 1;
+    run_case(odd_address, stream.value, totals);
     run_case(Case("zero_K_fills_output", 17, 19, 0), stream.value, totals);
     if (options.benchmark)
       run_case(random_case(options.m, options.n, options.k, 20261123), stream.value,

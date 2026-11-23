@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "observed_at_utc": "2026-11-23T16:52:25+00:00",
+  "watcher_started_at_utc": "2026-11-23T16:52:24+00:00",
+  "watcher_process_observed_alive": true,
+  "observed_process_command": "python3",
+  "phase": "waiting",
+  "reason": "Owned job status is Pending",
+  "cli_version": "1.4.1",
+  "poll_interval_seconds": 60,
+  "maximum_queue_wait_seconds": 43200,
+  "remote_payload_timeout_seconds": 3000,
+  "maximum_result_bytes": 134217728,
+  "source_publication_pending_at_this_snapshot": true,
+  "remote_payload_attempted": false,
+  "remote_payload_completed": false,
+  "gpu_execution_claimed": false,
+  "job_identity_sha256": "89c1db705c79464e3d603996e7b9d4c308359b367a20f3c2a82f8f6e80c3910c",
+  "job_cancelled": false,
+  "local_watcher_source_sha256": "d53282e098400575b499f3e3a82ce0790220b72a3fb62c8a5ae0cd75ade575fb"
+}

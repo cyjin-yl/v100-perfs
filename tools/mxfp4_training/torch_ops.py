@@ -48,7 +48,7 @@ class TorchMXTensor:
             raise ValueError("codes and scales must be on the same device")
         if k % 2 and bool(torch.any(self.codes[:, k // 2] & 0xf0)):
             raise ValueError("K padding must be canonical positive zero")
-        if bool(torch.any(self.codes[:, (k + 1) // 2:])):
+        if k < self.padded_k and bool(torch.any(self.codes[:, (k + 1) // 2:])):
             raise ValueError("K padding must be canonical positive zero")
 
 
@@ -95,14 +95,25 @@ def quantize_mx_torch(x: torch.Tensor, *, rounding: str = "nearest",
     return TorchMXTensor(packed, (exponent + 127).to(torch.uint8).contiguous(), (rows, k))
 
 
-@lru_cache(maxsize=4)
-def _load_library(path: str) -> ctypes.CDLL:
+@lru_cache(maxsize=8)
+def _load_library(path: str, backend: str = "cuda") -> ctypes.CDLL:
     lib = ctypes.CDLL(str(Path(path).expanduser().resolve(strict=True)))
     lib.mxfp4_cuda_abi_version.restype = ctypes.c_int
     if lib.mxfp4_cuda_abi_version() != 1:
         raise RuntimeError("unsupported MXFP4 CUDA ABI")
     lib.mxfp4_gemm_cuda.argtypes = [ctypes.c_void_p] * 5 + [ctypes.c_int64] * 3 + [ctypes.c_void_p]
     lib.mxfp4_gemm_cuda.restype = ctypes.c_int
+    if backend == "cuda_tiled":
+        try:
+            version = lib.mxfp4_tiled_cuda_abi_version
+            kernel = lib.mxfp4_gemm_tiled_cuda
+        except AttributeError as error:
+            raise RuntimeError("CUDA library has no tiled backend; rebuild with build_cuda.py") from error
+        version.restype = ctypes.c_int
+        if version() != 1:
+            raise RuntimeError("unsupported tiled MXFP4 CUDA ABI")
+        kernel.argtypes = lib.mxfp4_gemm_cuda.argtypes
+        kernel.restype = ctypes.c_int
     return lib
 
 
@@ -119,8 +130,8 @@ def gemm_packed(a: TorchMXTensor, b: TorchMXTensor, *, backend: str = "reference
         an = MXTensor(a.codes.numpy(), a.scales.numpy(), a.logical_shape)
         bn = MXTensor(b.codes.numpy(), b.scales.numpy(), b.logical_shape)
         return torch.from_numpy(gemm_mx(an, bn))
-    if backend != "cuda":
-        raise ValueError("backend must be reference or cuda")
+    if backend not in ("cuda", "cuda_tiled"):
+        raise ValueError("backend must be reference, cuda, or cuda_tiled")
     if a.codes.device.type != "cuda":
         raise ValueError("cuda backend requires CUDA inputs")
     if torch.cuda.get_device_capability(a.codes.device) != (7, 0):
@@ -128,15 +139,16 @@ def gemm_packed(a: TorchMXTensor, b: TorchMXTensor, *, backend: str = "reference
     library_path = os.environ.get("MXFP4_CUDA_LIBRARY")
     if not library_path:
         raise RuntimeError("set MXFP4_CUDA_LIBRARY to the compiled libmxfp4_sm70.so")
-    lib = _load_library(library_path)
+    lib = _load_library(library_path, backend)
+    kernel = lib.mxfp4_gemm_tiled_cuda if backend == "cuda_tiled" else lib.mxfp4_gemm_cuda
     with torch.cuda.device(a.codes.device):
         stream = torch.cuda.current_stream(a.codes.device)
         out = torch.empty((a.logical_shape[0], b.logical_shape[0]),
                           device=a.codes.device, dtype=torch.float32)
         tensors = [a.codes, a.scales, b.codes, b.scales, out]
-        code = lib.mxfp4_gemm_cuda(*(t.data_ptr() for t in tensors),
-                                 a.logical_shape[0], b.logical_shape[0], a.padded_k,
-                                 stream.cuda_stream)
+        code = kernel(*(t.data_ptr() for t in tensors),
+                      a.logical_shape[0], b.logical_shape[0], a.padded_k,
+                      stream.cuda_stream)
         if code:
             raise RuntimeError(f"MXFP4 CUDA launch failed with cudaError_t={code}")
         for tensor in tensors:
@@ -157,7 +169,7 @@ class MXRecipe:
     def __post_init__(self) -> None:
         if any(type(v) is not bool for v in (self.forward, self.dgrad, self.wgrad)):
             raise ValueError("forward, dgrad and wgrad must be bool")
-        if self.backend not in ("reference", "cuda"):
+        if self.backend not in ("reference", "cuda", "cuda_tiled"):
             raise ValueError("unsupported backend")
         if any(r not in ("nearest", "stochastic") for r in (self.rounding, self.gradient_rounding)):
             raise ValueError("unsupported rounding")

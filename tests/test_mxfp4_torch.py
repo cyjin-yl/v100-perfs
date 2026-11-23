@@ -139,7 +139,7 @@ class TorchMXPackedTests(unittest.TestCase):
     def test_packed_validation_and_no_cuda_fallback_on_cpu(self):
         a = quantize_mx_torch(torch.ones(3, 1))
         b = quantize_mx_torch(torch.ones(2, 1))
-        for backend in ("cuda", "unknown"):
+        for backend in ("cuda", "cuda_tiled", "unknown"):
             with self.assertRaises(ValueError):
                 gemm_packed(a, b, backend=backend)
         with self.assertRaisesRegex(ValueError, "same logical K"):

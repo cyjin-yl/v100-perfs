@@ -1,0 +1,195 @@
+{
+  "schema_version": 1,
+  "evidence_type": "derived_summary_of_archived_actual_gpu_runs",
+  "primary_timing": "synchronized_wall",
+  "variants": [
+    {
+      "certified_variant": 0,
+      "tiled_variant": 1,
+      "source_files_match_compilation": {
+        "csrc/bench_mxfp4.cu": true,
+        "csrc/check_mxfp4.cu": true,
+        "csrc/check_mxfp4_certified.cu": true,
+        "csrc/mxfp4_gemm.cu": true,
+        "csrc/mxfp4_gemm.h": true,
+        "csrc/mxfp4_gemm_certified.cu": true,
+        "csrc/mxfp4_gemm_certified.h": true,
+        "csrc/mxfp4_gemm_tiled.cu": true,
+        "csrc/mxfp4_gemm_tiled.h": true
+      },
+      "native_correctness": {
+        "pipeline_calls": 67,
+        "output_checks": 372132,
+        "accepted_calls": 21,
+        "fallback_calls": 46,
+        "mismatches": 0
+      },
+      "input_fnv1a64": "17e7aed60a9341e3",
+      "shape": [
+        2048,
+        2048,
+        2048
+      ],
+      "timings": [
+        {
+          "name": "mxfp4_baseline",
+          "wall_median_ms": 5.992418,
+          "wall_tflops": 2.86693438008
+        },
+        {
+          "name": "mxfp4_tiled",
+          "wall_median_ms": 0.7376669,
+          "wall_tflops": 23.2894673517
+        },
+        {
+          "name": "mxfp4_certified_total",
+          "wall_median_ms": 0.3921876,
+          "wall_tflops": 43.805232965
+        },
+        {
+          "name": "cublas_compute",
+          "wall_median_ms": 0.2438141,
+          "wall_tflops": 70.4629846428
+        },
+        {
+          "name": "cublas_dequant",
+          "wall_median_ms": 0.1048734,
+          "wall_tflops": null
+        },
+        {
+          "name": "cublas_total",
+          "wall_median_ms": 0.3454802,
+          "wall_tflops": 49.7275073477
+        }
+      ],
+      "raw_benchmark": "verified/build-perf-c0/varied-2048.jsonl",
+      "raw_benchmark_sha256": "f0e5ee4ab3fbbe534d80feda4c70467704d0f9226f667b5d28b2539ed16caf03"
+    },
+    {
+      "certified_variant": 1,
+      "tiled_variant": 1,
+      "source_files_match_compilation": {
+        "csrc/bench_mxfp4.cu": true,
+        "csrc/check_mxfp4.cu": true,
+        "csrc/check_mxfp4_certified.cu": true,
+        "csrc/mxfp4_gemm.cu": true,
+        "csrc/mxfp4_gemm.h": true,
+        "csrc/mxfp4_gemm_certified.cu": true,
+        "csrc/mxfp4_gemm_certified.h": true,
+        "csrc/mxfp4_gemm_tiled.cu": true,
+        "csrc/mxfp4_gemm_tiled.h": true
+      },
+      "native_correctness": {
+        "pipeline_calls": 67,
+        "output_checks": 372132,
+        "accepted_calls": 21,
+        "fallback_calls": 46,
+        "mismatches": 0
+      },
+      "input_fnv1a64": "17e7aed60a9341e3",
+      "shape": [
+        2048,
+        2048,
+        2048
+      ],
+      "timings": [
+        {
+          "name": "mxfp4_baseline",
+          "wall_median_ms": 5.8928201,
+          "wall_tflops": 2.91539006663
+        },
+        {
+          "name": "mxfp4_tiled",
+          "wall_median_ms": 0.7173529,
+          "wall_tflops": 23.948978507
+        },
+        {
+          "name": "mxfp4_certified_total",
+          "wall_median_ms": 0.3410741,
+          "wall_tflops": 50.3699025637
+        },
+        {
+          "name": "cublas_compute",
+          "wall_median_ms": 0.238762,
+          "wall_tflops": 71.9539507292
+        },
+        {
+          "name": "cublas_dequant",
+          "wall_median_ms": 0.1024612,
+          "wall_tflops": null
+        },
+        {
+          "name": "cublas_total",
+          "wall_median_ms": 0.3381199,
+          "wall_tflops": 50.8099913196
+        }
+      ],
+      "raw_benchmark": "verified/build-perf-c1/varied-2048.jsonl",
+      "raw_benchmark_sha256": "a59b4f6c66b8652ea14203320a5af83f2f9d7ca3c366f9a3f727636d8a918282"
+    },
+    {
+      "certified_variant": 2,
+      "tiled_variant": 1,
+      "source_files_match_compilation": {
+        "csrc/bench_mxfp4.cu": true,
+        "csrc/check_mxfp4.cu": true,
+        "csrc/check_mxfp4_certified.cu": true,
+        "csrc/mxfp4_gemm.cu": true,
+        "csrc/mxfp4_gemm.h": true,
+        "csrc/mxfp4_gemm_certified.cu": true,
+        "csrc/mxfp4_gemm_certified.h": true,
+        "csrc/mxfp4_gemm_tiled.cu": true,
+        "csrc/mxfp4_gemm_tiled.h": true
+      },
+      "native_correctness": {
+        "pipeline_calls": 67,
+        "output_checks": 372132,
+        "accepted_calls": 21,
+        "fallback_calls": 46,
+        "mismatches": 0
+      },
+      "input_fnv1a64": "17e7aed60a9341e3",
+      "shape": [
+        2048,
+        2048,
+        2048
+      ],
+      "timings": [
+        {
+          "name": "mxfp4_baseline",
+          "wall_median_ms": 5.8975124,
+          "wall_tflops": 2.91307046408
+        },
+        {
+          "name": "mxfp4_tiled",
+          "wall_median_ms": 0.722019,
+          "wall_tflops": 23.7942065015
+        },
+        {
+          "name": "mxfp4_certified_total",
+          "wall_median_ms": 0.3371798,
+          "wall_tflops": 50.9516560126
+        },
+        {
+          "name": "cublas_compute",
+          "wall_median_ms": 0.239385,
+          "wall_tflops": 71.7666904108
+        },
+        {
+          "name": "cublas_dequant",
+          "wall_median_ms": 0.1029671,
+          "wall_tflops": null
+        },
+        {
+          "name": "cublas_total",
+          "wall_median_ms": 0.3386379,
+          "wall_tflops": 50.7322694359
+        }
+      ],
+      "raw_benchmark": "verified/build-perf-c2/varied-2048.jsonl",
+      "raw_benchmark_sha256": "f82d2d29b5655c3cc0edfaa9ccb6d66ad812faf7c4a1c57d06d777c9f85b92a6"
+    }
+  ],
+  "framework_gpu_validation_executed": false,
+  "full_training_benchmark_executed": false
+}

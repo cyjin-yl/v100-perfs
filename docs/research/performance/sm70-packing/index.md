@@ -1,8 +1,28 @@
 # V100 / SM70：低精度运算打包研究
 
-研究日期：2026-11-22；训练基础续进：2026-11-23。本文是独立研究记录；当前生产状态仍以 [production.md](../../../operations/current-state/production.md) 为准。
+研究日期：2026-11-22；训练基础续进：2026-11-23；性能优化：2026-11-24（Asia/Shanghai）。本文是独立研究记录；当前生产状态仍以 [production.md](../../../operations/current-state/production.md) 为准。
+
+## 2026-11-24：真实 V100 上的正确性与性能优化
+
+在完整 E2M1 / E8M0 算术上新增共享内存 tiled 内核，并以 [整数精度证书](mxfp4-certified-fastpath.md) 决定何时可将整个 K 维交给 cuBLAS Tensor Core 连续累加。未通过证书的输入回退完整范围 tiled 内核，保持原 MX32 缩放与 FP32 累加合同。
+
+在与原服务共存的 Tesla V100-PCIE-32GB 上，固定合成输入 `2048³` 的同步墙钟结果如下：
+
+| 路径 | 有效 TFLOPS | 范围 |
+|---|---:|---|
+| 原始 MXFP4 内核 | 2.91 | packed 输入 → FP32 输出 |
+| shared-memory tiled | 23.79 | 同一完整范围逐块合同 |
+| 证书快速路径 | **50.95** | 含每次证书、归一化、cuBLAS、输出缩放和回退调度 |
+| cuBLAS compute 对照 | 71.77 | 预物化 FP16 输入 → FP32 输出 |
+| 反量化 + cuBLAS 对照 | 50.73 | 本轮可精确转成 FP16 的 packed 输入 → FP32 输出 |
+
+每个最终 certified variant 都完成 **67 次调用、372,132 个输出、0 mismatch**；计时前后另对 `2048³` 的 4,194,304 个输出作完整比较。通用 tiled 通过 46 例、175,429 个独立 oracle 输出检查。原始数据、三种变体、计时口径及边界见 [性能证据](../../../../evidence/results/mxfp4-training/2026-11-24-performance/README.md)。
+
+这些时间从已打包输入开始，不包括 FP32→MXFP4 量化、H2D 或分配；接受证书的合成数据不能代替真实训练命中率。本轮没有达到 125 TFLOPS，也没有完整训练加速结论。`cuda_tiled` 已接入训练接口，certified API 目前仍为 native 路径。框架 GPU 检查、包含量化的 benchmark 和 GPU decoder smoke 已准备，单张 V100 的 Crater 任务已实际提交排队，尚未把这些未执行阶段记为通过。
 
 ## 2026-11-23：完整 MXFP4 算子与训练接口已落地
+
+本节保留早期基线状态；后续 tiled 与性能进展以上节为准。
 
 新增 [MXFP4 训练基础实现](../../../../tools/mxfp4_training/README.md)，使用完整 E2M1 编码、MX32 E8M0 尺度和 SM70 Tensor Core，实现单输出 `A @ B.T`。它为受限 packing 提供可核对的通用基线；目前不宣称 packing 加速、FP16 基线加速或训练显存节约。
 

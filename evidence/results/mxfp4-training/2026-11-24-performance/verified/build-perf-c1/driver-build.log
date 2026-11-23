@@ -1,0 +1,1 @@
+{"passed": true, "gpu_executed": false, "output_dir": "/tmp/v100-mxfp4-perf-3cc0562b0106/build-perf-c1", "artifacts": ["bench_mxfp4", "libmxfp4_sm70.so"]}

@@ -717,6 +717,10 @@ class LayoutManifestTests(unittest.TestCase):
                 "docs",
                 "/docs/research/performance/sm70-packing",
             ),
+            "docs/research/performance/sm70-packing/mxfp4-certified-fastpath.md": (
+                "docs",
+                "/docs/research/performance/sm70-packing/mxfp4-certified-fastpath",
+            ),
             "docs/research/storage/optane-l3.md": (
                 "docs",
                 "/docs/research/storage/optane-l3",
@@ -801,6 +805,7 @@ class LayoutManifestTests(unittest.TestCase):
             "docs/research/performance/prefill-exact-port.md",
             "docs/research/performance/short-prefill-plan.md",
             "docs/research/performance/sm70-packing/index.md",
+            "docs/research/performance/sm70-packing/mxfp4-certified-fastpath.md",
             "docs/research/storage/optane-l3.md",
         }
         actual_supporting_docs = {
