@@ -22,7 +22,7 @@ V100 执行的是 FP16 输入、FP32 累加的 Tensor Core 运算；MXFP4 由软
 | CPU tiny causal decoder（历史 smoke） | **5 组配方各训练 40 步，全部完成** | CPU 端前向、反向、FP32 AdamW 更新已接通 |
 | PyTorch CUDA wrapper | **119 项 GPU 检查已准备，尚未在 GPU 上运行** | `cuda`／`cuda_tiled`、量化与 F/D/W 梯度的框架级验证仍待完成 |
 | PyTorch 量化＋GEMM 测量 | **脚本已准备，GPU 结果待执行** | 不能从 native packed-input 数字推算高精度输入端到端吞吐 |
-| Crater 临时节点工作流 | **单 V100 job 已提交，有时限 waiter 正在运行；GPU 阶段仍待执行** | 60 秒轮询、最长等待 12 小时；排队状态不代表 GPU 检查或训练通过 |
+| Crater 临时节点工作流 | **原作业已排到卡但启动失败，恢复目前受登录过期阻塞；GPU 阶段仍待执行** | 只在原有截止内恢复；当前状态和失败记录见 C8 研究报告，不将历史 waiting 快照当成现状 |
 | 完整 GPU 训练、真实语料预训练 | **未运行** | 尚无 LLM 收敛、训练吞吐、显存收益或加速比结论 |
 
 最新 tiled 记录见 [46-case 输出](../../evidence/results/mxfp4-training/2026-11-24-performance/iterations/build-final-v1/correctness-v2.jsonl)；certified 的三组完整检查分别见 [variant 0](../../evidence/results/mxfp4-training/2026-11-24-performance/verified/build-perf-c0/correctness.jsonl)、[variant 1](../../evidence/results/mxfp4-training/2026-11-24-performance/verified/build-perf-c1/correctness.jsonl)、[variant 2](../../evidence/results/mxfp4-training/2026-11-24-performance/verified/build-perf-c2/correctness.jsonl)。早期基线的 42 例、137,792 个输出保留在原始实验目录中。
@@ -248,13 +248,15 @@ python -m tools.mxfp4_training.pretrain_smoke \
 
 先完成第 3.5 节的 GPU integration check。CUDA wrapper 仅接受计算能力 `(7,0)`，不会静默回退 CPU。smoke 在创建 context 后要求至少 512 MiB 空闲显存；该门槛是启动检查，不是对所有环境峰值占用的保证。现有共享 V100 的余量不足，所以上表只把 CPU 训练标为已接通。
 
-### 3.9 Crater 排队执行入口：waiter 运行中，GPU 阶段待执行
+### 3.9 Crater 执行入口：启动恢复与鉴权状态
 
 [crater_queue_runner.py](crater_queue_runner.py) 跟进一个已授权、已存在的 Crater job；固定源码 archive 和 payload 通过 `--ready-json` 发布门禁后，才在分配到的节点上运行 [crater_remote_run.py](crater_remote_run.py)。runner 本身不提交、停止或删除平台 job。队列状态及后续结果入口见 [性能证据说明](../../evidence/results/mxfp4-training/2026-11-24-performance/README.md)。
 
 payload 只探测和使用已安装的 CUDA 12.x、NumPy 与 CUDA 版 PyTorch，依次执行 native build/check、native benchmark、119 项 Torch check、量化成本 benchmark，以及两条 Torch backend 的训练 smoke。扩展流程随后对 C2 控制组与 C3–C8 逐个比较 2048³／4096³；每个融合候选须先通过自己的完整 correctness。正常路径36个stage共用原2700秒总deadline，主框架库保持C2。前置检查不通过或运行环境缺失时，相应阶段记录blocked／failed；结果和哈希保存在独立目录与 `results.tar.gz` 中。当前候选与队列发布审计见 [C8研究报告](../../evidence/results/mxfp4-training/2026-11-24-hardware-study/README.md)。
 
-**单 V100 job 已提交，有时限 waiter 正在按 60 秒轮询、最长 12 小时等待；GPU check、benchmark 和训练阶段仍待执行。** runner 启动、节点分配或 SSH 成功均不能代替各阶段实际 GPU 证据；候选运行环境仍须由 payload 实际探测和验证。
+**原作业已经排到 V100，但镜像缺少 sshd，启动后立即失败；替换尝试也未启动 CUDA payload。当前 Crater API 返回登录 token 过期，修正后的恢复入口须等待同一账号重新认证。** 所有恢复保持原截止北京时间2026-11-24 12:52:24，不延长资源预算；最新实际进程和失败审计见 [C8研究报告 §6](../../evidence/results/mxfp4-training/2026-11-24-hardware-study/README.md#6-排队作业与后续执行)。runner 启动、节点分配或 SSH 成功均不能代替各阶段实际 GPU 证据。
+
+现有119项GPU框架检查针对 `cuda`／`cuda_tiled`；**certified/C8尚未接入Torch backend**。这些检查即使通过，也不能作为C8完整训练的验证。C8仍须补上自身的框架连接、stream与生命周期检查，并在真实训练张量和完整step上测量。
 
 ## 4. 编码、量化与计算契约
 

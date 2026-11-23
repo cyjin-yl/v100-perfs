@@ -150,11 +150,43 @@ C8两条scale预取在第一条HMMA前；B packed的`LDG.64`位于`0x2560`，后
 
 ## 6. 排队作业与后续执行
 
-原作业`sg-jincy26-261123-e5bb3`于UTC2026-11-23 15:57:51创建，申请1张V100、4 CPU、16GiB；保持原作业和创建时间。原watcher在北京时间02:46:47因Crater401退出，未尝试远端payload，见[失败状态](queue/previous-failed-state.json)。同一既有LDAP账号的读取随后恢复；本轮没有登录或切换账号。
+以下03:08–03:30记录是保留的发布历史，**当前状态已由本节后面的启动失败与鉴权过期更新覆盖**。
+
+原作业`sg-jincy26-261123-e5bb3`于UTC2026-11-23 15:57:51创建，申请1张V100、4 CPU、16GiB；恢复等待时保持原作业和创建时间。原watcher在北京时间02:46:47因Crater401退出，未尝试远端payload，见[失败状态](queue/previous-failed-state.json)。同一既有LDAP账号的读取随后恢复；本轮没有登录或切换账号。
 
 北京时间**03:08:30**，在确认旧进程已结束、同一作业仍Pending/Inqueue、原archive/payload哈希正确后，启动新的有界等待进程，见[恢复审计](queue/recovery-audit.json)。[独立进程观察](queue/recovered-live-process.json)和[恢复后状态](queue/recovered-state-observation.json)确认新PID2630233、run id `20261123T190830Z-5f5e8cd5`处于waiting。仍每60秒轮询，只分配原截止时间剩余的等待时长，**截止不晚于北京时间12:52:24**；没有重建作业或改变排队优先级。
 
-恢复时远端ready仍绑定旧源码commit `4d7ff3b95768ff0e4833a336931e3e80265c897d`。本地后续payload已加入C8，保留原native、Torch检查、量化benchmark、五组smoke和C2控制，再执行C3–C8完整检查及2048³/4096³同seed测量；正常路径36个stage共享原2700秒deadline。[10场景host mock](host/payload-host-simulation.json)验证正常、缺工具链/框架、失败和超时的编排，不是Crater/GPU执行。是否已发布新源码，以随后真实publication审计为准。
+恢复时远端ready仍绑定旧源码commit `4d7ff3b95768ff0e4833a336931e3e80265c897d`。本轮代码和GPU证据随后以带`Signed-off-by`的commit `91e776034aba6e215b085a373affb5c71f2a79e6`提交并推送到现有研究分支。新archive的23个文件逐个与该commit比较一致后，使用既有保护程序刷新仍未冻结输入的同一watcher。
+
+北京时间**03:29:25**发布完成，[刷新审计](queue/refresh-audit.json)记录`committed=true`、`resumed=true`，原PID/starttime/run-id保持；[配置](queue/refresh-config.json)限定原进程身份、旧哈希、新哈希和独立备份位置。没有修改job或watcher状态文件。新[ready](queue/source-ready.json)绑定：
+
+| 发布项 | SHA256 |
+|---|---|
+| commit 91e7760 的source archive，108,801 B | `50a4d7a0444bf6544b2ea2f269d26013e36a6f18356fb0c53e5ab5116abedf8a` |
+| C8 remote payload | `023b140da884955f3e36c308215b930a9c0a9269761feb06d85c8f66dc5bcf73` |
+| ready publication | `b58afdc911c60eb39b57b7f3790179829737980a7d05e7dc28abdf168280a44c` |
+
+北京时间**03:30:03**的[独立观察](queue/publication-observation.json)重新读取已发布文件并核对哈希，确认同一watcher当时仍在运行且`waiting`，payload未尝试。Crater同一job当时的`status=Pending`、`podGroupPhase=Running`，创建时间保持不变；这两个状态不能替代节点SSH或GPU执行证据。
+
+已发布payload保留原native、Torch检查、量化benchmark、五组smoke和C2控制，再执行C3–C8完整检查及2048³/4096³同seed测量；正常路径36个stage共享原2700秒deadline。[10场景host mock](host/payload-host-simulation.json)验证正常、缺工具链/框架、失败和超时的编排，不是Crater/GPU执行。
+
+### 后续启动失败与当前恢复边界
+
+原作业实际于北京时间03:25:35分配到`dell-gpu-25`，拉取镜像后03:30:59启动，日志为`Image has no sshd`，03:31:01进入`Failed`。恢复watcher随后退出，`remote_payload_attempted=false`。这说明排队已得到资源，失败发生在容器启动环境；不是没有尝试排队。[保留的原job事件、日志、终态及替换API结果](queue/recovery-failures-observed.json)记录了这个过程。
+
+第一次替换`sg-jincy26-261124-de561`于03:41:53创建。此前交互式CLI观察确认其终态为`Failed`、启动日志为`required_tool_missing:python3`；该次原始终态/日志响应未另存文件，所以不把手工描述当作原始JSON。原因是本轮bootstrap覆盖了镜像PATH，不能据此说镜像没有Python；其创建响应还显示没有显式请求的`/workspace/user`挂载。创建响应中的挂载检查在启动watcher前停止了流程，没有运行CUDA payload。
+
+下一次修正保留镜像PATH，并尝试显式挂载，但API以`invalid mount path format: sugon-gpu-home-lab/jincy26`拒绝，没有返回job。之后同账号API再次返回`ERR_UNAUTHORIZED_401`、`token has invalid claims: token is expired`，因此未能独立列举该次display name确认没有job。恢复入口必须先完成这一只读核对，不因请求失败就盲目重提。
+
+已从Crater上游commit `856eb357bc5ad7b67a8fb9c7aca0a0dfe2648c7a`的[`backend/internal/util/volumes.go`](https://github.com/raids-lab/crater/blob/856eb357bc5ad7b67a8fb9c7aca0a0dfe2648c7a/backend/internal/util/volumes.go)核实：CLI应传逻辑路径`--volume user:/workspace/user`，由平台映射至当前用户自己的持久卷；物理PVC subPath不符合接口格式。第三版恢复入口据此修正，同时保持同账号、同资源请求、同源码91e7760和原截止。bootstrap只在容器内补齐缺失sshd，保留镜像Python/CUDA路径，沿用已有公钥的非root认证。
+
+北京时间**03:59:35**，已实际启动独立的鉴权等待器；**04:00:03**的[进程与状态观察](queue/auth-recovery-live-observation.json)核验PID2849785、starttime38213678和完整argv，状态为`waiting_for_auth`，`launcher_attempt_count=0`，尚未创建第三版作业。等待器每60秒只读检查原账号/平台与原失败job；同一账号恢复认证后才执行一次经哈希绑定的提交快照。原截止仍为**北京时间2026-11-24 12:52:24**，过期自动结束。它没有登录、读取token内容或切换账号。
+
+交付的[bootstrap](queue/bootstrap_recovery.sh)、[第三版提交器](queue/submit_replacement_v3.py)和[鉴权等待器](queue/wait_auth_and_recover.py)与观察记录中的远端SHA一致。提交器在create前核对原两次作业终态、v2和v3名称无既有job、资源与源码哈希；先写唯一attempt，再提交。未知结果及非零退出不自动重试。新watcher外层在实际启动时按绝对UTC计算`timeout`，覆盖等待、SSH执行和结果收集；容器自身也受原绝对截止和最多4小时限制。6个[host mock场景](queue/auth-wait-host-checks.json)通过，包含过期后恢复、错误账号、其他API错误、非零退出、超时和到期；这些mock没有调用真实CLI或创建job。
+
+当前认证恢复之前没有新作业或GPU执行证据。后续GPU payload保留原36个stage与2700秒总预算。现有119项Torch检查只覆盖`cuda`／`cuda_tiled`，**certified/C8目前仅有native C API，还需要单独接入Torch及验证完整训练step**；框架基础检查即使成功，也不会自动证明C8训练已完成。
+
+代码提交前43项CPU contract测试和33项仓库布局测试通过，站点构建2120页、manifest及424条legacy路由核验通过。它们不代替上述待执行的GPU框架与训练验证。
 
 ## 一手资料链接
 

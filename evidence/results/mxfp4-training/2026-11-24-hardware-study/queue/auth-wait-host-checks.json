@@ -1,0 +1,48 @@
+{
+  "passed": true,
+  "tests": [
+    {
+      "case": "expired_then_recovers",
+      "passed": true,
+      "phase": "launcher_returned_zero",
+      "launcher_calls": 1
+    },
+    {
+      "case": "wrong_account",
+      "passed": true,
+      "phase": "failed",
+      "launcher_calls": 0
+    },
+    {
+      "case": "other_api_error",
+      "passed": true,
+      "phase": "failed",
+      "launcher_calls": 0
+    },
+    {
+      "case": "launcher_nonzero",
+      "passed": true,
+      "phase": "launcher_nonzero",
+      "launcher_calls": 1
+    },
+    {
+      "case": "launcher_timeout",
+      "passed": true,
+      "phase": "launcher_outcome_unknown",
+      "launcher_calls": 1
+    },
+    {
+      "case": "deadline_expired",
+      "passed": true,
+      "phase": "deadline_reached",
+      "launcher_calls": 0
+    }
+  ],
+  "case_count": 6,
+  "ast_passed": true,
+  "source_sha256": "d0a634ab5a513d30bd1934de3c1c8737acd9ca664e2bbae298f8bf23fa596676",
+  "harness_sha256": "84260ab3328832bb263c136a30692490a198dec50a939f59b5e962910a30b142",
+  "real_cli_calls": 0,
+  "real_launcher_calls": 0,
+  "gpu_executed": false
+}

@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "observed_at_utc": "2026-11-23T19:30:03.664556+00:00",
+  "publication_sha256": {
+    "archive": "50a4d7a0444bf6544b2ea2f269d26013e36a6f18356fb0c53e5ab5116abedf8a",
+    "payload": "023b140da884955f3e36c308215b930a9c0a9269761feb06d85c8f66dc5bcf73",
+    "ready": "b58afdc911c60eb39b57b7f3790179829737980a7d05e7dc28abdf168280a44c"
+  },
+  "source_commit": "91e776034aba6e215b085a373affb5c71f2a79e6",
+  "watcher": {
+    "pid": 2630233,
+    "starttime": 37907240,
+    "euid": 1000,
+    "state": "S",
+    "argv_matches": true,
+    "cwd_matches": true
+  },
+  "watcher_state": {
+    "cli_commit": "8232a995908027a65cab2e7a22851ac091ee1a29",
+    "cli_version": "1.4.1",
+    "gpu_executed": null,
+    "job": "sg-jincy26-261123-e5bb3",
+    "namespace": "crater-workspace",
+    "owner": "jincy26",
+    "phase": "waiting",
+    "reason": "Owned job status is Pending",
+    "remote_dir": "/workspace/user/mxfp4-sg-jincy26-261123-e5bb3-20261123T190830Z-5f5e8cd5",
+    "remote_payload_attempted": false,
+    "remote_payload_completed": false,
+    "run_id": "20261123T190830Z-5f5e8cd5",
+    "schema_version": 1,
+    "started_at": "2026-11-23T19:08:30+00:00",
+    "updated_at": "2026-11-23T19:29:30+00:00"
+  },
+  "job": {
+    "jobName": "sg-jincy26-261123-e5bb3",
+    "username": "jincy26",
+    "namespace": "crater-workspace",
+    "createdAt": "2026-11-23T15:57:51Z",
+    "status": "Pending",
+    "podGroupPhase": "Running",
+    "resources": {
+      "cpu": "4",
+      "memory": "16Gi",
+      "nvidia.com/v100": "1"
+    }
+  },
+  "job_query_error": null,
+  "original_deadline_utc": "2026-11-24T04:52:24+00:00",
+  "job_recreated": false,
+  "gpu_execution_observed": false
+}
