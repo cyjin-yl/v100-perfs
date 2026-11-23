@@ -6,3 +6,7 @@ evidence/results/mxfp4-training/** -text
 # cuobjdump emits trailing spaces in its raw, hashed header; retain its bytes.
 evidence/results/mxfp4-training/**/mxfp4-sm70.sass.txt -whitespace
 evidence/results/mxfp4-training/2026-11-24-fused/verified/v4/prefetch-c6-int32-no-tail.sass.txt -whitespace
+evidence/results/mxfp4-training/2026-11-24-hardware-study/verified/v6/c6-int32-no-tail.sass.txt -whitespace
+evidence/results/mxfp4-training/2026-11-24-hardware-study/verified/v6/c8-halfrow.sass.txt -whitespace
+# Retain the exact hashed remote driver, including its recorded final blank line.
+evidence/results/mxfp4-training/2026-11-24-hardware-study/verified/v6/run_iteration.py -whitespace

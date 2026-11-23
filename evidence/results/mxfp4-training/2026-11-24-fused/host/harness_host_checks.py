@@ -59,7 +59,8 @@ def record_execution(binary: Path, args: list[str], record: dict, **kwargs):
     return result, observed
 
 
-def check_profile(src: Path, temp: Path, result: dict) -> None:
+def check_profile(src: Path, temp: Path, result: dict,
+                  fused_variants: tuple[int, ...] = (3, 4, 5)) -> None:
     source = (src / "check_mxfp4.cu").read_text()
     wrapper = (src / "check_mxfp4_certified.cu").read_text()
     globals_ = source[source.index("int reserve_mib = 128;"):source.index("void checked(")]
@@ -115,9 +116,9 @@ int main(int argc,char** argv){try {
         (["--wrong"], False, None, None),
     ]
     result["correctness_profile"] = records = []
-    for label, variant, certified in [
-            ("base", None, False), ("base_variant3", 3, False), ("c2", 2, True),
-            ("f3", 3, True), ("f4", 4, True), ("f5", 5, True)]:
+    configurations = [("base", None, False), ("base_variant3", 3, False), ("c2", 2, True)]
+    configurations += [(f"f{variant}", variant, True) for variant in fused_variants]
+    for label, variant, certified in configurations:
         record = {"configuration": label}
         records.append(record)
         defines = ("" if variant is None else f"#define MXFP4_CERTIFIED_VARIANT {variant}\n")
@@ -155,7 +156,8 @@ int main(int argc,char** argv){try {
         record["checks_passed"] = len(record["executions"])
 
 
-def check_packed(src: Path, temp: Path, result: dict) -> None:
+def check_packed(src: Path, temp: Path, result: dict,
+                 fused_variants: tuple[int, ...] = (3, 4, 5)) -> None:
     base = (src / "bench_mxfp4.cu").read_text()
     packed = (src / "bench_mxfp4_fused.cu").read_text()
     core = (src / "mxfp4_gemm_certified.cu").read_text()
@@ -167,6 +169,7 @@ def check_packed(src: Path, temp: Path, result: dict) -> None:
 #include <cstddef>
 using cudaError_t=int; using cudaStream_t=void*; using cudaEvent_t=void*;
 constexpr int cudaSuccess=0,cudaStreamNonBlocking=1,cudaMemcpyDeviceToHost=2,cudaMemcpyHostToDevice=3;
+constexpr int cudaErrorInvalidValue=4,cudaErrorUnknown=5;
 struct cudaDeviceProp{int major,minor,multiProcessorCount,clockRate,memoryClockRate,memoryBusWidth,ECCEnabled;char name[256];};
 #define __device__
 #define __constant__
@@ -189,7 +192,7 @@ int cublasCreate(...);int cublasSetStream(...);int cublasSetMathMode(...);int cu
     syntax = temp / "packed_syntax.cpp"
     syntax.write_text(packed.replace('#include "bench_mxfp4.cu"', '#include "bench_helpers_host.hpp"'))
     result["packed_host_driver_syntax"] = records = []
-    for variant in [3, 4, 5, 0, 2]:
+    for variant in [*fused_variants, 0, 2]:
         argv = ["g++", "-std=c++17", "-fsyntax-only", f"-DMXFP4_CERTIFIED_VARIANT={variant}",
                 "-I" + str(temp), "-I" + str(src), str(syntax)]
         observed = run(argv)
@@ -333,6 +336,8 @@ int main(int argc,char** argv){
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--fused-variants", type=int, nargs="+", choices=range(3, 9),
+                        default=[3, 4, 5], help="fused variants to host-check (default: 3 4 5)")
     args = parser.parse_args()
     script = Path(__file__).resolve()
     repo = next(p for p in script.parents if (p / "tools/mxfp4_training/csrc/check_mxfp4.cu").is_file())
@@ -341,6 +346,7 @@ def main() -> int:
         "schema_version": 1, "evidence_type": "host_cpp_harness_tests",
         "gpu_executed": False, "cuda_device_code_compiled": False, "cuda_linked": False,
         "memory_snapshots_are_test_stubs": True,
+        "fused_variants": args.fused_variants,
         "started_utc": datetime.now(timezone.utc).isoformat(),
         "compiler_version": run(["g++", "--version"]).stdout.splitlines()[0],
         "script_sha256": sha256(script),
@@ -352,8 +358,18 @@ def main() -> int:
     try:
         with tempfile.TemporaryDirectory(prefix="mxfp4-harness-host-") as name:
             temp = Path(name)
-            check_profile(src, temp, record)
-            check_packed(src, temp, record)
+            check_profile(src, temp, record, tuple(args.fused_variants))
+            check_packed(src, temp, record, tuple(args.fused_variants))
+            record["certified_host_driver_syntax"] = []
+            for variant in [2, *args.fused_variants]:
+                command = ["g++", "-std=c++17", "-fsyntax-only", "-x", "c++",
+                           f"-DMXFP4_CERTIFIED_VARIANT={variant}", "-I" + str(temp),
+                           "-I" + str(src), str(src / "check_mxfp4_certified.cu")]
+                observed = run(command)
+                record["certified_host_driver_syntax"].append({"variant": variant,
+                    "argv": command, "returncode": observed.returncode,
+                    "stdout": observed.stdout, "stderr": observed.stderr})
+                assert observed.returncode == 0, observed.stderr
         record["passed"] = True
     except Exception:
         record["passed"] = False

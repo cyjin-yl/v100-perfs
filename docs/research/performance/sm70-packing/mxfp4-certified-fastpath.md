@@ -61,13 +61,17 @@ V=\max_j\sum_k (b'_{jk})^2.
 - 最后先处理零，再用正确的 power-of-two 缩放；不要先构造可能不适合的半精度 scale。本文刻意采用正常数区间 `[-126,103]`，不依赖 Tensor Core 的次正规数行为。
 - 若将证书缓存，必须绑定到输入 codes、scales 和布局的真实版本；权重更新及重新量化后失效。F、dgrad、wgrad 的不同归约轴分别验证。
 - 证书、归一化反量化、cuBLAS、最终缩放和失败回退都应计入端到端计时。可在同一 stream 中依次执行 GPU 证书、无条件 cuBLAS、通过时的最终缩放、拒绝时的精确 tiled fallback，避免每次把 flag 读回 host 后再调度。拒绝的归一化输入必须安全地写成有限值；其无用 cuBLAS 结果由 fallback 覆盖。fallback 的 device guard 必须在任何 barrier 前由整个 CTA 一致执行；拒绝时额外执行一次 cuBLAS 的成本不能从 total 隐去。额外 FP16 workspace 为约 `2*(M+N)*padded_K` 字节；这条路径本身不构成省显存结论。
-- 相同证书也支持融合反量化的 HMMA 主循环：跨整 K 累加，最终只缩放一次，避免全局 FP16 workspace。新增 variants 3–7 实现此路径，但是否优于所选 cuBLAS 版本需按相同输入和完整 pipeline 计时比较，不能从减少 workspace 直接推断。
+- 相同证书也支持融合反量化的 HMMA 主循环：跨整 K 累加，最终只缩放一次，避免全局 FP16 workspace。新增 variants 3–8 实现此路径，但是否优于所选 cuBLAS 版本需按相同输入和完整 pipeline 计时比较，不能从减少 workspace 直接推断。
 
 ### 融合路径与块能量缓存
 
-融合实现把 `q*2^(s-m)` 直接写入共享内存，用 `mma.sync.aligned.m8n8k4.row.col.f32.f16.f16.f32` 跨整 K 累加，在写 FP32 输出时施加一次行对尺度并将零规范化为 `+0`。GPU 证书拒绝时，整个 CTA 在读取操作数和任何 barrier 之前一致返回，随后原 exact tiled 后端计算输出。cuBLAS variants 0／1／2 的拒绝成本仍包含无用 cuBLAS；融合 variants 3–7 没有该项成本，报告须区分。
+融合实现把 `q*2^(s-m)` 直接写入共享内存，用 `mma.sync.aligned.m8n8k4.row.col.f32.f16.f16.f32` 跨整 K 累加，在写 FP32 输出时施加一次行对尺度并将零规范化为 `+0`。GPU 证书拒绝时，整个 CTA 在读取操作数和任何 barrier 之前一致返回，随后原 exact tiled 后端计算输出。cuBLAS variants 0／1／2 的拒绝成本仍包含无用 cuBLAS；融合 variants 3–8 没有该项成本，报告须区分。
 
 C6／C7 在计算当前 BK32 stage 前，把下一块 packed codes 和 scale 预取到寄存器，下一次迭代才解码并写共享内存。现有两个 CTA barrier 分别保护当前共享数据发布与共享 stage 复用；所有线程按统一的 K 循环执行。预取不改变归一化数值、证书门槛或最终缩放，零块仍在任何可能为负的尺度差移位前返回零。C7 改用 64×64 warp tile；这只改变已由整数证书允许的 HMMA 归约分组，性能是否有利另由测量判定。
+
+C8 保留 C6 的计算顺序和共享 stage，只改变符合条件的输入加载。int32 安全索引、M/N 为128倍数且 A/B 均8B对齐时，每线程为每个操作数读取半个MX32块，形成一个 `uint2` packed 与一个 scale。行字节数为16倍数，行内偏移为 `block*16+half*8`，因此宽加载保持对齐且不跨块；其他输入显式使用 C6。交换线程行编号的bit2/bit3只是双射，所有共享half4位置仍恰写一次，HMMA读取的逻辑元素不变。
+
+若一个half的任一q非零，其所属MX32块必已参与row_min；通过原证书后，整个half可共用有效的 `0<=delta<=12`。其中即使某个half4全为零，原归一化掩码也会将其写为canonical `+0`。全零half在形成delta前直接发布零，避免低scale零块的负移位。预取只在下一块存在时发起，K=0不读取packed、scale或row_bases；拒绝仍在任何barrier前一致返回。以上不改变证书准入条件，也不引入FP16部分和。硬件依据、源码检查和实际验证状态见 [C8硬件与文献研究](../../../../evidence/results/mxfp4-training/2026-11-24-hardware-study/README.md)。
 
 当 `padded_K<=32768`，融合版准备阶段先为每个 MX32 计算整数 `Q=sum(q*q)`，把它与 scale 存在一个 32-bit 共享字中。`0<=Q<=4608`，因此低 16 位足够；scale 放在高 16 位。取得行最小尺度后，只需将每个非零且 scale 有限的 Q 左移 `2*(s-m)`，按原规则饱和累加。此时非零块已经参与最小值计算，故移位非负；`delta<=24` 时最大中间值 `4608*2^48<2^61`，仍在 uint64 范围内。非负整数饱和加法满足结合律，因此块聚合与原先四元素分组得到相同能量和拒绝标志。更长 K 保留不缓存的准备路径。
 

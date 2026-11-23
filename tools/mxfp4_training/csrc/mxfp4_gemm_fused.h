@@ -25,7 +25,8 @@ extern "C" {
 // Accepted inputs are normalized directly into shared memory, continuously
 // accumulated over all K in FP32 HMMA, then scaled once on output. No global
 // FP16 matrix or intermediate FP32 output is materialized. q-zero values
-// become half +0 before exponent manipulation; output zero is canonical +0.
+// become half +0; output zero is canonical +0. Exponent manipulation only
+// occurs after establishing a valid delta from an active MX32 block.
 // Numeric results equal the ordered MX32 contract under the certificate.
 //
 // Storage is unchanged: low nibble = even K, uint8 scales per row/MX32,
@@ -36,7 +37,7 @@ extern "C" {
 // Buffers and accepted/row_bases must remain valid and immutable until stream
 // completion, be on the current device, and not overlap output storage.
 //
-// Bounded runtime experiments (no automatic tuning or silent substitution):
+// Bounded runtime experiments (no automatic tuning):
 //   variant0: CTA64x64,   BK64, 128 threads, warp32x32.
 //   variant1: CTA128x128, BK32, 256 threads, warp32x64.
 //   variant2: CTA128x128, BK64, 256 threads, warp32x64.
@@ -44,6 +45,11 @@ extern "C" {
 //             One shared stage and the same two barriers per K stage.
 //   variant4: CTA128x128, BK32, 128 threads, warp64x64, raw register prefetch.
 //             128 FP32 accumulators/thread, same shared stage and barriers.
+//   variant5: variant3 geometry, each thread prefetches one half MX32 row
+//             per operand (uint2 packed + scale), six raw registers total.
+//             Fast kernel requires int32 offsets, M/N multiples of128, and
+//             8-byte aligned A/B; all other cases explicitly use variant3.
+//             Same shared layout, HMMA order, and two barriers per K stage.
 // All variants implement the same certificate-dependent arithmetic.
 // Returns cudaError_t as int after enqueue; does not synchronize.
 int mxfp4_gemm_fused_cuda(const uint8_t* a, const uint8_t* a_scales,

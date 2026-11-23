@@ -39,11 +39,12 @@ def main() -> int:
                         help="include the conditional exact Tensor Core backend and its checks")
     parser.add_argument("--tiled-variant", type=int, choices=(0, 1, 2), default=1,
                         help="0: MX32; 1: MX32 with normal-scale gate; 2: two MX32 blocks per stage")
-    parser.add_argument("--certified-variant", type=int, choices=(0, 1, 2, 3, 4, 5, 6, 7), default=2,
+    parser.add_argument("--certified-variant", type=int, choices=(0, 1, 2, 3, 4, 5, 6, 7, 8), default=2,
                         help="0..2: cuBLAS preparation/epilogue variants; "
                              "3: fused 64/BK64; 4: fused 128/BK32; 5: fused 128/BK64; "
                              "6: fused 128/BK32 with register prefetch; "
-                             "7: prefetched 128/BK32 with 64x64 warp tiles")
+                             "7: prefetched 128/BK32 with 64x64 warp tiles; "
+                             "8: half-row vector raw prefetch with variant-6 fallback")
     args = parser.parse_args()
     if args.with_fused_benchmark and (not args.with_certified or args.certified_variant < 3):
         parser.error("--with-fused-benchmark requires --with-certified and --certified-variant >=3")

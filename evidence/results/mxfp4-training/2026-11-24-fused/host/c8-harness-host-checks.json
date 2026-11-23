@@ -1,0 +1,1940 @@
+{
+  "schema_version": 1,
+  "evidence_type": "host_cpp_harness_tests",
+  "gpu_executed": false,
+  "cuda_device_code_compiled": false,
+  "cuda_linked": false,
+  "memory_snapshots_are_test_stubs": true,
+  "fused_variants": [
+    8
+  ],
+  "started_utc": "2026-11-23T19:08:52.454732+00:00",
+  "compiler_version": "g++ (Debian 14.2.0-19) 14.2.0",
+  "script_sha256": "d5473fe8a43b0254d5832615a7f339a5cac4ac29a99df9d9173f799f806b11a9",
+  "source_sha256": {
+    "tools/mxfp4_training/csrc/check_mxfp4.cu": "476a24671ac3ac6c9ed28562f9357e570cb50c1a9244533df5cba94c9a701a71",
+    "tools/mxfp4_training/csrc/check_mxfp4_certified.cu": "1d4f4d6139e2c626a0877629fa4a1a30205a985c9847e727d230e370ea22dfbe",
+    "tools/mxfp4_training/csrc/bench_mxfp4.cu": "d07e73cbb50edf3cacabb20e610b278a9cfff33fd5fe3cb289c8589c0493d3fe",
+    "tools/mxfp4_training/csrc/bench_mxfp4_fused.cu": "22dbeb4f13fa981c574ee458ef1ab7138ad522ec23cadf6922b4ce450d54331e",
+    "tools/mxfp4_training/csrc/mxfp4_gemm_certified.cu": "462f0601801f588fe7b948b30da87d4d84a6f36bfe42ebb47055099cbdd94dc6"
+  },
+  "correctness_profile": [
+    {
+      "configuration": "base",
+      "compilations": [
+        {
+          "argv": [
+            "g++",
+            "-std=c++17",
+            "-O2",
+            "/tmp/mxfp4-harness-host-owqnlvi9/base.cpp",
+            "-o",
+            "/tmp/mxfp4-harness-host-owqnlvi9/base"
+          ],
+          "returncode": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      ],
+      "executions": [
+        {
+          "args": [],
+          "test_environment": {},
+          "returncode": 0,
+          "stdout_json": {
+            "type": "environment",
+            "device": 0,
+            "name": "host-only stub",
+            "compute_capability": "7.0",
+            "actual_V100": false,
+            "driver_version": 0,
+            "runtime_version": 0,
+            "free_bytes_after_context": 65208320,
+            "total_bytes": 17179869184,
+            "backend": "host-only parser and guard test",
+            "memory_profile": "ordinary",
+            "reserve_mib": 128,
+            "max_explicit_allocation_bytes": null,
+            "gpu_executed": false
+          },
+          "stderr": "0"
+        },
+        {
+          "args": [
+            "--reserve-mib",
+            "64"
+          ],
+          "test_environment": {},
+          "returncode": 0,
+          "stdout_json": {
+            "type": "environment",
+            "device": 0,
+            "name": "host-only stub",
+            "compute_capability": "7.0",
+            "actual_V100": false,
+            "driver_version": 0,
+            "runtime_version": 0,
+            "free_bytes_after_context": 65208320,
+            "total_bytes": 17179869184,
+            "backend": "host-only parser and guard test",
+            "memory_profile": "ordinary",
+            "reserve_mib": 64,
+            "max_explicit_allocation_bytes": null,
+            "gpu_executed": false
+          },
+          "stderr": "0"
+        },
+        {
+          "args": [
+            "--reserve-mib",
+            "48"
+          ],
+          "test_environment": {},
+          "returncode": 1,
+          "stdout_json": {
+            "error": "reserve-mib must be at least 64 outside small-memory-correctness"
+          },
+          "stderr": "0"
+        },
+        {
+          "args": [
+            "--small-memory-correctness"
+          ],
+          "test_environment": {},
+          "returncode": 1,
+          "stdout_json": {
+            "error": "small-memory-correctness requires a compiled fused certified variant >= 3"
+          },
+          "stderr": "0"
+        },
+        {
+          "args": [
+            "--small-memory-correctness",
+            "--reserve-mib",
+            "48"
+          ],
+          "test_environment": {},
+          "returncode": 1,
+          "stdout_json": {
+            "error": "small-memory-correctness requires a compiled fused certified variant >= 3"
+          },
+          "stderr": "0"
+        },
+        {
+          "args": [
+            "--reserve-mib",
+            "48",
+            "--small-memory-correctness"
+          ],
+          "test_environment": {},
+          "returncode": 1,
+          "stdout_json": {
+            "error": "small-memory-correctness requires a compiled fused certified variant >= 3"
+          },
+          "stderr": "0"
+        },
+        {
+          "args": [
+            "--small-memory-correctness",
+            "--reserve-mib",
+            "64"
+          ],
+          "test_environment": {},
+          "returncode": 1,
+          "stdout_json": {
+            "error": "small-memory-correctness requires a compiled fused certified variant >= 3"
+          },
+          "stderr": "0"
+        },
+        {
+          "args": [
+            "--reserve-mib",
+            "47",
+            "--small-memory-correctness"
+          ],
+          "test_environment": {},
+          "returncode": 1,
+          "stdout_json": {
+            "error": "small-memory-correctness requires a compiled fused certified variant >= 3"
+          },
+          "stderr": "0"
+        },
+        {
+          "args": [
+            "--benchmark",
+            "--correctness-only",
+            "--small-memory-correctness",
+            "--reserve-mib",
+            "48"
+          ],
+          "test_environment": {},
+          "returncode": 1,
+          "stdout_json": {
+            "error": "small-memory-correctness requires a compiled fused certified variant >= 3"
+          },
+          "stderr": "0"
+        },
+        {
+          "args": [
+            "--small-memory-correctness",
+            "--reserve-mib",
+            "48",
+            "--benchmark"
+          ],
+          "test_environment": {},
+          "returncode": 1,
+          "stdout_json": {
+            "error": "small-memory-correctness requires a compiled fused certified variant >= 3"
+          },
+          "stderr": "0"
+        },
+        {
+          "args": [
+            "--reserve-mib"
+          ],
+          "test_environment": {},
+          "returncode": 1,
+          "stdout_json": {
+            "error": "Missing value for --reserve-mib"
+          },
+          "stderr": "0"
+        },
+        {
+          "args": [
+            "--reserve-mib",
+            "-1"
+          ],
+          "test_environment": {},
+          "returncode": 1,
+          "stdout_json": {
+            "error": "Invalid nonnegative bounded integer for --reserve-mib"
+          },
+          "stderr": "0"
+        },
+        {
+          "args": [
+            "--reserve-mib",
+            "48x",
+            "--small-memory-correctness"
+          ],
+          "test_environment": {},
+          "returncode": 1,
+          "stdout_json": {
+            "error": "Invalid nonnegative bounded integer for --reserve-mib"
+          },
+          "stderr": "0"
+        },
+        {
+          "args": [
+            "--small-memory-correctness",
+            "--reserve-mib",
+            "48",
+            "--iters",
+            "0"
+          ],
+          "test_environment": {},
+          "returncode": 1,
+          "stdout_json": {
+            "error": "iters, M and N must be positive"
+          },
+          "stderr": "0"
+        },
+        {
+          "args": [
+            "--wrong"
+          ],
+          "test_environment": {},
+          "returncode": 1,
+          "stdout_json": {
+            "error": "Missing value for --wrong"
+          },
+          "stderr": "0"
+        },
+        {
+          "args": [
+            "--reserve-mib",
+            "64"
+          ],
+          "test_environment": {
+            "TEST_BYTES": "1",
+            "TEST_FREE": "65208320"
+          },
+          "returncode": 1,
+          "stdout_json": {
+            "error": "Insufficient free VRAM: need case allocations plus 64 MiB reserve; no services are stopped"
+          },
+          "stderr": "1"
+        },
+        {
+          "args": [
+            "--reserve-mib",
+            "64"
+          ],
+          "test_environment": {
+            "TEST_BYTES": "11338200",
+            "TEST_FREE": "78447064"
+          },
+          "returncode": 0,
+          "stdout_json": {
+            "type": "environment",
+            "device": 0,
+            "name": "host-only stub",
+            "compute_capability": "7.0",
+            "actual_V100": false,
+            "driver_version": 0,
+            "runtime_version": 0,
+            "free_bytes_after_context": 78447064,
+            "total_bytes": 17179869184,
+            "backend": "host-only parser and guard test",
+            "memory_profile": "ordinary",
+            "reserve_mib": 64,
+            "max_explicit_allocation_bytes": null,
+            "gpu_executed": false
+          },
+          "stderr": "1"
+        },
+        {
+          "args": [
+            "--reserve-mib",
+            "64"
+          ],
+          "test_environment": {
+            "TEST_BYTES": "11338200",
+            "TEST_FREE": "78447063"
+          },
+          "returncode": 1,
+          "stdout_json": {
+            "error": "Insufficient free VRAM: need case allocations plus 64 MiB reserve; no services are stopped"
+          },
+          "stderr": "1"
+        }
+      ],
+      "checks_passed": 18
+    },
+    {
+      "configuration": "base_variant3",
+      "compilations": [
+        {
+          "argv": [
+            "g++",
+            "-std=c++17",
+            "-O2",
+            "/tmp/mxfp4-harness-host-owqnlvi9/base_variant3.cpp",
+            "-o",
+            "/tmp/mxfp4-harness-host-owqnlvi9/base_variant3"
+          ],
+          "returncode": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      ],
+      "executions": [
+        {
+          "args": [],
+          "test_environment": {},
+          "returncode": 0,
+          "stdout_json": {
+            "type": "environment",
+            "device": 0,
+            "name": "host-only stub",
+            "compute_capability": "7.0",
+            "actual_V100": false,
+            "driver_version": 0,
+            "runtime_version": 0,
+            "free_bytes_after_context": 65208320,
+            "total_bytes": 17179869184,
+            "backend": "host-only parser and guard test",
+            "memory_profile": "ordinary",
+            "reserve_mib": 128,
+            "max_explicit_allocation_bytes": null,
+            "gpu_executed": false
+          },
+          "stderr": "0"
+        },
+        {
+          "args": [
+            "--reserve-mib",
+            "64"
+          ],
+          "test_environment": {},
+          "returncode": 0,
+          "stdout_json": {
+            "type": "environment",
+            "device": 0,
+            "name": "host-only stub",
+            "compute_capability": "7.0",
+            "actual_V100": false,
+            "driver_version": 0,
+            "runtime_version": 0,
+            "free_bytes_after_context": 65208320,
+            "total_bytes": 17179869184,
+            "backend": "host-only parser and guard test",
+            "memory_profile": "ordinary",
+            "reserve_mib": 64,
+            "max_explicit_allocation_bytes": null,
+            "gpu_executed": false
+          },
+          "stderr": "0"
+        },
+        {
+          "args": [
+            "--reserve-mib",
+            "48"
+          ],
+          "test_environment": {},
+          "returncode": 1,
+          "stdout_json": {
+            "error": "reserve-mib must be at least 64 outside small-memory-correctness"
+          },
+          "stderr": "0"
+        },
+        {
+          "args": [
+            "--small-memory-correctness"
+          ],
+          "test_environment": {},
+          "returncode": 1,
+          "stdout_json": {
+            "error": "small-memory-correctness requires a compiled fused certified variant >= 3"
+          },
+          "stderr": "0"
+        },
+        {
+          "args": [
+            "--small-memory-correctness",
+            "--reserve-mib",
+            "48"
+          ],
+          "test_environment": {},
+          "returncode": 1,
+          "stdout_json": {
+            "error": "small-memory-correctness requires a compiled fused certified variant >= 3"
+          },
+          "stderr": "0"
+        },
+        {
+          "args": [
+            "--reserve-mib",
+            "48",
+            "--small-memory-correctness"
+          ],
+          "test_environment": {},
+          "returncode": 1,
+          "stdout_json": {
+            "error": "small-memory-correctness requires a compiled fused certified variant >= 3"
+          },
+          "stderr": "0"
+        },
+        {
+          "args": [
+            "--small-memory-correctness",
+            "--reserve-mib",
+            "64"
+          ],
+          "test_environment": {},
+          "returncode": 1,
+          "stdout_json": {
+            "error": "small-memory-correctness requires a compiled fused certified variant >= 3"
+          },
+          "stderr": "0"
+        },
+        {
+          "args": [
+            "--reserve-mib",
+            "47",
+            "--small-memory-correctness"
+          ],
+          "test_environment": {},
+          "returncode": 1,
+          "stdout_json": {
+            "error": "small-memory-correctness requires a compiled fused certified variant >= 3"
+          },
+          "stderr": "0"
+        },
+        {
+          "args": [
+            "--benchmark",
+            "--correctness-only",
+            "--small-memory-correctness",
+            "--reserve-mib",
+            "48"
+          ],
+          "test_environment": {},
+          "returncode": 1,
+          "stdout_json": {
+            "error": "small-memory-correctness requires a compiled fused certified variant >= 3"
+          },
+          "stderr": "0"
+        },
+        {
+          "args": [
+            "--small-memory-correctness",
+            "--reserve-mib",
+            "48",
+            "--benchmark"
+          ],
+          "test_environment": {},
+          "returncode": 1,
+          "stdout_json": {
+            "error": "small-memory-correctness requires a compiled fused certified variant >= 3"
+          },
+          "stderr": "0"
+        },
+        {
+          "args": [
+            "--reserve-mib"
+          ],
+          "test_environment": {},
+          "returncode": 1,
+          "stdout_json": {
+            "error": "Missing value for --reserve-mib"
+          },
+          "stderr": "0"
+        },
+        {
+          "args": [
+            "--reserve-mib",
+            "-1"
+          ],
+          "test_environment": {},
+          "returncode": 1,
+          "stdout_json": {
+            "error": "Invalid nonnegative bounded integer for --reserve-mib"
+          },
+          "stderr": "0"
+        },
+        {
+          "args": [
+            "--reserve-mib",
+            "48x",
+            "--small-memory-correctness"
+          ],
+          "test_environment": {},
+          "returncode": 1,
+          "stdout_json": {
+            "error": "Invalid nonnegative bounded integer for --reserve-mib"
+          },
+          "stderr": "0"
+        },
+        {
+          "args": [
+            "--small-memory-correctness",
+            "--reserve-mib",
+            "48",
+            "--iters",
+            "0"
+          ],
+          "test_environment": {},
+          "returncode": 1,
+          "stdout_json": {
+            "error": "iters, M and N must be positive"
+          },
+          "stderr": "0"
+        },
+        {
+          "args": [
+            "--wrong"
+          ],
+          "test_environment": {},
+          "returncode": 1,
+          "stdout_json": {
+            "error": "Missing value for --wrong"
+          },
+          "stderr": "0"
+        },
+        {
+          "args": [
+            "--reserve-mib",
+            "64"
+          ],
+          "test_environment": {
+            "TEST_BYTES": "1",
+            "TEST_FREE": "65208320"
+          },
+          "returncode": 1,
+          "stdout_json": {
+            "error": "Insufficient free VRAM: need case allocations plus 64 MiB reserve; no services are stopped"
+          },
+          "stderr": "1"
+        },
+        {
+          "args": [
+            "--reserve-mib",
+            "64"
+          ],
+          "test_environment": {
+            "TEST_BYTES": "11338200",
+            "TEST_FREE": "78447064"
+          },
+          "returncode": 0,
+          "stdout_json": {
+            "type": "environment",
+            "device": 0,
+            "name": "host-only stub",
+            "compute_capability": "7.0",
+            "actual_V100": false,
+            "driver_version": 0,
+            "runtime_version": 0,
+            "free_bytes_after_context": 78447064,
+            "total_bytes": 17179869184,
+            "backend": "host-only parser and guard test",
+            "memory_profile": "ordinary",
+            "reserve_mib": 64,
+            "max_explicit_allocation_bytes": null,
+            "gpu_executed": false
+          },
+          "stderr": "1"
+        },
+        {
+          "args": [
+            "--reserve-mib",
+            "64"
+          ],
+          "test_environment": {
+            "TEST_BYTES": "11338200",
+            "TEST_FREE": "78447063"
+          },
+          "returncode": 1,
+          "stdout_json": {
+            "error": "Insufficient free VRAM: need case allocations plus 64 MiB reserve; no services are stopped"
+          },
+          "stderr": "1"
+        }
+      ],
+      "checks_passed": 18
+    },
+    {
+      "configuration": "c2",
+      "compilations": [
+        {
+          "argv": [
+            "g++",
+            "-std=c++17",
+            "-O2",
+            "/tmp/mxfp4-harness-host-owqnlvi9/c2.cpp",
+            "-o",
+            "/tmp/mxfp4-harness-host-owqnlvi9/c2"
+          ],
+          "returncode": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      ],
+      "executions": [
+        {
+          "args": [],
+          "test_environment": {},
+          "returncode": 0,
+          "stdout_json": {
+            "type": "environment",
+            "device": 0,
+            "name": "host-only stub",
+            "compute_capability": "7.0",
+            "actual_V100": false,
+            "driver_version": 0,
+            "runtime_version": 0,
+            "free_bytes_after_context": 65208320,
+            "total_bytes": 17179869184,
+            "backend": "host-only parser and guard test",
+            "memory_profile": "ordinary",
+            "reserve_mib": 128,
+            "max_explicit_allocation_bytes": null,
+            "gpu_executed": false
+          },
+          "stderr": "0"
+        },
+        {
+          "args": [
+            "--reserve-mib",
+            "64"
+          ],
+          "test_environment": {},
+          "returncode": 0,
+          "stdout_json": {
+            "type": "environment",
+            "device": 0,
+            "name": "host-only stub",
+            "compute_capability": "7.0",
+            "actual_V100": false,
+            "driver_version": 0,
+            "runtime_version": 0,
+            "free_bytes_after_context": 65208320,
+            "total_bytes": 17179869184,
+            "backend": "host-only parser and guard test",
+            "memory_profile": "ordinary",
+            "reserve_mib": 64,
+            "max_explicit_allocation_bytes": null,
+            "gpu_executed": false
+          },
+          "stderr": "0"
+        },
+        {
+          "args": [
+            "--reserve-mib",
+            "48"
+          ],
+          "test_environment": {},
+          "returncode": 1,
+          "stdout_json": {
+            "error": "reserve-mib must be at least 64 outside small-memory-correctness"
+          },
+          "stderr": "0"
+        },
+        {
+          "args": [
+            "--small-memory-correctness"
+          ],
+          "test_environment": {},
+          "returncode": 1,
+          "stdout_json": {
+            "error": "small-memory-correctness requires a compiled fused certified variant >= 3"
+          },
+          "stderr": "0"
+        },
+        {
+          "args": [
+            "--small-memory-correctness",
+            "--reserve-mib",
+            "48"
+          ],
+          "test_environment": {},
+          "returncode": 1,
+          "stdout_json": {
+            "error": "small-memory-correctness requires a compiled fused certified variant >= 3"
+          },
+          "stderr": "0"
+        },
+        {
+          "args": [
+            "--reserve-mib",
+            "48",
+            "--small-memory-correctness"
+          ],
+          "test_environment": {},
+          "returncode": 1,
+          "stdout_json": {
+            "error": "small-memory-correctness requires a compiled fused certified variant >= 3"
+          },
+          "stderr": "0"
+        },
+        {
+          "args": [
+            "--small-memory-correctness",
+            "--reserve-mib",
+            "64"
+          ],
+          "test_environment": {},
+          "returncode": 1,
+          "stdout_json": {
+            "error": "small-memory-correctness requires a compiled fused certified variant >= 3"
+          },
+          "stderr": "0"
+        },
+        {
+          "args": [
+            "--reserve-mib",
+            "47",
+            "--small-memory-correctness"
+          ],
+          "test_environment": {},
+          "returncode": 1,
+          "stdout_json": {
+            "error": "small-memory-correctness requires a compiled fused certified variant >= 3"
+          },
+          "stderr": "0"
+        },
+        {
+          "args": [
+            "--benchmark",
+            "--correctness-only",
+            "--small-memory-correctness",
+            "--reserve-mib",
+            "48"
+          ],
+          "test_environment": {},
+          "returncode": 1,
+          "stdout_json": {
+            "error": "small-memory-correctness requires a compiled fused certified variant >= 3"
+          },
+          "stderr": "0"
+        },
+        {
+          "args": [
+            "--small-memory-correctness",
+            "--reserve-mib",
+            "48",
+            "--benchmark"
+          ],
+          "test_environment": {},
+          "returncode": 1,
+          "stdout_json": {
+            "error": "small-memory-correctness requires a compiled fused certified variant >= 3"
+          },
+          "stderr": "0"
+        },
+        {
+          "args": [
+            "--reserve-mib"
+          ],
+          "test_environment": {},
+          "returncode": 1,
+          "stdout_json": {
+            "error": "Missing value for --reserve-mib"
+          },
+          "stderr": "0"
+        },
+        {
+          "args": [
+            "--reserve-mib",
+            "-1"
+          ],
+          "test_environment": {},
+          "returncode": 1,
+          "stdout_json": {
+            "error": "Invalid nonnegative bounded integer for --reserve-mib"
+          },
+          "stderr": "0"
+        },
+        {
+          "args": [
+            "--reserve-mib",
+            "48x",
+            "--small-memory-correctness"
+          ],
+          "test_environment": {},
+          "returncode": 1,
+          "stdout_json": {
+            "error": "Invalid nonnegative bounded integer for --reserve-mib"
+          },
+          "stderr": "0"
+        },
+        {
+          "args": [
+            "--small-memory-correctness",
+            "--reserve-mib",
+            "48",
+            "--iters",
+            "0"
+          ],
+          "test_environment": {},
+          "returncode": 1,
+          "stdout_json": {
+            "error": "iters, M and N must be positive"
+          },
+          "stderr": "0"
+        },
+        {
+          "args": [
+            "--wrong"
+          ],
+          "test_environment": {},
+          "returncode": 1,
+          "stdout_json": {
+            "error": "Missing value for --wrong"
+          },
+          "stderr": "0"
+        },
+        {
+          "args": [
+            "--reserve-mib",
+            "64"
+          ],
+          "test_environment": {
+            "TEST_BYTES": "1",
+            "TEST_FREE": "65208320"
+          },
+          "returncode": 1,
+          "stdout_json": {
+            "error": "Insufficient free VRAM: need case allocations plus 64 MiB reserve; no services are stopped"
+          },
+          "stderr": "1"
+        },
+        {
+          "args": [
+            "--reserve-mib",
+            "64"
+          ],
+          "test_environment": {
+            "TEST_BYTES": "11338200",
+            "TEST_FREE": "78447064"
+          },
+          "returncode": 0,
+          "stdout_json": {
+            "type": "environment",
+            "device": 0,
+            "name": "host-only stub",
+            "compute_capability": "7.0",
+            "actual_V100": false,
+            "driver_version": 0,
+            "runtime_version": 0,
+            "free_bytes_after_context": 78447064,
+            "total_bytes": 17179869184,
+            "backend": "host-only parser and guard test",
+            "memory_profile": "ordinary",
+            "reserve_mib": 64,
+            "max_explicit_allocation_bytes": null,
+            "gpu_executed": false
+          },
+          "stderr": "1"
+        },
+        {
+          "args": [
+            "--reserve-mib",
+            "64"
+          ],
+          "test_environment": {
+            "TEST_BYTES": "11338200",
+            "TEST_FREE": "78447063"
+          },
+          "returncode": 1,
+          "stdout_json": {
+            "error": "Insufficient free VRAM: need case allocations plus 64 MiB reserve; no services are stopped"
+          },
+          "stderr": "1"
+        }
+      ],
+      "checks_passed": 18
+    },
+    {
+      "configuration": "f8",
+      "compilations": [
+        {
+          "argv": [
+            "g++",
+            "-std=c++17",
+            "-O2",
+            "/tmp/mxfp4-harness-host-owqnlvi9/f8.cpp",
+            "-o",
+            "/tmp/mxfp4-harness-host-owqnlvi9/f8"
+          ],
+          "returncode": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      ],
+      "executions": [
+        {
+          "args": [],
+          "test_environment": {},
+          "returncode": 0,
+          "stdout_json": {
+            "type": "environment",
+            "device": 0,
+            "name": "host-only stub",
+            "compute_capability": "7.0",
+            "actual_V100": false,
+            "driver_version": 0,
+            "runtime_version": 0,
+            "free_bytes_after_context": 65208320,
+            "total_bytes": 17179869184,
+            "backend": "host-only parser and guard test",
+            "memory_profile": "ordinary",
+            "reserve_mib": 128,
+            "max_explicit_allocation_bytes": null,
+            "gpu_executed": false
+          },
+          "stderr": "0"
+        },
+        {
+          "args": [
+            "--reserve-mib",
+            "64"
+          ],
+          "test_environment": {},
+          "returncode": 0,
+          "stdout_json": {
+            "type": "environment",
+            "device": 0,
+            "name": "host-only stub",
+            "compute_capability": "7.0",
+            "actual_V100": false,
+            "driver_version": 0,
+            "runtime_version": 0,
+            "free_bytes_after_context": 65208320,
+            "total_bytes": 17179869184,
+            "backend": "host-only parser and guard test",
+            "memory_profile": "ordinary",
+            "reserve_mib": 64,
+            "max_explicit_allocation_bytes": null,
+            "gpu_executed": false
+          },
+          "stderr": "0"
+        },
+        {
+          "args": [
+            "--reserve-mib",
+            "48"
+          ],
+          "test_environment": {},
+          "returncode": 1,
+          "stdout_json": {
+            "error": "reserve-mib must be at least 64 outside small-memory-correctness"
+          },
+          "stderr": "0"
+        },
+        {
+          "args": [
+            "--small-memory-correctness"
+          ],
+          "test_environment": {},
+          "returncode": 1,
+          "stdout_json": {
+            "error": "small-memory-correctness requires explicit --reserve-mib (minimum 48)"
+          },
+          "stderr": "0"
+        },
+        {
+          "args": [
+            "--small-memory-correctness",
+            "--reserve-mib",
+            "48"
+          ],
+          "test_environment": {},
+          "returncode": 0,
+          "stdout_json": {
+            "type": "environment",
+            "device": 0,
+            "name": "host-only stub",
+            "compute_capability": "7.0",
+            "actual_V100": false,
+            "driver_version": 0,
+            "runtime_version": 0,
+            "free_bytes_after_context": 65208320,
+            "total_bytes": 17179869184,
+            "backend": "host-only parser and guard test",
+            "memory_profile": "small_memory_correctness",
+            "reserve_mib": 48,
+            "max_explicit_allocation_bytes": 8388608,
+            "gpu_executed": false
+          },
+          "stderr": "0"
+        },
+        {
+          "args": [
+            "--reserve-mib",
+            "48",
+            "--small-memory-correctness"
+          ],
+          "test_environment": {},
+          "returncode": 0,
+          "stdout_json": {
+            "type": "environment",
+            "device": 0,
+            "name": "host-only stub",
+            "compute_capability": "7.0",
+            "actual_V100": false,
+            "driver_version": 0,
+            "runtime_version": 0,
+            "free_bytes_after_context": 65208320,
+            "total_bytes": 17179869184,
+            "backend": "host-only parser and guard test",
+            "memory_profile": "small_memory_correctness",
+            "reserve_mib": 48,
+            "max_explicit_allocation_bytes": 8388608,
+            "gpu_executed": false
+          },
+          "stderr": "0"
+        },
+        {
+          "args": [
+            "--small-memory-correctness",
+            "--reserve-mib",
+            "64"
+          ],
+          "test_environment": {},
+          "returncode": 0,
+          "stdout_json": {
+            "type": "environment",
+            "device": 0,
+            "name": "host-only stub",
+            "compute_capability": "7.0",
+            "actual_V100": false,
+            "driver_version": 0,
+            "runtime_version": 0,
+            "free_bytes_after_context": 65208320,
+            "total_bytes": 17179869184,
+            "backend": "host-only parser and guard test",
+            "memory_profile": "small_memory_correctness",
+            "reserve_mib": 64,
+            "max_explicit_allocation_bytes": 8388608,
+            "gpu_executed": false
+          },
+          "stderr": "0"
+        },
+        {
+          "args": [
+            "--reserve-mib",
+            "47",
+            "--small-memory-correctness"
+          ],
+          "test_environment": {},
+          "returncode": 1,
+          "stdout_json": {
+            "error": "small-memory-correctness reserve-mib must be at least 48"
+          },
+          "stderr": "0"
+        },
+        {
+          "args": [
+            "--benchmark",
+            "--correctness-only",
+            "--small-memory-correctness",
+            "--reserve-mib",
+            "48"
+          ],
+          "test_environment": {},
+          "returncode": 1,
+          "stdout_json": {
+            "error": "small-memory-correctness cannot be used with --benchmark"
+          },
+          "stderr": "0"
+        },
+        {
+          "args": [
+            "--small-memory-correctness",
+            "--reserve-mib",
+            "48",
+            "--benchmark"
+          ],
+          "test_environment": {},
+          "returncode": 1,
+          "stdout_json": {
+            "error": "small-memory-correctness cannot be used with --benchmark"
+          },
+          "stderr": "0"
+        },
+        {
+          "args": [
+            "--reserve-mib"
+          ],
+          "test_environment": {},
+          "returncode": 1,
+          "stdout_json": {
+            "error": "Missing value for --reserve-mib"
+          },
+          "stderr": "0"
+        },
+        {
+          "args": [
+            "--reserve-mib",
+            "-1"
+          ],
+          "test_environment": {},
+          "returncode": 1,
+          "stdout_json": {
+            "error": "Invalid nonnegative bounded integer for --reserve-mib"
+          },
+          "stderr": "0"
+        },
+        {
+          "args": [
+            "--reserve-mib",
+            "48x",
+            "--small-memory-correctness"
+          ],
+          "test_environment": {},
+          "returncode": 1,
+          "stdout_json": {
+            "error": "Invalid nonnegative bounded integer for --reserve-mib"
+          },
+          "stderr": "0"
+        },
+        {
+          "args": [
+            "--small-memory-correctness",
+            "--reserve-mib",
+            "48",
+            "--iters",
+            "0"
+          ],
+          "test_environment": {},
+          "returncode": 1,
+          "stdout_json": {
+            "error": "iters, M and N must be positive"
+          },
+          "stderr": "0"
+        },
+        {
+          "args": [
+            "--wrong"
+          ],
+          "test_environment": {},
+          "returncode": 1,
+          "stdout_json": {
+            "error": "Missing value for --wrong"
+          },
+          "stderr": "0"
+        },
+        {
+          "args": [
+            "--small-memory-correctness",
+            "--reserve-mib",
+            "48"
+          ],
+          "test_environment": {
+            "TEST_BYTES": "3014876",
+            "TEST_FREE": "65208320"
+          },
+          "returncode": 0,
+          "stdout_json": {
+            "type": "environment",
+            "device": 0,
+            "name": "host-only stub",
+            "compute_capability": "7.0",
+            "actual_V100": false,
+            "driver_version": 0,
+            "runtime_version": 0,
+            "free_bytes_after_context": 65208320,
+            "total_bytes": 17179869184,
+            "backend": "host-only parser and guard test",
+            "memory_profile": "small_memory_correctness",
+            "reserve_mib": 48,
+            "max_explicit_allocation_bytes": 8388608,
+            "gpu_executed": false
+          },
+          "stderr": "1"
+        },
+        {
+          "args": [
+            "--small-memory-correctness",
+            "--reserve-mib",
+            "48"
+          ],
+          "test_environment": {
+            "TEST_BYTES": "8388608",
+            "TEST_FREE": "65208320"
+          },
+          "returncode": 0,
+          "stdout_json": {
+            "type": "environment",
+            "device": 0,
+            "name": "host-only stub",
+            "compute_capability": "7.0",
+            "actual_V100": false,
+            "driver_version": 0,
+            "runtime_version": 0,
+            "free_bytes_after_context": 65208320,
+            "total_bytes": 17179869184,
+            "backend": "host-only parser and guard test",
+            "memory_profile": "small_memory_correctness",
+            "reserve_mib": 48,
+            "max_explicit_allocation_bytes": 8388608,
+            "gpu_executed": false
+          },
+          "stderr": "1"
+        },
+        {
+          "args": [
+            "--small-memory-correctness",
+            "--reserve-mib",
+            "48"
+          ],
+          "test_environment": {
+            "TEST_BYTES": "8388609",
+            "TEST_FREE": "65208320"
+          },
+          "returncode": 1,
+          "stdout_json": {
+            "error": "Small-memory correctness allocation cap exceeded: requested 8388609 explicit GPU bytes; maximum 8388608"
+          },
+          "stderr": "0"
+        },
+        {
+          "args": [
+            "--small-memory-correctness",
+            "--reserve-mib",
+            "48"
+          ],
+          "test_environment": {
+            "TEST_BYTES": "11338200",
+            "TEST_FREE": "65208320"
+          },
+          "returncode": 1,
+          "stdout_json": {
+            "error": "Small-memory correctness allocation cap exceeded: requested 11338200 explicit GPU bytes; maximum 8388608"
+          },
+          "stderr": "0"
+        },
+        {
+          "args": [
+            "--small-memory-correctness",
+            "--reserve-mib",
+            "48"
+          ],
+          "test_environment": {
+            "TEST_BYTES": "3014876",
+            "TEST_FREE": "53346524"
+          },
+          "returncode": 0,
+          "stdout_json": {
+            "type": "environment",
+            "device": 0,
+            "name": "host-only stub",
+            "compute_capability": "7.0",
+            "actual_V100": false,
+            "driver_version": 0,
+            "runtime_version": 0,
+            "free_bytes_after_context": 53346524,
+            "total_bytes": 17179869184,
+            "backend": "host-only parser and guard test",
+            "memory_profile": "small_memory_correctness",
+            "reserve_mib": 48,
+            "max_explicit_allocation_bytes": 8388608,
+            "gpu_executed": false
+          },
+          "stderr": "1"
+        },
+        {
+          "args": [
+            "--small-memory-correctness",
+            "--reserve-mib",
+            "48"
+          ],
+          "test_environment": {
+            "TEST_BYTES": "3014876",
+            "TEST_FREE": "53346523"
+          },
+          "returncode": 1,
+          "stdout_json": {
+            "error": "Insufficient free VRAM: need case allocations plus 48 MiB reserve; no services are stopped"
+          },
+          "stderr": "1"
+        },
+        {
+          "args": [
+            "--small-memory-correctness",
+            "--reserve-mib",
+            "48"
+          ],
+          "test_environment": {
+            "TEST_BYTES": "0",
+            "TEST_FREE": "50331647"
+          },
+          "returncode": 1,
+          "stdout_json": {
+            "error": "Insufficient free VRAM: need case allocations plus 48 MiB reserve; no services are stopped"
+          },
+          "stderr": "1"
+        }
+      ],
+      "checks_passed": 22
+    }
+  ],
+  "packed_host_driver_syntax": [
+    {
+      "variant": 8,
+      "argv": [
+        "g++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-DMXFP4_CERTIFIED_VARIANT=8",
+        "-I/tmp/mxfp4-harness-host-owqnlvi9",
+        "-I/workspace/scratch/3cc0562b0106/v100-perfs/tools/mxfp4_training/csrc",
+        "/tmp/mxfp4-harness-host-owqnlvi9/packed_syntax.cpp"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "variant": 0,
+      "argv": [
+        "g++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-DMXFP4_CERTIFIED_VARIANT=0",
+        "-I/tmp/mxfp4-harness-host-owqnlvi9",
+        "-I/workspace/scratch/3cc0562b0106/v100-perfs/tools/mxfp4_training/csrc",
+        "/tmp/mxfp4-harness-host-owqnlvi9/packed_syntax.cpp"
+      ],
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "/tmp/mxfp4-harness-host-owqnlvi9/packed_syntax.cpp:8:2: error: #error \"bench_mxfp4_fused requires a compiled certified variant >= 3\"\n    8 | #error \"bench_mxfp4_fused requires a compiled certified variant >= 3\"\n      |  ^~~~~\n"
+    },
+    {
+      "variant": 2,
+      "argv": [
+        "g++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-DMXFP4_CERTIFIED_VARIANT=2",
+        "-I/tmp/mxfp4-harness-host-owqnlvi9",
+        "-I/workspace/scratch/3cc0562b0106/v100-perfs/tools/mxfp4_training/csrc",
+        "/tmp/mxfp4-harness-host-owqnlvi9/packed_syntax.cpp"
+      ],
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "/tmp/mxfp4-harness-host-owqnlvi9/packed_syntax.cpp:8:2: error: #error \"bench_mxfp4_fused requires a compiled certified variant >= 3\"\n    8 | #error \"bench_mxfp4_fused requires a compiled certified variant >= 3\"\n      |  ^~~~~\n"
+    }
+  ],
+  "packed_parser_and_guard": {
+    "compilations": [
+      {
+        "argv": [
+          "g++",
+          "-std=c++17",
+          "-O2",
+          "/tmp/mxfp4-harness-host-owqnlvi9/packed_parser.cpp",
+          "-o",
+          "/tmp/mxfp4-harness-host-owqnlvi9/packed_parser"
+        ],
+        "returncode": 0,
+        "stdout": "",
+        "stderr": ""
+      }
+    ],
+    "executions": [
+      {
+        "args": [],
+        "test_environment": {},
+        "returncode": 1,
+        "stdout_json": {
+          "error": "Packed-only benchmark requires explicit --max-mib and --reserve-mib"
+        },
+        "stderr": "0"
+      },
+      {
+        "args": [
+          "--max-mib",
+          "12"
+        ],
+        "test_environment": {},
+        "returncode": 1,
+        "stdout_json": {
+          "error": "Packed-only benchmark requires explicit --max-mib and --reserve-mib"
+        },
+        "stderr": "0"
+      },
+      {
+        "args": [
+          "--reserve-mib",
+          "48"
+        ],
+        "test_environment": {},
+        "returncode": 1,
+        "stdout_json": {
+          "error": "Packed-only benchmark requires explicit --max-mib and --reserve-mib"
+        },
+        "stderr": "0"
+      },
+      {
+        "args": [
+          "--max-mib",
+          "12",
+          "--reserve-mib",
+          "48"
+        ],
+        "test_environment": {},
+        "returncode": 0,
+        "stdout_json": {
+          "M": 1536,
+          "N": 1536,
+          "K": 1536,
+          "rounds": 5,
+          "iters": 10,
+          "warmup": 3,
+          "mode": "random_block_scales",
+          "budget": {
+            "packed_nibbles_and_scales": 2506752,
+            "single_fp32_output": 9437184,
+            "certified_workspace": 52296,
+            "total_explicit_gpu_bytes": 11996232
+          }
+        },
+        "stderr": "0"
+      },
+      {
+        "args": [
+          "--reserve-mib",
+          "48",
+          "--max-mib",
+          "12"
+        ],
+        "test_environment": {},
+        "returncode": 0,
+        "stdout_json": {
+          "M": 1536,
+          "N": 1536,
+          "K": 1536,
+          "rounds": 5,
+          "iters": 10,
+          "warmup": 3,
+          "mode": "random_block_scales",
+          "budget": {
+            "packed_nibbles_and_scales": 2506752,
+            "single_fp32_output": 9437184,
+            "certified_workspace": 52296,
+            "total_explicit_gpu_bytes": 11996232
+          }
+        },
+        "stderr": "0"
+      },
+      {
+        "args": [
+          "--max-mib",
+          "13",
+          "--reserve-mib",
+          "48"
+        ],
+        "test_environment": {},
+        "returncode": 1,
+        "stdout_json": {
+          "error": "Packed-only max-mib must be 1..12"
+        },
+        "stderr": "0"
+      },
+      {
+        "args": [
+          "--max-mib",
+          "0",
+          "--reserve-mib",
+          "48"
+        ],
+        "test_environment": {},
+        "returncode": 1,
+        "stdout_json": {
+          "error": "Packed-only max-mib must be 1..12"
+        },
+        "stderr": "0"
+      },
+      {
+        "args": [
+          "--max-mib",
+          "12",
+          "--reserve-mib",
+          "47"
+        ],
+        "test_environment": {},
+        "returncode": 1,
+        "stdout_json": {
+          "error": "Packed-only reserve-mib must be at least 48"
+        },
+        "stderr": "0"
+      },
+      {
+        "args": [
+          "--max-mib",
+          "12",
+          "--reserve-mib",
+          "48",
+          "--m",
+          "17"
+        ],
+        "test_environment": {},
+        "returncode": 1,
+        "stdout_json": {
+          "error": "Custom shapes require positive --m, --n and --k together"
+        },
+        "stderr": "0"
+      },
+      {
+        "args": [
+          "--max-mib",
+          "12",
+          "--reserve-mib",
+          "48",
+          "--m",
+          "17",
+          "--n",
+          "19",
+          "--k",
+          "65"
+        ],
+        "test_environment": {},
+        "returncode": 0,
+        "stdout_json": {
+          "M": 17,
+          "N": 19,
+          "K": 65,
+          "rounds": 5,
+          "iters": 10,
+          "warmup": 3,
+          "mode": "random_block_scales",
+          "budget": {
+            "packed_nibbles_and_scales": 1836,
+            "single_fp32_output": 1292,
+            "certified_workspace": 684,
+            "total_explicit_gpu_bytes": 3812
+          }
+        },
+        "stderr": "0"
+      },
+      {
+        "args": [
+          "--max-mib",
+          "12",
+          "--reserve-mib",
+          "48",
+          "--m",
+          "65537",
+          "--n",
+          "1",
+          "--k",
+          "32"
+        ],
+        "test_environment": {},
+        "returncode": 1,
+        "stdout_json": {
+          "error": "Each custom dimension is bounded to 65536"
+        },
+        "stderr": "0"
+      },
+      {
+        "args": [
+          "--max-mib",
+          "12",
+          "--reserve-mib",
+          "48",
+          "--rounds",
+          "2"
+        ],
+        "test_environment": {},
+        "returncode": 1,
+        "stdout_json": {
+          "error": "Require iters=1..10000, rounds=3..100, samples=1..65536 and warmup<=10000"
+        },
+        "stderr": "0"
+      },
+      {
+        "args": [
+          "--max-mib",
+          "12",
+          "--reserve-mib",
+          "48",
+          "--iters",
+          "0"
+        ],
+        "test_environment": {},
+        "returncode": 1,
+        "stdout_json": {
+          "error": "Require iters=1..10000, rounds=3..100, samples=1..65536 and warmup<=10000"
+        },
+        "stderr": "0"
+      },
+      {
+        "args": [
+          "--max-mib",
+          "12",
+          "--reserve-mib",
+          "48",
+          "--warmup",
+          "10001"
+        ],
+        "test_environment": {},
+        "returncode": 1,
+        "stdout_json": {
+          "error": "Require iters=1..10000, rounds=3..100, samples=1..65536 and warmup<=10000"
+        },
+        "stderr": "0"
+      },
+      {
+        "args": [
+          "--max-mib",
+          "12",
+          "--reserve-mib",
+          "48",
+          "--mode",
+          "unknown"
+        ],
+        "test_environment": {},
+        "returncode": 1,
+        "stdout_json": {
+          "error": "Unknown input mode unknown"
+        },
+        "stderr": "0"
+      },
+      {
+        "args": [
+          "--max-mib",
+          "12",
+          "--reserve-mib",
+          "48",
+          "--correctness-only"
+        ],
+        "test_environment": {},
+        "returncode": 0,
+        "stdout_json": {
+          "M": 1536,
+          "N": 1536,
+          "K": 1536,
+          "rounds": 5,
+          "iters": 10,
+          "warmup": 3,
+          "mode": "random_block_scales",
+          "budget": {
+            "packed_nibbles_and_scales": 2506752,
+            "single_fp32_output": 9437184,
+            "certified_workspace": 52296,
+            "total_explicit_gpu_bytes": 11996232
+          }
+        },
+        "stderr": "0"
+      },
+      {
+        "args": [
+          "--max-mib",
+          "12",
+          "--reserve-mib",
+          "48"
+        ],
+        "test_environment": {
+          "TEST_FREE": "65208320",
+          "TEST_GUARD": "1"
+        },
+        "returncode": 0,
+        "stdout_json": {
+          "M": 1536,
+          "N": 1536,
+          "K": 1536,
+          "rounds": 5,
+          "iters": 10,
+          "warmup": 3,
+          "mode": "random_block_scales",
+          "budget": {
+            "packed_nibbles_and_scales": 2506752,
+            "single_fp32_output": 9437184,
+            "certified_workspace": 52296,
+            "total_explicit_gpu_bytes": 11996232
+          }
+        },
+        "stderr": "1"
+      },
+      {
+        "args": [
+          "--max-mib",
+          "12",
+          "--reserve-mib",
+          "48"
+        ],
+        "test_environment": {
+          "TEST_FREE": "62327880",
+          "TEST_GUARD": "1"
+        },
+        "returncode": 0,
+        "stdout_json": {
+          "M": 1536,
+          "N": 1536,
+          "K": 1536,
+          "rounds": 5,
+          "iters": 10,
+          "warmup": 3,
+          "mode": "random_block_scales",
+          "budget": {
+            "packed_nibbles_and_scales": 2506752,
+            "single_fp32_output": 9437184,
+            "certified_workspace": 52296,
+            "total_explicit_gpu_bytes": 11996232
+          }
+        },
+        "stderr": "1"
+      },
+      {
+        "args": [
+          "--max-mib",
+          "12",
+          "--reserve-mib",
+          "48"
+        ],
+        "test_environment": {
+          "TEST_FREE": "62327879",
+          "TEST_GUARD": "1"
+        },
+        "returncode": 1,
+        "stdout_json": {
+          "error": "test: insufficient free VRAM for packed-only allocations and the explicit 48 MiB reserve; no services are stopped"
+        },
+        "stderr": "1"
+      },
+      {
+        "args": [
+          "--max-mib",
+          "12",
+          "--reserve-mib",
+          "48"
+        ],
+        "test_environment": {
+          "TEST_FREE": "50331648",
+          "TEST_GUARD": "1",
+          "TEST_RESIDENT": "1"
+        },
+        "returncode": 0,
+        "stdout_json": {
+          "M": 1536,
+          "N": 1536,
+          "K": 1536,
+          "rounds": 5,
+          "iters": 10,
+          "warmup": 3,
+          "mode": "random_block_scales",
+          "budget": {
+            "packed_nibbles_and_scales": 2506752,
+            "single_fp32_output": 9437184,
+            "certified_workspace": 52296,
+            "total_explicit_gpu_bytes": 11996232
+          }
+        },
+        "stderr": "1"
+      },
+      {
+        "args": [
+          "--max-mib",
+          "12",
+          "--reserve-mib",
+          "48"
+        ],
+        "test_environment": {
+          "TEST_FREE": "50331647",
+          "TEST_GUARD": "1",
+          "TEST_RESIDENT": "1"
+        },
+        "returncode": 1,
+        "stdout_json": {
+          "error": "test: insufficient free VRAM for packed-only allocations and the explicit 48 MiB reserve; no services are stopped"
+        },
+        "stderr": "1"
+      },
+      {
+        "args": [
+          "--max-mib",
+          "12",
+          "--reserve-mib",
+          "48",
+          "--m",
+          "2048",
+          "--n",
+          "2048",
+          "--k",
+          "2048"
+        ],
+        "test_environment": {
+          "TEST_GUARD": "1"
+        },
+        "returncode": 1,
+        "stdout_json": {
+          "error": "test: packed-only allocation cap refused 21303368 explicit GPU bytes; cap is at most 12 MiB"
+        },
+        "stderr": "0"
+      }
+    ],
+    "checks_passed": 22
+  },
+  "finite_baseline_fault_injection": {
+    "compilations": [
+      {
+        "argv": [
+          "g++",
+          "-std=c++17",
+          "-O2",
+          "/tmp/mxfp4-harness-host-owqnlvi9/finite_baseline.cpp",
+          "-o",
+          "/tmp/mxfp4-harness-host-owqnlvi9/finite_baseline"
+        ],
+        "returncode": 0,
+        "stdout": "",
+        "stderr": ""
+      }
+    ],
+    "executions": [
+      {
+        "args": [
+          "finite"
+        ],
+        "test_environment": {},
+        "returncode": 0,
+        "stdout_json": {
+          "case": "finite",
+          "passed": true,
+          "baseline_nonfinite_values_all_outputs": 0,
+          "tiled_exact_mismatches": 0,
+          "certified_exact_mismatches": 0
+        },
+        "stderr": ""
+      },
+      {
+        "args": [
+          "shared_nan_hole"
+        ],
+        "test_environment": {},
+        "returncode": 0,
+        "stdout_json": {
+          "case": "shared_nan_hole",
+          "passed": false,
+          "baseline_nonfinite_values_all_outputs": 1,
+          "tiled_exact_mismatches": 0,
+          "certified_exact_mismatches": 0
+        },
+        "stderr": ""
+      },
+      {
+        "args": [
+          "shared_inf_hole"
+        ],
+        "test_environment": {},
+        "returncode": 0,
+        "stdout_json": {
+          "case": "shared_inf_hole",
+          "passed": false,
+          "baseline_nonfinite_values_all_outputs": 1,
+          "tiled_exact_mismatches": 0,
+          "certified_exact_mismatches": 0
+        },
+        "stderr": ""
+      },
+      {
+        "args": [
+          "candidate_nan_hole"
+        ],
+        "test_environment": {},
+        "returncode": 0,
+        "stdout_json": {
+          "case": "candidate_nan_hole",
+          "passed": false,
+          "baseline_nonfinite_values_all_outputs": 0,
+          "tiled_exact_mismatches": 0,
+          "certified_exact_mismatches": 1
+        },
+        "stderr": ""
+      }
+    ],
+    "checks_passed": 4
+  },
+  "certified_host_driver_syntax": [
+    {
+      "variant": 2,
+      "argv": [
+        "g++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-x",
+        "c++",
+        "-DMXFP4_CERTIFIED_VARIANT=2",
+        "-I/tmp/mxfp4-harness-host-owqnlvi9",
+        "-I/workspace/scratch/3cc0562b0106/v100-perfs/tools/mxfp4_training/csrc",
+        "/workspace/scratch/3cc0562b0106/v100-perfs/tools/mxfp4_training/csrc/check_mxfp4_certified.cu"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "variant": 8,
+      "argv": [
+        "g++",
+        "-std=c++17",
+        "-fsyntax-only",
+        "-x",
+        "c++",
+        "-DMXFP4_CERTIFIED_VARIANT=8",
+        "-I/tmp/mxfp4-harness-host-owqnlvi9",
+        "-I/workspace/scratch/3cc0562b0106/v100-perfs/tools/mxfp4_training/csrc",
+        "/workspace/scratch/3cc0562b0106/v100-perfs/tools/mxfp4_training/csrc/check_mxfp4_certified.cu"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "passed": true,
+  "finished_utc": "2026-11-23T19:09:01.669578+00:00",
+  "behavior_checks_passed": 102
+}

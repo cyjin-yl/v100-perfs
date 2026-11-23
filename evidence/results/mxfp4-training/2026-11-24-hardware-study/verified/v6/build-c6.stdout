@@ -1,0 +1,1 @@
+{"passed": true, "gpu_executed": false, "output_dir": "/tmp/v100-mxfp4-fused-3cc0562b0106/v6/build-c6", "artifacts": ["bench_mxfp4_fused", "check_mxfp4", "check_mxfp4_certified", "check_mxfp4_tiled", "libmxfp4_sm70.so"]}

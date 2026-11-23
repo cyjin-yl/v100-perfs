@@ -1,5 +1,7 @@
 # V100 MXFP4：融合解码与整 K HMMA 候选
 
+后续硬件与文献调研、C8向量加载实验，以及原Crater等待进程的恢复记录见 [下一轮研究](../2026-11-24-hardware-study/README.md)。本页保留V1–V5及02:37发布时的历史证据。
+
 本轮延续 [此前 50.95 TFLOPS 的证书路径](../2026-11-24-performance/README.md)，在同一数值合同下减少全局 FP16 工作区和调用阶段。**目前保留 C6 作为融合候选：1536³ 的 V4 ABBA 比较中，相对 C4 的完整 pipeline 吞吐提高 30.85%；进一步扩大 warp tile 的 C7 在 V5 ABBA 中比 C6 低 5.23%，保留为负面结果。** 两次比较发生在不同设备负载窗口，不能用其绝对吞吐计算跨轮加速比。默认仍为 tiled variant 1／certified variant 2；尚无同形状、同条件 C2 对照，也未达到 125 TFLOPS。日期按 Asia/Shanghai 归档；驱动日志记录 UTC，NVML CSV 保留设备本地时间。
 
 ## 1. 实现变化

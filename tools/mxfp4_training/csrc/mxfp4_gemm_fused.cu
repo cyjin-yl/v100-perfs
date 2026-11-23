@@ -18,9 +18,9 @@ __device__ __forceinline__ unsigned q_half_pair(unsigned packed) {
 }
 
 __device__ __forceinline__ uint2 normalized_four(unsigned packed, int delta) {
-  // The caller has established at least one nonzero q in this group, hence
-  // its active block participated in row_min: 0<=delta<=12. Add exponent bits
-  // only after that guard. Individual zero nibbles are masked to canonical+0.
+  // The caller has established an active MX32 block and 0<=delta<=12.
+  // A zero subgroup may share that valid delta with an active half row.
+  // Individual zero nibbles are masked to canonical+0 after the safe shifts.
   const unsigned shift = unsigned(delta) << 10;
   const unsigned both = shift | (shift << 16);
   unsigned lo = q_half_pair(packed & 255u) + both;
@@ -434,6 +434,136 @@ __global__ __launch_bounds__(128) void fused_certified_prefetch32_warp64(
   }
 }
 
+// Variant5 assigns one half MX32 row to each thread. Dispatch guarantees
+// int32-safe offsets, complete 128-row tiles, and 8-byte aligned code bases.
+// row_bytes and block*16 preserve that alignment for the uint2 loads.
+__device__ __forceinline__ void prefetch_raw_halfrow32(
+    const uint8_t* codes, const uint8_t* scales, int row, int row_bytes,
+    int blocks, int block, int half, uint2& raw, unsigned& scale) {
+  raw = *reinterpret_cast<const uint2*>(codes + row * row_bytes + block * 16 + half * 8);
+  scale = unsigned(scales[row * blocks + block]);
+}
+
+__device__ __forceinline__ void publish_halfrow32(
+    uint2* shared_row, int half, uint2 raw, unsigned scale, int base) {
+  // An active half proves its MX32 block participated in row_min, so its
+  // delta is in [0,12]. normalized_four also masks every zero nibble to +0
+  // when a zero half4 subgroup shares this valid delta. A wholly zero half
+  // can have scale<base: do not form its delta or shift any exponent bits.
+  if ((raw.x | raw.y) & 0x77777777u) {
+    const int delta = int(scale) - base;
+    #pragma unroll
+    for (int copy = 0; copy < 4; ++copy) {
+      const unsigned word = copy < 2 ? raw.x : raw.y;
+      const unsigned packed = (word >> ((copy & 1) * 16)) & 0xffffu;
+      shared_row[half * 4 + copy] = normalized_four(packed, delta);
+    }
+  } else {
+    #pragma unroll
+    for (int copy = 0; copy < 4; ++copy)
+      shared_row[half * 4 + copy] = make_uint2(0, 0);
+  }
+}
+
+// Low-register experiment: retain variant3's 256-thread compute geometry,
+// shared stage, HMMA order, epilogue, and two barriers per K stage. Six raw
+// registers replace sixteen, with one uint2 and one scale load per operand.
+// Only this kernel's input distribution changes; other cases use variant3.
+__global__ __launch_bounds__(256) void fused_certified_prefetch32_halfrow(
+    const uint8_t* __restrict__ a, const uint8_t* __restrict__ as,
+    const uint8_t* __restrict__ b, const uint8_t* __restrict__ bs,
+    float* __restrict__ out, int m, int n, int k,
+    const uint8_t* __restrict__ row_bases, const int* accepted, int tiles_n) {
+  if (*accepted == 0) return;
+  using Index = int;
+  constexpr bool Tails = false;
+  __shared__ __align__(16) uint2 shared_a[128][9], shared_b[128][9];
+  __shared__ uint8_t base_a[128], base_b[128];
+  const int tid = int(threadIdx.x), lane = tid & 31, warp = tid >> 5;
+  const int warp_row = (warp / 2) * 32, warp_col = (warp % 2) * 64;
+  const Index tile_row = (Index(blockIdx.x) / tiles_n) * 128;
+  const Index tile_col = (Index(blockIdx.x) % tiles_n) * 128;
+  const Index row_bytes = k / 2, blocks = k / 32;
+  const int linear_row = tid >> 1, half = tid & 1;
+  // Swap row bits2/3 without changing the shared layout seen by HMMA.
+  // For each 16-thread STS.64 phase and fixed copy, word-bank starts are
+  // (18*local_row + 8*half + 2*copy)%32: all sixteen even banks exactly once.
+  // This is a source-address model; generated transactions require SASS.
+  const int load_row = (linear_row & ~12) | ((linear_row & 4) << 1)
+      | ((linear_row & 8) >> 1);
+  if (tid < 128) {
+    base_a[tid] = k ? row_bases[tile_row + tid] : 127;
+    base_b[tid] = k ? row_bases[m + tile_col + tid] : 127;
+  }
+  __syncthreads();
+  const int my_base_a = int(base_a[load_row]), my_base_b = int(base_b[load_row]);
+  float accum[2][4][8] = {};
+  uint2 raw_a, raw_b;
+  unsigned raw_as, raw_bs;
+  if (blocks) {
+    prefetch_raw_halfrow32(a, as, tile_row + load_row, row_bytes, blocks, 0, half, raw_a, raw_as);
+    prefetch_raw_halfrow32(b, bs, tile_col + load_row, row_bytes, blocks, 0, half, raw_b, raw_bs);
+  }
+  for (Index block = 0; block < blocks; ++block) {
+    publish_halfrow32(shared_a[load_row], half, raw_a, raw_as, my_base_a);
+    publish_halfrow32(shared_b[load_row], half, raw_b, raw_bs, my_base_b);
+    __syncthreads();
+    // Next-stage reads touch only the six thread-private raw registers.
+    // The prior shared stores have already consumed this stage's raw data.
+    if (block + 1 < blocks) {
+      prefetch_raw_halfrow32(a, as, tile_row + load_row, row_bytes, blocks, block + 1, half, raw_a, raw_as);
+      prefetch_raw_halfrow32(b, bs, tile_col + load_row, row_bytes, blocks, block + 1, half, raw_b, raw_bs);
+    }
+    #pragma unroll
+    for (int vector = 0; vector < 8; ++vector) {
+      uint2 av[2], bv[4];
+      #pragma unroll
+      for (int fr = 0; fr < 2; ++fr)
+        av[fr] = shared_a[warp_row + fr * 16 + a_row(lane)][vector];
+      #pragma unroll
+      for (int fc = 0; fc < 4; ++fc)
+        bv[fc] = shared_b[warp_col + fc * 16 + b_col(lane)][vector];
+      #pragma unroll
+      for (int fr = 0; fr < 2; ++fr) {
+        #pragma unroll
+        for (int fc = 0; fc < 4; ++fc)
+          mma_four(accum[fr][fc], av[fr], bv[fc]);
+      }
+    }
+    // All warps must finish current-stage reads before next-stage stores.
+    __syncthreads();
+  }
+
+  const bool vector_output = (reinterpret_cast<uintptr_t>(out) & 7u) == 0 && n % 2 == 0;
+  #pragma unroll
+  for (int fr = 0; fr < 2; ++fr) {
+    #pragma unroll
+    for (int fc = 0; fc < 4; ++fc) {
+      #pragma unroll
+      for (int pair = 0; pair < 4; ++pair) {
+        const int i = pair * 2;
+        const int local_row = warp_row + fr * 16 + c_row(lane, i);
+        const int local_col = warp_col + fc * 16 + c_col(lane, i);
+        const Index row = tile_row + local_row, col = tile_col + local_col;
+        if (!Tails || (row < m && col < n)) {
+          const float x = scale_output(accum[fr][fc][i], base_a[local_row], base_b[local_col]);
+          if (!Tails || col + 1 < n) {
+            const float y = scale_output(accum[fr][fc][i + 1], base_a[local_row], base_b[local_col + 1]);
+            if (vector_output)
+              *reinterpret_cast<float2*>(out + row * n + col) = make_float2(x, y);
+            else {
+              out[row * n + col] = x;
+              out[row * n + col + 1] = y;
+            }
+          } else {
+            out[row * n + col] = x;
+          }
+        }
+      }
+    }
+  }
+}
+
 bool product_fits(int64_t a, int64_t b, size_t element_size) {
   const uint64_t limit = uint64_t(std::numeric_limits<ptrdiff_t>::max());
   return a == 0 || uint64_t(b) <= limit / element_size / uint64_t(a);
@@ -468,11 +598,22 @@ void dispatch_variant(const uint8_t* a, const uint8_t* as, const uint8_t* b, con
   else if (variant == 3)
     fused_certified_prefetch32<Index, true><<<grid, 256, 0, stream>>>(
         a, as, b, bs, out, Index(m), Index(n), Index(k), bases, accepted, Index(tiles_n));
-  else if (m % 128 == 0 && n % 128 == 0)
+  else if (variant == 4 && m % 128 == 0 && n % 128 == 0)
     fused_certified_prefetch32_warp64<Index, false><<<grid, 128, 0, stream>>>(
         a, as, b, bs, out, Index(m), Index(n), Index(k), bases, accepted, Index(tiles_n));
-  else
+  else if (variant == 4)
     fused_certified_prefetch32_warp64<Index, true><<<grid, 128, 0, stream>>>(
+        a, as, b, bs, out, Index(m), Index(n), Index(k), bases, accepted, Index(tiles_n));
+  else if (sizeof(Index) == sizeof(int) && m % 128 == 0 && n % 128 == 0
+           && ((reinterpret_cast<uintptr_t>(a) | reinterpret_cast<uintptr_t>(b)) & 7u) == 0)
+    fused_certified_prefetch32_halfrow<<<grid, 256, 0, stream>>>(
+        a, as, b, bs, out, int(m), int(n), int(k), bases, accepted, int(tiles_n));
+  // Explicit variant5 fallback for wide indices, tails, or unaligned codes.
+  else if (m % 128 == 0 && n % 128 == 0)
+    fused_certified_prefetch32<Index, false><<<grid, 256, 0, stream>>>(
+        a, as, b, bs, out, Index(m), Index(n), Index(k), bases, accepted, Index(tiles_n));
+  else
+    fused_certified_prefetch32<Index, true><<<grid, 256, 0, stream>>>(
         a, as, b, bs, out, Index(m), Index(n), Index(k), bases, accepted, Index(tiles_n));
 }
 
@@ -482,7 +623,7 @@ extern "C" int mxfp4_gemm_fused_cuda(
     const uint8_t* a, const uint8_t* a_scales, const uint8_t* b, const uint8_t* b_scales,
     float* out, int64_t m, int64_t n, int64_t padded_k,
     const uint8_t* row_bases, const int* accepted, int variant, cudaStream_t stream) {
-  if (m < 0 || n < 0 || padded_k < 0 || padded_k % 32 != 0 || variant < 0 || variant > 4)
+  if (m < 0 || n < 0 || padded_k < 0 || padded_k % 32 != 0 || variant < 0 || variant > 5)
     return int(cudaErrorInvalidValue);
   if (m == 0 || n == 0) return int(cudaSuccess);
   if (!out || !accepted || (padded_k && (!a || !a_scales || !b || !b_scales || !row_bases)))
@@ -519,6 +660,7 @@ extern "C" const char* mxfp4_fused_cuda_backend(int variant) {
     case 2: return "sm70_certified_fused128_bk64_warp32x64_v1";
     case 3: return "sm70_certified_fused128_bk32_prefetch_warp32x64_v1";
     case 4: return "sm70_certified_fused128_bk32_prefetch_warp64x64_v1";
+    case 5: return "sm70_certified_fused128_bk32_halfrow_prefetch_warp32x64_v1";
     default: return "invalid_fused_variant";
   }
 }

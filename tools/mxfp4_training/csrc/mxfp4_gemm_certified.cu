@@ -16,8 +16,8 @@
 #ifndef MXFP4_CERTIFIED_VARIANT
 #define MXFP4_CERTIFIED_VARIANT 0
 #endif
-#if MXFP4_CERTIFIED_VARIANT < 0 || MXFP4_CERTIFIED_VARIANT > 7
-#error "MXFP4_CERTIFIED_VARIANT must be 0..2 (cuBLAS) or 3..7 (fused normalized HMMA)"
+#if MXFP4_CERTIFIED_VARIANT < 0 || MXFP4_CERTIFIED_VARIANT > 8
+#error "MXFP4_CERTIFIED_VARIANT must be 0..2 (cuBLAS) or 3..8 (fused normalized HMMA)"
 #endif
 
 namespace {

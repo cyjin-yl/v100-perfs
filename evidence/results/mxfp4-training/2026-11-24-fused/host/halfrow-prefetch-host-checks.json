@@ -1,0 +1,290 @@
+{
+  "schema_version": 1,
+  "evidence_type": "host_only_c8_halfrow_mapping_staging_decode_dispatch",
+  "recorded_at_utc": "2026-11-23T19:06:50.164894+00:00",
+  "passed": true,
+  "gpu_executed": false,
+  "cuda_compilation_executed": false,
+  "limitations": "Host source/address/decode models only; no GPU arithmetic, occupancy, bank transaction or performance measurement.",
+  "source_sha256": "b81e780adddcb87b1a548ecda583e1a1e030041c74cf89999ec2270bc7123708",
+  "header_sha256": "34ebe0d912a1e85f975093d81c3dc23feed70a88e0cf48499b26278ba4ad1442",
+  "script_sha256": "391e9e06249b226e9ae99afa4e1f93cb9bdcd7913b07aea8d1bc13469b25457f",
+  "prior_cuda_sha256": "90e6252c455c099df510505a25edc63e3f5146e16357a03211af339727cbd3ad",
+  "prior_header_sha256": "b52633aeb346379562c5d93ba9ca8306c68aaff2c5de7a6b749808afece50b6c",
+  "old_c0_through_c7_sources_reconstructed_byte_exact": true,
+  "c6_compute_loop_and_epilogue_byte_identical": true,
+  "static_shared_bytes_from_source": 18688,
+  "raw_register_payload_from_source": 6,
+  "coverage_and_bank_model": {
+    "groups_per_operand_exactly_once": 1024,
+    "store_phases_checked_per_operand": 64,
+    "c8_max_distinct_addresses_per_bank_per_assumed_phase": 1,
+    "c6_max_distinct_addresses_per_bank_same_model": 2,
+    "model_only_not_a_hardware_transaction_measurement": true
+  },
+  "stages": {
+    "shape_cases": 24,
+    "stage_groups_matched": 368640,
+    "cases": [
+      {
+        "shape": [
+          128,
+          128,
+          0
+        ],
+        "stage_groups_matched": 0
+      },
+      {
+        "shape": [
+          128,
+          128,
+          32
+        ],
+        "stage_groups_matched": 2048
+      },
+      {
+        "shape": [
+          128,
+          128,
+          64
+        ],
+        "stage_groups_matched": 4096
+      },
+      {
+        "shape": [
+          128,
+          128,
+          96
+        ],
+        "stage_groups_matched": 6144
+      },
+      {
+        "shape": [
+          128,
+          128,
+          160
+        ],
+        "stage_groups_matched": 10240
+      },
+      {
+        "shape": [
+          128,
+          128,
+          288
+        ],
+        "stage_groups_matched": 18432
+      },
+      {
+        "shape": [
+          128,
+          256,
+          0
+        ],
+        "stage_groups_matched": 0
+      },
+      {
+        "shape": [
+          128,
+          256,
+          32
+        ],
+        "stage_groups_matched": 4096
+      },
+      {
+        "shape": [
+          128,
+          256,
+          64
+        ],
+        "stage_groups_matched": 8192
+      },
+      {
+        "shape": [
+          128,
+          256,
+          96
+        ],
+        "stage_groups_matched": 12288
+      },
+      {
+        "shape": [
+          128,
+          256,
+          160
+        ],
+        "stage_groups_matched": 20480
+      },
+      {
+        "shape": [
+          128,
+          256,
+          288
+        ],
+        "stage_groups_matched": 36864
+      },
+      {
+        "shape": [
+          256,
+          128,
+          0
+        ],
+        "stage_groups_matched": 0
+      },
+      {
+        "shape": [
+          256,
+          128,
+          32
+        ],
+        "stage_groups_matched": 4096
+      },
+      {
+        "shape": [
+          256,
+          128,
+          64
+        ],
+        "stage_groups_matched": 8192
+      },
+      {
+        "shape": [
+          256,
+          128,
+          96
+        ],
+        "stage_groups_matched": 12288
+      },
+      {
+        "shape": [
+          256,
+          128,
+          160
+        ],
+        "stage_groups_matched": 20480
+      },
+      {
+        "shape": [
+          256,
+          128,
+          288
+        ],
+        "stage_groups_matched": 36864
+      },
+      {
+        "shape": [
+          256,
+          256,
+          0
+        ],
+        "stage_groups_matched": 0
+      },
+      {
+        "shape": [
+          256,
+          256,
+          32
+        ],
+        "stage_groups_matched": 8192
+      },
+      {
+        "shape": [
+          256,
+          256,
+          64
+        ],
+        "stage_groups_matched": 16384
+      },
+      {
+        "shape": [
+          256,
+          256,
+          96
+        ],
+        "stage_groups_matched": 24576
+      },
+      {
+        "shape": [
+          256,
+          256,
+          160
+        ],
+        "stage_groups_matched": 40960
+      },
+      {
+        "shape": [
+          256,
+          256,
+          288
+        ],
+        "stage_groups_matched": 73728
+      }
+    ]
+  },
+  "dispatch": {
+    "alignment_tail_zero_cases": 2304,
+    "routes": {
+      "no_op": 512,
+      "c6_safety_fallback": 1780,
+      "c8_halfrow": 12
+    },
+    "index_boundaries": [
+      {
+        "shape": [
+          128,
+          16777088,
+          0
+        ],
+        "expected_route": "c8_halfrow"
+      },
+      {
+        "shape": [
+          128,
+          16777216,
+          0
+        ],
+        "expected_route": "c6_safety_fallback"
+      },
+      {
+        "shape": [
+          128,
+          128,
+          33554400
+        ],
+        "expected_route": "c8_halfrow"
+      },
+      {
+        "shape": [
+          128,
+          128,
+          33554432
+        ],
+        "expected_route": "c6_safety_fallback"
+      },
+      {
+        "shape": [
+          128,
+          128,
+          2147483616
+        ],
+        "expected_route": "c6_safety_fallback"
+      },
+      {
+        "shape": [
+          128,
+          128,
+          2147483648
+        ],
+        "expected_route": "c6_safety_fallback"
+      }
+    ],
+    "output_plus4_keeps_same_dispatch": true,
+    "zero_k_null_inputs_full_tile_route": "c8_halfrow"
+  },
+  "decode": {
+    "all_sign_zero_half_patterns": 65536,
+    "zero_patterns_with_negative_delta_never_normalized": true,
+    "single_active_nibble_half_cases": 2912,
+    "random_half_cases": 1024,
+    "individual_normalized_half_values_compared": 1111552
+  }
+}
