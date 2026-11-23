@@ -37,6 +37,8 @@ def main() -> int:
                         help="also build the bounded packed-only fused benchmark (requires certified >=3)")
     parser.add_argument("--with-certified", action="store_true",
                         help="include the conditional exact Tensor Core backend and its checks")
+    parser.add_argument("--with-quantizer-rne", action="store_true",
+                        help="include the opt-in native FP32 MX32 RNE quantizer in the shared library")
     parser.add_argument("--tiled-variant", type=int, choices=(0, 1, 2), default=1,
                         help="0: MX32; 1: MX32 with normal-scale gate; 2: two MX32 blocks per stage")
     parser.add_argument("--certified-variant", type=int, choices=tuple(range(11)), default=2,
@@ -68,8 +70,9 @@ def main() -> int:
     if args.with_certified and args.certified_variant >= 3:
         certified_sources.append(str(source / "mxfp4_gemm_fused.cu"))
     certified_links = ["-lcublas"] if args.with_certified else []
+    quantizer_sources = [str(source / "mxfp4_quantize_rne.cu")] if args.with_quantizer_rne else []
     jobs = [("shared_library", common + ["-shared", "-Xcompiler=-fPIC"] + kernels +
-             certified_sources + certified_links +
+             certified_sources + quantizer_sources + certified_links +
              ["-o", str(output / "libmxfp4_sm70.so")])]
     if not args.library_only:
         jobs.append(("standalone_harness", common + [str(source / "mxfp4_gemm.cu"),
@@ -102,6 +105,8 @@ def main() -> int:
                        else "sm70_mx32_certified_cublas_or_tiled")] if args.with_certified else []),
         "tiled_variant": args.tiled_variant,
         "certified_enabled": args.with_certified,
+        "quantizer_rne_enabled": args.with_quantizer_rne,
+        "quantizer_rne_backend": "sm70_mx32_rne_warp_fp32_v1" if args.with_quantizer_rne else None,
         "certified_variant": args.certified_variant if args.with_certified else None,
         "fused_packed_benchmark_enabled": args.with_fused_benchmark,
         "full_training_executed": False, "nvcc_version": version.strip(),

@@ -117,7 +117,8 @@ def main() -> int:
     parser.add_argument("--steps", type=int, default=40)
     parser.add_argument("--seed", type=int, default=20261123)
     parser.add_argument("--lr", type=float, default=0.005)
-    parser.add_argument("--backend", choices=["reference", "cuda", "cuda_tiled"], default="reference")
+    parser.add_argument("--backend", choices=["reference", "cuda", "cuda_tiled", "cuda_certified"], default="reference")
+    parser.add_argument("--quantizer-backend", choices=["torch", "cuda_rne"], default="torch")
     parser.add_argument("--device", default="cpu")
     args = parser.parse_args()
     if args.output.exists():
@@ -132,16 +133,16 @@ def main() -> int:
         free, _ = torch.cuda.mem_get_info(args.device)
         if free < 512 * 1024 * 1024:
             raise RuntimeError("CUDA smoke needs at least 512 MiB free after context creation")
-    baseline = MXRecipe(False, False, False, backend=args.backend)
+    baseline = MXRecipe(False, False, False, backend=args.backend, quantizer_backend=args.quantizer_backend)
     prototype = TinyDecoder(baseline)
     state = {k: v.detach().clone() for k, v in prototype.state_dict().items()}
     arms = [
         ("fp32", baseline),
-        ("mx_forward", MXRecipe(True, False, False, backend=args.backend)),
-        ("mx_forward_dgrad", MXRecipe(True, True, False, backend=args.backend)),
-        ("mx_forward_dgrad_wgrad", MXRecipe(True, True, True, backend=args.backend)),
+        ("mx_forward", MXRecipe(True, False, False, backend=args.backend, quantizer_backend=args.quantizer_backend)),
+        ("mx_forward_dgrad", MXRecipe(True, True, False, backend=args.backend, quantizer_backend=args.quantizer_backend)),
+        ("mx_forward_dgrad_wgrad", MXRecipe(True, True, True, backend=args.backend, quantizer_backend=args.quantizer_backend)),
         ("mx_all_stochastic_grad", MXRecipe(True, True, True,
-                                           gradient_rounding="stochastic", backend=args.backend)),
+                                           gradient_rounding="stochastic", backend=args.backend, quantizer_backend=args.quantizer_backend)),
     ]
     report = {
         "schema_version": 1, "purpose": "causal next-token integration smoke",
@@ -149,7 +150,8 @@ def main() -> int:
         "model": {"layers": 1, "width": 32, "heads": 4,
                   "parameter_count": sum(p.numel() for p in prototype.parameters())},
         "seed": args.seed, "learning_rate": args.lr, "optimizer": "AdamW FP32",
-        "backend": args.backend, "device": args.device,
+        "backend": args.backend, "quantizer_backend": args.quantizer_backend, "device": args.device,
+        "certified_geometry_note": "Width-32 smoke does not establish 128x128 halfrow fast-loader performance; paths are not instrumented.",
         "gpu_executed": args.backend != "reference", "llm_convergence_validated": False,
         "performance_claim": None, "python": platform.python_version(),
         "torch": torch.__version__, "numpy": np.__version__,

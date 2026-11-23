@@ -8,8 +8,9 @@ Then, with MXFP4_CUDA_LIBRARY still set:
 
 The FP16 Torch baselines return FP16, as ordinary torch.mm does. They are
 context, not the FP16-input/FP32-output cuBLAS baseline in bench_mxfp4.cu.
-This measures synthetic forward products, not training or the native
-certified C API. No CUDA device means blocked, never a CPU fallback.
+This measures synthetic forward products, not training. The optional
+--with-certified job includes the synchronous certified context lifecycle.
+No CUDA device means blocked, never a CPU fallback.
 """
 from __future__ import annotations
 
@@ -40,7 +41,7 @@ except ImportError:
     torch = None
 
 if torch is not None:
-    from tools.mxfp4_training.torch_ops import gemm_packed, quantize_mx_torch
+    from tools.mxfp4_training.torch_ops import gemm_packed, quantize_mx_torch, quantize_mx_cuda_rne
 
 
 MINIMUM_FREE_BYTES = 1024 * 1024 * 1024
@@ -96,6 +97,34 @@ def prerequisite(path: Path, report: dict) -> dict:
             "source_and_library_hashes_match": True,
             "device_identity_scope": "index,name,compute_capability,total_memory,Torch_and_CUDA_build",
             "executed_inside_benchmark": False}
+
+
+
+def quantizer_prerequisite(path: Path | None, report: dict) -> dict:
+    """Require the independent byte/original-FP32 route check for native RNE."""
+    if path is None or not path.is_file():
+        raise Blocked("cuda_rne requires the passing --quantizer-check-report from check_quantize_cuda.py")
+    from tools.mxfp4_training.check_quantize_cuda import source_hashes as quantizer_sources
+    evidence = json.loads(path.read_text())
+    if (evidence.get("status") != "passed" or evidence.get("passed") is not True
+            or evidence.get("gpu_executed") is not True
+            or evidence.get("all_attempted_work_synchronized") is not True
+            or evidence.get("source_unchanged_during_check") is not True
+            or not evidence.get("cases")
+            or evidence.get("completed_cases") != len(evidence["cases"])
+            or not all(case.get("passed") is True for case in evidence["cases"])):
+        raise Blocked("Native RNE prerequisite is not a complete passing GPU check")
+    if (evidence.get("source_sha256") != quantizer_sources()
+            or evidence.get("library", {}).get("sha256") != report["library"]["sha256"]):
+        raise Blocked("Native RNE checker source/library differs from this benchmark")
+    prior_gpu, gpu = evidence.get("gpu", {}), report["gpu"]
+    if (evidence.get("device") != report["device"] or evidence.get("torch") != report["torch"]
+            or any(prior_gpu.get(key) != gpu[key] for key in
+                   ("name", "compute_capability", "total_memory_bytes", "torch_cuda_build_version"))):
+        raise Blocked("Native RNE checker device/Torch identity differs")
+    return {"path": str(path.resolve()), "sha256": sha256(path), "status": "passed",
+            "completed_cases": evidence["completed_cases"], "source_and_library_hashes_match": True,
+            "library": evidence["library"], "executed_inside_benchmark": False}
 
 
 def error_context(actual: np.ndarray, reference: np.ndarray) -> dict:
@@ -193,12 +222,14 @@ def benchmark(args, report: dict, device, stream, state: ExecutionState) -> None
     ah, bh = execute(lambda: (a.to(torch.float16), b.to(torch.float16)))
     report["memory"]["after_resident_inputs"] = memory_snapshot(device)
 
-    def quantize_both():
-        return quantize_mx_torch(a, rounding="nearest"), quantize_mx_torch(b, rounding="nearest")
+    quantizer = quantize_mx_cuda_rne if args.quantizer_backend == "cuda_rne" else quantize_mx_torch
 
-    def quantize_and_gemm(backend):
+    def quantize_both():
+        return quantizer(a), quantizer(b)  # Both functions use RNE by contract/default.
+
+    def quantize_and_gemm(backend, diagnostic=None):
         qa, qb = quantize_both()
-        return gemm_packed(qa, qb, backend=backend)
+        return gemm_packed(qa, qb, backend=backend, certified_info=diagnostic)
 
     jobs = [
         Job("torch_fp32_matmul", "resident_fp32_A_at_B_rows_transpose", lambda: a @ b.T, "torch.float32"),
@@ -212,6 +243,11 @@ def benchmark(args, report: dict, device, stream, state: ExecutionState) -> None
         Job("mxfp4_cuda_tiled_quantize_and_gemm", "fp32_to_mxfp4_then_tiled_packed_gemm_fp32_output",
             lambda: quantize_and_gemm("cuda_tiled"), "torch.float32"),
     ]
+    certified_name = "mxfp4_cuda_certified_quantize_and_gemm"
+    if args.with_certified:
+        jobs.append(Job(certified_name,
+            "fp32_to_mxfp4_then_certified_create_prepare_certificate_gemm_scale_destroy_sync_fp32_output",
+            lambda: quantize_and_gemm("cuda_certified"), "torch.float32"))
 
     def capture(job, result):
         if not job.is_gemm:
@@ -235,7 +271,14 @@ def benchmark(args, report: dict, device, stream, state: ExecutionState) -> None
 
     host_results = {}
     for job in jobs:
-        result = execute(job.function)
+        if job.name == certified_name:
+            diagnostic = {}
+            report["native_certified_workspace_allocated"] = None
+            result = execute(lambda: quantize_and_gemm("cuda_certified", diagnostic))
+            report["native_certified_workspace_allocated"] = True
+            report["certified_diagnostic_untimed_initial"] = diagnostic
+        else:
+            result = execute(job.function)
         host_results[job.name] = execute(lambda: capture(job, result))
         del result
     full_exact = exact_outputs(host_results["mxfp4_cuda_quantize_and_gemm"],
@@ -250,6 +293,9 @@ def benchmark(args, report: dict, device, stream, state: ExecutionState) -> None
                                          for job in jobs if job.is_gemm},
         "fp16_output_note": "ordinary Torch FP16 matmul rounds its output to FP16; not the native FP32-output cuBLAS primitive",
     }
+    if args.with_certified:
+        report["validation"]["packed_certified_vs_baseline_all_outputs"] = exact_outputs(
+            host_results[certified_name], host_results["mxfp4_cuda_quantize_and_gemm"])
     for _ in range(args.warmup):
         for job in jobs:
             result = execute(job.function)
@@ -293,6 +339,9 @@ def benchmark(args, report: dict, device, stream, state: ExecutionState) -> None
     # These are the actual final timed outputs, copied after both endpoints.
     final_exact = exact_outputs(final_results["mxfp4_cuda_quantize_and_gemm"],
                                 final_results["mxfp4_cuda_tiled_quantize_and_gemm"])
+    if args.with_certified:
+        report["validation"]["final_timed_certified_vs_baseline_all_outputs"] = exact_outputs(
+            final_results[certified_name], final_results["mxfp4_cuda_quantize_and_gemm"])
     repeat_checks = {}
     for job in jobs:
         if not job.is_gemm:
@@ -320,12 +369,18 @@ def benchmark(args, report: dict, device, stream, state: ExecutionState) -> None
     state.synchronize(stream)
     report["memory"]["after_timed_rounds"] = memory_snapshot(device)
     report["timings"] = [job.summary(2 * args.m * args.n * args.k) for job in jobs]
+    report["native_certified_capi_benchmarked"] = args.with_certified
 
 
 def parse_args():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--check-report", type=Path, required=True)
+    parser.add_argument("--quantizer-backend", choices=("torch", "cuda_rne"), default="torch")
+    parser.add_argument("--quantizer-check-report", type=Path,
+                        help="required independent byte/gradient check when selecting cuda_rne")
+    parser.add_argument("--with-certified", action="store_true",
+                        help="also measure the explicit synchronous certified wrapper, including context lifetime")
     parser.add_argument("--device", default="cuda:0")
     parser.add_argument("--m", type=int, default=1024)
     parser.add_argument("--n", type=int, default=1024)
@@ -355,10 +410,15 @@ def main() -> int:
     # FP32/int64/bool temporaries, input/output lifetimes and allocator slack.
     budget = (128 * max(args.m, args.n) * padded_k + 8 * (args.m + args.n) * padded_k
               + 12 * args.m * args.n + 64 * 1024 * 1024)
+    if args.with_certified:
+        # Conservatively cover normalized FP16 operands, metadata and workspace
+        # even when the selected certified library uses metadata-only fused GEMM.
+        budget += 4 * (args.m + args.n) * padded_k + 8 * 1024 * 1024
     report = {
         "schema_version": 1, "purpose": "SM70 PyTorch quantization and forward GEMM cost",
         "started_at_utc": datetime.now(timezone.utc).isoformat(),
         "status": "pending", "passed": False, "device": args.device,
+        "quantizer_backend": args.quantizer_backend, "certified_job_enabled": args.with_certified,
         "python": platform.python_version(), "numpy": np.__version__,
         "torch": None if torch is None else torch.__version__, "source_sha256": source_hashes(),
         "shape": {"M": args.m, "N": args.n, "logical_K": args.k, "padded_K": padded_k},
@@ -375,13 +435,15 @@ def main() -> int:
             "Python_and_ctypes_dispatch", "GEMM_output_allocation", "packed_GEMM"],
         "excluded_from_times": ["context_and_library_initialization", "input_generation",
             "initial_preconversion_for_fp16_compute_only", "external_integration_check",
-            "correctness_copies_and_comparisons", "timing_event_initialization"],
+            "correctness_copies_and_comparisons", "timing_event_initialization", "untimed_certified_diagnostic"],
         "minimum_free_bytes_after_context": MINIMUM_FREE_BYTES,
         "reserve_bytes": RESERVE_BYTES, "estimated_peak_increment_budget_bytes": budget,
         "maximum_budget_fraction_of_free_memory": .75,
         "memory": {}, "timings": [], "native_certified_capi_benchmarked": False,
         "native_certified_workspace_allocated": False,
-        "memory_accounting_note": "Torch allocator peaks omit CUDA context/cuBLAS internal allocations; device free-memory snapshots include them. Packed baseline/tiled C APIs have no separately allocated native workspace. No certified workspace is created or measured.",
+        "memory_accounting_note": ("Torch allocator peaks omit CUDA context/cuBLAS internal allocations; device free-memory snapshots include them. Packed baseline/tiled C APIs have no separately allocated native workspace. "
+            + ("Optional certified totals include create/metadata or normalized inputs/native workspace, GEMM, destruction and synchronization."
+               if args.with_certified else "No certified workspace is created or measured.")),
         "full_training_executed": False, "llm_convergence_validated": False,
         "cpu_fallback": False, "gpu_services_stopped": False, "clock_or_power_changes": False,
     }
@@ -407,6 +469,8 @@ def main() -> int:
             raise Blocked("This benchmark requires actual SM70 hardware")
         report["library"] = library_metadata()
         report["prerequisite"] = prerequisite(args.check_report, report)
+        if args.quantizer_backend == "cuda_rne":
+            report["quantizer_prerequisite"] = quantizer_prerequisite(args.quantizer_check_report, report)
         report["memory"]["after_context_and_library"] = memory_snapshot(device)
         free = report["memory"]["after_context_and_library"]["device_free_bytes"]
         if free < MINIMUM_FREE_BYTES:
