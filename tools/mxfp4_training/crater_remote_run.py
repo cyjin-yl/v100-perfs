@@ -37,6 +37,13 @@ def digest(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
 
+def installed_python_candidates(candidates):
+    # Resolving a venv's python symlink selects its base interpreter and loses
+    # that venv's site-packages. Deduplicate lexical absolute paths instead.
+    return list(dict.fromkeys(os.path.abspath(p) for p in candidates
+                              if p and Path(p).is_file()))
+
+
 def extract_source(archive, destination):
     """Accept regular files/directories only, even for an authenticated upload."""
     with tarfile.open(archive, "r:gz") as source:
@@ -260,7 +267,7 @@ def main():
                           "numpy=numpy.__version__,cuda=torch.version.cuda,"
                           "available=torch.cuda.is_available()))); "
                           "sys.exit(0 if sys.version_info >= (3,8) and torch.cuda.is_available() else 2)")
-            for candidate in dict.fromkeys(str(Path(p).resolve()) for p in candidates if p and Path(p).is_file()):
+            for candidate in installed_python_candidates(candidates):
                 try:
                     probe = subprocess.run([candidate, "-c", probe_code], capture_output=True,
                                            text=True, env=environment, timeout=45)
