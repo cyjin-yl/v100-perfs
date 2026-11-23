@@ -1,8 +1,20 @@
 # V100 / SM70：低精度运算打包研究
 
-研究日期：2026-11-22。本文是独立研究记录；当前生产状态仍以 [production.md](../../../operations/current-state/production.md) 为准。
+研究日期：2026-11-22；训练基础续进：2026-11-23。本文是独立研究记录；当前生产状态仍以 [production.md](../../../operations/current-state/production.md) 为准。
 
-## 结论与完成状态
+## 2026-11-23：完整 MXFP4 算子与训练接口已落地
+
+新增 [MXFP4 训练基础实现](../../../../tools/mxfp4_training/README.md)，使用完整 E2M1 编码、MX32 E8M0 尺度和 SM70 Tensor Core，实现单输出 `A @ B.T`。它为受限 packing 提供可核对的通用基线；目前不宣称 packing 加速、FP16 基线加速或训练显存节约。
+
+在用户的 **Tesla V100-PCIE-32GB** 上，真实 CUDA 12.9 编译及执行已通过：**42 个 case、137,792 个输出，零不一致**，包括全部尺度字节配对、NaN、溢出、次正规数及非方阵尾块。编译使用 64 个寄存器，无 spill。原始编译、SASS 与执行记录见 [2026-11-23 证据](../../../../evidence/results/mxfp4-training/2026-11-23/README.md)。
+
+新增 NumPy 独立 oracle、PyTorch `MXLinear` 一阶 surrogate backward、独立控制的 forward/dgrad/wgrad 和 RNE/SR 舍入。**43 项 CPU 测试全部通过**。一个 1 层、宽度 32 的因果 decoder 在合成 next-token 数据上完成五组各 40 步 AdamW 对照，均能反传、更新 FP32 参数和降低损失。
+
+**V100 上确认的是独立原生算子的正确性；五组训练对照运行于 CPU oracle。** PyTorch CUDA 训练链路、真实文本预训练收敛及端到端速度比较仍待验证。两卡正在运行 vLLM，独立 CUDA 上下文建立后仅余约 144 MiB；本轮未改变服务。量化暂由多步 PyTorch 运算组成，kernel 尚未采用 shared-memory tiling，原始 FP32 activation 与 master weight 仍保留。
+
+## 2026-11-22 packing 研究：结论与完成状态
+
+以下记录保留原研究范围；其中“GPU 执行待完成”针对受限 packing 候选，不包括上述新加入的通用 MXFP4 基线。
 
 **FP16 Tensor Core 的输入尾数较短，并不能直接证明所有低精度 packing 都不可行。受限数值域内已经构造出可恢复的编码，并通过 V100 专用数值模型检验。** 本轮进一步发现不对称编码和只恢复同一点积中间系数的方案，改善了支持的输入域或解包频率。
 

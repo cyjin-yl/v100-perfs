@@ -2,3 +2,6 @@
 # including upstream CRLF files, when a checkout enables core.autocrlf.
 evidence/benchmarks/sm70-packing/study/** -text
 evidence/results/sm70-packing/** -text
+evidence/results/mxfp4-training/** -text
+# cuobjdump emits trailing spaces in its raw, hashed header; retain its bytes.
+evidence/results/mxfp4-training/**/mxfp4-sm70.sass.txt -whitespace

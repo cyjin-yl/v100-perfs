@@ -1,0 +1,48 @@
+name: MXFP4 training contracts
+
+on:
+  pull_request:
+    paths:
+      - 'tools/mxfp4_training/**'
+      - 'tests/test_mxfp4_*.py'
+      - '.github/workflows/mxfp4-training.yml'
+  push:
+    branches: [main, 'research/sm70-packed-lowprecision-20261122']
+    paths:
+      - 'tools/mxfp4_training/**'
+      - 'tests/test_mxfp4_*.py'
+      - '.github/workflows/mxfp4-training.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mxfp4-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  cpu-contracts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install CPU validation dependencies
+        run: |
+          python -m pip install numpy==2.3.5
+          python -m pip install torch==2.5.1+cpu --index-url https://download.pytorch.org/whl/cpu
+      - name: Require PyTorch and validate numerical contracts
+        run: |
+          python -c 'import torch; assert not torch.cuda.is_available(); print(torch.__version__)'
+          python -m unittest tests.test_mxfp4_reference tests.test_mxfp4_torch -v
+      - name: Exercise five causal-decoder training arms
+        run: python -m tools.mxfp4_training.pretrain_smoke --output /tmp/mxfp4-cpu-smoke.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: mxfp4-cpu-smoke
+          path: /tmp/mxfp4-cpu-smoke.json
+          if-no-files-found: ignore
