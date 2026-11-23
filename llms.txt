@@ -614,6 +614,10 @@
 - https://cyjin-yl.github.io/v100-perfs/evidence/results/mxfp4-training/2026-11-24-fused/iterations/v1/run_iteration.py/
 - https://cyjin-yl.github.io/v100-perfs/evidence/results/mxfp4-training/2026-11-24-fused/iterations/v1/sass-summary.json/
 - https://cyjin-yl.github.io/v100-perfs/evidence/results/mxfp4-training/2026-11-24-fused/iterations/v1/source.tar.gz/
+- https://cyjin-yl.github.io/v100-perfs/evidence/results/mxfp4-training/2026-11-24-fused/queue/post-refresh-observation.json/
+- https://cyjin-yl.github.io/v100-perfs/evidence/results/mxfp4-training/2026-11-24-fused/queue/refresh-audit.json/
+- https://cyjin-yl.github.io/v100-perfs/evidence/results/mxfp4-training/2026-11-24-fused/queue/refresh-config.json/
+- https://cyjin-yl.github.io/v100-perfs/evidence/results/mxfp4-training/2026-11-24-fused/queue/source-ready.json/
 - https://cyjin-yl.github.io/v100-perfs/evidence/results/mxfp4-training/2026-11-24-fused/queue_refresh.py/
 - https://cyjin-yl.github.io/v100-perfs/evidence/results/mxfp4-training/2026-11-24-fused/verified/v2/build-c3/certified_harness.log/
 - https://cyjin-yl.github.io/v100-perfs/evidence/results/mxfp4-training/2026-11-24-fused/verified/v2/build-c3/compile-evidence.json/

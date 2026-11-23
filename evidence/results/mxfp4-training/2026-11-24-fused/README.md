@@ -116,7 +116,11 @@ V4／V5 的每次 benchmark 均有证书接受、54 次已提交调用（1 次�
 
 ## 5. 排队后的同条件比较
 
-已授权的 Crater 单 V100 作业继续排队，原框架检查与 smoke 保留。待发布到同一 watcher 的扩展 payload 在原流程后，计划对 certified2 控制组与 certified3–7 分别执行 2048³、4096³，统一 seed `20261123`、`random_block_scales`、3 warmup、5 rounds、每轮 10 iterations。每个融合候选必须先通过自己的完整 certified correctness。源码发布与排队执行状态以实际 queue refresh 审计及 watcher 记录为准；本节不声明新源码已在排队节点执行。
+已授权的 Crater 单 V100 作业 `sg-jincy26-261123-e5bb3` 继续排队，原框架检查与 smoke 保留。**2026-11-24 02:37:08（Asia/Shanghai）已向原 watcher 发布源码 commit `4d7ff3b95768ff0e4833a336931e3e80265c897d`**，见 [真实发布审计](queue/refresh-audit.json)、[发布配置](queue/refresh-config.json) 和 [源码 ready 记录](queue/source-ready.json)。helper 在核对进程身份、waiting 状态和输入尚未冻结后更新 archive／payload／ready，随后恢复同一 PID；未重建作业或重启 watcher。原每 60 秒轮询、最长等待 12 小时的限制不变，等待期限为当日 12:52:24（Asia/Shanghai）。
+
+[发布后独立观察](queue/post-refresh-observation.json) 核对相同 PID／starttime、进程已恢复、新文件哈希和原 Crater 作业的 Pending／Inqueue 状态。作业实际执行的固定源码是上述 commit；随后记录发布事实的文档与证据提交不改变算子或 payload。发布成功不表示 GPU 阶段已经执行，框架检查、量化成本及 GPU smoke 仍待节点分配。
+
+扩展 payload 在原流程后，对 certified2 控制组与 certified3–7 分别执行 2048³、4096³，统一 seed `20261123`、`random_block_scales`、3 warmup、5 rounds、每轮 10 iterations。每个融合候选必须先通过自己的完整 certified correctness。实际执行与完成情况以 watcher 和各 GPU 阶段原始记录为准。
 
 主框架始终使用原 certified2 库；融合 C API 仍未接入 MXRecipe。新增阶段共用既有 2700 秒总 deadline，不能执行的阶段明确记 `blocked`，各候选构建日志、源码／产物哈希和实际命令单独保存。这里描述的是待执行流程，不是新增吞吐、框架正确性或预训练收敛结论。
 

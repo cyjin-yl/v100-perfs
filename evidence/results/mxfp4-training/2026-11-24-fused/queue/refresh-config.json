@@ -1,0 +1,60 @@
+{
+  "pid": 2150246,
+  "starttime": 37090653,
+  "euid": 1000,
+  "argv": [
+    "python3",
+    "-u",
+    "/tank/shared/projects/research/v100-mxfp4-20261123/crater_queue_runner.py",
+    "--cli",
+    "/home/ezra/verdant-dev4-transfer/tools/crater-1.4.1",
+    "--job",
+    "sg-jincy26-261123-e5bb3",
+    "--owner",
+    "jincy26",
+    "--namespace",
+    "crater-workspace",
+    "--pod",
+    "sg-jincy26-261123-e5bb3-default0-0",
+    "--source-archive",
+    "/tank/shared/projects/research/v100-mxfp4-20261123/queued-source.tar.gz",
+    "--remote-script",
+    "/tank/shared/projects/research/v100-mxfp4-20261123/crater_remote_run.py",
+    "--ready-json",
+    "/tank/shared/projects/research/v100-mxfp4-20261123/queue-source-ready.json",
+    "--outdir",
+    "/tank/shared/projects/research/v100-mxfp4-20261123/queue-watch-20261124",
+    "--proxy-command",
+    "ssh -T -o BatchMode=yes -o StrictHostKeyChecking=yes -o ForwardAgent=no doescontainer docker exec -i act-easyconnect /usr/bin/socat STDIO TCP:%h:%p,connect-timeout=10"
+  ],
+  "cwd": "/tank/shared/projects/research/v100-mxfp4-20261123",
+  "job": "sg-jincy26-261123-e5bb3",
+  "owner": "jincy26",
+  "run_id": "20261123T165224Z-a09e966c",
+  "outdir": "/tank/shared/projects/research/v100-mxfp4-20261123/queue-watch-20261124",
+  "state_path": "/tank/shared/projects/research/v100-mxfp4-20261123/queue-watch-20261124/state.json",
+  "backup_dir": "/tank/shared/projects/research/v100-mxfp4-20261123/queue-refresh-4d7ff3b-backup",
+  "audit_path": "/tank/shared/projects/research/v100-mxfp4-20261123/queue-refresh-4d7ff3b-audit.json",
+  "old_commit": "149d0c8de64790fe95297d2c36d6dd280db980ee",
+  "new_commit": "4d7ff3b95768ff0e4833a336931e3e80265c897d",
+  "files": {
+    "archive": {
+      "published": "/tank/shared/projects/research/v100-mxfp4-20261123/queued-source.tar.gz",
+      "new_source": "/tank/shared/projects/research/v100-mxfp4-20261123/queue-inputs-4d7ff3b/source.tar.gz",
+      "old_sha256": "4ef7d1bbea9a0ac5530aeb536b14be5a6c483f82474534944721c0e30ec1d9c4",
+      "new_sha256": "5957ac035acc004e37b840310c1e51cb800666c790ea0935f39330251181425a"
+    },
+    "payload": {
+      "published": "/tank/shared/projects/research/v100-mxfp4-20261123/crater_remote_run.py",
+      "new_source": "/tank/shared/projects/research/v100-mxfp4-20261123/queue-inputs-4d7ff3b/crater_remote_run.py",
+      "old_sha256": "0726fd519a1ae8c4f6efe3fe8abc20668a098e5b0d4aeb82972e3e17a2c86036",
+      "new_sha256": "9002694a66329a17c4e6e3ee8355660b77fa137f30c794bda1812cec77cb27a0"
+    },
+    "ready": {
+      "published": "/tank/shared/projects/research/v100-mxfp4-20261123/queue-source-ready.json",
+      "new_source": "/tank/shared/projects/research/v100-mxfp4-20261123/queue-inputs-4d7ff3b/ready.json",
+      "old_sha256": "24130b9470cecd81fbf8b50f2e9907115a404dc11b2ed795c72f26794605e9a4",
+      "new_sha256": "cc8f2def3f19c3c4c9e1c13dc56c18fcc3a9623ae7e4d683018ea3c57cf661dc"
+    }
+  }
+}
