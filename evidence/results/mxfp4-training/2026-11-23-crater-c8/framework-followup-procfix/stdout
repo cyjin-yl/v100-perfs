@@ -1,0 +1,6 @@
+{"stage": "python_environment", "status": "passed"}
+{"stage": "torch_integration", "status": "passed"}
+{"stage": "torch_benchmark", "status": "passed"}
+{"stage": "smoke_cuda", "status": "passed"}
+{"stage": "smoke_cuda_tiled", "status": "passed"}
+{"status": "passed", "passed": true, "results_archive": "/workspace/user/mxfp4-framework-followup-b-20261123T2115-procfix/results.tar.gz", "sha256": "2de0fc7de6d7f3fb8e33a760c538fc2e36c37cf4f08b133960e9c7df9f778cd1", "bytes": 47225, "completion_sha256": "7dce2db9845562ed58401160b48a929f1f5141d5b5338e4a77178e50b491068c", "source_commit": "80d3a7c2bb0bb551a34b28bd7fda59978b6304ef", "source_archive_sha256": "62378914e2b6ad7e34e3dd70736cb90aea07c962963494d97062d5f5738b0f57", "original_B_results_rewritten": false}

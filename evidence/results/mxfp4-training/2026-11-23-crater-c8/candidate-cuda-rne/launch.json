@@ -1,0 +1,30 @@
+{
+  "phase": "launched",
+  "argv": [
+    "timeout",
+    "--signal=TERM",
+    "--kill-after=15s",
+    "5460s",
+    "/opt/venv/bin/python3",
+    "-B",
+    "/workspace/user/mxfp4-cuda-rne-20261123T2157.py",
+    "--source-archive",
+    "/workspace/user/mxfp4-cuda-rne-inputs-20261123T2148/source.tar.gz",
+    "--source-binding",
+    "/workspace/user/mxfp4-cuda-rne-inputs-20261123T2148/source-binding.json",
+    "--run-directory",
+    "/workspace/user/mxfp4-cuda-rne-20261123T2157",
+    "--prior-native-run",
+    "/workspace/user/mxfp4-c9-c10-20261123T2128",
+    "--python",
+    "/opt/venv/bin/python3"
+  ],
+  "runner_sha256": "b7247572956d4c9c613254367cbd72e0109d276edc4afc3f7504503adc6203dd",
+  "source_commit": "0ff69f8e9a9522aced2f3be887a71ba318fdb867",
+  "source_sha256": "5b730b12d6eeab8fca67799e90f8e1eac6d7d6201c6feb794b658d1865d1ef26",
+  "node_uid": 1001,
+  "created_at_utc": "2026-11-23T21:55:48.999783+00:00",
+  "pid": 7190,
+  "starttime": 26121036,
+  "launched_at_utc": "2026-11-23T21:55:49.015084+00:00"
+}

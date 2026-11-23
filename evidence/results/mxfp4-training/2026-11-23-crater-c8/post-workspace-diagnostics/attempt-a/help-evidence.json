@@ -1,0 +1,498 @@
+{
+  "help_sha256": "62f9c7e9473087aa5a9e8e0adadc4e80d17d948512cb2d98feea50e6cec57bab",
+  "selected_help_lines": [
+    {
+      "lineno": 14,
+      "text": "  --max-connections arg (=64)           Maximum number of ports for connecting to target application"
+    },
+    {
+      "lineno": 15,
+      "text": "  --config-file arg (=1)                Use config.ncu-cfg config file to set parameters. Searches in the current "
+    },
+    {
+      "lineno": 16,
+      "text": "                                        working directory and \"$HOME/.config/NVIDIA Corporation\" directory."
+    },
+    {
+      "lineno": 17,
+      "text": "  --config-file-path arg                Override the default path for config file."
+    },
+    {
+      "lineno": 18,
+      "text": ""
+    },
+    {
+      "lineno": 19,
+      "text": "Launch Options:"
+    },
+    {
+      "lineno": 20,
+      "text": "  --check-exit-code arg (=1)            Check the application exit code and print an error if it is different than 0. "
+    },
+    {
+      "lineno": 21,
+      "text": "                                        If set, --replay-mode application will stop after the first pass if the exit "
+    },
+    {
+      "lineno": 22,
+      "text": "                                        code is not 0."
+    },
+    {
+      "lineno": 23,
+      "text": "  --injection-path-32 arg (=../linux-desktop-glibc_2_11_3-x86)"
+    },
+    {
+      "lineno": 24,
+      "text": "                                        Override the default path for the 32-bit injection libraries."
+    },
+    {
+      "lineno": 25,
+      "text": "  --injection-path-64 arg               Override the default path for the 64-bit injection libraries."
+    },
+    {
+      "lineno": 26,
+      "text": "  --preload-library arg                 Prepend a shared library to be loaded by the application before the injection "
+    },
+    {
+      "lineno": 27,
+      "text": "                                        libraries."
+    },
+    {
+      "lineno": 28,
+      "text": "  --call-stack                          Enable CPU Call Stack collection. By default, the native-type stack will be "
+    },
+    {
+      "lineno": 29,
+      "text": "                                        collected, cf. --call-stack-type."
+    },
+    {
+      "lineno": 30,
+      "text": "  --call-stack-type arg                 Set the call stack type to be collected. More than one type may be specified. "
+    },
+    {
+      "lineno": 31,
+      "text": "                                        Implies --call-stack."
+    },
+    {
+      "lineno": 32,
+      "text": "                                          native (default)"
+    },
+    {
+      "lineno": 134,
+      "text": "  --list-metrics                        List all metrics to be collected based on selected sections."
+    },
+    {
+      "lineno": 135,
+      "text": "  --query-metrics                       Query available metrics for devices on the system. Use --devices and --chips to"
+    },
+    {
+      "lineno": 136,
+      "text": "                                        filter which devices to query. By default, metrics reported by this option "
+    },
+    {
+      "lineno": 137,
+      "text": "                                        require a suffix to be collected. See --query-metrics-mode for details."
+    },
+    {
+      "lineno": 138,
+      "text": "  --query-metrics-mode arg (=base)      Set the mode for querying metrics. Implies --query-metrics."
+    },
+    {
+      "lineno": 139,
+      "text": "                                        Available modes:"
+    },
+    {
+      "lineno": 140,
+      "text": "                                          base (default)"
+    },
+    {
+      "lineno": 141,
+      "text": "                                          (base names for metrics)"
+    },
+    {
+      "lineno": 142,
+      "text": "                                          suffix"
+    },
+    {
+      "lineno": 143,
+      "text": "                                          (suffix names for metrics. Use --metrics to specify the base metrics to "
+    },
+    {
+      "lineno": 144,
+      "text": "                                        query)"
+    },
+    {
+      "lineno": 145,
+      "text": "                                          all"
+    },
+    {
+      "lineno": 146,
+      "text": "                                          (full names for metrics)"
+    },
+    {
+      "lineno": 147,
+      "text": "  --query-metrics-collection arg (=profiling)"
+    },
+    {
+      "lineno": 148,
+      "text": "                                        Set which metric collection kind to query. Implies --query-metrics."
+    },
+    {
+      "lineno": 149,
+      "text": "                                        Available modes:"
+    },
+    {
+      "lineno": 150,
+      "text": "                                          device"
+    },
+    {
+      "lineno": 151,
+      "text": "                                          (query CUDA device attributes)"
+    },
+    {
+      "lineno": 152,
+      "text": "                                          groups"
+    },
+    {
+      "lineno": 153,
+      "text": "                                          (query metric groups)"
+    },
+    {
+      "lineno": 154,
+      "text": "                                          launch"
+    },
+    {
+      "lineno": 155,
+      "text": "                                          (query launch attributes)"
+    },
+    {
+      "lineno": 156,
+      "text": "                                          numa"
+    },
+    {
+      "lineno": 157,
+      "text": "                                          (query NUMA topology metrics)"
+    },
+    {
+      "lineno": 158,
+      "text": "                                          nvlink"
+    },
+    {
+      "lineno": 159,
+      "text": "                                          (query metrics related to NVLink)"
+    },
+    {
+      "lineno": 160,
+      "text": "                                          pmsampling"
+    },
+    {
+      "lineno": 161,
+      "text": "                                          (query metrics available for pm sampling)"
+    },
+    {
+      "lineno": 162,
+      "text": "                                          profiling (default)"
+    },
+    {
+      "lineno": 163,
+      "text": "                                          (query metrics available for profiling)"
+    },
+    {
+      "lineno": 171,
+      "text": "                                        and warp scheduler state)"
+    },
+    {
+      "lineno": 172,
+      "text": "  --list-chips                          List all supported chips that can be used with --chips."
+    },
+    {
+      "lineno": 173,
+      "text": "  --chips arg                           Specify the chips for querying metrics, separated by comma."
+    },
+    {
+      "lineno": 174,
+      "text": "  --profile-from-start arg (=1)         Set if application should be profiled from its start. Allowed values:"
+    },
+    {
+      "lineno": 175,
+      "text": "                                          on/off"
+    },
+    {
+      "lineno": 176,
+      "text": "                                          yes/no"
+    },
+    {
+      "lineno": 177,
+      "text": "  --disable-profiler-start-stop         Disable start/stop profiling. When set, cu(da)ProfilerStart/Stop APIs are "
+    },
+    {
+      "lineno": 178,
+      "text": "                                        ignored."
+    },
+    {
+      "lineno": 179,
+      "text": "  --quiet                               Suppress all profiler output."
+    },
+    {
+      "lineno": 180,
+      "text": "  --verbose                             Make profiler output more verbose."
+    },
+    {
+      "lineno": 181,
+      "text": "  --cache-control arg (=all)            Control the behavior of the GPU caches during profiling. Allowed values:"
+    },
+    {
+      "lineno": 182,
+      "text": "                                          all"
+    },
+    {
+      "lineno": 183,
+      "text": "                                          none"
+    },
+    {
+      "lineno": 184,
+      "text": "  --clock-control arg (=base)           Control the behavior of the GPU clocks during profiling. Allowed values:"
+    },
+    {
+      "lineno": 185,
+      "text": "                                          base"
+    },
+    {
+      "lineno": 186,
+      "text": "                                          (Lock GPU clocks to base)"
+    },
+    {
+      "lineno": 187,
+      "text": "                                          none"
+    },
+    {
+      "lineno": 188,
+      "text": "                                          (Don't lock clocks)"
+    },
+    {
+      "lineno": 224,
+      "text": "                                          mangled"
+    },
+    {
+      "lineno": 225,
+      "text": "  --rename-kernels arg (=1)             Perform simplification on the kernel demangled names."
+    },
+    {
+      "lineno": 226,
+      "text": "                                        Rename demangled names using a config file. By default, searches for "
+    },
+    {
+      "lineno": 227,
+      "text": "                                        ncu-kernel-renames.yaml config file in the current working directory and "
+    },
+    {
+      "lineno": 228,
+      "text": "                                        \"$HOME/.config/NVIDIA Corporation\" directory. Use --rename-kernels-export "
+    },
+    {
+      "lineno": 229,
+      "text": "                                        option to export the simplified demangled names to the config file."
+    },
+    {
+      "lineno": 230,
+      "text": "  --rename-kernels-export arg (=0)      Export renamed or simplified kernel demangled names to the config file."
+    },
+    {
+      "lineno": 231,
+      "text": "                                        By default, exports the ncu-kernel-renames.yaml config file in "
+    },
+    {
+      "lineno": 232,
+      "text": "                                        \"$HOME/.config/NVIDIA Corporation\" directory."
+    },
+    {
+      "lineno": 233,
+      "text": "  --rename-kernels-path arg             Override the default path to kernel demangled names config file. Only valid "
+    },
+    {
+      "lineno": 234,
+      "text": "                                        while renaming or exporting the kernel demangled names."
+    },
+    {
+      "lineno": 235,
+      "text": "  -c [ --launch-count ] arg             Limit the number of collected profile results. The count is only incremented "
+    },
+    {
+      "lineno": 236,
+      "text": "                                        for launches that match the kernel filters."
+    },
+    {
+      "lineno": 237,
+      "text": "  -s [ --launch-skip ] arg (=0)         Set the number of kernel launches to skip before starting to profile. The count"
+    },
+    {
+      "lineno": 238,
+      "text": "                                        is incremented for launches that match the kernel filters only."
+    },
+    {
+      "lineno": 239,
+      "text": "  --launch-skip-before-match arg (=0)   Set the number of kernel launches to skip before starting to profile. The count"
+    },
+    {
+      "lineno": 240,
+      "text": "                                        is incremented for all launches."
+    },
+    {
+      "lineno": 241,
+      "text": "  --section arg                         Collect the section by providing section identifier in one of the following "
+    },
+    {
+      "lineno": 242,
+      "text": "                                        ways:"
+    },
+    {
+      "lineno": 243,
+      "text": "                                          <section identifier> Set the section identifier for an exact match."
+    },
+    {
+      "lineno": 244,
+      "text": "                                          regex:<expression> Set the regex to use for matching the section identifier."
+    },
+    {
+      "lineno": 245,
+      "text": "                                        If option is not specified, the default section set is collected."
+    },
+    {
+      "lineno": 246,
+      "text": "                                        Section metrics that cannot be collected will usually generate a warning only."
+    },
+    {
+      "lineno": 247,
+      "text": "  --metrics arg                         Specify all metrics to be profiled, separated by comma."
+    },
+    {
+      "lineno": 248,
+      "text": "                                        Names passed to this option support the following prefixes:"
+    },
+    {
+      "lineno": 249,
+      "text": "                                          regex:<expression> Expands to all metrics that partially match the"
+    },
+    {
+      "lineno": 250,
+      "text": "                                                             expression. Enclose the regular expression in"
+    },
+    {
+      "lineno": 251,
+      "text": "                                                             ^...$ to force a full match."
+    },
+    {
+      "lineno": 252,
+      "text": "                                          group:<name>       Lists all metrics of the metric group with that"
+    },
+    {
+      "lineno": 253,
+      "text": "                                                             name. See section files for valid group names."
+    },
+    {
+      "lineno": 254,
+      "text": "                                          breakdown:<metric> Expands to the input metrics of the high-level"
+    },
+    {
+      "lineno": 255,
+      "text": "                                                             throughput metric. If the specified metric does"
+    },
+    {
+      "lineno": 256,
+      "text": "                                                             not support a breakdown, no metrics are added."
+    },
+    {
+      "lineno": 257,
+      "text": "                                        If a metric requires a suffix to be valid, and no prefix is used this option "
+    },
+    {
+      "lineno": 258,
+      "text": "                                        automatically expands the name to all available first-level sub-metrics."
+    },
+    {
+      "lineno": 259,
+      "text": "                                        Metrics that cannot be collected will generate an error."
+    },
+    {
+      "lineno": 260,
+      "text": "  --disable-extra-suffixes              Disables the collection of extra suffixes (avg, min, max, sum). Only collect "
+    },
+    {
+      "lineno": 261,
+      "text": "                                        what is explicity specified."
+    },
+    {
+      "lineno": 262,
+      "text": "  --nvtx-include arg                    Adds include statement to the NVTX filter, which allows selecting kernels to "
+    },
+    {
+      "lineno": 326,
+      "text": "                                        view."
+    },
+    {
+      "lineno": 327,
+      "text": "                                         Metrics specified with --metrics and specified section file with --section are"
+    },
+    {
+      "lineno": 328,
+      "text": "                                        correlated."
+    },
+    {
+      "lineno": 329,
+      "text": "                                         Consider restricting the number of selected metrics such that values fit into "
+    },
+    {
+      "lineno": 330,
+      "text": "                                        a single output row."
+    },
+    {
+      "lineno": 331,
+      "text": "  --resolve-source-file arg             Set a comma separated list of file paths to consider when resolving files for "
+    },
+    {
+      "lineno": 332,
+      "text": "                                        the source output."
+    },
+    {
+      "lineno": 333,
+      "text": "  --print-details arg (=header)         Select which part of a section should be shown in the details page output:"
+    },
+    {
+      "lineno": 334,
+      "text": "                                          header (default)"
+    },
+    {
+      "lineno": 335,
+      "text": "                                          (Show all metrics from header of the section)"
+    },
+    {
+      "lineno": 336,
+      "text": "                                          body"
+    },
+    {
+      "lineno": 337,
+      "text": "                                          (Show all metrics from body of the section)"
+    },
+    {
+      "lineno": 338,
+      "text": "                                          all"
+    },
+    {
+      "lineno": 339,
+      "text": "                                          (Show all metrics from the section)"
+    },
+    {
+      "lineno": 340,
+      "text": "  --print-metric-name arg (=label)      Select one of the option to show it in the Metric Name column:"
+    },
+    {
+      "lineno": 341,
+      "text": "                                          label (default)"
+    },
+    {
+      "lineno": 342,
+      "text": "                                          (Show metric label)"
+    }
+  ],
+  "catalog_bytes": 39912522
+}

@@ -1,0 +1,61 @@
+{
+  "status": "completed_with_blocked_cases",
+  "started_at_utc": "2026-11-23T21:41:35.584165+00:00",
+  "gpu_serialization": "native finalized archive and candidate same B flock",
+  "stages": [
+    {
+      "name": "build",
+      "argv": [
+        "/opt/venv/bin/python3",
+        "-B",
+        "/workspace/user/mxfp4-c2-algorithm-20261123T2145/candidate.py",
+        "build",
+        "--source-root",
+        "/workspace/user/mxfp4-c9-c10-20261123T2128/source",
+        "--source-binding",
+        "/workspace/user/mxfp4-c9-c10-inputs-20261123T2118/source-binding.json",
+        "--source-archive",
+        "/workspace/user/mxfp4-c9-c10-inputs-20261123T2118/source.tar.gz",
+        "--nvcc",
+        "/usr/local/cuda-12.8/bin/nvcc",
+        "--output-directory",
+        "/workspace/user/mxfp4-c2-algorithm-20261123T2145/build"
+      ],
+      "status": "passed",
+      "started_at_utc": "2026-11-23T21:41:35.585949+00:00",
+      "pid": 6733,
+      "returncode": 0,
+      "finished_at_utc": "2026-11-23T21:41:56.544098+00:00"
+    },
+    {
+      "name": "run",
+      "argv": [
+        "/opt/venv/bin/python3",
+        "-B",
+        "/workspace/user/mxfp4-c2-algorithm-20261123T2145/candidate.py",
+        "run",
+        "--build-directory",
+        "/workspace/user/mxfp4-c2-algorithm-20261123T2145/build",
+        "--run-directory",
+        "/workspace/user/mxfp4-c2-algorithm-20261123T2145/run",
+        "--prior-native-run",
+        "/workspace/user/mxfp4-c9-c10-20261123T2128"
+      ],
+      "status": "completed_with_blocked_cases",
+      "started_at_utc": "2026-11-23T21:48:11.569559+00:00",
+      "pid": 6982,
+      "returncode": 2,
+      "finished_at_utc": "2026-11-23T21:49:38.232323+00:00"
+    }
+  ],
+  "candidate_sha256": {
+    "candidate.py": "e2229c8d04b6a9e6ffd32d72bca3dfe5104015e69aafb591d600ad236db43239",
+    "bench_c2_algorithms.cu": "ab55fc59c1f10d392d1d867a1a366b66ec159eabc3f58689f0e2069084c221ab",
+    "README.md": "41680ef106ea64ead4c3bd438c1f6e6afd458545a6f97cf20cd3750e81842b2f",
+    "controller.py": "d58b6399686b8444dc2c01f305502d397c0856e9434362284b18c7b5e9da05d8"
+  },
+  "native_archive_observed_at_utc": "2026-11-23T21:48:11.566961+00:00",
+  "native_wait_seconds": 375.01951886797906,
+  "finished_at_utc": "2026-11-23T21:49:38.234601+00:00",
+  "wall_seconds": 482.6504615370068
+}

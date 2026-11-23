@@ -1,0 +1,925 @@
+diff --git a/tools/mxfp4_training/bench_certified_workspace.py b/tools/mxfp4_training/bench_certified_workspace.py
+new file mode 100644
+--- /dev/null
++++ b/tools/mxfp4_training/bench_certified_workspace.py
+@@ -0,0 +1,289 @@
++"""Measure complete FP32 quantization + certified GEMM with an explicit lifecycle.
++
++Run the independent workspace and quantizer checkers first. Select per_call or
++workspace in separate processes, then compare an ABBA ordering with identical
++shape/seed and actual input hashes. Workspace creation and closing are measured
++separately; repeated-call timings include quantization, validations, allocations,
++Python/ctypes, preparation, certificate, GEMM and output scale/fallback. This is
++a synthetic operator benchmark, not an autograd training-step benchmark.
++"""
++from __future__ import annotations
++
++import argparse
++from datetime import datetime, timezone
++import hashlib
++import json
++import math
++from pathlib import Path
++import platform
++import statistics
++import sys
++import time
++
++import numpy as np
++
++if __package__ in (None, ""):
++    sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
++
++from tools.mxfp4_training.check_torch_cuda import Blocked, sha256
++from tools.mxfp4_training.check_torch_certified import library_metadata
++from tools.mxfp4_training.check_certified_workspace import source_hashes as checker_sources
++from tools.mxfp4_training.bench_torch_cuda import quantizer_prerequisite
++
++try:
++    import torch
++except ImportError:
++    torch = None
++
++if torch is not None:
++    from tools.mxfp4_training.certified_workspace import CertifiedWorkspace
++    from tools.mxfp4_training.torch_ops import gemm_packed, quantize_mx_cuda_rne, quantize_mx_torch
++
++
++def sources():
++    root = Path(__file__).resolve().parent
++    return {**checker_sources(), **{name: sha256(root / name) for name in
++            ("bench_certified_workspace.py", "bench_torch_cuda.py")}}
++
++
++def exact_bits(actual, expected):
++    actual, expected = actual.cpu().numpy(), expected.cpu().numpy()
++    if actual.shape != expected.shape or actual.dtype != expected.dtype or actual.dtype != np.float32:
++        raise AssertionError("Output shape/dtype differs")
++    if not np.isfinite(actual).all() or not np.isfinite(expected).all():
++        raise AssertionError("Nonfinite output in Gaussian benchmark")
++    mismatches = int(np.count_nonzero(actual.view(np.uint32) != expected.view(np.uint32)))
++    if mismatches or np.any(actual.view(np.uint32)[actual == 0] != 0):
++        raise AssertionError(f"Full output bit comparison failed at {mismatches} values")
++    return {"values": int(actual.size), "bit_mismatches": 0,
++            "canonical_positive_zero": True, "all_finite": True}
++
++
++def input_hash(a, b):
++    return {name: hashlib.sha256(tensor.cpu().numpy().tobytes(order="C")).hexdigest()
++            for name, tensor in (("a_fp32_bytes", a), ("b_fp32_bytes", b))}
++
++
++def check_prerequisite(path, report):
++    if not path.is_file():
++        raise Blocked("Run the independent workspace checker first")
++    data = json.loads(path.read_text())
++    if (data.get("status") != "passed" or data.get("passed") is not True
++            or data.get("gpu_executed") is not True
++            or data.get("all_attempted_work_synchronized") is not True
++            or data.get("source_unchanged_during_check") is not True
++            or data.get("library_unchanged_during_check") is not True
++            or len(data.get("cases", [])) < 11
++            or data.get("completed_cases") != len(data["cases"])
++            or not all(case.get("passed") is True for case in data["cases"])):
++        raise Blocked("Workspace checker is not a complete passing GPU result")
++    if data.get("source_sha256") != checker_sources():
++        raise Blocked("Workspace checker used different sources")
++    if (data.get("library", {}).get("sha256") != report["library"]["sha256"]
++            or data.get("device") != report["device"] or data.get("torch") != report["torch"]
++            or any(data.get("gpu", {}).get(key) != report["gpu"][key] for key in
++                   ("name", "compute_capability", "total_memory_bytes", "torch_cuda_build_version"))):
++        raise Blocked("Workspace checker library/device/runtime differs")
++    return {"path": str(path.resolve()), "sha256": sha256(path),
++            "completed_cases": data["completed_cases"], "source_and_library_hashes_match": True,
++            "executed_inside_benchmark": False}
++
++
++def benchmark(args, report, device, stream):
++    generator = torch.Generator(device=device).manual_seed(args.seed)
++    a = torch.randn((args.m, args.k), device=device, dtype=torch.float32, generator=generator)
++    b = torch.randn((args.n, args.k), device=device, dtype=torch.float32, generator=generator)
++    stream.synchronize()
++    report["gpu_executed"] = True
++    report["input_sha256_before"] = input_hash(a, b)
++    quantizer = quantize_mx_cuda_rne if args.quantizer_backend == "cuda_rne" else quantize_mx_torch
++    qa, qb = quantizer(a), quantizer(b)
++    expected = gemm_packed(qa, qb, backend="cuda_tiled")
++    stream.synchronize()
++    del qa, qb
++    workspace = None
++    report["lifecycle_timing"] = {"context_create_and_initial_abi_query_ms": None,
++                                   "context_close_and_final_wait_ms": None}
++    try:
++        if args.lifecycle == "workspace":
++            start = time.perf_counter()
++            workspace = CertifiedWorkspace(args.m, args.n, args.k, device=device)
++            workspace.__enter__()
++            report["lifecycle_timing"]["context_create_and_initial_abi_query_ms"] = (
++                time.perf_counter() - start) * 1000
++            report["workspace_bytes"] = workspace.workspace_bytes
++
++        def operation(diagnostic=None):
++            qa, qb = quantizer(a), quantizer(b)
++            if workspace is not None:
++                return workspace.gemm(qa, qb, certified_info=diagnostic)
++            return gemm_packed(qa, qb, backend="cuda_certified", certified_info=diagnostic)
++
++        initial_info = {}
++        initial = operation(initial_info)
++        stream.synchronize()
++        report["initial_all_outputs"] = exact_bits(initial, expected)
++        report["initial_certificate"] = initial_info
++        if initial_info.get("accepted") != 1 or initial_info.get("reject_flags") != 0:
++            raise AssertionError("Initial certificate did not accept this performance input")
++        for _ in range(args.warmup):
++            warm = operation()
++            del warm
++        stream.synchronize()
++        start_event, end_event = torch.cuda.Event(enable_timing=True), torch.cuda.Event(enable_timing=True)
++        start_event.record(stream)
++        end_event.record(stream)
++        end_event.synchronize()
++        wall, events = [], []
++        for round_index in range(args.rounds):
++            stream.synchronize()
++            started = time.perf_counter()
++            start_event.record(stream)
++            for iteration in range(args.iters):
++                final = operation()
++                if iteration + 1 < args.iters:
++                    del final
++            end_event.record(stream)
++            end_event.synchronize()
++            wall.append((time.perf_counter() - started) * 1000 / args.iters)
++            events.append(start_event.elapsed_time(end_event) / args.iters)
++            if not all(math.isfinite(value) and value > 0 for value in (wall[-1], events[-1])):
++                raise AssertionError("Invalid elapsed interval")
++            if round_index + 1 < args.rounds:
++                del final
++            print(f"Completed {args.lifecycle} round {round_index + 1}/{args.rounds}", flush=True)
++        # Compare the ACTUAL final timed result, without recomputing GEMM.
++        report["actual_last_timed_all_outputs"] = exact_bits(final, expected)
++        report["actual_last_timed_vs_initial"] = exact_bits(final, initial)
++        if workspace is not None:
++            info = workspace.info()
++            expected_calls = 1 + args.warmup + args.rounds * args.iters
++            if (info["submitted_calls"] != expected_calls or info["accepted"] != 1
++                    or info["reject_flags"] != 0):
++                raise AssertionError("Actual last timed submission metadata differs")
++            report["actual_last_timed_certificate"] = info
++        else:
++            report["actual_last_timed_certificate"] = None
++            report["actual_last_timed_certificate_unavailable_reason"] = (
++                "per-call contexts are destroyed inside measured operation; no timed diagnostic sync was added")
++        report["input_sha256_after"] = input_hash(a, b)
++        if report["input_sha256_after"] != report["input_sha256_before"]:
++            raise AssertionError("Input bytes changed during timing")
++        median_ms = statistics.median(wall)
++        report["timing"] = {"primary_clock": "synchronized_perf_counter", "median_ms": median_ms,
++                             "useful_tflops": 2 * args.m * args.n * args.k / (median_ms * 1e9),
++                             "synchronized_wall_round_ms": wall, "cuda_event_round_ms": events,
++                             "cuda_event_median_ms": statistics.median(events)}
++        report["calls_in_one_lifecycle"] = 1 + args.warmup + args.rounds * args.iters
++    finally:
++        if workspace is not None:
++            start = time.perf_counter()
++            workspace.close()
++            report["lifecycle_timing"]["context_close_and_final_wait_ms"] = (
++                time.perf_counter() - start) * 1000
++            report["workspace_closed"] = workspace.closed
++    if workspace is not None:
++        total_ms = sum(report["lifecycle_timing"].values())
++        report["lifecycle_timing"]["separate_create_close_total_ms"] = total_ms
++        report["lifecycle_timing"]["create_close_ms_per_all_completed_call"] = total_ms / report["calls_in_one_lifecycle"]
++        report["lifecycle_timing"]["note"] = "Amortization denominator includes one validation, warmup, and measured calls; not a training-step rate"
++
++
++def main():
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument("--output", type=Path, required=True)
++    parser.add_argument("--check-report", type=Path, required=True)
++    parser.add_argument("--compile-evidence", type=Path, required=True)
++    parser.add_argument("--quantizer-check-report", type=Path)
++    parser.add_argument("--quantizer-backend", choices=("cuda_rne", "torch"), default="cuda_rne")
++    parser.add_argument("--expected-certified-variant", type=int, default=2)
++    parser.add_argument("--lifecycle", choices=("per_call", "workspace"), required=True)
++    parser.add_argument("--device", default="cuda:0")
++    for name in ("m", "n", "k"):
++        parser.add_argument("--" + name, type=int, default=1024)
++    parser.add_argument("--seed", type=int, default=20261123)
++    parser.add_argument("--warmup", type=int, default=10)
++    parser.add_argument("--rounds", type=int, default=5)
++    parser.add_argument("--iters", type=int, default=10)
++    args = parser.parse_args()
++    if args.output.exists():
++        parser.error("output exists; use a new evidence path")
++    if (not args.device.startswith("cuda:") or not args.device[5:].isdigit()
++            or not all(1 <= value <= 4096 for value in (args.m, args.n, args.k))
++            or not (10 <= args.warmup <= 100 and 3 <= args.rounds <= 9 and 1 <= args.iters <= 20)
++            or not 0 <= args.seed < 2**32):
++        parser.error("require explicit CUDA device, dimensions 1..4096, warmup 10..100, rounds 3..9, iters 1..20, uint32 seed")
++    report = {"schema_version": 1, "purpose": "complete quantization plus certified packed GEMM lifecycle comparison",
++              "started_at_utc": datetime.now(timezone.utc).isoformat(), "status": "pending", "passed": False,
++              "device": args.device, "python": platform.python_version(), "numpy": np.__version__,
++              "torch": None if torch is None else torch.__version__, "source_sha256": sources(),
++              "lifecycle": args.lifecycle, "quantizer_backend": args.quantizer_backend,
++              "shape": {"M": args.m, "N": args.n, "logical_K": args.k}, "seed": args.seed,
++              "warmup": args.warmup, "rounds": args.rounds, "iterations_per_round": args.iters,
++              "input_distribution": "synthetic_standard_normal_fp32_GPU_generator",
++              "gpu_executed": False, "full_training_executed": False, "autograd_workspace_integration": False,
++              "included_in_timed_operation": ["both_FP32_input_validations", "both_RNE_quantizations",
++                  "packed_operand_allocations", "packed_validation", "Python_and_ctypes_dispatch",
++                  "FP32_output_allocation", "preparation", "certificate", "GEMM", "output_scale_or_fallback"],
++              "context_create_destroy_in_timed_operation": args.lifecycle == "per_call",
++              "excluded_from_repeated_call_timing": ["input_generation", "correctness_comparisons",
++                  "diagnostic_queries", "library_loading", "timing_event_initialization"],
++              "tflops_formula": "2*M*N*logical_K/(median_ms*1e9)"}
++    if args.lifecycle == "workspace":
++        report["excluded_from_repeated_call_timing"].append("separately_measured_explicit_workspace_create_and_close")
++    device = None
++    try:
++        if torch is None or not torch.cuda.is_available():
++            raise Blocked("A real CUDA runtime with Torch is required")
++        device = torch.device(args.device)
++        p = torch.cuda.get_device_properties(device)
++        report["gpu"] = {"name": p.name, "compute_capability": [p.major, p.minor],
++                         "total_memory_bytes": p.total_memory, "torch_cuda_build_version": torch.version.cuda,
++                         "actual_SM70": (p.major, p.minor) == (7, 0)}
++        if not report["gpu"]["actual_SM70"] or "V100" not in p.name:
++            raise Blocked("Require an actual V100 SM70")
++        report["library"] = library_metadata(args.compile_evidence, args.expected_certified_variant,
++                                             report["source_sha256"])
++        report["library"]["context_lifecycle"] = args.lifecycle
++        report["workspace_prerequisite"] = check_prerequisite(args.check_report, report)
++        if args.quantizer_backend == "cuda_rne":
++            report["quantizer_prerequisite"] = quantizer_prerequisite(args.quantizer_check_report, report)
++        with torch.cuda.device(device):
++            free, total = torch.cuda.mem_get_info(device)
++            budget = 128 * max(args.m, args.n) * ((args.k + 31) // 32 * 32)
++            budget += 24 * args.m * args.n + 8 * (args.m + args.n) * args.k + 256 * 1024**2
++            report["memory_admission"] = {"free_bytes": free, "total_bytes": total,
++                                           "conservative_increment_budget_bytes": budget,
++                                           "reserve_bytes": 512 * 1024**2}
++            if free < budget + 512 * 1024**2:
++                raise Blocked("Insufficient free memory for conservative complete-wrapper budget")
++            stream = torch.cuda.Stream(device=device)
++            with torch.cuda.stream(stream):
++                benchmark(args, report, device, stream)
++            stream.synchronize()
++        if sources() != report["source_sha256"] or sha256(Path(report["library"]["path"])) != report["library"]["sha256"]:
++            raise AssertionError("Source/library changed during benchmark")
++        report.update(status="passed", passed=True, source_unchanged_during_benchmark=True,
++                      library_unchanged_during_benchmark=True, all_attempted_work_synchronized=True)
++    except Exception as error:
++        report.update(status="blocked" if isinstance(error, Blocked) else "failed",
++                      error_type=type(error).__name__, error=str(error))
++    finally:
++        if device is not None:
++            try:
++                torch.cuda.synchronize(device)
++                report["all_attempted_work_synchronized"] = True
++            except Exception as error:
++                report.update(status="failed", passed=False, cleanup_error=str(error),
++                              all_attempted_work_synchronized=False)
++        report["finished_at_utc"] = datetime.now(timezone.utc).isoformat()
++        args.output.parent.mkdir(parents=True, exist_ok=True)
++        with args.output.open("x") as handle:
++            json.dump(report, handle, indent=2, allow_nan=False)
++            handle.write("\n")
++        print(json.dumps({key: report[key] for key in ("status", "passed", "gpu_executed")}))
++    return 0 if report["passed"] else (2 if report["status"] == "blocked" else 1)
++
++
++if __name__ == "__main__":
++    raise SystemExit(main())
+diff --git a/tools/mxfp4_training/certified_workspace.py b/tools/mxfp4_training/certified_workspace.py
+new file mode 100644
+--- /dev/null
++++ b/tools/mxfp4_training/certified_workspace.py
+@@ -0,0 +1,240 @@
++"""Explicit, bounded reuse of one SM70 certified native GEMM context.
++
++Use ``with CertifiedWorkspace(m, n, logical_k, device='cuda:0') as workspace``
++and call ``workspace.gemm(a, b)`` on that same host thread. Successful calls
++enqueue work asynchronously on PyTorch's current stream. Closing waits for the
++native work and releases the fixed workspace. There is no global context cache,
++implicit finalizer, or integration with autograd's potentially different worker
++threads. The existing ``gemm_packed(..., backend='cuda_certified')`` API retains
++its per-call synchronous context lifecycle.
++"""
++from __future__ import annotations
++
++import ctypes
++import os
++from pathlib import Path
++import threading
++
++import torch
++
++from .torch_ops import TorchMXTensor, _CertifiedInfo, _certified_error, _load_library
++
++
++class CertifiedWorkspaceBusy(RuntimeError):
++    """A stream switch would race unfinished work; no new work was submitted."""
++
++
++class CertifiedWorkspace:
++    """A single fixed shape/device/library context, owned by its entering thread.
++
++    Construction itself allocates no CUDA resources. Enter exactly once, and
++    always leave the context manager or call ``close`` on the entering thread.
++    A preflight validation error leaves an active context usable. An error
++    after a native submission attempt closes it synchronously before propagating
++    the error. No context can be reopened. ``info`` synchronizes and therefore
++    belongs outside performance timing. CUDA Graph capture is unsupported.
++
++    A different current stream is accepted only after the previous stream has
++    completed. This API never inserts a hidden event dependency to make a busy
++    stream switch succeed. Callers still own the input tensor data dependencies.
++    """
++
++    def __init__(self, m: int, n: int, logical_k: int, *, device,
++                 library_path: str | None = None):
++        if any(type(value) is not int or value <= 0 for value in (m, n, logical_k)):
++            raise ValueError("workspace dimensions must be positive integers")
++        self._shape = (m, n, logical_k)
++        self._padded_k = (logical_k + 31) // 32 * 32
++        self._device = torch.device(device)
++        if self._device.type != "cuda" or self._device.index is None:
++            raise ValueError("workspace device must name an explicit CUDA index")
++        path = library_path if library_path is not None else os.environ.get("MXFP4_CUDA_LIBRARY")
++        if not path:
++            raise RuntimeError("set MXFP4_CUDA_LIBRARY or pass library_path")
++        self._library_path = str(Path(path).expanduser().resolve(strict=True))
++        self._lib = None
++        self._context = ctypes.c_void_p()
++        self._owner = None
++        self._last_stream = None
++        self._state = "new"
++        self._submitted_calls = 0
++        self._workspace_bytes = None
++
++    @property
++    def shape(self):
++        return self._shape
++
++    @property
++    def padded_k(self):
++        return self._padded_k
++
++    @property
++    def device(self):
++        return self._device
++
++    @property
++    def library_path(self):
++        return self._library_path
++
++    @property
++    def workspace_bytes(self):
++        return self._workspace_bytes
++
++    @property
++    def closed(self) -> bool:
++        return self._state == "closed"
++
++    @property
++    def submitted_calls(self) -> int:
++        return self._submitted_calls
++
++    def _assert_owner(self) -> None:
++        # Compare Thread objects as well as native C++'s thread id, so a reused
++        # Python/native numeric id cannot revive an abandoned owner context.
++        if self._owner is not None and threading.current_thread() is not self._owner:
++            raise RuntimeError("certified workspace requires its entering host thread")
++
++    def _assert_active(self) -> None:
++        self._assert_owner()
++        if self._state != "active" or not self._context.value:
++            raise RuntimeError("certified workspace is not active; enter it exactly once")
++
++    @staticmethod
++    def _reject_capture() -> None:
++        if torch.cuda.is_current_stream_capturing():
++            raise RuntimeError("certified workspace does not support CUDA Graph capture")
++
++    def __enter__(self):
++        self._assert_owner()
++        if self._state != "new":
++            raise RuntimeError("certified workspace can be entered exactly once")
++        self._owner = threading.current_thread()
++        try:
++            with torch.cuda.device(self._device):
++                self._reject_capture()
++                if torch.cuda.get_device_capability(self._device) != (7, 0):
++                    raise ValueError("certified workspace is gated to SM70")
++                self._lib = _load_library(self._library_path, "cuda_certified")
++                code = self._lib.mxfp4_certified_create(
++                    self._shape[0], self._shape[1], self._padded_k, ctypes.byref(self._context))
++                if code:
++                    raise _certified_error(self._lib, "workspace create", code)
++                if not self._context.value:
++                    raise RuntimeError("certified create returned a null context")
++                self._state = "active"
++                initial = self._read_info()
++                self._workspace_bytes = initial["workspace_bytes"]
++        except BaseException as error:
++            self._close_after_error(error)
++            raise
++        return self
++
++    def __exit__(self, exc_type, exc_value, traceback):
++        if exc_value is None:
++            self.close()
++        else:
++            self._close_after_error(exc_value)
++        return False
++
++    def _close_after_error(self, failure: BaseException) -> None:
++        try:
++            self.close()
++        except BaseException as cleanup:
++            raise RuntimeError(f"{failure}; workspace cleanup also failed: {cleanup}") from failure
++
++    def close(self) -> None:
++        """Release once, on the owner thread and bound device; wait for native work."""
++        self._assert_owner()
++        if self._state == "closed":
++            return
++        if not self._context.value:
++            self._state = "closed"
++            return
++        with torch.cuda.device(self._device):
++            self._reject_capture()
++            context = self._context
++            # Native destroy can report a CUDA cleanup error after deleting the
++            # C++ object. Never retry that consumed pointer, even on failure.
++            try:
++                code = self._lib.mxfp4_certified_destroy(context)
++            finally:
++                self._context = ctypes.c_void_p()
++                self._state = "closed"
++                self._last_stream = None
++            if code:
++                raise _certified_error(self._lib, "workspace destroy", code)
++
++    def _read_info(self) -> dict:
++        result = _CertifiedInfo()
++        code = self._lib.mxfp4_certified_get_info(self._context, ctypes.byref(result))
++        if code:
++            raise _certified_error(self._lib, "workspace diagnostic query", code)
++        expected_valid = int(self._submitted_calls > 0)
++        if (result.abi_version != 1 or result.device != self._device.index
++                or (result.m, result.n, result.padded_k) !=
++                (self._shape[0], self._shape[1], self._padded_k)
++                or result.submitted_calls != self._submitted_calls
++                or result.metadata_valid != expected_valid):
++            raise RuntimeError("certified workspace ABI/shape/call metadata is inconsistent")
++        info = {name: int(getattr(result, name)) for name, _ in result._fields_}
++        info["context_lifecycle"] = "explicit_single_shape_owner_thread_workspace"
++        return info
++
++    def info(self) -> dict:
++        """Read diagnostics for the latest submission, synchronizing its stream."""
++        self._assert_active()
++        with torch.cuda.device(self._device):
++            self._reject_capture()
++            try:
++                return self._read_info()
++            except BaseException as error:
++                self._close_after_error(error)
++                raise
++
++    @torch.no_grad()
++    def gemm(self, a: TorchMXTensor, b: TorchMXTensor, *,
++             certified_info: dict | None = None) -> torch.Tensor:
++        """Validate and enqueue A @ B_rows.T, returning a new FP32 output tensor.
++
++        An optional empty dictionary receives this exact submission's metadata;
++        that diagnostic query synchronizes. Without diagnostics, successful
++        calls do not force a host wait (padding validation can still synchronize).
++        """
++        self._assert_active()
++        if certified_info is not None and (type(certified_info) is not dict or certified_info):
++            raise ValueError("certified_info must be an empty dict")
++        with torch.cuda.device(self._device):
++            self._reject_capture()  # Before padding validation can synchronize.
++            if not isinstance(a, TorchMXTensor) or not isinstance(b, TorchMXTensor):
++                raise TypeError("workspace operands must be TorchMXTensor instances")
++            a.validate()
++            b.validate()
++            if (a.logical_shape != (self._shape[0], self._shape[2])
++                    or b.logical_shape != (self._shape[1], self._shape[2])):
++                raise ValueError("workspace operands do not match its fixed logical shape")
++            if a.codes.device != self._device or b.codes.device != self._device:
++                raise ValueError("workspace operands do not match its bound CUDA device")
++            stream = torch.cuda.current_stream(self._device)
++            if (self._last_stream is not None
++                    and stream.cuda_stream != self._last_stream.cuda_stream
++                    and not self._last_stream.query()):
++                raise CertifiedWorkspaceBusy("previous workspace stream is still busy; synchronize it before switching")
++            out = torch.empty((self._shape[0], self._shape[1]), device=self._device, dtype=torch.float32)
++            tensors = (a.codes, a.scales, b.codes, b.scales, out)
++            for tensor in tensors:
++                tensor.record_stream(stream)  # BEFORE any native submission.
++            try:
++                code = self._lib.mxfp4_certified_gemm(
++                    self._context, *(tensor.data_ptr() for tensor in tensors), stream.cuda_stream, None)
++                if code:
++                    raise _certified_error(self._lib, "workspace gemm", code)
++                self._last_stream = stream
++                self._submitted_calls += 1
++                if certified_info is not None:
++                    certified_info.update(self._read_info())
++            except BaseException as error:
++                # A failure may follow partially enqueued preparation/GEMM.
++                # Retain local tensors through same-thread synchronous close.
++                self._close_after_error(error)
++                raise
++            return out
+diff --git a/tools/mxfp4_training/check_certified_workspace.py b/tools/mxfp4_training/check_certified_workspace.py
+new file mode 100644
+--- /dev/null
++++ b/tools/mxfp4_training/check_certified_workspace.py
+@@ -0,0 +1,381 @@
++"""Check explicit certified workspace reuse on a real V100, never CPU fallback."""
++from __future__ import annotations
++
++import argparse
++from concurrent.futures import ThreadPoolExecutor
++from datetime import datetime, timezone
++import json
++from pathlib import Path
++import platform
++import sys
++
++import numpy as np
++
++if __package__ in (None, ""):
++    sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
++
++from tools.mxfp4_training.check_torch_cuda import Blocked, Runner, raw_tensor, sha256
++from tools.mxfp4_training.check_torch_certified import (
++    exact_output, library_metadata, patched_native, source_hashes as certified_sources,
++)
++from tools.mxfp4_training.reference import gemm_mx
++
++try:
++    import torch
++except ImportError:
++    torch = None
++
++if torch is not None:
++    from tools.mxfp4_training.certified_workspace import CertifiedWorkspace, CertifiedWorkspaceBusy
++    from tools.mxfp4_training.torch_ops import TorchMXTensor, _load_library
++
++
++def source_hashes():
++    root = Path(__file__).resolve().parent
++    return {**certified_sources(), **{name: sha256(root / name) for name in
++            ("certified_workspace.py", "check_certified_workspace.py")}}
++
++
++def rejected(function, kind=RuntimeError, text=None):
++    try:
++        function()
++    except kind as error:
++        if text is not None and text not in str(error):
++            raise AssertionError(f"Wrong rejection: {error}") from error
++        return {"error_type": type(error).__name__, "message": str(error)}
++    raise AssertionError("Expected rejection did not occur")
++
++
++def run_checks(runner, report):
++    device, stream = runner.device, runner.stream
++    rng = np.random.default_rng(20261123)
++    ah = raw_tensor(rng.integers(0, 16, (8, 64), dtype=np.uint8), 127)
++    bh = raw_tensor(rng.integers(0, 16, (12, 64), dtype=np.uint8), 127)
++    expected = gemm_mx(ah, bh)
++    da, db = runner.execute(lambda: (runner.to_packed(ah), runner.to_packed(bh)))
++
++    def workspace():
++        return CertifiedWorkspace(8, 12, 64, device=device)
++
++    def lifecycle():
++        w = workspace()
++        before = rejected(lambda: w.gemm(da, db), text="not active")
++        fixed_properties = {name: rejected(lambda name=name: setattr(w, name, None), AttributeError)
++                            for name in ("shape", "device", "padded_k", "library_path")}
++        with w:
++            initial = w.info()
++            info = {}
++            result = runner.execute(lambda: w.gemm(da, db, certified_info=info))
++            if initial["submitted_calls"] != 0 or info["submitted_calls"] != 1 or info["accepted"] != 1:
++                raise AssertionError("Initial/submission metadata differs")
++            result_check = exact_output(result.cpu().numpy(), expected)
++        w.close()
++        if not w.closed:
++            raise AssertionError("Workspace not closed")
++        return {"pre_entry": before, "read_only_bindings": fixed_properties,
++                "initial_info": initial, "submission_info": info,
++                "output": result_check, "closed": True, "idempotent_close": True,
++                "use_after_close": rejected(lambda: w.gemm(da, db), text="not active"),
++                "reentry": rejected(lambda: w.__enter__(), text="exactly once")}
++    runner.case("explicit_lifecycle_and_first_output", lifecycle)
++
++    def padded():
++        aa = raw_tensor(rng.integers(0, 16, (3, 33), dtype=np.uint8), 127)
++        bb = raw_tensor(rng.integers(0, 16, (5, 33), dtype=np.uint8), 127)
++        a, b = runner.execute(lambda: (runner.to_packed(aa), runner.to_packed(bb)))
++        with CertifiedWorkspace(3, 5, 33, device=device) as w:
++            out = runner.execute(lambda: w.gemm(a, b))
++            checked = exact_output(out.cpu().numpy(), gemm_mx(aa, bb))
++            with torch.cuda.stream(stream):
++                invalid_codes = a.codes.clone()
++                invalid_codes[:, 16] |= 0x80
++                invalid = TorchMXTensor(invalid_codes, a.scales, a.logical_shape)
++                failure = rejected(lambda: w.gemm(invalid, b), ValueError, "canonical positive zero")
++            info = w.info()
++            if info["padded_k"] != 64 or info["submitted_calls"] != 1:
++                raise AssertionError("Padding failure changed submitted count or native K")
++        return {"logical_k": 33, "native_padded_k": 64, "output": checked,
++                "invalid_padding_rejected": failure, "final_info": info}
++    runner.case("odd_logical_k_padding_and_native_shape_binding", padded)
++
++    def initial_query_failure():
++        lib = _load_library(report["library"]["path"], "cuda_certified")
++        destroyed = []
++        def get_info(original):
++            def call(*args):
++                code = original(*args)
++                return code if code else 1
++            return call
++        def destroy(original):
++            def call(*args):
++                destroyed.append(1)
++                return original(*args)
++            return call
++        w = workspace()
++        with patched_native(lib, {"mxfp4_certified_get_info": get_info,
++                                  "mxfp4_certified_destroy": destroy}):
++            failure = rejected(w.__enter__, text="workspace diagnostic query")
++        if not w.closed or destroyed != [1]:
++            raise AssertionError("Initial ABI query failure did not clean up actual created context")
++        return {"failure_after_real_create_and_real_info_call": failure,
++                "native_destroy_calls": len(destroyed), "closed": w.closed}
++    runner.case("initial_diagnostic_failure_rolls_back_native_allocation", initial_query_failure)
++
++    def repeated():
++        outputs, diagnostics = [], []
++        with workspace() as w:
++            for step in range(5):
++                aa = raw_tensor(rng.integers(0, 16, (8, 64), dtype=np.uint8), 127)
++                bb = raw_tensor(rng.integers(0, 16, (12, 64), dtype=np.uint8), 127)
++                if step == 1:
++                    aa.scales[:, 1] = 128
++                elif step == 2:
++                    aa.codes[:] = 0x88  # Signed zero input; output must canonicalize +0.
++                elif step == 3:
++                    aa.scales[:, 1] = 151  # Real certificate rejection, finite fallback.
++                elif step == 4:
++                    aa.scales[0, 0] = 255  # NaN scale must not reuse a stale certificate.
++                reference = gemm_mx(aa, bb)
++                info = {}
++                def work():
++                    da.codes.copy_(torch.from_numpy(aa.codes).to(device))
++                    da.scales.copy_(torch.from_numpy(aa.scales).to(device))
++                    db.codes.copy_(torch.from_numpy(bb.codes).to(device))
++                    db.scales.copy_(torch.from_numpy(bb.scales).to(device))
++                    return w.gemm(da, db, certified_info=info).clone()
++                actual = runner.execute(work)
++                outputs.append(exact_output(actual.cpu().numpy(), reference))
++                diagnostics.append(info)
++                if info["submitted_calls"] != step + 1 or bool(info["accepted"]) != (step < 3):
++                    raise AssertionError("Reused context retained stale count/certificate")
++            final = w.info()
++        # Restore the stable shared fixture on its stream.
++        runner.execute(lambda: (da.codes.copy_(torch.from_numpy(ah.codes).to(device)),
++                               da.scales.copy_(torch.from_numpy(ah.scales).to(device)),
++                               db.codes.copy_(torch.from_numpy(bh.codes).to(device)),
++                               db.scales.copy_(torch.from_numpy(bh.scales).to(device))))
++        return {"outputs": outputs, "diagnostics": diagnostics, "final_info": final,
++                "same_device_input_storage_mutated_between_calls": True,
++                "nan_payload_equivalence_only_for_nan_fixture": True}
++    runner.case("mutated_inputs_certificate_and_nan_fallback", repeated)
++
++    def validation():
++        with workspace() as w:
++            short = TorchMXTensor(da.codes[:7], da.scales[:7], (7, 64))
++            shape = rejected(lambda: w.gemm(short, db), ValueError, "fixed logical shape")
++            cpu_a = TorchMXTensor(torch.from_numpy(ah.codes), torch.from_numpy(ah.scales), ah.logical_shape)
++            cpu_b = TorchMXTensor(torch.from_numpy(bh.codes), torch.from_numpy(bh.scales), bh.logical_shape)
++            bound = rejected(lambda: w.gemm(cpu_a, cpu_b), ValueError, "bound CUDA device")
++            invalid_info = rejected(lambda: w.gemm(da, db, certified_info={"stale": 1}),
++                                    ValueError, "empty dict")
++            if w.info()["submitted_calls"] != 0:
++                raise AssertionError("Preflight failure submitted work")
++            result = runner.execute(lambda: w.gemm(da, db))
++            checked = exact_output(result.cpu().numpy(), expected)
++        return {"wrong_shape": shape, "wrong_operand_device_cpu": bound,
++                "nonempty_diagnostic": invalid_info, "recovery_output": checked}
++    runner.case("preflight_failures_recover_without_submission", validation)
++
++    def wrong_thread():
++        with workspace() as w:
++            def worker():
++                return {name: rejected(function, text="entering host thread") for name, function in
++                        (("gemm", lambda: w.gemm(da, db)), ("info", w.info), ("close", w.close))}
++            with ThreadPoolExecutor(max_workers=1) as pool:
++                result = pool.submit(worker).result(timeout=10)
++            if w.closed or w.info()["submitted_calls"] != 0:
++                raise AssertionError("Wrong thread touched or destroyed owner context")
++            out = runner.execute(lambda: w.gemm(da, db))
++            result["owner_recovery_output"] = exact_output(out.cpu().numpy(), expected)
++        return result
++    runner.case("wrong_host_thread_never_enters_native_context", wrong_thread)
++
++    def streams():
++        other = torch.cuda.Stream(device=device)
++        if not hasattr(torch.cuda, "_sleep"):
++            raise Blocked("Stream-busy test needs torch.cuda._sleep on this runtime")
++        with workspace() as w:
++            with torch.cuda.stream(stream):
++                first = w.gemm(da, db)
++                torch.cuda._sleep(400_000_000)  # Bounded ~0.3 s at V100 clocks.
++            if stream.query():
++                raise AssertionError("Busy-stream fixture completed before rejection check")
++            with torch.cuda.stream(other):
++                busy = rejected(lambda: w.gemm(da, db), CertifiedWorkspaceBusy, "still busy")
++            if w.closed or w.submitted_calls != 1:
++                raise AssertionError("Busy switch submitted work or closed workspace")
++            stream.synchronize()
++            first_check = exact_output(first.cpu().numpy(), expected)
++            with torch.cuda.stream(other):
++                last = w.gemm(da, db)
++            other.synchronize()
++            last_check = exact_output(last.cpu().numpy(), expected)
++            info = w.info()
++        return {"busy_switch": busy, "initial_output": first_check, "switched_output": last_check,
++                "final_info": info, "different_stream_handles": stream.cuda_stream != other.cuda_stream}
++    runner.case("busy_stream_reject_then_completed_stream_switch", streams)
++
++    def queued_lifetime():
++        with workspace() as w:
++            retained_outputs = []
++            with torch.cuda.stream(stream):
++                for _ in range(4):
++                    a = TorchMXTensor(da.codes.clone(), da.scales.clone(), da.logical_shape)
++                    b = TorchMXTensor(db.codes.clone(), db.scales.clone(), db.logical_shape)
++                    retained_outputs.append(w.gemm(a, b).clone())
++                    del a, b
++                # Context exit itself must wait; no explicit synchronize here.
++            submitted = w.submitted_calls
++        if not stream.query():
++            raise AssertionError("Workspace close returned before its native stream completed")
++        return {"submitted_calls": submitted, "close_waited": True,
++                "outputs": [exact_output(x.cpu().numpy(), expected) for x in retained_outputs],
++                "temporary_operand_references_released_after_enqueue": True}
++    runner.case("queued_calls_tensor_lifetime_and_close_wait", queued_lifetime)
++
++    def partial_failure():
++        w = workspace()
++        destroys = []
++        with w:
++            def wrap_gemm(original):
++                def call(*args):
++                    status = original(*args)
++                    if status:
++                        return status
++                    return 1  # Inject only after REAL native work was submitted.
++                return call
++            def wrap_destroy(original):
++                def call(*args):
++                    destroys.append(1)
++                    return original(*args)
++                return call
++            with patched_native(w._lib, {"mxfp4_certified_gemm": wrap_gemm,
++                                         "mxfp4_certified_destroy": wrap_destroy}):
++                with torch.cuda.stream(stream):
++                    failure = rejected(lambda: w.gemm(da, db), text="workspace gemm")
++            if not w.closed or destroys != [1] or not stream.query():
++                raise AssertionError("Partial submission did not destroy exactly once and wait")
++        return {"injected_after_real_native_submission": True, "failure": failure,
++                "native_destroy_calls": len(destroys), "stream_complete_after_failure": True,
++                "closed": w.closed}
++    runner.case("partial_native_submission_failure_closes_and_waits", partial_failure)
++
++    def body_failure():
++        w = workspace()
++        class BodyError(Exception):
++            pass
++        def body():
++            with w:
++                with torch.cuda.stream(stream):
++                    w.gemm(da, db)
++                raise BodyError("intentional context-body exception")
++        failure = rejected(body, BodyError, "intentional")
++        if not w.closed or not stream.query():
++            raise AssertionError("Body exception failed to close and wait")
++        return {"body_failure": failure, "closed": True, "stream_complete": True}
++    runner.case("context_body_exception_cleans_up", body_failure)
++
++    def capture():
++        graph = torch.cuda.CUDAGraph()
++        capture_stream = torch.cuda.Stream(device=device)
++        marker = torch.zeros(1, device=device)
++        torch.cuda.synchronize(device)
++        with workspace() as w:
++            # Catch the expected preflight exceptions INSIDE capture, leaving
++            # the graph valid; close the active context only after capture ends.
++            with torch.cuda.graph(graph, stream=capture_stream):
++                marker.add_(1)
++                call = rejected(lambda: w.gemm(da, db), text="CUDA Graph capture")
++                close = rejected(w.close, text="CUDA Graph capture")
++            capture_stream.synchronize()
++            if w.closed or w.info()["submitted_calls"] != 0:
++                raise AssertionError("Capture rejection changed native workspace")
++            out = runner.execute(lambda: w.gemm(da, db))
++            checked = exact_output(out.cpu().numpy(), expected)
++        return {"gemm_capture_rejected_before_validation": call,
++                "destroy_capture_rejected_without_consuming_context": close,
++                "post_capture_recovery_output": checked}
++    runner.case("capture_rejection_and_post_capture_recovery", capture)
++
++    report["optional_coverage_unavailable"] = []
++    if torch.cuda.device_count() < 2:
++        report["optional_coverage_unavailable"].append("second CUDA device: only one visible device; CPU operand rejection executed")
++    else:
++        def second_device():
++            index = (device.index + 1) % torch.cuda.device_count()
++            other = torch.device(f"cuda:{index}")
++            aa = TorchMXTensor(da.codes.to(other), da.scales.to(other), da.logical_shape)
++            bb = TorchMXTensor(db.codes.to(other), db.scales.to(other), db.logical_shape)
++            with workspace() as w:
++                failure = rejected(lambda: w.gemm(aa, bb), ValueError, "bound CUDA device")
++                info = w.info()
++            return {"failure": failure, "no_submissions": info["submitted_calls"] == 0}
++        runner.case("other_cuda_device_operand_rejection", second_device)
++
++
++def main():
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument("--output", type=Path, required=True)
++    parser.add_argument("--compile-evidence", type=Path, required=True)
++    parser.add_argument("--expected-certified-variant", type=int, default=2)
++    parser.add_argument("--device", default="cuda:0")
++    args = parser.parse_args()
++    if args.output.exists():
++        parser.error("output exists; use a new evidence path")
++    if not args.device.startswith("cuda:") or not args.device[5:].isdigit():
++        parser.error("require an explicit CUDA device index")
++    report = {"schema_version": 1, "purpose": "explicit owner-thread certified workspace correctness",
++              "started_at_utc": datetime.now(timezone.utc).isoformat(), "status": "pending", "passed": False,
++              "device": args.device, "python": platform.python_version(), "numpy": np.__version__,
++              "torch": None if torch is None else torch.__version__, "source_sha256": source_hashes(),
++              "cases": [], "gpu_executed": False, "full_training_executed": False,
++              "autograd_workspace_integration": False, "cpu_fallback": False}
++    runner = None
++    try:
++        if torch is None or not torch.cuda.is_available():
++            raise Blocked("A real CUDA runtime with Torch is required")
++        device = torch.device(args.device)
++        properties = torch.cuda.get_device_properties(device)
++        report["gpu"] = {"name": properties.name, "compute_capability": [properties.major, properties.minor],
++                         "total_memory_bytes": properties.total_memory,
++                         "torch_cuda_build_version": torch.version.cuda,
++                         "actual_SM70": (properties.major, properties.minor) == (7, 0)}
++        if not report["gpu"]["actual_SM70"] or "V100" not in properties.name:
++            raise Blocked("Require an actual V100 SM70")
++        report["library"] = library_metadata(args.compile_evidence, args.expected_certified_variant,
++                                             report["source_sha256"])
++        report["library"]["context_lifecycle"] = "explicit_single_shape_owner_thread_workspace"
++        with torch.cuda.device(device):
++            stream = torch.cuda.Stream(device=device)
++            runner = Runner(device, stream, report)
++            run_checks(runner, report)
++            torch.cuda.synchronize(device)
++        if source_hashes() != report["source_sha256"]:
++            raise AssertionError("Source changed during checker")
++        if sha256(Path(report["library"]["path"])) != report["library"]["sha256"]:
++            raise AssertionError("Library changed during checker")
++        report.update(status="passed", passed=True, source_unchanged_during_check=True,
++                      library_unchanged_during_check=True)
++    except Exception as error:
++        report.update(status="blocked" if isinstance(error, Blocked) else "failed",
++                      error_type=type(error).__name__, error=str(error))
++    finally:
++        if runner is not None:
++            try:
++                torch.cuda.synchronize(runner.device)
++                runner.pending = False
++            except Exception as error:
++                report.update(status="failed", passed=False, cleanup_error=str(error))
++            report.update(runner.state())
++        report["completed_cases"] = sum(case.get("passed") is True for case in report["cases"])
++        report["finished_at_utc"] = datetime.now(timezone.utc).isoformat()
++        args.output.parent.mkdir(parents=True, exist_ok=True)
++        with args.output.open("x") as handle:
++            json.dump(report, handle, indent=2, allow_nan=False)
++            handle.write("\n")
++        print(json.dumps({key: report[key] for key in ("status", "passed", "completed_cases", "gpu_executed")}))
++    return 0 if report["passed"] else (2 if report["status"] == "blocked" else 1)
++
++
++if __name__ == "__main__":
++    raise SystemExit(main())

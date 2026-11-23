@@ -1,0 +1,16 @@
+{
+  "status": "passed",
+  "gpu_executed": false,
+  "observed_at_utc": "2026-11-23T20:51:48.357754+00:00",
+  "payload_sha256": "b3cf06196828297325990d1b17473f8fa7afce3899421a28235048d45b2a79e4",
+  "test": "real symlinked venv containing a marker module absent from base interpreter",
+  "old_resolve_probe": {
+    "prefix": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python",
+    "marker_found": false
+  },
+  "lexical_path_probe": {
+    "prefix": "/tmp/mxfp4-venv-probe-zfw5lw_q/venv",
+    "marker_found": true
+  },
+  "duplicate_and_missing_candidates_filtered": true
+}

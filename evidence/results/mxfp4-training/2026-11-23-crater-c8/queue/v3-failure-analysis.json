@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "observed_at_utc": "2026-11-23T20:24:17.428568+00:00",
+  "job": {
+    "jobName": "sg-jincy26-261124-5a8e7",
+    "username": "jincy26",
+    "namespace": "crater-workspace",
+    "status": "Failed",
+    "createdAt": "2026-11-23T20:17:37Z",
+    "startedAt": "2026-11-23T20:17:40Z",
+    "completedAt": "2026-11-23T20:17:53Z",
+    "resources": {
+      "cpu": "4",
+      "memory": "16Gi",
+      "nvidia.com/v100": "1"
+    },
+    "terminatedStates": [
+      {
+        "containerID": "containerd://ad69de5e0e9829cbdefd3d84d8ca618ab9b10cdc52eeca07311cdc58a713f441",
+        "exitCode": 70,
+        "finishedAt": "2026-11-23T20:17:51Z",
+        "reason": "Error",
+        "startedAt": "2026-11-23T20:17:40Z"
+      }
+    ]
+  },
+  "logs": {
+    "observed_at_utc": "2026-11-23T20:18:03.965069+00:00",
+    "job": "sg-jincy26-261124-5a8e7",
+    "data": {
+      "logs": [
+        {
+          "namespace": "crater-workspace",
+          "pod": "sg-jincy26-261124-5a8e7-default0-0",
+          "container": "custom",
+          "content": "Get:6 https://mirrors.tuna.tsinghua.edu.cn/ubuntu jammy/universe amd64 Packages [17.5 MB]\nGet:7 https://mirrors.tuna.tsinghua.edu.cn/ubuntu jammy/restricted amd64 Packages [164 kB]\nGet:8 https://mirrors.tuna.tsinghua.edu.cn/ubuntu jammy-updates/multiverse amd64 Packages [104 kB]\nGet:9 https://mirrors.tuna.tsinghua.edu.cn/ubuntu jammy-updates/universe amd64 Packages [1631 kB]\nGet:10 https://mirrors.tuna.tsinghua.edu.cn/ubuntu jammy-updates/restricted amd64 Packages [8422 kB]\nGet:11 https://mirrors.tuna.tsinghua.edu.cn/ubuntu jammy-updates/main amd64 Packages [4884 kB]\nGet:12 https://mirrors.tuna.tsinghua.edu.cn/ubuntu jammy-security/universe amd64 Packages [1329 kB]\nGet:13 https://mirrors.tuna.tsinghua.edu.cn/ubuntu jammy-security/multiverse amd64 Packages [96.7 kB]\nGet:14 https://mirrors.tuna.tsinghua.edu.cn/ubuntu jammy-security/main amd64 Packages [4547 kB]\nGet:15 https://mirrors.tuna.tsinghua.edu.cn/ubuntu jammy-security/restricted amd64 Packages [8111 kB]\nFetched 49.3 MB in 5s (9982 kB/s)\nReading package lists...\nReading package lists...\nBuilding dependency tree...\nReading state information...\nThe following additional packages will be installed:\n  libbsd0 libcbor0.8 libedit2 libfido2-1 libmd0 libwrap0 openssh-client\n  openssh-sftp-server ucf\nSuggested packages:\n  keychain libpam-ssh monkeysphere ssh-askpass molly-guard ufw\nRecommended packages:\n  xauth default-logind | logind | libpam-systemd ncurses-term ssh-import-id\nThe following NEW packages will be installed:\n  libbsd0 libcbor0.8 libedit2 libfido2-1 libmd0 libwrap0 openssh-client\n  openssh-server openssh-sftp-server ucf\n0 upgraded, 10 newly installed, 0 to remove and 86 not upgraded.\nNeed to get 1756 kB of archives.\nAfter this operation, 5975 kB of additional disk space will be used.\nGet:1 https://mirrors.tuna.tsinghua.edu.cn/ubuntu jammy/main amd64 libmd0 amd64 1.0.4-1build1 [23.0 kB]\nGet:2 https://mirrors.tuna.tsinghua.edu.cn/ubuntu jammy/main amd64 libbsd0 amd64 0.11.5-1 [44.8 kB]\nGet:3 https://mirrors.tuna.tsinghua.edu.cn/ubuntu jammy/main amd64 libedit2 amd64 3.1-20210910-1build1 [96.8 kB]\nGet:4 https://mirrors.tuna.tsinghua.edu.cn/ubuntu jammy/main amd64 libcbor0.8 amd64 0.8.0-2ubuntu1 [24.6 kB]\nGet:5 https://mirrors.tuna.tsinghua.edu.cn/ubuntu jammy/main amd64 libfido2-1 amd64 1.10.0-1 [82.8 kB]\nGet:6 https://mirrors.tuna.tsinghua.edu.cn/ubuntu jammy-updates/main amd64 openssh-client amd64 1:8.9p1-3ubuntu0.18 [905 kB]\nGet:7 https://mirrors.tuna.tsinghua.edu.cn/ubuntu jammy-updates/main amd64 openssh-sftp-server amd64 1:8.9p1-3ubuntu0.18 [38.9 kB]\nGet:8 https://mirrors.tuna.tsinghua.edu.cn/ubuntu jammy/main amd64 ucf all 3.0043 [56.1 kB]\nGet:9 https://mirrors.tuna.tsinghua.edu.cn/ubuntu jammy/main amd64 libwrap0 amd64 7.6.q-31build2 [47.9 kB]\nGet:10 https://mirrors.tuna.tsinghua.edu.cn/ubuntu jammy-updates/main amd64 openssh-server amd64 1:8.9p1-3ubuntu0.18 [436 kB]\ndebconf: delaying package configuration, since apt-utils is not installed\nFetched 1756 kB in 0s (10.6 MB/s)\nSelecting previously unselected package libmd0:amd64.\n(Reading database ... \r(Reading database ... 5%\r(Reading database ... 10%\r(Reading database ... 15%\r(Reading database ... 20%\r(Reading database ... 25%\r(Reading database ... 30%\r(Reading database ... 35%\r(Reading database ... 40%\r(Reading database ... 45%\r(Reading database ... 50%\r(Reading database ... 55%\r(Reading database ... 60%\r(Reading database ... 65%\r(Reading database ... 70%\r(Reading database ... 75%\r(Reading database ... 80%\r(Reading database ... 85%\r(Reading database ... 90%\r(Reading database ... 95%\r(Reading database ... 100%\r(Reading database ... 16898 files and directories currently installed.)\nPreparing to unpack .../0-libmd0_1.0.4-1build1_amd64.deb ...\nUnpacking libmd0:amd64 (1.0.4-1build1) ...\nSelecting previously unselected package libbsd0:amd64.\nPreparing to unpack .../1-libbsd0_0.11.5-1_amd64.deb ...\nUnpacking libbsd0:amd64 (0.11.5-1) ...\nSelecting previously unselected package libedit2:amd64.\nPreparing to unpack .../2-libedit2_3.1-20210910-1build1_amd64.deb ...\nUnpacking libedit2:amd64 (3.1-20210910-1build1) ...\nSelecting previously unselected package libcbor0.8:amd64.\nPreparing to unpack .../3-libcbor0.8_0.8.0-2ubuntu1_amd64.deb ...\nUnpacking libcbor0.8:amd64 (0.8.0-2ubuntu1) ...\nSelecting previously unselected package libfido2-1:amd64.\nPreparing to unpack .../4-libfido2-1_1.10.0-1_amd64.deb ...\nUnpacking libfido2-1:amd64 (1.10.0-1) ...\nSelecting previously unselected package openssh-client.\nPreparing to unpack .../5-openssh-client_1%3a8.9p1-3ubuntu0.18_amd64.deb ...\nUnpacking openssh-client (1:8.9p1-3ubuntu0.18) ...\nSelecting previously unselected package openssh-sftp-server.\nPreparing to unpack .../6-openssh-sftp-server_1%3a8.9p1-3ubuntu0.18_amd64.deb ...\nUnpacking openssh-sftp-server (1:8.9p1-3ubuntu0.18) ...\nSelecting previously unselected package ucf.\nPreparing to unpack .../7-ucf_3.0043_all.deb ...\nMoving old data out of the way\nUnpacking ucf (3.0043) ...\nSelecting previously unselected package libwrap0:amd64.\nPreparing to unpack .../8-libwrap0_7.6.q-31build2_amd64.deb ...\nUnpacking libwrap0:amd64 (7.6.q-31build2) ...\nSelecting previously unselected package openssh-server.\nPreparing to unpack .../9-openssh-server_1%3a8.9p1-3ubuntu0.18_amd64.deb ...\nUnpacking openssh-server (1:8.9p1-3ubuntu0.18) ...\nSetting up libcbor0.8:amd64 (0.8.0-2ubuntu1) ...\nSetting up libwrap0:amd64 (7.6.q-31build2) ...\nSetting up ucf (3.0043) ...\nSetting up libmd0:amd64 (1.0.4-1build1) ...\nSetting up libfido2-1:amd64 (1.10.0-1) ...\nSetting up libbsd0:amd64 (0.11.5-1) ...\nSetting up libedit2:amd64 (3.1-20210910-1build1) ...\nSetting up openssh-client (1:8.9p1-3ubuntu0.18) ...\nupdate-alternatives: using /usr/bin/ssh to provide /usr/bin/rsh (rsh) in auto mode\nupdate-alternatives: warning: skip creation of /usr/share/man/man1/rsh.1.gz because associated file /usr/share/man/man1/ssh.1.gz (of link group rsh) doesn't exist\nupdate-alternatives: using /usr/bin/slogin to provide /usr/bin/rlogin (rlogin) in auto mode\nupdate-alternatives: warning: skip creation of /usr/share/man/man1/rlogin.1.gz because associated file /usr/share/man/man1/slogin.1.gz (of link group rlogin) doesn't exist\nupdate-alternatives: using /usr/bin/scp to provide /usr/bin/rcp (rcp) in auto mode\nupdate-alternatives: warning: skip creation of /usr/share/man/man1/rcp.1.gz because associated file /usr/share/man/man1/scp.1.gz (of link group rcp) doesn't exist\nSetting up openssh-sftp-server (1:8.9p1-3ubuntu0.18) ...\nSetting up openssh-server (1:8.9p1-3ubuntu0.18) ...\n\nCreating config file /etc/ssh/sshd_config with new version\nCreating SSH2 RSA key; this may take some time ...\n3072 SHA256:nLxkmZFKt/kawTkyYnYn315cdF+h/0GM2MIRqH6dy6c root@sg-jincy26-261124-5a8e7-default0-0 (RSA)\nCreating SSH2 ECDSA key; this may take some time ...\n256 SHA256:on15+tgZDORbwsV2Nlov0JjxAB2G/N6GStvwdKf2//A root@sg-jincy26-261124-5a8e7-default0-0 (ECDSA)\nCreating SSH2 ED25519 key; this may take some time ...\n256 SHA256:Ike94m5IsFTLktJkF876aPKmJiPvUbF5fMSmWhMr0MM root@sg-jincy26-261124-5a8e7-default0-0 (ED25519)\ninvoke-rc.d: could not determine current runlevel\ninvoke-rc.d: policy-rc.d denied execution of start.\nProcessing triggers for libc-bin (2.35-0ubuntu3.8) ...\nMXFP4_BOOTSTRAP_ERROR=login_cannot_write_persistent_workspace\n"
+        }
+      ]
+    }
+  },
+  "watcher_state": {
+    "cli_commit": "8232a995908027a65cab2e7a22851ac091ee1a29",
+    "cli_version": "1.4.1",
+    "error": "Owned job reached terminal status Failed",
+    "gpu_executed": null,
+    "job": "sg-jincy26-261124-5a8e7",
+    "namespace": "crater-workspace",
+    "owner": "jincy26",
+    "phase": "failed",
+    "reason": "Owned job status is Pending",
+    "remote_dir": "/workspace/user/mxfp4-sg-jincy26-261124-5a8e7-20261123T201738Z-408e18db",
+    "remote_payload_attempted": false,
+    "remote_payload_completed": false,
+    "run_id": "20261123T201738Z-408e18db",
+    "schema_version": 1,
+    "started_at": "2026-11-23T20:17:38+00:00",
+    "updated_at": "2026-11-23T20:18:38+00:00"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "prior_commit": "0ff69f8e9a9522aced2f3be887a71ba318fdb867",
+  "source_commit": "f338faaa5cbdcd900aa82ae95af00ed5fb770235",
+  "changed_files": [
+    "tools/mxfp4_training/check_quantize_cuda.py"
+  ],
+  "native_kernels_unchanged": true,
+  "torch_ops_unchanged": true,
+  "comparison_contract_unchanged": true
+}

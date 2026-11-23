@@ -1,0 +1,5 @@
+{
+  "returncode": 0,
+  "stdout": "{\"authenticated_owned_job_verified\":true,\"job\":\"sg-jincy26-261124-4abd5\",\"owner\":\"jincy26\",\"pod\":\"sg-jincy26-261124-4abd5-default0-0\",\"script_bytes\":104,\"script_exit_code\":0,\"script_sha256\":\"7a4e8f7e149c15e398a0ec463066eb5e34aad57f3742b4b8fad8d53bea3fb7c1\",\"token_or_password_output\":false,\"transcript\":\"\\u001b[?2004h\\u001b]0;root@sg-jincy26-261124-4abd5-default0-0: /workspace/user\\u0007root@sg-jincy26-261124-4abd5-default0-0:/workspace/user# \\u001b[?2004l\\r\\u001b[?2004h\\u001b]0;root@sg-jincy26-261124-4abd5-default0-0: /workspace/user\\u0007root@sg-jincy26-261124-4abd5-default0-0:/workspace/user# \\u001b[?2004l\\r\\u001b[?2004h\\u001b]0;root@sg-jincy26-261124-4abd5-default0-0: /workspace/user\\u0007root@sg-jincy26-261124-4abd5-default0-0:/workspace/user# \\u001b[?2004l\\ruid=0(root) gid=0(root) groups=0(root)\\r\\nMXFP4_WORKSPACE uid=1001 gid=1001 mode=750\\r\\nMXFP4_PROBE_DONE\\r\\n\\r\\nMXFP4_TERM_EXIT_a520fd5d73f689244bf176d7=0\\r\\nexit\"}\n",
+  "stderr": ""
+}

@@ -1,0 +1,8 @@
+{
+  "status": "completed_with_blocked_cases",
+  "passed": false,
+  "archive": "/workspace/user/mxfp4-c2-algorithm-20261123T2145/run/results.tar.gz",
+  "archive_sha256": "b9bb395a2abaeaab11e08e44452361f931c7d710a0e16861d4305e899bfa88c6",
+  "bytes": 1028506,
+  "completion_sha256": "5e35142161bb61a6ad139418a6c5bd2225c2abb35ede963bdb85bc8f1e1b5e4e"
+}

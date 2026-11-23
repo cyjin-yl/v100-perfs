@@ -1,0 +1,9 @@
+{"at": "2026-11-23T20:41:31+00:00", "phase": "starting"}
+{"at": "2026-11-23T20:41:31+00:00", "cli_commit": "8232a995908027a65cab2e7a22851ac091ee1a29", "cli_version": "1.4.1", "phase": "waiting"}
+{"at": "2026-11-23T20:41:34+00:00", "endpoint": {"container": "custom", "container_port": 22, "host": "192.168.5.24", "host_key_sha256": "SHA256:1LHfGE0heUi8B8Biwv/HE3ePpG6eidQszHUB5cwzMIM", "job": "sg-jincy26-261124-4abd5", "job_created_at": "2026-11-23T20:25:26Z", "namespace": "crater-workspace", "node": "dell-gpu-24", "owner": "jincy26", "pod": "sg-jincy26-261124-4abd5-default0-0", "port": 30098, "user": "mxfp4owner"}, "phase": "endpoint_ready"}
+{"at": "2026-11-23T20:41:34+00:00", "phase": "source_ready", "remote_script_sha256": "023b140da884955f3e36c308215b930a9c0a9269761feb06d85c8f66dc5bcf73", "source_archive_sha256": "50a4d7a0444bf6544b2ea2f269d26013e36a6f18356fb0c53e5ab5116abedf8a", "source_commit": "91e776034aba6e215b085a373affb5c71f2a79e6"}
+{"at": "2026-11-23T20:41:35+00:00", "phase": "uploading"}
+{"at": "2026-11-23T20:41:38+00:00", "phase": "running", "remote_payload_attempted": true, "remote_payload_timeout_seconds": 3000}
+{"at": "2026-11-23T20:41:55+00:00", "payload_exit_code": 1, "payload_ssh_returncode": 1, "phase": "collecting", "remote_payload_completed": true}
+{"at": "2026-11-23T20:41:56+00:00", "payload_ssh_returncode": 1, "phase": "payload_failed", "result_archive": "/tank/shared/projects/research/v100-mxfp4-20261123/c8-replacement-v4-20261124/watch-ssh22/results.tar.gz", "result_archive_sha256": "50a29a861733629d05bd532e609e0575cf86132e0ab86b21c80ca4ccdd817ac7"}
+{"at": "2026-11-23T20:41:56+00:00", "error": "One payload attempt returned SSH exit 1, payload exit 1; evidence collected, no automatic retry", "phase": "failed"}

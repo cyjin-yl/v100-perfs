@@ -1,0 +1,30 @@
+{
+  "phase": "launched",
+  "argv": [
+    "timeout",
+    "--signal=TERM",
+    "--kill-after=15s",
+    "5460s",
+    "/opt/venv/bin/python3",
+    "-B",
+    "/workspace/user/mxfp4-c9-c10-20261123T2128.py",
+    "--source-archive",
+    "/workspace/user/mxfp4-c9-c10-inputs-20261123T2118/source.tar.gz",
+    "--source-binding",
+    "/workspace/user/mxfp4-c9-c10-inputs-20261123T2118/source-binding.json",
+    "--run-directory",
+    "/workspace/user/mxfp4-c9-c10-20261123T2128",
+    "--framework-run",
+    "/workspace/user/mxfp4-framework-followup-b-20261123T2115-procfix",
+    "--python",
+    "/opt/venv/bin/python3"
+  ],
+  "runner_sha256": "f7f45628bcf7616a7e7915823c77f2f75602cff66be29bf640c5ec3be8ecce1e",
+  "source_commit": "ed39b0d715271e7b359672a081d758b4e4d5070f",
+  "source_sha256": "3fb8cc55336a187f3c863eb98ae4d5089f57aabd6b8b585db85c0d09e03c1bd0",
+  "node_uid": 1001,
+  "created_at_utc": "2026-11-23T21:27:14.757392+00:00",
+  "pid": 4820,
+  "starttime": 25949611,
+  "launched_at_utc": "2026-11-23T21:27:14.760773+00:00"
+}

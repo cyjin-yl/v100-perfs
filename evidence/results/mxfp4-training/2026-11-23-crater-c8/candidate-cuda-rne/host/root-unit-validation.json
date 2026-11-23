@@ -1,0 +1,10 @@
+{
+  "source_commit": "0ff69f8e9a9522aced2f3be887a71ba318fdb867",
+  "command": "python3 -m unittest tests.test_mxfp4_reference tests.test_mxfp4_torch -v",
+  "passed_numpy_tests": 24,
+  "skipped_torch_tests": 19,
+  "reason": "optional PyTorch is not installed in local environment",
+  "cuda_executed": false,
+  "ast_compile_passed": true,
+  "git_diff_check_passed": true
+}

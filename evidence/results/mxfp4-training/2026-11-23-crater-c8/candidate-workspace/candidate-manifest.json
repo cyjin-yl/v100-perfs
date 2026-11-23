@@ -1,0 +1,28 @@
+{
+  "base_commit": "f338faaa5cbdcd900aa82ae95af00ed5fb770235",
+  "gpu_executed": false,
+  "status": "candidate_not_GPU_validated",
+  "files": {
+    "tools/mxfp4_training/bench_certified_workspace.py": {
+      "bytes": 16391,
+      "sha256": "b0d1a07dc08b8856a31c6226ec25c367264fe438c9559256739fff90247ac4bc",
+      "AST_parsed": true
+    },
+    "tools/mxfp4_training/certified_workspace.py": {
+      "bytes": 10841,
+      "sha256": "03a2222d6efb4ddf5369e01220041c16923da05ceb40235a92e48d3269cfe6cf",
+      "AST_parsed": true
+    },
+    "tools/mxfp4_training/check_certified_workspace.py": {
+      "bytes": 20218,
+      "sha256": "00b59608ad22b2d2d236b20c1fa64c0f7110481fac1d6525e4ef74d77bf797fc",
+      "AST_parsed": true
+    }
+  },
+  "patch": {
+    "bytes": 49014,
+    "sha256": "e42bb47b4318229893bf99ee9b79671a970c675789fba919b4e214eb63759b62"
+  },
+  "unchanged_existing_torch_ops_sha256": "37838ea16b34bd4e5f39307b0d9661c47616f0a1a69f9dd2de632b22e86fa400",
+  "new_python_modules_only": true
+}

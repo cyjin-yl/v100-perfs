@@ -1,0 +1,11 @@
+{
+  "bytes": 127516,
+  "completion_sha256": "cdda08e76eae03310cc24d42077432f635c50438fd3382c919ca441d7cbe521f",
+  "gpu_executed": true,
+  "passed": true,
+  "results_archive": "/workspace/user/mxfp4-c9-c10-20261123T2128/results.tar.gz",
+  "sha256": "d6775a7149d64b175ff20af085e1f9788937531561f10a80edccd5efb09462b8",
+  "source_archive_sha256": "3fb8cc55336a187f3c863eb98ae4d5089f57aabd6b8b585db85c0d09e03c1bd0",
+  "source_commit": "ed39b0d715271e7b359672a081d758b4e4d5070f",
+  "status": "passed"
+}

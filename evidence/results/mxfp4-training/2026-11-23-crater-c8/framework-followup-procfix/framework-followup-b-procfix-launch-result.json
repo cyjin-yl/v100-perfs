@@ -1,0 +1,5 @@
+{
+  "returncode": 0,
+  "stdout": "{\"phase\": \"launched\", \"argv\": [\"timeout\", \"--signal=TERM\", \"--kill-after=15s\", \"1860s\", \"/opt/venv/bin/python3\", \"-B\", \"/workspace/user/mxfp4-framework-followup-b-20261123T2115-procfix.py\", \"--native-root\", \"/workspace/user/mxfp4-sg-jincy26-261124-4abd5-20261123T204443Z-9fb4ed47\", \"--run-directory\", \"/workspace/user/mxfp4-framework-followup-b-20261123T2115-procfix\", \"--python\", \"/opt/venv/bin/python3\"], \"helper_sha256\": \"2046ca0b52d0f52fa9baaf565be92fe899a5ac165da3970eaa583902eee0197b\", \"node_uid\": 1001, \"created_utc\": \"2026-11-23T21:15:12.409128+00:00\", \"output_directory\": \"/workspace/user/mxfp4-framework-followup-b-20261123T2115-procfix\", \"pid\": 4512, \"starttime\": 25877376, \"launched_utc\": \"2026-11-23T21:15:12.412998+00:00\"}\n",
+  "stderr": ""
+}

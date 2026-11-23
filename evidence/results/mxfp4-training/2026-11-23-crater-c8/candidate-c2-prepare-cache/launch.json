@@ -1,0 +1,26 @@
+{
+  "status": "launched",
+  "started_at_utc": "2026-11-23T22:38:57.535722+00:00",
+  "pid": 8768,
+  "proc_start_ticks": "26379889",
+  "uid": 1001,
+  "hostname": "sg-jincy26-261124-4abd5-default0-0",
+  "run_directory": "/workspace/user/mxfp4-c2-cache-20261123T2240",
+  "argv": [
+    "/opt/venv/bin/python3",
+    "-B",
+    "/workspace/user/mxfp4-c2-cache-20261123T2240.py",
+    "--source-archive",
+    "/workspace/user/mxfp4-c2-cache-inputs-20261123T2240/source.tar.gz",
+    "--source-binding",
+    "/workspace/user/mxfp4-c2-cache-inputs-20261123T2240/source-binding.json",
+    "--run-directory",
+    "/workspace/user/mxfp4-c2-cache-20261123T2240",
+    "--python",
+    "/opt/venv/bin/python3"
+  ],
+  "source_commit": "c581389551be2233ba23404fa72c471cc4c6f961",
+  "source_archive_sha256": "a7062abcfa1b9263d7a7bf0d282f2de1b51cfa279939f3b969eacb543f5417c0",
+  "runner_sha256": "65e23628156a4430421cd6ad21359a62e4f2ab922f9daf58ee7d1621b5ecdde7",
+  "source_binding_sha256": "5bcde264ae6aec1264c3a54112148ec6c03014427b297e8d9f883d41ecd91900"
+}

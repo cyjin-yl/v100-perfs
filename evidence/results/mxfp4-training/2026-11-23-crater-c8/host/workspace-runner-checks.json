@@ -1,0 +1,15 @@
+{
+  "status": "host_structure_checks_passed",
+  "gpu_executed": false,
+  "new_runner_sha256": "4018f7b5b08d3493ee746458cd98dea58925e1bc233b4e456b4adfea2fc9ee03",
+  "new_runner_bytes": 39420,
+  "cache_stage_plan_exact_match": true,
+  "cache_stage_count": 26,
+  "workspace_stage_count": 10,
+  "workspace_case_count": 11,
+  "actual_source_archive_binding_matched": true,
+  "actual_three_module_bindings_matched": true,
+  "source_archive_sha256": "aa7ac287d389d1e8705fdeef60713bae1927116c85bb7355a52a817e4a806a89",
+  "source_archive_bytes": 157598,
+  "cache_helper_actual_sha256_matched": true
+}

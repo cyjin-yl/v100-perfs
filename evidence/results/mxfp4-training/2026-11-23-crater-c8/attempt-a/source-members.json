@@ -1,0 +1,94 @@
+[
+  {
+    "name": "evidence/benchmarks/sm70-packing/study/simulation/round3/cuda/fragment_mapping.hpp",
+    "sha256": "78ca809cc6606912724982559c31ed82b6141ec74651cf65324015ecd901f4b1"
+  },
+  {
+    "name": "tools/mxfp4_training/README.md",
+    "sha256": "9ec8dc025f7d230feb5c4641e02c114081db86b116b807c1b9ecda26f9342095"
+  },
+  {
+    "name": "tools/mxfp4_training/__init__.py",
+    "sha256": "ae369746a798b3ba067012f6dba6df218db0c9547d22786b9589026d1e2047cb"
+  },
+  {
+    "name": "tools/mxfp4_training/bench_torch_cuda.py",
+    "sha256": "9c5cc1d0af1c22b36e1970d329b6f2f08a09564b383e174822340976eb2a26dc"
+  },
+  {
+    "name": "tools/mxfp4_training/build_cuda.py",
+    "sha256": "7d0f9038bbb6601895326de6eb64a56828c8f382ba79c8c05968894f5b79c783"
+  },
+  {
+    "name": "tools/mxfp4_training/check_torch_cuda.py",
+    "sha256": "7c6f03690ca9b5f554071f5a2f29c39ac5cb8404cdbf9bb278ed25e0263a4c42"
+  },
+  {
+    "name": "tools/mxfp4_training/crater_queue_runner.py",
+    "sha256": "d53282e098400575b499f3e3a82ce0790220b72a3fb62c8a5ae0cd75ade575fb"
+  },
+  {
+    "name": "tools/mxfp4_training/crater_remote_run.py",
+    "sha256": "023b140da884955f3e36c308215b930a9c0a9269761feb06d85c8f66dc5bcf73"
+  },
+  {
+    "name": "tools/mxfp4_training/csrc/bench_mxfp4.cu",
+    "sha256": "d07e73cbb50edf3cacabb20e610b278a9cfff33fd5fe3cb289c8589c0493d3fe"
+  },
+  {
+    "name": "tools/mxfp4_training/csrc/bench_mxfp4_fused.cu",
+    "sha256": "22dbeb4f13fa981c574ee458ef1ab7138ad522ec23cadf6922b4ce450d54331e"
+  },
+  {
+    "name": "tools/mxfp4_training/csrc/check_mxfp4.cu",
+    "sha256": "476a24671ac3ac6c9ed28562f9357e570cb50c1a9244533df5cba94c9a701a71"
+  },
+  {
+    "name": "tools/mxfp4_training/csrc/check_mxfp4_certified.cu",
+    "sha256": "1d4f4d6139e2c626a0877629fa4a1a30205a985c9847e727d230e370ea22dfbe"
+  },
+  {
+    "name": "tools/mxfp4_training/csrc/mxfp4_gemm.cu",
+    "sha256": "d1902ef6313f82a3a829596b7fd3708f3552363dcee72ab5b400be63ba66d11c"
+  },
+  {
+    "name": "tools/mxfp4_training/csrc/mxfp4_gemm.h",
+    "sha256": "083b85365544016f591de46c8e9e0e9ed9db3ad9faba7f771756d50515d753fd"
+  },
+  {
+    "name": "tools/mxfp4_training/csrc/mxfp4_gemm_certified.cu",
+    "sha256": "462f0601801f588fe7b948b30da87d4d84a6f36bfe42ebb47055099cbdd94dc6"
+  },
+  {
+    "name": "tools/mxfp4_training/csrc/mxfp4_gemm_certified.h",
+    "sha256": "4044ab192cbef6879d28f77bcdb7b71d5d97897e51e0dde01c3627975af9388a"
+  },
+  {
+    "name": "tools/mxfp4_training/csrc/mxfp4_gemm_fused.cu",
+    "sha256": "b81e780adddcb87b1a548ecda583e1a1e030041c74cf89999ec2270bc7123708"
+  },
+  {
+    "name": "tools/mxfp4_training/csrc/mxfp4_gemm_fused.h",
+    "sha256": "34ebe0d912a1e85f975093d81c3dc23feed70a88e0cf48499b26278ba4ad1442"
+  },
+  {
+    "name": "tools/mxfp4_training/csrc/mxfp4_gemm_tiled.cu",
+    "sha256": "be1655e12671bb8940f61f9b519e9199738e598033d248e29c795bccf0861e84"
+  },
+  {
+    "name": "tools/mxfp4_training/csrc/mxfp4_gemm_tiled.h",
+    "sha256": "e765ccd49f45a0a4a6a8a9d3ffecbf86dcd37df8685891143af53d78f21a2b3d"
+  },
+  {
+    "name": "tools/mxfp4_training/pretrain_smoke.py",
+    "sha256": "5498f99f779e091c71b03a82cd48049e45b3bf2fc65c09e195df4a9632f5e1c6"
+  },
+  {
+    "name": "tools/mxfp4_training/reference.py",
+    "sha256": "eeba6d661ad051c6caaa9e192d0dbe2c9666369faf31c384b88fc42556b02b8b"
+  },
+  {
+    "name": "tools/mxfp4_training/torch_ops.py",
+    "sha256": "cdc8fa7ffbf63546f12427cada352048d1d438af219037b9cc2105be199f1487"
+  }
+]

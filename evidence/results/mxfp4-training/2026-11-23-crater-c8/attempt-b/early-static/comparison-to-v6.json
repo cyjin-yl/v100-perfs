@@ -1,0 +1,11 @@
+{
+  "evidence_type": "static_instruction_comparison_only",
+  "old_sass_sha256": "2999d8db387863648d03e9d776ab93b63b2aae3cb47f0af4ac63226f8b93f945",
+  "new_sass_sha256": "34dbf9c24b836dfeb187ad48af440c89ea4f3573507b66a32efb65be0dddc1ad",
+  "old_instructions": 1664,
+  "new_instructions": 1664,
+  "instruction_text_and_offsets_identical": true,
+  "first_differences": [],
+  "new_function_compiled_in": "C3 binary; C8 native payload build pending",
+  "gpu_executed_by_analysis": false
+}

@@ -1,0 +1,9 @@
+{
+  "observed_at": "2026-11-23T20:41:31.272829+00:00",
+  "job": "sg-jincy26-261124-4abd5",
+  "pid": 2953171,
+  "starttime": 38368860,
+  "remote_payload_attempted": false,
+  "reason": "official SSH service exposes port 22; use explicit port adapter",
+  "signal": "SIGINT"
+}

@@ -1,0 +1,34 @@
+{
+  "scope": "changed and new files since last published source, including nested source/result tar members",
+  "checked_paths": 182,
+  "scanned_items": 1151,
+  "archive_file_members": 969,
+  "bytes_scanned": 115176950,
+  "patterns": [
+    "private_key",
+    "github_token",
+    "jwt",
+    "aws_access_key",
+    "authorization_header"
+  ],
+  "findings": [],
+  "passed": true,
+  "note": "Pattern scan; no credential values emitted or embedded in this report.",
+  "additional_final_diagnostics_audit_files_checked": [
+    {
+      "path": "evidence/results/mxfp4-training/2026-11-23-crater-c8/post-workspace-diagnostics/attempt-b/audit.py",
+      "bytes": 54012,
+      "sha256": "63912cf142cf8f62690cdefce9d08504d24e85ec8984754f1c5e801804d06cdb"
+    },
+    {
+      "path": "evidence/results/mxfp4-training/2026-11-23-crater-c8/post-workspace-diagnostics/attempt-b/audit.json",
+      "bytes": 329170,
+      "sha256": "efbb00315b4beeb0559f8e7efcbed30bdd4baf363748f8644f3c4a57b5a664ee"
+    },
+    {
+      "path": "evidence/results/mxfp4-training/2026-11-23-crater-c8/post-workspace-diagnostics/attempt-b/audit.md",
+      "bytes": 2480,
+      "sha256": "ea0890dfabd7c244be8d94c9b8e902355100fc41c43bf52ed7a5d3cf35abd6b7"
+    }
+  ]
+}

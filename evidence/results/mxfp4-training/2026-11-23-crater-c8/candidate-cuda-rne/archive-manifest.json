@@ -1,0 +1,13 @@
+{
+  "bytes": 80304,
+  "completion_sha256": "bdc150febad9a885e0267042a56974242f7bf761951332b2eb17c6e17472c39f",
+  "gpu_executed": true,
+  "passed": false,
+  "results_archive": "/workspace/user/mxfp4-cuda-rne-20261123T2157/results.tar.gz",
+  "reviewed_helper_sha256": "f7f45628bcf7616a7e7915823c77f2f75602cff66be29bf640c5ec3be8ecce1e",
+  "runner_sha256": "b7247572956d4c9c613254367cbd72e0109d276edc4afc3f7504503adc6203dd",
+  "sha256": "36682c293f811545d1ed8f67e68602c8d94a30bd1d87160db762136f6566d03f",
+  "source_archive_sha256": "5b730b12d6eeab8fca67799e90f8e1eac6d7d6201c6feb794b658d1865d1ef26",
+  "source_commit": "0ff69f8e9a9522aced2f3be887a71ba318fdb867",
+  "status": "failed"
+}
