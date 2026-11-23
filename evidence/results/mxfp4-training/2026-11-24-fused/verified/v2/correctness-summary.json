@@ -1,0 +1,35 @@
+[
+  {
+    "variant": 3,
+    "calls": 69,
+    "values": 405930,
+    "mismatches": 0,
+    "accepted": 23,
+    "fallback": 46,
+    "canonical_zero": 2950,
+    "passed": true,
+    "max_explicit_allocation": 3014876
+  },
+  {
+    "variant": 4,
+    "calls": 69,
+    "values": 405930,
+    "mismatches": 0,
+    "accepted": 23,
+    "fallback": 46,
+    "canonical_zero": 2950,
+    "passed": true,
+    "max_explicit_allocation": 3014876
+  },
+  {
+    "variant": 5,
+    "calls": 69,
+    "values": 405930,
+    "mismatches": 0,
+    "accepted": 23,
+    "fallback": 46,
+    "canonical_zero": 2950,
+    "passed": true,
+    "max_explicit_allocation": 3014876
+  }
+]

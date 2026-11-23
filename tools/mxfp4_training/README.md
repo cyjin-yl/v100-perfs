@@ -1,12 +1,12 @@
 # V100 MXFP4 训练基础算子
 
-本目录提供 **完整 E2M1 数值域、MX32 块尺度的 SM70 GEMM、共享内存 tiled 实现、带精确证书与回退的 native cuBLAS 路径，以及可分别启用 Forward／Dgrad／Wgrad 的 PyTorch 线性层**。目标是为后续 LLM 预训练实验建立可核对的算术、反向传播和测量入口。
+本目录提供 **完整 E2M1 数值域、MX32 块尺度的 SM70 GEMM、共享内存 tiled 实现、带精确证书与回退的 native cuBLAS／融合 HMMA 路径，以及可分别启用 Forward／Dgrad／Wgrad 的 PyTorch 线性层**。目标是为后续 LLM 预训练实验建立可核对的算术、反向传播和测量入口。
 
 V100 执行的是 FP16 输入、FP32 累加的 Tensor Core 运算；MXFP4 由软件编码、解码和施加块尺度。当前版本没有原生 FP4 指令，也没有接入受限域的 middle-only packing 优化。下面的 native 性能来自已打包输入；PyTorch GPU 训练与高精度输入量化成本仍待实际运行验证。
 
 ## 1. 已验证到什么程度
 
-基础正确性与 CPU smoke 保存在 [2026-11-23 实验目录](../../evidence/results/mxfp4-training/2026-11-23/)；后续 native 正确性、性能选择与 Crater 待执行状态见 [性能证据说明](../../evidence/results/mxfp4-training/2026-11-24-performance/README.md)。
+基础正确性与 CPU smoke 保存在 [2026-11-23 实验目录](../../evidence/results/mxfp4-training/2026-11-23/)；native 默认选择见 [50.95 TFLOPS 性能证据](../../evidence/results/mxfp4-training/2026-11-24-performance/README.md)，新增融合解码、预取候选和 Crater 扩展流程见 [融合实验](../../evidence/results/mxfp4-training/2026-11-24-fused/README.md)。
 
 | 项目 | 本轮结果 | 能支持的结论 |
 |---|---|---|
@@ -14,7 +14,9 @@ V100 执行的是 FP16 输入、FP32 累加的 Tensor Core 运算；MXFP4 由软
 | CUDA 编译 | **CUDA 12.9 编译通过** | native 共享库、三种正确性 harness 和 cuBLAS benchmark 可构建；编译证据含命令、variant 与哈希 |
 | 真实 V100 tiled，选用 variant 1 | **46 例、175,429 个输出、0 mismatch** | 完整数值域、极端尺度、尾部和非默认 stream 通过独立 ordered-MX32 oracle 检查 |
 | 真实 V100 certified，variant 0／1／2 | **每个 variant 均为 67 次调用、372,132 个输出、0 mismatch** | 每组含 21 次证书准入、46 次精确回退、context 重用及 400 个 canonical `+0` 检查；当前选用 variant 2 |
+| 真实 V100 fused certified，variants 3–7 | **每个 variant 均通过扩展后的 69 次调用、405,930 个输出，0 mismatch** | 每组 23 次接受、46 次精确回退及 2,950 个 canonical `+0` 检查；原整数证书未放宽 |
 | Native packed-input 性能 | **2048³ 的 certified 全路径为 50.952 TFLOPS** | 这是下表同次运行的同步 wall 测量，尚未达到 125 TFLOPS 目标 |
+| 融合路径预取优化 | **1536³ 配对 C4→C6→C6→C4 测量中，吞吐提升约 30.85%** | 完整 pipeline 的 pooled wall median 从 0.287067 ms 降到 0.219382 ms；尚无与 C2 的同形状同轮比较，默认仍为 C2 |
 | CPU tiny causal decoder（历史 smoke） | **5 组配方各训练 40 步，全部完成** | CPU 端前向、反向、FP32 AdamW 更新已接通 |
 | PyTorch CUDA wrapper | **119 项 GPU 检查已准备，尚未在 GPU 上运行** | `cuda`／`cuda_tiled`、量化与 F/D/W 梯度的框架级验证仍待完成 |
 | PyTorch 量化＋GEMM 测量 | **脚本已准备，GPU 结果待执行** | 不能从 native packed-input 数字推算高精度输入端到端吞吐 |
@@ -41,7 +43,15 @@ V100 执行的是 FP16 输入、FP32 累加的 Tensor Core 运算；MXFP4 由软
 
 certified total 与本次简单 dequant＋cuBLAS total 处于同一量级；这不能证明优于所有优化后的解码实现，也不能外推为训练加速。此轮采用单个共享 GPU 输出缓冲区，显式使用 `--reserve-mib 64 --max-mib 64` 适应有限空闲显存；默认 reserve 仍为 512 MiB。PyTorch GPU check／训练 smoke 需要至少 512 MiB free，Torch benchmark 需要至少 1 GiB free，因此这些框架级阶段仍未执行。
 
-### 1.2 历史 CPU 训练连接 smoke
+### 1.2 融合 HMMA 与预取实验
+
+certified variants 3–7 共用原精度证书，把 packed 解码和归一化直接融合到 HMMA 共享内存加载中，移除全局 normalized FP16 输入和 cuBLAS workspace。2048³ 的 native context 显式设备工作区从 C2 的 **21,037,128 B** 降至 **69,704 B**；这不包含输入、输出与驱动分配，也不是完整训练峰值显存。
+
+当前融合候选为 **C6：128×128 CTA、BK32、下一块 packed／scale 寄存器预取**。在同一 1536³ 输入、交错 C4/C6 的真实 V100 测量中，C6 两次运行分别为 33.0306／33.0390 wall TFLOPS，C4 为 25.2303／25.2637。全部初始及最后实际计时输出精确一致。较大的 64×64 warp tile 候选 C7 在另一组配对实验中比 C6 慢，64 位索引编译路径还出现 spill，未选用。
+
+原始 JSONL、编译／SASS 证据、同驻负载采样及较慢的实验都保留在 [融合实验报告](../../evidence/results/mxfp4-training/2026-11-24-fused/README.md)。两张 GPU 上仍有既有服务；不能把不同时段或不同形状的吞吐直接算作加速比。**C6 的 1536³ 数据没有证明胜过 C2 的 2048³ 50.95 TFLOPS，默认 certified variant 2 保持不变。**
+
+### 1.3 历史 CPU 训练连接 smoke
 
 CPU smoke 使用固定种子的单层 causal decoder、32 维隐藏状态、4 个 attention heads、长度 16 的合成序列与词表 32。任务是可预测的循环递增 token 序列。五组使用相同初始参数，记录如下：
 
@@ -65,9 +75,11 @@ CPU smoke 使用固定种子的单层 causal decoder、32 维隐藏状态、4 �
 | [csrc/mxfp4_gemm.h](csrc/mxfp4_gemm.h) | C ABI、内存、尺度和累计顺序契约 |
 | [csrc/mxfp4_gemm_tiled.cu](csrc/mxfp4_gemm_tiled.cu) | 共享内存复用、PRMT 解码和数值门控的尺度路径；当前选用 variant 1 |
 | [csrc/mxfp4_gemm_certified.cu](csrc/mxfp4_gemm_certified.cu)／[C API](csrc/mxfp4_gemm_certified.h) | GPU 精确证书、向量化 prepare／epilogue、normalized FP16 cuBLAS 与 exact tiled fallback；当前选用 variant 2 |
+| [csrc/mxfp4_gemm_fused.cu](csrc/mxfp4_gemm_fused.cu) | variants 3–7 的共享内存归一化、SM70 HMMA 和最终缩放；融合候选选 C6，未改变全局默认 |
 | [csrc/check_mxfp4.cu](csrc/check_mxfp4.cu) | 不依赖 PyTorch／cuBLAS 的真实 GPU 正确性 harness |
 | [csrc/check_mxfp4_certified.cu](csrc/check_mxfp4_certified.cu) | 完整数值域、证书边界、拒绝回退和 context 重用检查 |
 | [csrc/bench_mxfp4.cu](csrc/bench_mxfp4.cu) | packed-input baseline／tiled／certified 与 FP16 cuBLAS 分项及总成本比较 |
+| [csrc/bench_mxfp4_fused.cu](csrc/bench_mxfp4_fused.cu) | 小显存 packed-only 比较，保留完整 certified pipeline；不含 C2／普通 cuBLAS 对照 |
 | [build_cuda.py](build_cuda.py) | 编译共享库和 harness，并记录源码哈希、命令、日志和产物哈希 |
 | [check_torch_cuda.py](check_torch_cuda.py) | 119 项框架级 GPU 检查：独立 NumPy 预期、所有 recipe 开关与非默认 stream |
 | [bench_torch_cuda.py](bench_torch_cuda.py) | 通过外部 GPU check 后测量 Torch FP32、FP16、casts、量化与量化＋packed GEMM |
@@ -105,7 +117,7 @@ python tools/mxfp4_training/build_cuda.py \
 
 按安装位置调整 `--nvcc`；也可省略它，使用 `CUDA_HOME`／`CUDA_PATH` 或 `PATH` 中的工具链。当前默认就是 tiled variant 1、certified variant 2；命令显式写出版本以便复现。输出包含 `libmxfp4_sm70.so`、`check_mxfp4`、`check_mxfp4_tiled`、`check_mxfp4_certified`、`bench_mxfp4`、编译日志和 `compile-evidence.json`。只需 baseline／tiled 共享库时可省略两个 `--with-*` 并加 `--library-only`。
 
-构建使用 `--ftz=false`，以保留本契约要求的 FP32 次正规数。variant 0／1／2 的参数可用于明确标记的 A/B 复跑，编译记录和 benchmark 环境记录保留所选版本。编译成功本身不证明 GPU 执行正确。**certified 目前只提供 native C API，没有 `MXRecipe`／`gemm_packed` 的 Torch backend；`cuda_tiled` 已有 Torch 接口。**
+构建使用 `--ftz=false`，以保留本契约要求的 FP32 次正规数。certified variants 0–2 使用 cuBLAS，3–7 为融合候选，编译记录和 benchmark 环境记录保留所选版本。C6 的复现命令见 [融合报告](../../evidence/results/mxfp4-training/2026-11-24-fused/README.md)；`--with-fused-benchmark` 只允许启用 certified 且 variant>=3。编译成功本身不证明 GPU 执行正确。**certified 目前只提供 native C API，没有 `MXRecipe`／`gemm_packed` 的 Torch backend；`cuda_tiled` 已有 Torch 接口。**
 
 ### 3.3 真实 V100 正确性检查
 
@@ -129,6 +141,8 @@ python tools/mxfp4_training/build_cuda.py \
 默认要求真实 V100，检查在非默认 CUDA stream 上执行。完整域测试覆盖 16 × 16 个 E2M1 编码组合、两种非零 dot 下全部 65,536 个尺度字节组合、零 dot 的 NaN 传播、正负次正规数舍入、相反溢出块的 FP32 累计、非方阵／K 尾部及 `K=0`。certified 额外覆盖能量／span／lattice 边界、NaN scale 拒绝、非对齐与大行数路径、canonical `+0` 和 context 重用。
 
 每个案例分配前检查显存，默认保留 128 MiB；受限共享 GPU 的已归档 certified 运行显式使用 `--reserve-mib 64`。程序不停止或调整现有服务。`--allow-other-gpu` 仅用于明确标记的对照，结果中的 `actual_V100` 必须保留。正确性 harness 内的旧 `--benchmark` 不提供完整比较；正式性能比较使用下面的 `bench_mxfp4`，certified harness 也明确拒绝该旧选项。
+
+融合版完整 correctness 另支持显式 `--small-memory-correctness --reserve-mib 48`：仅允许 certified>=3，显式分配封顶 8 MiB，禁止 benchmark，保持全部 fixture。它不改变普通模式门槛，也不影响 Torch 检查。实际预算、适用范围和受限设备的运行证据见融合报告。
 
 ### 3.4 Native packed-input 性能
 
@@ -208,7 +222,7 @@ python -m tools.mxfp4_training.pretrain_smoke \
 
 [crater_queue_runner.py](crater_queue_runner.py) 跟进一个已授权、已存在的 Crater job；固定源码 archive 和 payload 通过 `--ready-json` 发布门禁后，才在分配到的节点上运行 [crater_remote_run.py](crater_remote_run.py)。runner 本身不提交、停止或删除平台 job。队列状态及后续结果入口见 [性能证据说明](../../evidence/results/mxfp4-training/2026-11-24-performance/README.md)。
 
-payload 只探测和使用已安装的 CUDA 12.x、NumPy 与 CUDA 版 PyTorch，依次执行 native build/check、native benchmark、119 项 Torch check、量化成本 benchmark，以及两条 Torch backend 的训练 smoke。前置检查不通过或运行环境缺失时，相应阶段记录 blocked／failed；结果和哈希保存在独立目录与 `results.tar.gz` 中。
+payload 只探测和使用已安装的 CUDA 12.x、NumPy 与 CUDA 版 PyTorch，依次执行 native build/check、native benchmark、119 项 Torch check、量化成本 benchmark，以及两条 Torch backend 的训练 smoke。扩展流程随后对 C2 控制组与 C3–C7 逐个比较 2048³／4096³；每个融合候选须先通过自己的完整 correctness。各阶段共用原 2700 秒总 deadline，主框架库保持 C2。前置检查不通过或运行环境缺失时，相应阶段记录 blocked／failed；结果和哈希保存在独立目录与 `results.tar.gz` 中。队列发布状态与新增候选证据见 [融合报告](../../evidence/results/mxfp4-training/2026-11-24-fused/README.md)。
 
 **单 V100 job 已提交，有时限 waiter 正在按 60 秒轮询、最长 12 小时等待；GPU check、benchmark 和训练阶段仍待执行。** runner 启动、节点分配或 SSH 成功均不能代替各阶段实际 GPU 证据；候选运行环境仍须由 payload 实际探测和验证。
 
@@ -333,6 +347,7 @@ certified C API 使用绑定 device 与 shape 的显式 context／workspace，�
 - 量化使用多个 PyTorch kernel 和与元素数量同阶的临时张量；有限值／padding 检查会产生主机同步，尚无融合量化或双方向生产 kernel。
 - tiled 已实现共享内存 tile 复用、PRMT nibble 解码和受数值门控的尺度路径；当前选用 variant 1。原始 baseline 继续保留为完整算术对照。
 - certified variant 2 使用向量化 prepare 与 epilogue，按 GPU 证书选择 cuBLAS 精确结果或 full-domain tiled 回退。为保持无主机分支同步，当前拒绝路径仍执行一遍安全的 normalized cuBLAS，再执行条件 fallback；该成本保留在总计时内。
+- 融合 variants 3–7 在证书通过后直接从 packed 输入执行 HMMA；拒绝时融合 CTA 提前返回，随后 exact tiled 回退。C6 增加下一块数据预取；Kp<=32768 时准备阶段缓存块能量，减少第二次 packed 读取。默认仍为 C2，融合候选尚待与 C2 同条件完整比较。
 - 证书是否通过取决于数据尺度分布和能量；合成 case 的通过不能推出所有训练张量均能走 cuBLAS 路径。实际训练数据的准入率、回退成本及准备阶段占比仍需测量。
 - 此前 `|q|≤3` 等受限域的 middle-only packing 尚未接入，也没有该 packing 的残差修复路径。certified 的精确证书是独立方案，不是对这项受限 packing 的启用声明。
 - master weights、保存供反向使用的 activation 和 optimizer states 均保持 FP32。packed 缓冲区的低位存储不等于训练峰值显存下降。

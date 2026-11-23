@@ -1,0 +1,13 @@
+{
+  "gpu_executed": false,
+  "host_only": true,
+  "source_path": "tools/mxfp4_training/csrc/mxfp4_gemm_certified.cu",
+  "source_sha256_at_execution": "68cb1c116c5e017a2636c14bc30e6541b5e126c70fea57732edfa164f144d5b0",
+  "script_path": "evidence/results/mxfp4-training/2026-11-24-fused/host/check_energy_cache.py",
+  "stdout_path": "evidence/results/mxfp4-training/2026-11-24-fused/host/comparison_stdout.json",
+  "original_execution": "python - with the preserved script supplied on stdin, from the repository root",
+  "exit_code": 0,
+  "tool_recorded_wall_time_seconds": 3.440650369,
+  "preservation_note": "The script and stdout were saved after the successful execution. They were not rerun to produce these evidence files.",
+  "scope": "Host arithmetic models compare original group aggregation, cached MX32 aggregation, and an arbitrary-precision scalar oracle. These results do not establish CUDA compilation, device memory safety, GPU execution, or performance."
+}

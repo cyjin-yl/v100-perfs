@@ -12,7 +12,13 @@
 // MXFP4_CERTIFIED_VARIANT=0: verified scalar preparation / scalar epilogue.
 // MXFP4_CERTIFIED_VARIANT=1: four-nibble PRMT/DP4A preparation, original epilogue.
 // MXFP4_CERTIFIED_VARIANT=2: variant 1 plus fixed-row float4/masked epilogue.
-// The default remains 0; runtime autotuning is deliberately absent.
+// MXFP4_CERTIFIED_VARIANT=3: fused normalized HMMA, 64x64 CTA / BK64.
+// MXFP4_CERTIFIED_VARIANT=4: fused normalized HMMA, 128x128 CTA / BK32.
+// MXFP4_CERTIFIED_VARIANT=5: fused normalized HMMA, 128x128 CTA / BK64.
+// MXFP4_CERTIFIED_VARIANT=6: 128x128 CTA / BK32 with raw-input register prefetch.
+// MXFP4_CERTIFIED_VARIANT=7: variant 6 with 128 threads and 64x64 warp tiles.
+// build_cuda.py defaults to 2; direct compilation without a define uses 0.
+// Runtime autotuning is deliberately absent.
 
 enum MXFP4CertifiedReject {
   MXFP4_CERT_REJECT_NAN_SCALE = 1u,
@@ -25,7 +31,9 @@ typedef struct MXFP4CertifiedInfo {
   uint32_t abi_version;
   int32_t device;
   int64_t m, n, padded_k;
-  // Explicit cudaMalloc allocations, including a 4 MiB cuBLAS workspace.
+  // Explicit cudaMalloc allocations. Variants 0..2 include normalized FP16
+  // operands and a 4 MiB cuBLAS workspace; variants 3..7 own only row metadata,
+  // row bases and the certificate, with no global normalized operand storage.
   // Excludes caller inputs/output and library/driver initialization overhead.
   uint64_t workspace_bytes;
   uint64_t max_energy_a, max_energy_b;
@@ -60,9 +68,10 @@ const char* mxfp4_certified_error_string(int status);
 int mxfp4_certified_workspace_bytes(int64_t m, int64_t n, int64_t padded_k,
                                    uint64_t* bytes);
 
-// The context is bound to the current device and fixed shape, and owns two
-// normalized-half matrices, row minima/energies, GPU certificate metadata,
-// pinned diagnostic metadata, cuBLAS handle, and explicit cuBLAS workspace.
+// The context is bound to the current device and fixed shape, and owns row
+// minima/energies, GPU certificate metadata and pinned diagnostic metadata.
+// Variants 0..2 also own two normalized-half matrices, a cuBLAS handle and
+// explicit cuBLAS workspace; variants 3..7 instead own compact row bases.
 // Creation/destruction are outside per-call timing. This prototype binds a
 // context to its CREATING HOST THREAD as well as device, so per-thread-default
 // stream tokens cannot silently change meaning. Do not use it concurrently.
@@ -78,13 +87,16 @@ int mxfp4_certified_create(int64_t m, int64_t n, int64_t padded_k, void** contex
 // backend. The certificate checks row scale span <=12, normalized integer
 // row energies U,V with U*V <= 2^48, and common lattice exponent [-126,103].
 // E8M0=255 always rejects, including zero blocks. Rejection dispatches the
-// exact tiled path; it NEVER returns an uncertified approximate cuBLAS value.
+// exact tiled path; it NEVER returns an uncertified fast-path value.
 //
 // With used_fast=nullptr this enqueues the complete pipeline asynchronously:
-// GPU preparation/certificate, cuBLAS, conditional scale, conditional fallback.
-// cuBLAS executes even on rejected calls, using bounded finite safe inputs;
-// this unused work must remain inside fallback timing. With used_fast!=nullptr
-// the function explicitly synchronizes and returns accepted as 0/1 as well.
+// GPU preparation/certificate, conditional fast path, conditional fallback.
+// Variants 0..2 execute cuBLAS even on rejected calls using bounded finite
+// safe inputs, then conditionally postscale; this unused work remains inside
+// fallback timing. Variants 3..7 normalize directly into shared memory in a
+// fused HMMA kernel, and rejected calls skip that kernel before input reads.
+// With used_fast!=nullptr the function explicitly synchronizes and returns
+// accepted as 0/1 as well.
 int mxfp4_certified_gemm(void* context,
                         const uint8_t* a, const uint8_t* a_scales,
                         const uint8_t* b, const uint8_t* b_scales, float* out,

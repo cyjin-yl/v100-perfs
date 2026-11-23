@@ -1,0 +1,535 @@
+{
+  "schema_version": 1,
+  "evidence_type": "derived_existing_gpu_benchmark_records",
+  "derivation_gpu_executed": false,
+  "source_records_gpu_executed": true,
+  "collection_archive_sha256": "97e41d00562535a33250b9ac26ca284bde50ca4c88708edbd86ba3a00e28149f",
+  "collection_archive_verification": "Collection/root verified before extraction; hash supplied to this derivation",
+  "source_archive_sha256": "5a3010b8c2ed97e203d545453d7992af6e4e82e73fe6b671c4b2cdcecb1fb88e",
+  "input_file_sha256": {
+    "abba-00-c6-1536.jsonl": "a708fafd3b8100c93b736a51ba4d3561ca34fa3c9c5965b02fd7ce23d5e877ff",
+    "abba-01-c7-1536.jsonl": "c88934451ab695e5ccf991ce5a36e26c1516aa1e69e9c10730733d56b2b8f821",
+    "abba-02-c7-1536.jsonl": "0691996511a4d6821bdd6e9a41f44205d1b01efcaff4a5db72eeabdc04657126",
+    "abba-03-c6-1536.jsonl": "22026a29b12c31e66a3961235aa049f12789f13e416d6810a1851d6504a320c3",
+    "correctness-c6.jsonl": "a015e6aa20b7f402ce652d193b77d7c1815a7294a7f1f15fe9e3dbed40f41cff",
+    "correctness-c7.jsonl": "a02b9b0aa0bcaaee1db40ca1b6ecee3e5b9e05449cf142e26e04410b3d8b64de",
+    "background-gpu-samples.csv": "67aa529431f680fbfe7deaa3d529d1a5078acf38ef6907be55c64fd5ce4bdfb6",
+    "build-c7/shared_library.log": "99d2739cecd94a742e5c8c9e20c8eebde929d4230a30c10e158a11992211790c",
+    "build-c7/compile-evidence.json": "06c7d056fecd13d78b389f93457aa9b36a35cec0f5953ff18cf8e26d5ca6d543",
+    "build-c6/compile-evidence.json": "3e44f40dc204f4c07e704fcdf1aa0d7d739916a5ae2ce012bc30f0d347f9d7c2",
+    "driver-state.json": "eadea55b091eee226bad3f65f9ff9c2a0bc5db815cdf206d9eff611238a5dd35"
+  },
+  "shape": [
+    1536,
+    1536,
+    1536
+  ],
+  "useful_flops": 7247757312,
+  "input_mode": "random_block_scales",
+  "seed": 20261123,
+  "input_fnv1a64": "8729bc8ef4895a63",
+  "run_order": [
+    6,
+    7,
+    7,
+    6
+  ],
+  "warmup_per_job": 3,
+  "iterations_per_round": 10,
+  "rounds_per_run": 5,
+  "method": "For each variant, concatenate the five per-iteration round times from both ABBA runs and take the median of all ten values; derive throughput as 2*M*N*logical_K/(median_ms*1e9). No round is removed.",
+  "primary_clock": "synchronized_steady_clock",
+  "rows": [
+    {
+      "file": "abba-00-c6-1536.jsonl",
+      "source_sha256": "a708fafd3b8100c93b736a51ba4d3561ca34fa3c9c5965b02fd7ce23d5e877ff",
+      "variant": 6,
+      "wall_median_ms": 0.7179078,
+      "wall_tflops": 10.0956659226,
+      "event_median_ms": 0.481587219238,
+      "event_tflops": 15.0497293584,
+      "wall_round_ms": [
+        0.719829,
+        0.7169368,
+        0.7319055,
+        0.7104995,
+        0.7179078
+      ],
+      "event_round_ms": [
+        0.481587219238,
+        0.480665588379,
+        0.481792020798,
+        0.481792020798,
+        0.479231977463
+      ],
+      "fingerprint": "8729bc8ef4895a63",
+      "certificate_accepted": true,
+      "certified_submitted_calls": 54,
+      "final_values_per_backend": 2359296,
+      "final_mismatches_per_backend": 0,
+      "cpu_reference_samples": 256,
+      "telemetry_before": {
+        "nvml_available": true,
+        "sm_clock_mhz": 1380,
+        "memory_clock_mhz": 877,
+        "power_w": 141.22,
+        "power_limit_w": 250,
+        "error": null
+      },
+      "telemetry_after": {
+        "nvml_available": true,
+        "sm_clock_mhz": 1380,
+        "memory_clock_mhz": 877,
+        "power_w": 146.949,
+        "power_limit_w": 250,
+        "error": null
+      },
+      "memory_before_allocation": {
+        "free_bytes": 65208320,
+        "total_bytes": 34072559616
+      },
+      "memory_after_warmup": {
+        "free_bytes": 50528256,
+        "total_bytes": 34072559616
+      },
+      "memory_after_timing": {
+        "free_bytes": 50528256,
+        "total_bytes": 34072559616
+      }
+    },
+    {
+      "file": "abba-01-c7-1536.jsonl",
+      "source_sha256": "c88934451ab695e5ccf991ce5a36e26c1516aa1e69e9c10730733d56b2b8f821",
+      "variant": 7,
+      "wall_median_ms": 0.7585779,
+      "wall_tflops": 9.55440082291,
+      "event_median_ms": 0.519987201691,
+      "event_tflops": 13.938337883,
+      "wall_round_ms": [
+        0.7565057,
+        0.7588199,
+        0.7584319,
+        0.7585779,
+        0.7591469
+      ],
+      "event_round_ms": [
+        0.519987201691,
+        0.519680023193,
+        0.520703983307,
+        0.519475221634,
+        0.520601606369
+      ],
+      "fingerprint": "8729bc8ef4895a63",
+      "certificate_accepted": true,
+      "certified_submitted_calls": 54,
+      "final_values_per_backend": 2359296,
+      "final_mismatches_per_backend": 0,
+      "cpu_reference_samples": 256,
+      "telemetry_before": {
+        "nvml_available": true,
+        "sm_clock_mhz": 1380,
+        "memory_clock_mhz": 877,
+        "power_w": 140.496,
+        "power_limit_w": 250,
+        "error": null
+      },
+      "telemetry_after": {
+        "nvml_available": true,
+        "sm_clock_mhz": 1380,
+        "memory_clock_mhz": 877,
+        "power_w": 149.614,
+        "power_limit_w": 250,
+        "error": null
+      },
+      "memory_before_allocation": {
+        "free_bytes": 65208320,
+        "total_bytes": 34072559616
+      },
+      "memory_after_warmup": {
+        "free_bytes": 50528256,
+        "total_bytes": 34072559616
+      },
+      "memory_after_timing": {
+        "free_bytes": 50528256,
+        "total_bytes": 34072559616
+      }
+    },
+    {
+      "file": "abba-02-c7-1536.jsonl",
+      "source_sha256": "0691996511a4d6821bdd6e9a41f44205d1b01efcaff4a5db72eeabdc04657126",
+      "variant": 7,
+      "wall_median_ms": 0.7575097,
+      "wall_tflops": 9.56787393218,
+      "event_median_ms": 0.520601606369,
+      "event_tflops": 13.9218881066,
+      "wall_round_ms": [
+        0.7589269,
+        0.6886834,
+        0.7575097,
+        0.7571277,
+        0.759585
+      ],
+      "event_round_ms": [
+        0.520601606369,
+        0.449740791321,
+        0.521216011047,
+        0.519782400131,
+        0.520806407928
+      ],
+      "fingerprint": "8729bc8ef4895a63",
+      "certificate_accepted": true,
+      "certified_submitted_calls": 54,
+      "final_values_per_backend": 2359296,
+      "final_mismatches_per_backend": 0,
+      "cpu_reference_samples": 256,
+      "telemetry_before": {
+        "nvml_available": true,
+        "sm_clock_mhz": 1380,
+        "memory_clock_mhz": 877,
+        "power_w": 139.424,
+        "power_limit_w": 250,
+        "error": null
+      },
+      "telemetry_after": {
+        "nvml_available": true,
+        "sm_clock_mhz": 1380,
+        "memory_clock_mhz": 877,
+        "power_w": 150.014,
+        "power_limit_w": 250,
+        "error": null
+      },
+      "memory_before_allocation": {
+        "free_bytes": 65208320,
+        "total_bytes": 34072559616
+      },
+      "memory_after_warmup": {
+        "free_bytes": 50528256,
+        "total_bytes": 34072559616
+      },
+      "memory_after_timing": {
+        "free_bytes": 50528256,
+        "total_bytes": 34072559616
+      }
+    },
+    {
+      "file": "abba-03-c6-1536.jsonl",
+      "source_sha256": "22026a29b12c31e66a3961235aa049f12789f13e416d6810a1851d6504a320c3",
+      "variant": 6,
+      "wall_median_ms": 0.7190369,
+      "wall_tflops": 10.0798127495,
+      "event_median_ms": 0.480051183701,
+      "event_tflops": 15.0978844717,
+      "wall_round_ms": [
+        0.7202518,
+        0.719624,
+        0.7186349,
+        0.7190369,
+        0.7175768
+      ],
+      "event_round_ms": [
+        0.481075191498,
+        0.480768013,
+        0.478822422028,
+        0.480051183701,
+        0.478515195847
+      ],
+      "fingerprint": "8729bc8ef4895a63",
+      "certificate_accepted": true,
+      "certified_submitted_calls": 54,
+      "final_values_per_backend": 2359296,
+      "final_mismatches_per_backend": 0,
+      "cpu_reference_samples": 256,
+      "telemetry_before": {
+        "nvml_available": true,
+        "sm_clock_mhz": 1380,
+        "memory_clock_mhz": 877,
+        "power_w": 140.956,
+        "power_limit_w": 250,
+        "error": null
+      },
+      "telemetry_after": {
+        "nvml_available": true,
+        "sm_clock_mhz": 1380,
+        "memory_clock_mhz": 877,
+        "power_w": 148.393,
+        "power_limit_w": 250,
+        "error": null
+      },
+      "memory_before_allocation": {
+        "free_bytes": 65208320,
+        "total_bytes": 34072559616
+      },
+      "memory_after_warmup": {
+        "free_bytes": 50528256,
+        "total_bytes": 34072559616
+      },
+      "memory_after_timing": {
+        "free_bytes": 50528256,
+        "total_bytes": 34072559616
+      }
+    }
+  ],
+  "pooled": {
+    "6": {
+      "wall_round_ms": [
+        0.719829,
+        0.7169368,
+        0.7319055,
+        0.7104995,
+        0.7179078,
+        0.7202518,
+        0.719624,
+        0.7186349,
+        0.7190369,
+        0.7175768
+      ],
+      "event_round_ms": [
+        0.481587219238,
+        0.480665588379,
+        0.481792020798,
+        0.481792020798,
+        0.479231977463,
+        0.481075191498,
+        0.480768013,
+        0.478822422028,
+        0.480051183701,
+        0.478515195847
+      ],
+      "timing_round_samples": 10,
+      "pooled_wall_median_ms": 0.7188359,
+      "pooled_event_median_ms": 0.48071680068949996,
+      "pooled_wall_tflops": 10.08263125422645,
+      "pooled_event_tflops": 15.07697942240509,
+      "wall_min_ms": 0.7104995,
+      "wall_max_ms": 0.7319055
+    },
+    "7": {
+      "wall_round_ms": [
+        0.7565057,
+        0.7588199,
+        0.7584319,
+        0.7585779,
+        0.7591469,
+        0.7589269,
+        0.6886834,
+        0.7575097,
+        0.7571277,
+        0.759585
+      ],
+      "event_round_ms": [
+        0.519987201691,
+        0.519680023193,
+        0.520703983307,
+        0.519475221634,
+        0.520601606369,
+        0.520601606369,
+        0.449740791321,
+        0.521216011047,
+        0.519782400131,
+        0.520806407928
+      ],
+      "timing_round_samples": 10,
+      "pooled_wall_median_ms": 0.7585049,
+      "pooled_event_median_ms": 0.5202944040299999,
+      "pooled_wall_tflops": 9.555320357192155,
+      "pooled_event_tflops": 13.930108138510938,
+      "wall_min_ms": 0.6886834,
+      "wall_max_ms": 0.759585
+    }
+  },
+  "c7_vs_c6": {
+    "throughput_ratio": 0.947701062972698,
+    "throughput_change_percent": -5.2298937027302035,
+    "latency_ratio": 1.0551850568398158,
+    "latency_change_percent": 5.518505683981578
+  },
+  "correctness": [
+    {
+      "file": "correctness-c6.jsonl",
+      "source_sha256": "a015e6aa20b7f402ce652d193b77d7c1815a7294a7f1f15fe9e3dbed40f41cff",
+      "variant": 6,
+      "calls": 69,
+      "outputs_compared": 405930,
+      "mismatches": 0,
+      "accepted_calls": 23,
+      "fallback_calls": 46,
+      "canonical_positive_zero_values": 2950,
+      "gpu_executed": true,
+      "full_suite_passed": true
+    },
+    {
+      "file": "correctness-c7.jsonl",
+      "source_sha256": "a02b9b0aa0bcaaee1db40ca1b6ecee3e5b9e05449cf142e26e04410b3d8b64de",
+      "variant": 7,
+      "calls": 69,
+      "outputs_compared": 405930,
+      "mismatches": 0,
+      "accepted_calls": 23,
+      "fallback_calls": 46,
+      "canonical_positive_zero_values": 2950,
+      "gpu_executed": true,
+      "full_suite_passed": true
+    }
+  ],
+  "nvml_background_samples": {
+    "0": {
+      "samples": 17,
+      "first_timestamp_as_recorded": "2026/11/24 02:19:43.131",
+      "last_timestamp_as_recorded": "2026/11/24 02:19:46.444",
+      "ranges": {
+        "utilization.gpu [%]": {
+          "min": 99.0,
+          "max": 100.0
+        },
+        "utilization.memory [%]": {
+          "min": 34.0,
+          "max": 68.0
+        },
+        "memory.free [MiB]": {
+          "min": 49.0,
+          "max": 369.0
+        },
+        "clocks.current.sm [MHz]": {
+          "min": 1380.0,
+          "max": 1380.0
+        },
+        "power.draw [W]": {
+          "min": 134.66,
+          "max": 152.55
+        }
+      }
+    },
+    "1": {
+      "samples": 17,
+      "first_timestamp_as_recorded": "2026/11/24 02:19:43.134",
+      "last_timestamp_as_recorded": "2026/11/24 02:19:46.449",
+      "ranges": {
+        "utilization.gpu [%]": {
+          "min": 99.0,
+          "max": 100.0
+        },
+        "utilization.memory [%]": {
+          "min": 30.0,
+          "max": 67.0
+        },
+        "memory.free [MiB]": {
+          "min": 369.0,
+          "max": 369.0
+        },
+        "clocks.current.sm [MHz]": {
+          "min": 1380.0,
+          "max": 1380.0
+        },
+        "power.draw [W]": {
+          "min": 85.97,
+          "max": 152.82
+        }
+      }
+    }
+  },
+  "ptxas_resources": [
+    {
+      "kernel_symbol": "_ZN52_GLOBAL__N__cba4926e_19_mxfp4_gemm_fused_cu_da86c26233fused_certified_prefetch32_warp64IlLb1EEEvPKhS2_S2_S2_PfT_S4_S4_S2_PKiS4_",
+      "variant": 7,
+      "index_type": "int64",
+      "tails": true,
+      "registers_per_thread": 255,
+      "stack_frame_bytes": 112,
+      "spill_store_bytes": 132,
+      "spill_load_bytes": 216,
+      "shared_memory_bytes": 18688
+    },
+    {
+      "kernel_symbol": "_ZN52_GLOBAL__N__cba4926e_19_mxfp4_gemm_fused_cu_da86c26233fused_certified_prefetch32_warp64IlLb0EEEvPKhS2_S2_S2_PfT_S4_S4_S2_PKiS4_",
+      "variant": 7,
+      "index_type": "int64",
+      "tails": false,
+      "registers_per_thread": 255,
+      "stack_frame_bytes": 152,
+      "spill_store_bytes": 168,
+      "spill_load_bytes": 168,
+      "shared_memory_bytes": 18688
+    },
+    {
+      "kernel_symbol": "_ZN52_GLOBAL__N__cba4926e_19_mxfp4_gemm_fused_cu_da86c26226fused_certified_prefetch32IlLb1EEEvPKhS2_S2_S2_PfT_S4_S4_S2_PKiS4_",
+      "variant": 6,
+      "index_type": "int64",
+      "tails": true,
+      "registers_per_thread": 168,
+      "stack_frame_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0,
+      "shared_memory_bytes": 18688
+    },
+    {
+      "kernel_symbol": "_ZN52_GLOBAL__N__cba4926e_19_mxfp4_gemm_fused_cu_da86c26226fused_certified_prefetch32IlLb0EEEvPKhS2_S2_S2_PfT_S4_S4_S2_PKiS4_",
+      "variant": 6,
+      "index_type": "int64",
+      "tails": false,
+      "registers_per_thread": 166,
+      "stack_frame_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0,
+      "shared_memory_bytes": 18688
+    },
+    {
+      "kernel_symbol": "_ZN52_GLOBAL__N__cba4926e_19_mxfp4_gemm_fused_cu_da86c26233fused_certified_prefetch32_warp64IiLb1EEEvPKhS2_S2_S2_PfT_S4_S4_S2_PKiS4_",
+      "variant": 7,
+      "index_type": "int32",
+      "tails": true,
+      "registers_per_thread": 243,
+      "stack_frame_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0,
+      "shared_memory_bytes": 18688
+    },
+    {
+      "kernel_symbol": "_ZN52_GLOBAL__N__cba4926e_19_mxfp4_gemm_fused_cu_da86c26233fused_certified_prefetch32_warp64IiLb0EEEvPKhS2_S2_S2_PfT_S4_S4_S2_PKiS4_",
+      "variant": 7,
+      "index_type": "int32",
+      "tails": false,
+      "registers_per_thread": 251,
+      "stack_frame_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0,
+      "shared_memory_bytes": 18688
+    },
+    {
+      "kernel_symbol": "_ZN52_GLOBAL__N__cba4926e_19_mxfp4_gemm_fused_cu_da86c26226fused_certified_prefetch32IiLb1EEEvPKhS2_S2_S2_PfT_S4_S4_S2_PKiS4_",
+      "variant": 6,
+      "index_type": "int32",
+      "tails": true,
+      "registers_per_thread": 128,
+      "stack_frame_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0,
+      "shared_memory_bytes": 18688
+    },
+    {
+      "kernel_symbol": "_ZN52_GLOBAL__N__cba4926e_19_mxfp4_gemm_fused_cu_da86c26226fused_certified_prefetch32IiLb0EEEvPKhS2_S2_S2_PfT_S4_S4_S2_PKiS4_",
+      "variant": 6,
+      "index_type": "int32",
+      "tails": false,
+      "registers_per_thread": 128,
+      "stack_frame_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0,
+      "shared_memory_bytes": 18688
+    }
+  ],
+  "interpretation": {
+    "measured_index_type": "int32_no_tail",
+    "int64_spills_explain_this_measurement": false,
+    "candidate_selection": "Retain C6 as fused candidate; C7 is a negative result in this bounded comparison.",
+    "default_certified_variant": 2,
+    "c2_same_shape_comparison_performed": false,
+    "end_to_end_training_measured": false
+  },
+  "limitations": [
+    "Two interleaved process runs per variant and ten timing rounds are not ten independent statistical trials.",
+    "Nonexclusive device. GPU0 sampled utilization was99–100%; samples include benchmark activity and do not isolate external contention.",
+    "V4 andV5 absolute throughput must not be combined into a cross-window speedup.",
+    "C7 int64 specializations spill, but the measured1536-cubed shape uses int32; those spills cannot explain this measured difference.",
+    "Static SASS evidence for V4 C6 does not independently attribute all measured gain to prefetch or establish latency overlap duration."
+  ]
+}

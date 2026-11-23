@@ -3,7 +3,8 @@
 //   mxfp4_gemm.cu bench_mxfp4.cu -lcublas -ldl -o bench_mxfp4
 // Add the tiled translation unit and -DMXFP4_BENCH_TILED to compare that API.
 // MXFP4_BENCH_CERTIFIED additionally measures the explicit certified workspace
-// path, including preparation, GPU certificate, cuBLAS, epilogue and fallback.
+// path, including preparation, GPU certificate, its selected compute backend,
+// output scaling and fallback. Variants >=3 fuse normalized decode with HMMA.
 // Both CUDA event intervals and synchronized host wall time are reported.
 // Every TFLOPS numerator is 2*M*N*logical_K, never padded_K or packed lanes.
 #include "mxfp4_gemm.h"
@@ -56,6 +57,13 @@ void cublas_checked(cublasStatus_t status, const char* expression) {
 #define CUDA(expression) cuda_checked((expression), #expression)
 #define BLAS(expression) cublas_checked((expression), #expression)
 #ifdef MXFP4_BENCH_CERTIFIED
+constexpr bool kCertifiedFused = MXFP4_CERTIFIED_VARIANT >= 3;
+constexpr const char* kCertifiedAcceptedPath = kCertifiedFused
+    ? "fused_normalized_hmma" : "normalized_integer_cublas";
+constexpr const char* kCertifiedTotalScope = kCertifiedFused
+    ? "packed_to_fp32_gpu_certificate_fused_normalized_hmma_and_conditional_fallback"
+    : "packed_to_fp32_gpu_certificate_normalization_cublas_conditional_epilogue_and_fallback";
+
 void certified_checked(int status, const char* expression) {
   if (status != 0)
     throw std::runtime_error(std::string(expression) + ": " + mxfp4_certified_error_string(status));
@@ -332,8 +340,9 @@ uint64_t allocation_bytes(int m, int n, int kp) {
   const uint64_t inputs = uint64_t(m + n) * (kp / 2 + kp / 32 + uint64_t(kp) * sizeof(half));
   // Every backend executes serially on the same stream. One device output is
   // enough; correctness results are copied to independent host arrays before
-  // the next backend overwrites it. Direct and certified half inputs stay
-  // separate, so their full preparation/workspace costs remain accounted.
+  // the next backend overwrites it. The ordinary cuBLAS half inputs stay
+  // separate from any certified workspace. Fused certified variants do not
+  // allocate global normalized-half matrices; the C API reports their bytes.
   uint64_t bytes = inputs + uint64_t(m) * n * sizeof(float);
 #ifdef MXFP4_BENCH_CERTIFIED
   uint64_t workspace = 0;
@@ -548,15 +557,20 @@ std::string certificate_json(const MXFP4CertifiedInfo& info) {
   out << "{\"abi_version\":" << info.abi_version
       << ",\"metadata_valid\":" << (info.metadata_valid ? "true" : "false")
       << ",\"accepted\":" << (info.accepted ? "true" : "false")
-      << ",\"path\":" << quote(info.accepted ? "normalized_integer_cublas" : "exact_tiled_fallback")
+      << ",\"path\":" << quote(info.accepted ? kCertifiedAcceptedPath : "exact_tiled_fallback")
       << ",\"reject_flags\":" << info.reject_flags
       << ",\"reject_flag_bits\":{\"nan_scale\":1,\"span\":2,\"energy\":4,\"lattice\":8}"
       << ",\"workspace_bytes\":" << info.workspace_bytes
       << ",\"workspace_reused_across_calls\":true,\"workspace_allocation_timed\":false"
-      << ",\"certificate_recomputed_each_call\":true,\"normalized_operands_recomputed_each_call\":true"
+      << ",\"certificate_recomputed_each_call\":true"
+      << ",\"normalized_operands_recomputed_each_call\":" << (!kCertifiedFused || info.accepted ? "true" : "false")
+      << ",\"normalization_executes_on_rejected_calls\":" << (kCertifiedFused ? "false" : "true")
+      << ",\"normalized_operands_materialized\":" << (kCertifiedFused ? "false" : "true")
+      << ",\"normalization_location\":" << quote(kCertifiedFused ? "fused_gemm" : "prepare_global_fp16")
+      << ",\"output_scaling_location\":" << quote(kCertifiedFused ? "fused_gemm_epilogue" : "separate_epilogue")
       << ",\"host_gate_synchronization_per_call\":false"
       << ",\"diagnostic_get_info_in_timed_region\":false"
-      << ",\"cublas_executes_on_rejected_calls\":true"
+      << ",\"cublas_executes_on_rejected_calls\":" << (kCertifiedFused ? "false" : "true")
       << ",\"max_energy_a\":" << info.max_energy_a
       << ",\"max_energy_b\":" << info.max_energy_b
       << ",\"energy_a_representation\":" << quote(info.energy_saturated_a ? "lower_bound_at_cap" : "exact")
@@ -635,8 +649,10 @@ void run_case(const Input& in, const Options& options, cudaStream_t stream,
   auto certified_call = [&]() {
     execution.begin_multi_stage();
     // A null used_fast deliberately chooses the fully asynchronous API.
-    // Every call recomputes the device certificate and normalized operands;
-    // rejected inputs still pay for cuBLAS before conditional tiled fallback.
+    // Every call recomputes the device certificate. The selected backend
+    // either materializes normalized FP16 for cuBLAS (including rejected
+    // calls), or decodes inside a device-gated fused HMMA kernel. Conditional
+    // tiled fallback and all preparation remain in the measured pipeline.
     CERTIFIED(mxfp4_certified_gemm(certified_workspace.value, da.data, das.data,
                                   db.data, dbs.data, output.data, stream, nullptr));
     execution.enqueue_succeeded();
@@ -761,7 +777,7 @@ void run_case(const Input& in, const Options& options, cudaStream_t stream,
 #endif
 #ifdef MXFP4_BENCH_CERTIFIED
   jobs.push_back({"mxfp4_certified_total",
-                 "packed_to_fp32_gpu_certificate_normalization_cublas_conditional_epilogue_and_fallback",
+                 kCertifiedTotalScope,
                  certified_call, {}, {}, true});
 #endif
   jobs.push_back({"cublas_compute", "predequantized_fp16_to_fp32", cublas_call, {}});
@@ -914,6 +930,8 @@ int main(int argc, char** argv) {
         << ",\"certified_compiled\":true"
         << ",\"certified_abi_version\":" << MXFP4_CERTIFIED_ABI_VERSION
         << ",\"certified_variant\":" << MXFP4_CERTIFIED_VARIANT
+        << ",\"certified_accepted_backend\":" << quote(kCertifiedAcceptedPath)
+        << ",\"certified_global_normalized_fp16_workspace\":" << (kCertifiedFused ? "false" : "true")
         << ",\"certified_total_timing_clock\":\"synchronized_steady_clock\""
         << ",\"certified_workspace_allocation_excluded\":true"
 #else

@@ -1,0 +1,148 @@
+nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+ptxas info    : 0 bytes gmem
+ptxas info    : Compiling entry function '_ZN46_GLOBAL__N__030c7294_13_mxfp4_gemm_cu_eee9de659gemm_mx32EPKhS1_S1_S1_Pflllll' for 'sm_70'
+ptxas info    : Function properties for _ZN46_GLOBAL__N__030c7294_13_mxfp4_gemm_cu_eee9de659gemm_mx32EPKhS1_S1_S1_Pflllll
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 64 registers, used 0 barriers, 432 bytes cmem[0]
+ptxas info    : Compile time = 68.858 ms
+ptxas info    : 0 bytes gmem
+ptxas info    : Compiling entry function '_ZN52_GLOBAL__N__0ba3dfd3_19_mxfp4_gemm_tiled_cu_16b2015515gemm_tiled_mx32IlLb1ELi1ELb1ELb0EEEvPKhS2_S2_S2_PfT_S4_S4_S4_PKi' for 'sm_70'
+ptxas info    : Function properties for _ZN52_GLOBAL__N__0ba3dfd3_19_mxfp4_gemm_tiled_cu_16b2015515gemm_tiled_mx32IlLb1ELi1ELb1ELb0EEEvPKhS2_S2_S2_PfT_S4_S4_S4_PKi
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 117 registers, used 1 barriers, 9344 bytes smem, 432 bytes cmem[0]
+ptxas info    : Compile time = 157.701 ms
+ptxas info    : Compiling entry function '_ZN52_GLOBAL__N__0ba3dfd3_19_mxfp4_gemm_tiled_cu_16b2015515gemm_tiled_mx32IlLb0ELi1ELb1ELb0EEEvPKhS2_S2_S2_PfT_S4_S4_S4_PKi' for 'sm_70'
+ptxas info    : Function properties for _ZN52_GLOBAL__N__0ba3dfd3_19_mxfp4_gemm_tiled_cu_16b2015515gemm_tiled_mx32IlLb0ELi1ELb1ELb0EEEvPKhS2_S2_S2_PfT_S4_S4_S4_PKi
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 117 registers, used 1 barriers, 9344 bytes smem, 432 bytes cmem[0]
+ptxas info    : Compile time = 139.240 ms
+ptxas info    : Compiling entry function '_ZN52_GLOBAL__N__0ba3dfd3_19_mxfp4_gemm_tiled_cu_16b2015515gemm_tiled_mx32IiLb1ELi1ELb1ELb0EEEvPKhS2_S2_S2_PfT_S4_S4_S4_PKi' for 'sm_70'
+ptxas info    : Function properties for _ZN52_GLOBAL__N__0ba3dfd3_19_mxfp4_gemm_tiled_cu_16b2015515gemm_tiled_mx32IiLb1ELi1ELb1ELb0EEEvPKhS2_S2_S2_PfT_S4_S4_S4_PKi
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 96 registers, used 1 barriers, 9344 bytes smem, 416 bytes cmem[0]
+ptxas info    : Compile time = 119.223 ms
+ptxas info    : Compiling entry function '_ZN52_GLOBAL__N__0ba3dfd3_19_mxfp4_gemm_tiled_cu_16b2015515gemm_tiled_mx32IiLb0ELi1ELb1ELb0EEEvPKhS2_S2_S2_PfT_S4_S4_S4_PKi' for 'sm_70'
+ptxas info    : Function properties for _ZN52_GLOBAL__N__0ba3dfd3_19_mxfp4_gemm_tiled_cu_16b2015515gemm_tiled_mx32IiLb0ELi1ELb1ELb0EEEvPKhS2_S2_S2_PfT_S4_S4_S4_PKi
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 95 registers, used 1 barriers, 9344 bytes smem, 416 bytes cmem[0]
+ptxas info    : Compile time = 115.948 ms
+ptxas info    : Compiling entry function '_ZN52_GLOBAL__N__0ba3dfd3_19_mxfp4_gemm_tiled_cu_16b2015515gemm_tiled_mx32IlLb1ELi1ELb1ELb1EEEvPKhS2_S2_S2_PfT_S4_S4_S4_PKi' for 'sm_70'
+ptxas info    : Function properties for _ZN52_GLOBAL__N__0ba3dfd3_19_mxfp4_gemm_tiled_cu_16b2015515gemm_tiled_mx32IlLb1ELi1ELb1ELb1EEEvPKhS2_S2_S2_PfT_S4_S4_S4_PKi
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 117 registers, used 1 barriers, 9344 bytes smem, 432 bytes cmem[0]
+ptxas info    : Compile time = 157.765 ms
+ptxas info    : Compiling entry function '_ZN52_GLOBAL__N__0ba3dfd3_19_mxfp4_gemm_tiled_cu_16b2015515gemm_tiled_mx32IlLb0ELi1ELb1ELb1EEEvPKhS2_S2_S2_PfT_S4_S4_S4_PKi' for 'sm_70'
+ptxas info    : Function properties for _ZN52_GLOBAL__N__0ba3dfd3_19_mxfp4_gemm_tiled_cu_16b2015515gemm_tiled_mx32IlLb0ELi1ELb1ELb1EEEvPKhS2_S2_S2_PfT_S4_S4_S4_PKi
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 117 registers, used 1 barriers, 9344 bytes smem, 432 bytes cmem[0]
+ptxas info    : Compile time = 142.959 ms
+ptxas info    : Compiling entry function '_ZN52_GLOBAL__N__0ba3dfd3_19_mxfp4_gemm_tiled_cu_16b2015515gemm_tiled_mx32IiLb1ELi1ELb1ELb1EEEvPKhS2_S2_S2_PfT_S4_S4_S4_PKi' for 'sm_70'
+ptxas info    : Function properties for _ZN52_GLOBAL__N__0ba3dfd3_19_mxfp4_gemm_tiled_cu_16b2015515gemm_tiled_mx32IiLb1ELi1ELb1ELb1EEEvPKhS2_S2_S2_PfT_S4_S4_S4_PKi
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 96 registers, used 1 barriers, 9344 bytes smem, 416 bytes cmem[0]
+ptxas info    : Compile time = 118.730 ms
+ptxas info    : Compiling entry function '_ZN52_GLOBAL__N__0ba3dfd3_19_mxfp4_gemm_tiled_cu_16b2015515gemm_tiled_mx32IiLb0ELi1ELb1ELb1EEEvPKhS2_S2_S2_PfT_S4_S4_S4_PKi' for 'sm_70'
+ptxas info    : Function properties for _ZN52_GLOBAL__N__0ba3dfd3_19_mxfp4_gemm_tiled_cu_16b2015515gemm_tiled_mx32IiLb0ELi1ELb1ELb1EEEvPKhS2_S2_S2_PfT_S4_S4_S4_PKi
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 96 registers, used 1 barriers, 9344 bytes smem, 416 bytes cmem[0]
+ptxas info    : Compile time = 117.627 ms
+/tmp/v100-mxfp4-fused-3cc0562b0106/v3/tools/mxfp4_training/csrc/mxfp4_gemm_certified.cu(84): warning #177-D: function "<unnamed>::q_from_code" was declared but never referenced
+  __attribute__((device)) __inline__ __attribute__((always_inline)) int q_from_code(unsigned code) {
+                                                                        ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+/tmp/v100-mxfp4-fused-3cc0562b0106/v3/tools/mxfp4_training/csrc/mxfp4_gemm_certified.cu(91): warning #177-D: function "<unnamed>::normalized_half_bits" was declared but never referenced
+  __attribute__((device)) __inline__ __attribute__((always_inline)) uint16_t normalized_half_bits(unsigned code, int delta) {
+                                                                             ^
+
+/tmp/v100-mxfp4-fused-3cc0562b0106/v3/tools/mxfp4_training/csrc/mxfp4_gemm_certified.cu(408): warning #177-D: function "<unnamed>::postscale_if_certified" was declared but never referenced
+  __attribute__((global)) void postscale_if_certified(float* out, const RowData* rows,
+                               ^
+
+/tmp/v100-mxfp4-fused-3cc0562b0106/v3/tools/mxfp4_training/csrc/mxfp4_gemm_certified.cu(424): warning #177-D: function "<unnamed>::scale_certified_value" was declared but never referenced
+  __attribute__((device)) __inline__ __attribute__((always_inline)) float scale_certified_value(float value, int a_base, int b_base) {
+                                                                          ^
+
+ptxas info    : 0 bytes gmem
+ptxas info    : Compiling entry function '_ZN56_GLOBAL__N__b47cd05b_23_mxfp4_gemm_certified_cu_79527efb12prepare_rowsILb0EEEvPKhS2_S2_S2_PtPNS_7RowDataEPhiii' for 'sm_70'
+ptxas info    : Function properties for _ZN56_GLOBAL__N__b47cd05b_23_mxfp4_gemm_certified_cu_79527efb12prepare_rowsILb0EEEvPKhS2_S2_S2_PtPNS_7RowDataEPhiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 32 registers, used 1 barriers, 112 bytes smem, 420 bytes cmem[0]
+ptxas info    : Compile time = 53.969 ms
+ptxas info    : Compiling entry function '_ZN56_GLOBAL__N__b47cd05b_23_mxfp4_gemm_certified_cu_79527efb12prepare_rowsILb1EEEvPKhS2_S2_S2_PtPNS_7RowDataEPhiii' for 'sm_70'
+ptxas info    : Function properties for _ZN56_GLOBAL__N__b47cd05b_23_mxfp4_gemm_certified_cu_79527efb12prepare_rowsILb1EEEvPKhS2_S2_S2_PtPNS_7RowDataEPhiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 30 registers, used 1 barriers, 112 bytes smem, 420 bytes cmem[0]
+ptxas info    : Compile time = 37.981 ms
+ptxas info    : Compiling entry function '_ZN56_GLOBAL__N__b47cd05b_23_mxfp4_gemm_certified_cu_79527efb22postscale_if_certifiedEPfPKNS_7RowDataEPKNS_14DeviceMetadataEii' for 'sm_70'
+ptxas info    : Function properties for _ZN56_GLOBAL__N__b47cd05b_23_mxfp4_gemm_certified_cu_79527efb22postscale_if_certifiedEPfPKNS_7RowDataEPKNS_14DeviceMetadataEii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 32 registers, used 0 barriers, 384 bytes cmem[0]
+ptxas info    : Compile time = 20.401 ms
+ptxas info    : Compiling entry function '_ZN56_GLOBAL__N__b47cd05b_23_mxfp4_gemm_certified_cu_79527efb20finalize_certificateEPKNS_7RowDataEPNS_14DeviceMetadataEii' for 'sm_70'
+ptxas info    : Function properties for _ZN56_GLOBAL__N__b47cd05b_23_mxfp4_gemm_certified_cu_79527efb20finalize_certificateEPKNS_7RowDataEPNS_14DeviceMetadataEii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 39 registers, used 1 barriers, 576 bytes smem, 376 bytes cmem[0]
+ptxas info    : Compile time = 76.202 ms
+ptxas info    : 0 bytes gmem
+ptxas info    : Compiling entry function '_ZN52_GLOBAL__N__67c3af71_19_mxfp4_gemm_fused_cu_da86c26215fused_certifiedIlLb1ELi128ELi128ELi64ELi256ELi32ELi64EEEvPKhS2_S2_S2_PfT_S4_S4_S2_PKiS4_' for 'sm_70'
+ptxas info    : Function properties for _ZN52_GLOBAL__N__67c3af71_19_mxfp4_gemm_fused_cu_da86c26215fused_certifiedIlLb1ELi128ELi128ELi64ELi256ELi32ELi64EEEvPKhS2_S2_S2_PfT_S4_S4_S2_PKiS4_
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 110 registers, used 1 barriers, 35072 bytes smem, 440 bytes cmem[0]
+ptxas info    : Compile time = 235.915 ms
+ptxas info    : Compiling entry function '_ZN52_GLOBAL__N__67c3af71_19_mxfp4_gemm_fused_cu_da86c26215fused_certifiedIlLb0ELi128ELi128ELi64ELi256ELi32ELi64EEEvPKhS2_S2_S2_PfT_S4_S4_S2_PKiS4_' for 'sm_70'
+ptxas info    : Function properties for _ZN52_GLOBAL__N__67c3af71_19_mxfp4_gemm_fused_cu_da86c26215fused_certifiedIlLb0ELi128ELi128ELi64ELi256ELi32ELi64EEEvPKhS2_S2_S2_PfT_S4_S4_S2_PKiS4_
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 110 registers, used 1 barriers, 35072 bytes smem, 440 bytes cmem[0]
+ptxas info    : Compile time = 222.672 ms
+ptxas info    : Compiling entry function '_ZN52_GLOBAL__N__67c3af71_19_mxfp4_gemm_fused_cu_da86c26215fused_certifiedIlLb1ELi128ELi128ELi32ELi256ELi32ELi64EEEvPKhS2_S2_S2_PfT_S4_S4_S2_PKiS4_' for 'sm_70'
+ptxas info    : Function properties for _ZN52_GLOBAL__N__67c3af71_19_mxfp4_gemm_fused_cu_da86c26215fused_certifiedIlLb1ELi128ELi128ELi32ELi256ELi32ELi64EEEvPKhS2_S2_S2_PfT_S4_S4_S2_PKiS4_
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 112 registers, used 1 barriers, 18688 bytes smem, 440 bytes cmem[0]
+ptxas info    : Compile time = 253.978 ms
+ptxas info    : Compiling entry function '_ZN52_GLOBAL__N__67c3af71_19_mxfp4_gemm_fused_cu_da86c26215fused_certifiedIlLb0ELi128ELi128ELi32ELi256ELi32ELi64EEEvPKhS2_S2_S2_PfT_S4_S4_S2_PKiS4_' for 'sm_70'
+ptxas info    : Function properties for _ZN52_GLOBAL__N__67c3af71_19_mxfp4_gemm_fused_cu_da86c26215fused_certifiedIlLb0ELi128ELi128ELi32ELi256ELi32ELi64EEEvPKhS2_S2_S2_PfT_S4_S4_S2_PKiS4_
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 109 registers, used 1 barriers, 18688 bytes smem, 440 bytes cmem[0]
+ptxas info    : Compile time = 160.215 ms
+ptxas info    : Compiling entry function '_ZN52_GLOBAL__N__67c3af71_19_mxfp4_gemm_fused_cu_da86c26215fused_certifiedIlLb1ELi64ELi64ELi64ELi128ELi32ELi32EEEvPKhS2_S2_S2_PfT_S4_S4_S2_PKiS4_' for 'sm_70'
+ptxas info    : Function properties for _ZN52_GLOBAL__N__67c3af71_19_mxfp4_gemm_fused_cu_da86c26215fused_certifiedIlLb1ELi64ELi64ELi64ELi128ELi32ELi32EEEvPKhS2_S2_S2_PfT_S4_S4_S2_PKiS4_
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 96 registers, used 1 barriers, 17536 bytes smem, 440 bytes cmem[0]
+ptxas info    : Compile time = 121.352 ms
+ptxas info    : Compiling entry function '_ZN52_GLOBAL__N__67c3af71_19_mxfp4_gemm_fused_cu_da86c26215fused_certifiedIlLb0ELi64ELi64ELi64ELi128ELi32ELi32EEEvPKhS2_S2_S2_PfT_S4_S4_S2_PKiS4_' for 'sm_70'
+ptxas info    : Function properties for _ZN52_GLOBAL__N__67c3af71_19_mxfp4_gemm_fused_cu_da86c26215fused_certifiedIlLb0ELi64ELi64ELi64ELi128ELi32ELi32EEEvPKhS2_S2_S2_PfT_S4_S4_S2_PKiS4_
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 96 registers, used 1 barriers, 17536 bytes smem, 440 bytes cmem[0]
+ptxas info    : Compile time = 143.972 ms
+ptxas info    : Compiling entry function '_ZN52_GLOBAL__N__67c3af71_19_mxfp4_gemm_fused_cu_da86c26215fused_certifiedIiLb1ELi128ELi128ELi64ELi256ELi32ELi64EEEvPKhS2_S2_S2_PfT_S4_S4_S2_PKiS4_' for 'sm_70'
+ptxas info    : Function properties for _ZN52_GLOBAL__N__67c3af71_19_mxfp4_gemm_fused_cu_da86c26215fused_certifiedIiLb1ELi128ELi128ELi64ELi256ELi32ELi64EEEvPKhS2_S2_S2_PfT_S4_S4_S2_PKiS4_
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 104 registers, used 1 barriers, 35072 bytes smem, 428 bytes cmem[0]
+ptxas info    : Compile time = 206.758 ms
+ptxas info    : Compiling entry function '_ZN52_GLOBAL__N__67c3af71_19_mxfp4_gemm_fused_cu_da86c26215fused_certifiedIiLb0ELi128ELi128ELi64ELi256ELi32ELi64EEEvPKhS2_S2_S2_PfT_S4_S4_S2_PKiS4_' for 'sm_70'
+ptxas info    : Function properties for _ZN52_GLOBAL__N__67c3af71_19_mxfp4_gemm_fused_cu_da86c26215fused_certifiedIiLb0ELi128ELi128ELi64ELi256ELi32ELi64EEEvPKhS2_S2_S2_PfT_S4_S4_S2_PKiS4_
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 105 registers, used 1 barriers, 35072 bytes smem, 428 bytes cmem[0]
+ptxas info    : Compile time = 214.458 ms
+ptxas info    : Compiling entry function '_ZN52_GLOBAL__N__67c3af71_19_mxfp4_gemm_fused_cu_da86c26215fused_certifiedIiLb1ELi128ELi128ELi32ELi256ELi32ELi64EEEvPKhS2_S2_S2_PfT_S4_S4_S2_PKiS4_' for 'sm_70'
+ptxas info    : Function properties for _ZN52_GLOBAL__N__67c3af71_19_mxfp4_gemm_fused_cu_da86c26215fused_certifiedIiLb1ELi128ELi128ELi32ELi256ELi32ELi64EEEvPKhS2_S2_S2_PfT_S4_S4_S2_PKiS4_
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 92 registers, used 1 barriers, 18688 bytes smem, 428 bytes cmem[0]
+ptxas info    : Compile time = 171.265 ms
+ptxas info    : Compiling entry function '_ZN52_GLOBAL__N__67c3af71_19_mxfp4_gemm_fused_cu_da86c26215fused_certifiedIiLb0ELi128ELi128ELi32ELi256ELi32ELi64EEEvPKhS2_S2_S2_PfT_S4_S4_S2_PKiS4_' for 'sm_70'
+ptxas info    : Function properties for _ZN52_GLOBAL__N__67c3af71_19_mxfp4_gemm_fused_cu_da86c26215fused_certifiedIiLb0ELi128ELi128ELi32ELi256ELi32ELi64EEEvPKhS2_S2_S2_PfT_S4_S4_S2_PKiS4_
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 97 registers, used 1 barriers, 18688 bytes smem, 428 bytes cmem[0]
+ptxas info    : Compile time = 119.612 ms
+ptxas info    : Compiling entry function '_ZN52_GLOBAL__N__67c3af71_19_mxfp4_gemm_fused_cu_da86c26215fused_certifiedIiLb1ELi64ELi64ELi64ELi128ELi32ELi32EEEvPKhS2_S2_S2_PfT_S4_S4_S2_PKiS4_' for 'sm_70'
+ptxas info    : Function properties for _ZN52_GLOBAL__N__67c3af71_19_mxfp4_gemm_fused_cu_da86c26215fused_certifiedIiLb1ELi64ELi64ELi64ELi128ELi32ELi32EEEvPKhS2_S2_S2_PfT_S4_S4_S2_PKiS4_
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 90 registers, used 1 barriers, 17536 bytes smem, 428 bytes cmem[0]
+ptxas info    : Compile time = 112.515 ms
+ptxas info    : Compiling entry function '_ZN52_GLOBAL__N__67c3af71_19_mxfp4_gemm_fused_cu_da86c26215fused_certifiedIiLb0ELi64ELi64ELi64ELi128ELi32ELi32EEEvPKhS2_S2_S2_PfT_S4_S4_S2_PKiS4_' for 'sm_70'
+ptxas info    : Function properties for _ZN52_GLOBAL__N__67c3af71_19_mxfp4_gemm_fused_cu_da86c26215fused_certifiedIiLb0ELi64ELi64ELi64ELi128ELi32ELi32EEEvPKhS2_S2_S2_PfT_S4_S4_S2_PKiS4_
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 91 registers, used 1 barriers, 17536 bytes smem, 428 bytes cmem[0]
+ptxas info    : Compile time = 89.982 ms

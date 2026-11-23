@@ -1,0 +1,114 @@
+{
+  "gpu_executed": false,
+  "source": "build-c5/shared_library.log",
+  "kernels": [
+    {
+      "symbol": "_ZN52_GLOBAL__N__b531b9bb_19_mxfp4_gemm_fused_cu_da86c26215fused_certifiedIlLb1ELi128ELi128ELi64ELi256ELi32ELi64EEEvPKhS2_S2_S2_PfT_S4_S4_S2_PKiS4_",
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0,
+      "registers": 110,
+      "barriers": 1,
+      "static_shared_bytes": 35072
+    },
+    {
+      "symbol": "_ZN52_GLOBAL__N__b531b9bb_19_mxfp4_gemm_fused_cu_da86c26215fused_certifiedIlLb0ELi128ELi128ELi64ELi256ELi32ELi64EEEvPKhS2_S2_S2_PfT_S4_S4_S2_PKiS4_",
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0,
+      "registers": 110,
+      "barriers": 1,
+      "static_shared_bytes": 35072
+    },
+    {
+      "symbol": "_ZN52_GLOBAL__N__b531b9bb_19_mxfp4_gemm_fused_cu_da86c26215fused_certifiedIlLb1ELi128ELi128ELi32ELi256ELi32ELi64EEEvPKhS2_S2_S2_PfT_S4_S4_S2_PKiS4_",
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0,
+      "registers": 112,
+      "barriers": 1,
+      "static_shared_bytes": 18688
+    },
+    {
+      "symbol": "_ZN52_GLOBAL__N__b531b9bb_19_mxfp4_gemm_fused_cu_da86c26215fused_certifiedIlLb0ELi128ELi128ELi32ELi256ELi32ELi64EEEvPKhS2_S2_S2_PfT_S4_S4_S2_PKiS4_",
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0,
+      "registers": 109,
+      "barriers": 1,
+      "static_shared_bytes": 18688
+    },
+    {
+      "symbol": "_ZN52_GLOBAL__N__b531b9bb_19_mxfp4_gemm_fused_cu_da86c26215fused_certifiedIlLb1ELi64ELi64ELi64ELi128ELi32ELi32EEEvPKhS2_S2_S2_PfT_S4_S4_S2_PKiS4_",
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0,
+      "registers": 96,
+      "barriers": 1,
+      "static_shared_bytes": 17536
+    },
+    {
+      "symbol": "_ZN52_GLOBAL__N__b531b9bb_19_mxfp4_gemm_fused_cu_da86c26215fused_certifiedIlLb0ELi64ELi64ELi64ELi128ELi32ELi32EEEvPKhS2_S2_S2_PfT_S4_S4_S2_PKiS4_",
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0,
+      "registers": 96,
+      "barriers": 1,
+      "static_shared_bytes": 17536
+    },
+    {
+      "symbol": "_ZN52_GLOBAL__N__b531b9bb_19_mxfp4_gemm_fused_cu_da86c26215fused_certifiedIiLb1ELi128ELi128ELi64ELi256ELi32ELi64EEEvPKhS2_S2_S2_PfT_S4_S4_S2_PKiS4_",
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0,
+      "registers": 104,
+      "barriers": 1,
+      "static_shared_bytes": 35072
+    },
+    {
+      "symbol": "_ZN52_GLOBAL__N__b531b9bb_19_mxfp4_gemm_fused_cu_da86c26215fused_certifiedIiLb0ELi128ELi128ELi64ELi256ELi32ELi64EEEvPKhS2_S2_S2_PfT_S4_S4_S2_PKiS4_",
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0,
+      "registers": 105,
+      "barriers": 1,
+      "static_shared_bytes": 35072
+    },
+    {
+      "symbol": "_ZN52_GLOBAL__N__b531b9bb_19_mxfp4_gemm_fused_cu_da86c26215fused_certifiedIiLb1ELi128ELi128ELi32ELi256ELi32ELi64EEEvPKhS2_S2_S2_PfT_S4_S4_S2_PKiS4_",
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0,
+      "registers": 92,
+      "barriers": 1,
+      "static_shared_bytes": 18688
+    },
+    {
+      "symbol": "_ZN52_GLOBAL__N__b531b9bb_19_mxfp4_gemm_fused_cu_da86c26215fused_certifiedIiLb0ELi128ELi128ELi32ELi256ELi32ELi64EEEvPKhS2_S2_S2_PfT_S4_S4_S2_PKiS4_",
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0,
+      "registers": 97,
+      "barriers": 1,
+      "static_shared_bytes": 18688
+    },
+    {
+      "symbol": "_ZN52_GLOBAL__N__b531b9bb_19_mxfp4_gemm_fused_cu_da86c26215fused_certifiedIiLb1ELi64ELi64ELi64ELi128ELi32ELi32EEEvPKhS2_S2_S2_PfT_S4_S4_S2_PKiS4_",
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0,
+      "registers": 90,
+      "barriers": 1,
+      "static_shared_bytes": 17536
+    },
+    {
+      "symbol": "_ZN52_GLOBAL__N__b531b9bb_19_mxfp4_gemm_fused_cu_da86c26215fused_certifiedIiLb0ELi64ELi64ELi64ELi128ELi32ELi32EEEvPKhS2_S2_S2_PfT_S4_S4_S2_PKiS4_",
+      "stack_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0,
+      "registers": 91,
+      "barriers": 1,
+      "static_shared_bytes": 17536
+    }
+  ]
+}

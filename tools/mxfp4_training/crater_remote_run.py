@@ -24,6 +24,9 @@ import time
 
 MAX_ARCHIVE_BYTES = 128 * 1024 * 1024
 MAX_SOURCE_BYTES = 256 * 1024 * 1024
+FUSED_VARIANTS = (3, 4, 5, 6, 7)
+COMPARISON_SIZES = (2048, 4096)
+COMPARISON_SEED = 20261123
 
 
 def utc_now():
@@ -68,6 +71,21 @@ def main():
               "services_stopped": False, "clock_or_power_changes": False,
               "packages_installed": False,
               "training_scope": "synthetic tiny causal-decoder smoke, not LLM pretraining"}
+    comparison_stages = ["control_c2_benchmark_" + str(size) for size in COMPARISON_SIZES]
+    for variant in FUSED_VARIANTS:
+        prefix = "fused_c" + str(variant)
+        comparison_stages.extend([prefix + "_build", prefix + "_correctness"] +
+                                 [prefix + "_benchmark_" + str(size) for size in COMPARISON_SIZES])
+    report["fused_comparison"] = {
+        "control_certified_variant": 2, "candidate_certified_variants": list(FUSED_VARIANTS),
+        "shapes": [[size, size, size] for size in COMPARISON_SIZES],
+        "mode": "random_block_scales", "seed": COMPARISON_SEED,
+        "iters": 10, "rounds": 5, "warmup": 3,
+        "candidate_correctness_gate": "full check_mxfp4_certified --correctness-only",
+        "framework_library_certified_variant": 2,
+        "stage_order": comparison_stages,
+        "deadline_scope": "shared with all preceding native, framework and smoke stages",
+    }
     deadline = time.monotonic() + report["deadline_seconds"]
     environment = os.environ.copy()
     environment.update(OMP_NUM_THREADS="2", MKL_NUM_THREADS="2", PYTHONUNBUFFERED="1")
@@ -116,24 +134,29 @@ def main():
                                  "executed": False, "gpu_executed": False})
         save()
 
-    def run(name, command, timeout=300, cwd=None):
+    def run(name, command, timeout=300, cwd=None, log_subdirectory=None):
         nonlocal active_process
+        log_directory = Path(log_subdirectory) if log_subdirectory else Path()
         record = {"name": name, "argv": [str(x) for x in command],
                   "started_at_utc": utc_now(), "status": "running", "executed": True,
-                  "stdout": name + ".stdout", "stderr": name + ".stderr"}
+                  "stdout": str(log_directory / (name + ".stdout")),
+                  "stderr": str(log_directory / (name + ".stderr"))}
         report["stages"].append(record)
         save()
         start = time.monotonic()
         remaining = min(float(timeout), deadline - start)
         if remaining <= 0:
-            record.update(status="blocked", reason="batch deadline exhausted", executed=False)
+            record.update(status="blocked", reason="batch deadline exhausted", executed=False,
+                          gpu_executed=False)
             save()
             return False
+        (results / log_directory).mkdir(parents=True, exist_ok=True)
         with (results / record["stdout"]).open("xb") as out, (results / record["stderr"]).open("xb") as err:
-            process = subprocess.Popen(record["argv"], cwd=str(cwd or source), env=environment,
-                                       stdout=out, stderr=err, start_new_session=True)
-            active_process = process
+            process = None
             try:
+                process = subprocess.Popen(record["argv"], cwd=str(cwd or source), env=environment,
+                                           stdout=out, stderr=err, start_new_session=True)
+                active_process = process
                 record["returncode"] = process.wait(timeout=remaining)
                 record["status"] = "passed" if process.returncode == 0 else "failed"
             except subprocess.TimeoutExpired:
@@ -141,23 +164,40 @@ def main():
                 record.update(status="failed", returncode=process.returncode, error="stage timeout")
             except BaseException as error:
                 record.update(status="failed", error_type=type(error).__name__, error=str(error))
+                if process is None:
+                    record.update(executed=False, gpu_executed=False)
                 raise
             finally:
                 terminate_stage(process)
                 active_process = None
-                record.update(returncode=process.returncode, wall_seconds=time.monotonic() - start,
+                record.update(returncode=process.returncode if process is not None else None,
+                              wall_seconds=time.monotonic() - start,
                               finished_at_utc=utc_now())
                 save()
         print(json.dumps({"stage": name, "status": record["status"]}), flush=True)
         return record["status"] == "passed"
 
-    def collect_build(build):
-        destination = results / "build"
-        destination.mkdir(exist_ok=True)
+    def collect_build(build, subdirectory="build"):
+        destination = results / subdirectory
+        destination.mkdir(parents=True, exist_ok=True)
         if build.is_dir():
             for item in build.iterdir():
                 if item.is_file() and item.suffix in (".json", ".log"):
                     shutil.copyfile(item, destination / item.name)
+
+    def block_missing_comparison_stages(reason):
+        recorded = {stage["name"] for stage in report["stages"]}
+        for name in comparison_stages:
+            if name not in recorded:
+                blocked(name, reason)
+
+    def comparison_benchmark(name, build, subdirectory, size):
+        return run(name, [str(build / "bench_mxfp4"), "--device", "0",
+                   "--m", str(size), "--n", str(size), "--k", str(size),
+                   "--mode", "random_block_scales", "--seed", str(COMPARISON_SEED),
+                   "--iters", "10", "--rounds", "5", "--warmup", "3",
+                   "--output", str(results / subdirectory / ("benchmark-" + str(size) + ".jsonl"))],
+                   600, log_subdirectory=subdirectory)
 
     try:
         extract_source(archive, source)
@@ -254,10 +294,48 @@ def main():
                 else:
                     blocked("torch_benchmark", "Framework integration gate did not pass")
                     blocked("gpu_training_smoke", "Framework integration gate did not pass")
+
+        # Keep the original framework/smoke stages and their certified2 library
+        # above intact. These independently built native candidates never change
+        # MXFP4_CUDA_LIBRARY and consume only the existing batch's remaining time.
+        if nvcc is None:
+            block_missing_comparison_stages("No installed CUDA 12.x SM70 toolchain was selected")
+        elif not native_passed:
+            block_missing_comparison_stages("The main certified2 library did not pass all native correctness gates")
+        else:
+            # The default benchmark includes 4096^3, but uses seed + 4*7919 for
+            # that shape. Run explicit controls so both sizes use exactly the
+            # same inputs as each fused candidate's one-shape invocation.
+            for size in COMPARISON_SIZES:
+                comparison_benchmark("control_c2_benchmark_" + str(size), build, "control-c2", size)
+            for variant in FUSED_VARIANTS:
+                prefix = "fused_c" + str(variant)
+                subdirectory = "fused-c" + str(variant)
+                candidate_build = root / ("build-" + subdirectory)
+                built = run(prefix + "_build", [sys.executable, "tools/mxfp4_training/build_cuda.py",
+                            "--nvcc", str(nvcc), "--output-dir", str(candidate_build),
+                            "--with-benchmark", "--with-certified", "--tiled-variant", "1",
+                            "--certified-variant", str(variant)], 900, log_subdirectory=subdirectory)
+                collect_build(candidate_build, subdirectory + "/build")
+                if not built:
+                    reason = "Requires a successful " + prefix + "_build stage"
+                    blocked(prefix + "_correctness", reason)
+                    for size in COMPARISON_SIZES:
+                        blocked(prefix + "_benchmark_" + str(size), reason)
+                    continue
+                checked = run(prefix + "_correctness", [str(candidate_build / "check_mxfp4_certified"),
+                              "--device", "0", "--correctness-only"], 300, log_subdirectory=subdirectory)
+                for size in COMPARISON_SIZES:
+                    name = prefix + "_benchmark_" + str(size)
+                    if checked:
+                        comparison_benchmark(name, candidate_build, subdirectory, size)
+                    else:
+                        blocked(name, "Requires a successful full " + prefix + "_correctness stage")
         statuses = {stage["status"] for stage in report["stages"]}
         report["status"] = "failed" if "failed" in statuses else ("blocked" if "blocked" in statuses else "passed")
     except Exception as error:
         report.update(status="failed", error_type=type(error).__name__, error=str(error))
+        block_missing_comparison_stages("Payload prerequisite failed: " + type(error).__name__ + ": " + str(error))
     finally:
         report["finished_at_utc"] = utc_now()
         report["result_files_sha256"] = {str(p.relative_to(results)): digest(p)

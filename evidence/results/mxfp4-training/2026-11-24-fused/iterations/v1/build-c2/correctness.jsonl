@@ -1,0 +1,3 @@
+{"type":"environment","device":0,"name":"Tesla V100-PCIE-32GB","compute_capability":"7.0","actual_V100":true,"driver_version":12040,"runtime_version":12090,"free_bytes_after_context":65208320,"total_bytes":34072559616,"backend":"sm70_mx32_certified_cublas_or_exact_tiled_v1","gpu_executed":false}
+{"type":"summary","passed":false,"gpu_executed":false,"kernel_launch_attempted":false,"kernel_launch_submitted":false,"kernel_execution_completed":false,"actual_V100":true,"completed_cases":0,"error":"Insufficient free VRAM: need case allocations plus 64 MiB reserve; no services are stopped"}
+{"type":"certified_summary","passed":false,"gpu_executed":false,"full_domain_suite_passed":false,"error":"ordered_mx32_suite_failed"}

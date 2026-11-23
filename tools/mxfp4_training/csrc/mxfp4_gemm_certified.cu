@@ -1,7 +1,8 @@
-// Exact, data-certified FP16-input / FP32-output cuBLAS acceleration.
+// Exact, data-certified FP16-input / FP32-output Tensor Core acceleration.
 // A failed certificate always executes the exact tiled MX32 fallback.
 #include "mxfp4_gemm_certified.h"
 #include "mxfp4_gemm_tiled.h"
+#include "mxfp4_gemm_fused.h"
 
 #include <cublas_v2.h>
 #include <cuda_runtime.h>
@@ -15,8 +16,8 @@
 #ifndef MXFP4_CERTIFIED_VARIANT
 #define MXFP4_CERTIFIED_VARIANT 0
 #endif
-#if MXFP4_CERTIFIED_VARIANT < 0 || MXFP4_CERTIFIED_VARIANT > 2
-#error "MXFP4_CERTIFIED_VARIANT must be 0 (scalar), 1 (vec4 prepare), or 2 (vec4 prepare/epilogue)"
+#if MXFP4_CERTIFIED_VARIANT < 0 || MXFP4_CERTIFIED_VARIANT > 7
+#error "MXFP4_CERTIFIED_VARIANT must be 0..2 (cuBLAS) or 3..7 (fused normalized HMMA)"
 #endif
 
 namespace {
@@ -26,6 +27,8 @@ constexpr unsigned long long kEnergyCap = MXFP4_CERTIFIED_ENERGY_CAP;
 constexpr size_t kBlasWorkspace = 4u * 1024u * 1024u;
 constexpr int kPrepareThreads = 128;
 constexpr int kReduceThreads = 256;
+constexpr int kCachedEnergyBlocks = 1024;
+constexpr bool kFused = MXFP4_CERTIFIED_VARIANT >= 3;
 
 struct RowData {
   unsigned long long energy;
@@ -49,6 +52,7 @@ struct Context {
   int m = 0, n = 0, k = 0;
   uint64_t workspace_bytes = 0;
   uint16_t* normalized = nullptr;
+  uint8_t* row_bases = nullptr;
   RowData* rows = nullptr;
   DeviceMetadata* metadata = nullptr;
   DeviceMetadata* host_metadata = nullptr;
@@ -102,6 +106,32 @@ __device__ __forceinline__ bool block_has_nonzero_q(const uint8_t* p) {
   return (bits & 0x77u) != 0;
 }
 
+__device__ __forceinline__ unsigned packed_word_q_energy(unsigned packed) {
+  // Eight signed E2M1 codes: only magnitudes matter for the integer energy.
+  const unsigned lo = __byte_perm(0x03020100u, 0x0c080604u, packed & 0x7777u);
+  const unsigned hi = __byte_perm(0x03020100u, 0x0c080604u, (packed >> 16) & 0x7777u);
+  return __dp4a(lo, lo, __dp4a(hi, hi, 0u));
+}
+
+__device__ __forceinline__ unsigned unaligned_packed_word(const uint8_t* p) {
+  return unsigned(p[0]) | (unsigned(p[1]) << 8)
+      | (unsigned(p[2]) << 16) | (unsigned(p[3]) << 24);
+}
+
+__device__ __forceinline__ unsigned block_q_energy(const uint8_t* p) {
+  uint4 words;
+  if ((reinterpret_cast<uintptr_t>(p) & 15u) == 0) {
+    words = *reinterpret_cast<const uint4*>(p);
+  } else {
+    words = make_uint4(unaligned_packed_word(p), unaligned_packed_word(p + 4),
+                       unaligned_packed_word(p + 8), unaligned_packed_word(p + 12));
+  }
+  // Four independent two-DP4A chains instead of a serial eight-DP4A chain.
+  // The complete MX32 energy is at most 32*12^2=4608, fitting 16 bits.
+  return (packed_word_q_energy(words.x) + packed_word_q_energy(words.y))
+      + (packed_word_q_energy(words.z) + packed_word_q_energy(words.w));
+}
+
 __device__ __forceinline__ unsigned q_half_pair_bits(unsigned byte) {
   const unsigned selector = ((byte & 7u) << 4) | ((byte & 0x70u) << 8);
   const unsigned magnitude = __byte_perm(0x42403c00u, 0x4a484644u, selector);
@@ -127,11 +157,19 @@ __device__ __forceinline__ uint2 normalized_half4_bits(unsigned packed, int delt
 
 // One CTA per matrix row. Minima ignore wholly q-zero blocks, but ALL scale
 // bytes are checked for 255 before that exclusion. Normalization and integer
-// row energy then use these exact minima. Invalid rows still emit finite safe
-// zeros, since cuBLAS is unconditionally queued before conditional fallback.
+// row energy then use these exact minima. cuBLAS variants emit finite safe
+// zeros on invalid rows because cuBLAS precedes the conditional fallback.
+// Fused variants emit only metadata and skip rejected GEMM input reads.
+// Their short-K specialization caches one (scale, raw energy) word per MX32,
+// avoiding a second global packed read and eight separate energy shifts.
+template<bool CacheBlockEnergy>
 __global__ __launch_bounds__(kPrepareThreads) void prepare_rows(
     const uint8_t* a, const uint8_t* as, const uint8_t* b, const uint8_t* bs,
-    uint16_t* normalized, RowData* row_data, int m, int n, int k) {
+    uint16_t* normalized, RowData* row_data, uint8_t* row_bases, int m, int n, int k) {
+  static_assert(!CacheBlockEnergy || kFused, "energy cache is metadata-only");
+  // Only the cached instantiation requests dynamic shared memory at launch.
+  // Host dispatch bounds this allocation by kCachedEnergyBlocks*4 bytes.
+  extern __shared__ unsigned block_energy_scale[];
   const int row = int(blockIdx.x);
   const bool is_a = row < m;
   const int local_row = is_a ? row : row - m;
@@ -148,7 +186,14 @@ __global__ __launch_bounds__(kPrepareThreads) void prepare_rows(
   for (int block = tid; block < blocks; block += kPrepareThreads) {
     const unsigned scale = scales[block];
     if (scale == 255) ++nan_count;
-    const bool nonzero = block_has_nonzero_q(codes + size_t(block) * 16);
+    bool nonzero;
+    if constexpr (CacheBlockEnergy) {
+      const unsigned q_squared = block_q_energy(codes + size_t(block) * 16);
+      block_energy_scale[block] = (scale << 16) | q_squared;
+      nonzero = q_squared != 0;
+    } else {
+      nonzero = block_has_nonzero_q(codes + size_t(block) * 16);
+    }
     active |= unsigned(nonzero);
     if (nonzero && scale != 255) {
       minimum = min(minimum, int(scale));
@@ -194,6 +239,23 @@ __global__ __launch_bounds__(kPrepareThreads) void prepare_rows(
   __syncthreads();
   const bool safe_half = row_nan == 0 && row_span <= 12;
   unsigned long long energy = 0;
+  if constexpr (CacheBlockEnergy) {
+    for (int block = tid; block < blocks; block += kPrepareThreads) {
+      const unsigned cached = block_energy_scale[block];
+      const unsigned q_squared = cached & 0xffffu;
+      const unsigned scale = cached >> 16;
+      // Zero blocks can have scales below row_min. Exclude them BEFORE
+      // forming a shift; scale 255 is still counted/rejected independently.
+      if (q_squared != 0 && scale != 255) {
+        const int delta = int(scale) - row_min;
+        // q_squared<=4608, so even a shift by 48 stays below 2^61.
+        // Saturating sums of these nonnegative terms equal groupwise sums.
+        const unsigned long long term = delta > 24 ? kEnergyCap
+            : (static_cast<unsigned long long>(q_squared) << (2 * delta));
+        energy = sat_add(energy, term);
+      }
+    }
+  } else {
 #if MXFP4_CERTIFIED_VARIANT == 0
   // Coalesced half writes; neighboring lanes decode the two nibbles of one
   // byte. All source nonzero q values remain exact, including delta=12/q=12.
@@ -238,12 +300,15 @@ __global__ __launch_bounds__(kPrepareThreads) void prepare_rows(
       const unsigned long long term = delta > 24 ? kEnergyCap
           : (static_cast<unsigned long long>(q_squared) << (2 * delta));
       energy = sat_add(energy, term);
-      if (safe_half) output_bits = normalized_half4_bits(packed, delta);
+      if constexpr (!kFused)
+        if (safe_half) output_bits = normalized_half4_bits(packed, delta);
     }
     // cudaMalloc alignment and k%32==0 make every 64-bit output aligned.
-    normalized_vectors[size_t(row) * groups + group] = output_bits;
+    if constexpr (!kFused)
+      normalized_vectors[size_t(row) * groups + group] = output_bits;
   }
 #endif
+  }
   #pragma unroll
   for (int offset = 16; offset; offset >>= 1)
     energy = sat_add(energy, __shfl_down_sync(0xffffffffu, energy, offset));
@@ -260,6 +325,7 @@ __global__ __launch_bounds__(kPrepareThreads) void prepare_rows(
       result.min_scale = uint8_t(row_min); result.span = uint8_t(row_span);
       result.zero = uint8_t(row_active == 0); result.saturated = uint8_t(energy == kEnergyCap);
       row_data[row] = result;
+      if constexpr (kFused) row_bases[row] = uint8_t(row_min);
     }
   }
 }
@@ -400,10 +466,11 @@ int validate_shape(int64_t m, int64_t n, int64_t k, uint64_t* bytes) {
   const uint64_t limit = uint64_t(std::numeric_limits<ptrdiff_t>::max());
   const uint64_t rows = uint64_t(m) + uint64_t(n);
   if (uint64_t(m) > limit / sizeof(float) / uint64_t(n)) return int(cudaErrorInvalidValue);
-  const uint64_t fixed = kBlasWorkspace + sizeof(DeviceMetadata) + rows * sizeof(RowData);
+  const uint64_t fixed = (kFused ? 0 : kBlasWorkspace) + sizeof(DeviceMetadata)
+      + rows * (sizeof(RowData) + (kFused ? sizeof(uint8_t) : 0));
   if (fixed > limit || (k && rows > (limit - fixed) / (2 * uint64_t(k))))
     return int(cudaErrorInvalidValue);
-  *bytes = fixed + rows * uint64_t(k) * 2;
+  *bytes = fixed + (kFused ? 0 : rows * uint64_t(k) * 2);
   return int(cudaSuccess);
 }
 
@@ -425,6 +492,7 @@ int release(Context* c, bool synchronize) {
   if (synchronize && c->has_stream_work) remember(int(cudaStreamSynchronize(c->last_stream)));
   if (c->blas) remember(blas_status(cublasDestroy(c->blas)));
   if (c->normalized) remember(int(cudaFree(c->normalized)));
+  if (c->row_bases) remember(int(cudaFree(c->row_bases)));
   if (c->rows) remember(int(cudaFree(c->rows)));
   if (c->metadata) remember(int(cudaFree(c->metadata)));
   if (c->blas_workspace) remember(int(cudaFree(c->blas_workspace)));
@@ -502,14 +570,17 @@ extern "C" int mxfp4_certified_create(int64_t m, int64_t n, int64_t k, void** co
     if (!status && (properties.major != 7 || properties.minor != 0)) status = int(cudaErrorNotSupported);
   }
   const size_t row_count = size_t(m) + size_t(n);
-  if (!status && k) status = int(cudaMalloc(reinterpret_cast<void**>(&c->normalized), row_count * size_t(k) * 2));
+  if (!status && k && !kFused)
+    status = int(cudaMalloc(reinterpret_cast<void**>(&c->normalized), row_count * size_t(k) * 2));
+  if (!status && kFused)
+    status = int(cudaMalloc(reinterpret_cast<void**>(&c->row_bases), row_count));
   if (!status) status = int(cudaMalloc(reinterpret_cast<void**>(&c->rows), row_count * sizeof(RowData)));
   if (!status) status = int(cudaMalloc(reinterpret_cast<void**>(&c->metadata), sizeof(DeviceMetadata)));
-  if (!status) status = int(cudaMalloc(&c->blas_workspace, kBlasWorkspace));
+  if (!status && !kFused) status = int(cudaMalloc(&c->blas_workspace, kBlasWorkspace));
   if (!status) status = int(cudaMallocHost(reinterpret_cast<void**>(&c->host_metadata), sizeof(DeviceMetadata)));
-  if (!status) status = blas_status(cublasCreate(&c->blas));
-  if (!status) status = blas_status(cublasSetPointerMode(c->blas, CUBLAS_POINTER_MODE_HOST));
-  if (!status) status = blas_status(cublasSetMathMode(c->blas, cublasMath_t(
+  if (!status && !kFused) status = blas_status(cublasCreate(&c->blas));
+  if (!status && !kFused) status = blas_status(cublasSetPointerMode(c->blas, CUBLAS_POINTER_MODE_HOST));
+  if (!status && !kFused) status = blas_status(cublasSetMathMode(c->blas, cublasMath_t(
       CUBLAS_DEFAULT_MATH | CUBLAS_MATH_DISALLOW_REDUCED_PRECISION_REDUCTION)));
   if (status) { release(c, false); return status; }
   *context = c;
@@ -534,13 +605,29 @@ extern "C" int mxfp4_certified_gemm(
   }
   c->metadata_valid = false;
   c->last_stream = stream; c->has_stream_work = true;
-  prepare_rows<<<unsigned(c->m + c->n), kPrepareThreads, 0, stream>>>(
-      a, as, b, bs, c->normalized, c->rows, c->m, c->n, c->k);
+#if MXFP4_CERTIFIED_VARIANT >= 3
+  if (c->k / 32 <= kCachedEnergyBlocks) {
+    const size_t cache_bytes = size_t(c->k / 32) * sizeof(unsigned);
+    prepare_rows<true><<<unsigned(c->m + c->n), kPrepareThreads, cache_bytes, stream>>>(
+        a, as, b, bs, c->normalized, c->rows, c->row_bases, c->m, c->n, c->k);
+  } else
+#endif
+  {
+    prepare_rows<false><<<unsigned(c->m + c->n), kPrepareThreads, 0, stream>>>(
+        a, as, b, bs, c->normalized, c->rows, c->row_bases, c->m, c->n, c->k);
+  }
   status = int(cudaGetLastError());
   if (status) return status;
   finalize_certificate<<<1, kReduceThreads, 0, stream>>>(c->rows, c->metadata, c->m, c->n);
   status = int(cudaGetLastError());
   if (status) return status;
+  const int* accepted = reinterpret_cast<const int*>(
+      reinterpret_cast<const char*>(c->metadata) + offsetof(DeviceMetadata, accepted));
+#if MXFP4_CERTIFIED_VARIANT >= 3
+  status = mxfp4_gemm_fused_cuda(a, as, b, bs, out, c->m, c->n, c->k,
+      c->row_bases, accepted, MXFP4_CERTIFIED_VARIANT - 3, stream);
+  if (status) return status;
+#else
   if (c->k) {
     status = blas_status(cublasSetStream(c->blas, stream));
     if (status) return status;
@@ -572,8 +659,7 @@ extern "C" int mxfp4_certified_gemm(
 #endif
   status = int(cudaGetLastError());
   if (status) return status;
-  const int* accepted = reinterpret_cast<const int*>(
-      reinterpret_cast<const char*>(c->metadata) + offsetof(DeviceMetadata, accepted));
+#endif
   status = mxfp4_gemm_tiled_if_cuda(a, as, b, bs, out, c->m, c->n, c->k, stream, accepted);
   if (status) return status;
   ++c->submitted_calls;

@@ -1,0 +1,183 @@
+{
+  "schema_version": 1,
+  "evidence_type": "static_sass_prefetch_dataflow_analysis",
+  "recorded_at_utc": "2026-11-23T18:22:12.076083+00:00",
+  "gpu_executed": false,
+  "kernel_source_modified": false,
+  "steady_state_prefetch_verified": true,
+  "kernel_symbol": "_ZN52_GLOBAL__N__a2dd990b_19_mxfp4_gemm_fused_cu_da86c26226fused_certified_prefetch32IiLb0EEEvPKhS2_S2_S2_PfT_S4_S4_S2_PKiS4_",
+  "sass_file": "evidence/results/mxfp4-training/2026-11-24-fused/verified/v4/prefetch-c6-int32-no-tail.sass.txt",
+  "sass_sha256": "da3a9d8d73658e3a7ed1f1e611dae30739c391c5df6275e0b17ea84d4eddbbe0",
+  "sass_provenance_sha256": "749c02719de088c2a270ec5c4b34e20bce5dd63b9f274cba6574eee6e0de3891",
+  "library_sha256": "bcbc790eff1a5b5f5226b65b7328faa95a04e4fb7f51a0b6bd672c13509a6e36",
+  "scope": "C6 int32 no-tail function, aligned A/B path; unaligned load paths are also present before the same compute region.",
+  "loop": {
+    "entry": "0x1920",
+    "backedge": "0x4c30: @!P0 BRA 0x1920",
+    "block_counter_register": "R124",
+    "counter_initialization": "0x1420: R124=0",
+    "block_count_register": "R93",
+    "block_count_definition": "Kp/32 from argument c[0x0][0x190], computed at 0x0400, 0x0480, 0x04b0",
+    "advance_to_next_block": "0x30e0: IADD3 R124, R124, 0x1, RZ",
+    "last_stage_prefetch_skip": "0x3120 compares R124>=R93; 0x3130 branches to 0x3900 when true",
+    "packed_next_stage_offset": "0x3140 and 0x3370 form R124*16",
+    "scale_next_stage_offset": "0x32f0 and following IMAD instructions form row*R93+R124"
+  },
+  "schedule": {
+    "current_stage_last_shared_store": "0x30f0",
+    "publish_barrier": "0x3110",
+    "all_alignment_paths_first_ldg": "0x3250",
+    "aligned_path_first_ldg": "0x3350",
+    "last_prefetch_ldg": "0x38f0",
+    "current_stage_first_shared_load": "0x3900",
+    "current_stage_first_hmma": "0x3960",
+    "current_stage_last_hmma": "0x4c00",
+    "shared_reuse_barrier": "0x4c20",
+    "aligned_dynamic_prefetch_loads_per_thread": 16,
+    "hmma_instruction_count_in_loop": 256,
+    "shared_64bit_load_instruction_count_in_loop": 48,
+    "prologue_global_loads_excluded_from_verification": true
+  },
+  "raw_register_liveness": {
+    "registers": "R105..R120",
+    "no_explicit_reference_after_each_aligned_load_until_backedge": true,
+    "no_reference_in_compute_and_backedge_region_0x3900_to_0x4c30": true,
+    "wide_shared_load_destination_pairs": [
+      "R2:R3",
+      "R68:R69",
+      "R74:R75",
+      "R78:R79",
+      "R84:R85"
+    ],
+    "compute_shared_load_destinations_do_not_overlap_raw_registers": true,
+    "consumption": "After the backedge, packed values reach qzero guards and raw scales reach delta arithmetic before next shared stores."
+  },
+  "aligned_path_dataflow": [
+    {
+      "operand": "A",
+      "copy": 0,
+      "packed": {
+        "register": "R112",
+        "aligned_ldg_offset": "0x33e0",
+        "next_iteration_qzero_guard_offset": "0x1930"
+      },
+      "scale": {
+        "register": "R113",
+        "ldg_offset": "0x3350",
+        "next_iteration_delta_consumer_offset": "0x1b20"
+      },
+      "next_iteration_shared_store_offset": "0x1c10"
+    },
+    {
+      "operand": "A",
+      "copy": 1,
+      "packed": {
+        "register": "R114",
+        "aligned_ldg_offset": "0x3480",
+        "next_iteration_qzero_guard_offset": "0x1c20"
+      },
+      "scale": {
+        "register": "R115",
+        "ldg_offset": "0x3360",
+        "next_iteration_delta_consumer_offset": "0x1e20"
+      },
+      "next_iteration_shared_store_offset": "0x1f10"
+    },
+    {
+      "operand": "A",
+      "copy": 2,
+      "packed": {
+        "register": "R116",
+        "aligned_ldg_offset": "0x3420",
+        "next_iteration_qzero_guard_offset": "0x1f20"
+      },
+      "scale": {
+        "register": "R117",
+        "ldg_offset": "0x34a0",
+        "next_iteration_delta_consumer_offset": "0x2120"
+      },
+      "next_iteration_shared_store_offset": "0x2200"
+    },
+    {
+      "operand": "A",
+      "copy": 3,
+      "packed": {
+        "register": "R118",
+        "aligned_ldg_offset": "0x3440",
+        "next_iteration_qzero_guard_offset": "0x2210"
+      },
+      "scale": {
+        "register": "R119",
+        "ldg_offset": "0x34c0",
+        "next_iteration_delta_consumer_offset": "0x23f0"
+      },
+      "next_iteration_shared_store_offset": "0x2500"
+    },
+    {
+      "operand": "B",
+      "copy": 0,
+      "packed": {
+        "register": "R105",
+        "aligned_ldg_offset": "0x3860",
+        "next_iteration_qzero_guard_offset": "0x2510"
+      },
+      "scale": {
+        "register": "R106",
+        "ldg_offset": "0x37a0",
+        "next_iteration_delta_consumer_offset": "0x2710"
+      },
+      "next_iteration_shared_store_offset": "0x2800"
+    },
+    {
+      "operand": "B",
+      "copy": 1,
+      "packed": {
+        "register": "R107",
+        "aligned_ldg_offset": "0x37d0",
+        "next_iteration_qzero_guard_offset": "0x2810"
+      },
+      "scale": {
+        "register": "R108",
+        "ldg_offset": "0x37e0",
+        "next_iteration_delta_consumer_offset": "0x29f0"
+      },
+      "next_iteration_shared_store_offset": "0x2b00"
+    },
+    {
+      "operand": "B",
+      "copy": 2,
+      "packed": {
+        "register": "R109",
+        "aligned_ldg_offset": "0x38e0",
+        "next_iteration_qzero_guard_offset": "0x2b10"
+      },
+      "scale": {
+        "register": "R110",
+        "ldg_offset": "0x38b0",
+        "next_iteration_delta_consumer_offset": "0x2d10"
+      },
+      "next_iteration_shared_store_offset": "0x2df0"
+    },
+    {
+      "operand": "B",
+      "copy": 3,
+      "packed": {
+        "register": "R111",
+        "aligned_ldg_offset": "0x38f0",
+        "next_iteration_qzero_guard_offset": "0x2e00"
+      },
+      "scale": {
+        "register": "R120",
+        "ldg_offset": "0x38d0",
+        "next_iteration_delta_consumer_offset": "0x2fd0"
+      },
+      "next_iteration_shared_store_offset": "0x30f0"
+    }
+  ],
+  "conclusion": "Steady-state next-block packed and scale LDG instructions occur after current shared publication and before its HMMA. Their raw values survive through compute and are consumed in the following K iteration.",
+  "limitations": [
+    "Static disassembly analysis does not measure memory-transaction overlap duration or stall cycles.",
+    "This record does not independently attribute the measured performance gain to a single microarchitectural cause.",
+    "This analysis does not cover C6 int64/tail functions or C7; their GPU correctness and performance are separate evidence."
+  ]
+}

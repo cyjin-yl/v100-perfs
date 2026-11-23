@@ -1,0 +1,43 @@
+nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+ptxas info    : 0 bytes gmem
+ptxas info    : Compiling entry function '_ZN52_GLOBAL__N__a7c4e2cc_19_mxfp4_gemm_tiled_cu_16b2015515gemm_tiled_mx32IlLb1ELi1ELb1ELb0EEEvPKhS2_S2_S2_PfT_S4_S4_S4_PKi' for 'sm_70'
+ptxas info    : Function properties for _ZN52_GLOBAL__N__a7c4e2cc_19_mxfp4_gemm_tiled_cu_16b2015515gemm_tiled_mx32IlLb1ELi1ELb1ELb0EEEvPKhS2_S2_S2_PfT_S4_S4_S4_PKi
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 117 registers, used 1 barriers, 9344 bytes smem, 432 bytes cmem[0]
+ptxas info    : Compile time = 166.194 ms
+ptxas info    : Compiling entry function '_ZN52_GLOBAL__N__a7c4e2cc_19_mxfp4_gemm_tiled_cu_16b2015515gemm_tiled_mx32IlLb0ELi1ELb1ELb0EEEvPKhS2_S2_S2_PfT_S4_S4_S4_PKi' for 'sm_70'
+ptxas info    : Function properties for _ZN52_GLOBAL__N__a7c4e2cc_19_mxfp4_gemm_tiled_cu_16b2015515gemm_tiled_mx32IlLb0ELi1ELb1ELb0EEEvPKhS2_S2_S2_PfT_S4_S4_S4_PKi
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 117 registers, used 1 barriers, 9344 bytes smem, 432 bytes cmem[0]
+ptxas info    : Compile time = 147.008 ms
+ptxas info    : Compiling entry function '_ZN52_GLOBAL__N__a7c4e2cc_19_mxfp4_gemm_tiled_cu_16b2015515gemm_tiled_mx32IiLb1ELi1ELb1ELb0EEEvPKhS2_S2_S2_PfT_S4_S4_S4_PKi' for 'sm_70'
+ptxas info    : Function properties for _ZN52_GLOBAL__N__a7c4e2cc_19_mxfp4_gemm_tiled_cu_16b2015515gemm_tiled_mx32IiLb1ELi1ELb1ELb0EEEvPKhS2_S2_S2_PfT_S4_S4_S4_PKi
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 96 registers, used 1 barriers, 9344 bytes smem, 416 bytes cmem[0]
+ptxas info    : Compile time = 142.671 ms
+ptxas info    : Compiling entry function '_ZN52_GLOBAL__N__a7c4e2cc_19_mxfp4_gemm_tiled_cu_16b2015515gemm_tiled_mx32IiLb0ELi1ELb1ELb0EEEvPKhS2_S2_S2_PfT_S4_S4_S4_PKi' for 'sm_70'
+ptxas info    : Function properties for _ZN52_GLOBAL__N__a7c4e2cc_19_mxfp4_gemm_tiled_cu_16b2015515gemm_tiled_mx32IiLb0ELi1ELb1ELb0EEEvPKhS2_S2_S2_PfT_S4_S4_S4_PKi
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 95 registers, used 1 barriers, 9344 bytes smem, 416 bytes cmem[0]
+ptxas info    : Compile time = 121.661 ms
+ptxas info    : Compiling entry function '_ZN52_GLOBAL__N__a7c4e2cc_19_mxfp4_gemm_tiled_cu_16b2015515gemm_tiled_mx32IlLb1ELi1ELb1ELb1EEEvPKhS2_S2_S2_PfT_S4_S4_S4_PKi' for 'sm_70'
+ptxas info    : Function properties for _ZN52_GLOBAL__N__a7c4e2cc_19_mxfp4_gemm_tiled_cu_16b2015515gemm_tiled_mx32IlLb1ELi1ELb1ELb1EEEvPKhS2_S2_S2_PfT_S4_S4_S4_PKi
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 117 registers, used 1 barriers, 9344 bytes smem, 432 bytes cmem[0]
+ptxas info    : Compile time = 169.011 ms
+ptxas info    : Compiling entry function '_ZN52_GLOBAL__N__a7c4e2cc_19_mxfp4_gemm_tiled_cu_16b2015515gemm_tiled_mx32IlLb0ELi1ELb1ELb1EEEvPKhS2_S2_S2_PfT_S4_S4_S4_PKi' for 'sm_70'
+ptxas info    : Function properties for _ZN52_GLOBAL__N__a7c4e2cc_19_mxfp4_gemm_tiled_cu_16b2015515gemm_tiled_mx32IlLb0ELi1ELb1ELb1EEEvPKhS2_S2_S2_PfT_S4_S4_S4_PKi
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 117 registers, used 1 barriers, 9344 bytes smem, 432 bytes cmem[0]
+ptxas info    : Compile time = 147.418 ms
+ptxas info    : Compiling entry function '_ZN52_GLOBAL__N__a7c4e2cc_19_mxfp4_gemm_tiled_cu_16b2015515gemm_tiled_mx32IiLb1ELi1ELb1ELb1EEEvPKhS2_S2_S2_PfT_S4_S4_S4_PKi' for 'sm_70'
+ptxas info    : Function properties for _ZN52_GLOBAL__N__a7c4e2cc_19_mxfp4_gemm_tiled_cu_16b2015515gemm_tiled_mx32IiLb1ELi1ELb1ELb1EEEvPKhS2_S2_S2_PfT_S4_S4_S4_PKi
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 96 registers, used 1 barriers, 9344 bytes smem, 416 bytes cmem[0]
+ptxas info    : Compile time = 128.206 ms
+ptxas info    : Compiling entry function '_ZN52_GLOBAL__N__a7c4e2cc_19_mxfp4_gemm_tiled_cu_16b2015515gemm_tiled_mx32IiLb0ELi1ELb1ELb1EEEvPKhS2_S2_S2_PfT_S4_S4_S4_PKi' for 'sm_70'
+ptxas info    : Function properties for _ZN52_GLOBAL__N__a7c4e2cc_19_mxfp4_gemm_tiled_cu_16b2015515gemm_tiled_mx32IiLb0ELi1ELb1ELb1EEEvPKhS2_S2_S2_PfT_S4_S4_S4_PKi
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 96 registers, used 1 barriers, 9344 bytes smem, 416 bytes cmem[0]
+ptxas info    : Compile time = 123.697 ms
+ptxas info    : 0 bytes gmem

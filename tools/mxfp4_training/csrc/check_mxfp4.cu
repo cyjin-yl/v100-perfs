@@ -18,6 +18,11 @@
 namespace {
 
 int reserve_mib = 128;
+bool small_memory_correctness = false;
+constexpr uint64_t kSmallMemoryAllocationCap = 8ull << 20;
+#ifndef MXFP4_CHECK_SMALL_MEMORY_ALLOWED
+#define MXFP4_CHECK_SMALL_MEMORY_ALLOWED 0
+#endif
 #ifndef MXFP4_CHECK_EXTRA_BYTES
 #define MXFP4_CHECK_EXTRA_BYTES(m, n, k) uint64_t(0)
 #endif
@@ -120,6 +125,11 @@ uint64_t required_bytes(const Case& c) {
 }
 
 void require_free_memory(uint64_t bytes) {
+  // Includes the adapter's complete explicit workspace, not just its inputs.
+  if (small_memory_correctness && bytes > kSmallMemoryAllocationCap)
+    throw std::runtime_error("Small-memory correctness allocation cap exceeded: requested "
+        + std::to_string(bytes) + " explicit GPU bytes; maximum "
+        + std::to_string(kSmallMemoryAllocationCap));
   size_t available = 0, total = 0;
   CUDA_CHECK(cudaMemGetInfo(&available, &total));
   const uint64_t reserve = uint64_t(reserve_mib) << 20;
@@ -240,16 +250,27 @@ struct Options {
 
 Options parse(int argc, char** argv) {
   Options options;
+  int requested_reserve_mib = 128;
+  bool explicit_reserve = false, requested_small_memory = false;
+  bool benchmark_requested = false;
   for (int i = 1; i < argc; ++i) {
     const std::string arg = argv[i];
     if (arg == "--allow-other-gpu") options.allow_other_gpu = true;
-    else if (arg == "--benchmark") options.benchmark = true;
+    else if (arg == "--benchmark") {
+      options.benchmark = true;
+      benchmark_requested = true;
+    }
     else if (arg == "--correctness-only") options.benchmark = false;
+    else if (arg == "--small-memory-correctness") requested_small_memory = true;
     else if (arg == "--help") {
       std::cout << "check_mxfp4 [--device N] [--correctness-only] [--allow-other-gpu]\n"
                    "             [--reserve-mib N (default 128, minimum 64)]\n"
                    "             [--benchmark --warmup N --iters N --m N --n N --k N]\n"
                    "Default: bounded correctness cases, including multiple CTA tiles and odd-address inputs.\n";
+#if MXFP4_CHECK_SMALL_MEMORY_ALLOWED
+      std::cout << "Fused certified correctness only: --small-memory-correctness --reserve-mib N\n"
+                   "Requires an explicit reserve of at least 48 MiB; caps explicit GPU allocations at 8 MiB.\n";
+#endif
       std::exit(0);
     } else {
       if (i + 1 >= argc) throw std::runtime_error("Missing value for " + arg);
@@ -260,8 +281,8 @@ Options parse(int argc, char** argv) {
         throw std::runtime_error("Invalid nonnegative bounded integer for " + arg);
       if (arg == "--device") options.device = int(value);
       else if (arg == "--reserve-mib") {
-        if (value < 64) throw std::runtime_error("reserve-mib must be at least 64");
-        reserve_mib = int(value);
+        requested_reserve_mib = int(value);
+        explicit_reserve = true;
       }
       else if (arg == "--warmup") options.warmup = int(value);
       else if (arg == "--iters") options.iters = int(value);
@@ -273,6 +294,22 @@ Options parse(int argc, char** argv) {
   }
   if (options.iters == 0 || options.m == 0 || options.n == 0)
     throw std::runtime_error("iters, M and N must be positive");
+  // Validate after parsing so --reserve-mib and the opt-in flag commute.
+  // Seeing --benchmark is disallowed even if --correctness-only follows it.
+  if (requested_small_memory) {
+    if (!MXFP4_CHECK_SMALL_MEMORY_ALLOWED)
+      throw std::runtime_error("small-memory-correctness requires a compiled fused certified variant >= 3");
+    if (!explicit_reserve)
+      throw std::runtime_error("small-memory-correctness requires explicit --reserve-mib (minimum 48)");
+    if (benchmark_requested)
+      throw std::runtime_error("small-memory-correctness cannot be used with --benchmark");
+    if (requested_reserve_mib < 48)
+      throw std::runtime_error("small-memory-correctness reserve-mib must be at least 48");
+  } else if (requested_reserve_mib < 64) {
+    throw std::runtime_error("reserve-mib must be at least 64 outside small-memory-correctness");
+  }
+  reserve_mib = requested_reserve_mib;
+  small_memory_correctness = requested_small_memory;
   return options;
 }
 
@@ -304,6 +341,11 @@ int main(int argc, char** argv) {
               << ",\"driver_version\":" << driver_version << ",\"runtime_version\":" << runtime_version
               << ",\"free_bytes_after_context\":" << free_bytes << ",\"total_bytes\":" << total_bytes
               << ",\"backend\":" << json_string(mxfp4_cuda_backend())
+              << ",\"memory_profile\":" << json_string(small_memory_correctness
+                  ? "small_memory_correctness" : "ordinary")
+              << ",\"reserve_mib\":" << reserve_mib
+              << ",\"max_explicit_allocation_bytes\":" << (small_memory_correctness
+                  ? std::to_string(kSmallMemoryAllocationCap) : "null")
               << ",\"gpu_executed\":false}\n";
     require_free_memory(65536);
     check_api_contract();

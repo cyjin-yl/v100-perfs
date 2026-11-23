@@ -5,3 +5,4 @@ evidence/results/sm70-packing/** -text
 evidence/results/mxfp4-training/** -text
 # cuobjdump emits trailing spaces in its raw, hashed header; retain its bytes.
 evidence/results/mxfp4-training/**/mxfp4-sm70.sass.txt -whitespace
+evidence/results/mxfp4-training/2026-11-24-fused/verified/v4/prefetch-c6-int32-no-tail.sass.txt -whitespace

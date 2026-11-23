@@ -12,6 +12,10 @@
 #include <string>
 #include <vector>
 
+#ifndef MXFP4_CERTIFIED_VARIANT
+#define MXFP4_CERTIFIED_VARIANT 0
+#endif
+
 namespace certified_checks {
 MXFP4CertifiedInfo last_info{};
 uint64_t accepted = 0, rejected = 0, empty = 0;
@@ -86,12 +90,17 @@ extern "C" int certified_check_gemm(
 }
 extern "C" int certified_check_abi(void) { return 1; }
 extern "C" const char* certified_check_backend(void) {
+#if MXFP4_CERTIFIED_VARIANT >= 3
+  return "sm70_mx32_certified_fused_hmma_or_exact_tiled_v1";
+#else
   return "sm70_mx32_certified_cublas_or_exact_tiled_v1";
+#endif
 }
 
 // Compile the same exhaustive E8M0 / E2M1 / tail oracle with this adapter.
 // All explicit workspace allocations participate in its memory guard.
 #define MXFP4_CHECK_EXTRA_BYTES(m, n, k) certified_checks::extra_bytes(m, n, k)
+#define MXFP4_CHECK_SMALL_MEMORY_ALLOWED (MXFP4_CERTIFIED_VARIANT >= 3)
 #define mxfp4_gemm_cuda certified_check_gemm
 #define mxfp4_cuda_abi_version certified_check_abi
 #define mxfp4_cuda_backend certified_check_backend
@@ -102,6 +111,7 @@ extern "C" const char* certified_check_backend(void) {
 #undef mxfp4_cuda_abi_version
 #undef mxfp4_cuda_backend
 #undef MXFP4_CHECK_EXTRA_BYTES
+#undef MXFP4_CHECK_SMALL_MEMORY_ALLOWED
 
 namespace {
 
@@ -144,6 +154,34 @@ Case energy_boundary(const char* name, bool above, int sa, int sb) {
     set_code(c.a, 0, 262144, c.padded_k, 1);
     set_code(c.b, 0, 262144, c.padded_k, 1);
   }
+  return c;
+}
+
+Case multitile_row_bases(const char* name, int m, int n, int k, bool unaligned) {
+  Case c(name, m, n, k);
+  c.input_byte_offset = unaligned ? 1 : 0;
+  c.output_float_offset = unaligned ? 1 : 0;
+  auto fill = [&](std::vector<uint8_t>& codes, std::vector<uint8_t>& scales,
+                  int rows, bool is_a) {
+    for (int row = 0; row < rows; ++row) {
+      const int base = is_a ? 100 + row % 9 : 150 + (row * 5) % 11;
+      const bool zero_row = row % 31 == 0;
+      for (int block = 0; block < c.blocks; ++block) {
+        const bool zero_block = zero_row || (block == 0 && row % (is_a ? 5 : 7) == 0);
+        // Every nonzero row has a base-scale active block at block 1.
+        // Inactive blocks deliberately have scales below that active minimum.
+        scales[size_t(row) * c.blocks + block] = uint8_t(zero_block ? 1
+            : base + (block == 1 ? 0 : (block + row) % 4));
+        for (int kk = block * 32; kk < (block + 1) * 32 && kk < k; ++kk) {
+          const unsigned code = zero_block ? 8u // Signed zero, normalize to +0.
+              : unsigned(is_a ? (row * 11 + kk * 7) % 16 : (row * 3 + kk * 5 + 1) % 16);
+          set_code(codes, row, kk, c.padded_k, code);
+        }
+      }
+    }
+  };
+  fill(c.a, c.as, c.m, true);
+  fill(c.b, c.bs, c.n, false);
   return c;
 }
 
@@ -212,6 +250,10 @@ int main(int argc, char** argv) {
       std::cout << "check_mxfp4_certified [--device N] [--reserve-mib N]\n"
                    "Full ordered-MX32 oracle, exact certificate boundaries and context reuse.\n"
                    "Correctness only; default reserve 128 MiB, explicit minimum 64 MiB.\n";
+#if MXFP4_CERTIFIED_VARIANT >= 3
+      std::cout << "Optional: --small-memory-correctness --reserve-mib N\n"
+                   "Requires an explicit reserve of at least 48 MiB; caps explicit GPU allocations at 8 MiB.\n";
+#endif
       return 0;
     }
     if (std::string(argv[i]) == "--benchmark") {
@@ -296,6 +338,12 @@ int main(int argc, char** argv) {
       set_code(tall.b, row, 0, tall.padded_k, unsigned(row + 1));
     fixture(tall, true);
 
+    // Cross both 64/128 CTA tile boundaries with different A/B row bases.
+    // K=161 spans three BK64 stages; Kp=288 for K=257 also exercises a final
+    // half-stage. The second case offsets packed input and FP32 output.
+    fixture(multitile_row_bases("multitile_row_bases_129x131x161", 129, 131, 161, false), true);
+    fixture(multitile_row_bases("multitile_row_bases_unaligned_131x129x257", 131, 129, 257, true), true);
+
     Case cancellation("fp16_exact_does_not_imply_safe_reordering", 1, 1, 96);
     cancellation.as = {140, 128, 140}; cancellation.bs = {140, 128, 140};
     for (int k : {0, 32, 64}) {
@@ -321,6 +369,7 @@ int main(int argc, char** argv) {
     if (!certified_checks::accepted || !certified_checks::rejected)
       throw std::runtime_error("Both dispatch paths must execute");
     std::cout << "{\"type\":\"certified_summary\",\"passed\":true,\"gpu_executed\":true"
+              << ",\"certified_variant\":" << MXFP4_CERTIFIED_VARIANT
               << ",\"full_domain_suite_passed\":true,\"extra_fixture_cases\":" << totals.cases
               << ",\"extra_fixture_values\":" << totals.values
               << ",\"context_reuse_calls\":3,\"accepted_calls\":" << certified_checks::accepted

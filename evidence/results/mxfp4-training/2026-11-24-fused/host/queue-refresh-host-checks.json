@@ -1,0 +1,9 @@
+{
+  "returncode": 0,
+  "wall_seconds": 3.2386823580000055,
+  "source_sha256": "435c6df94142e02879b589f49b5d4fee4a577e2f1dcc0984f8e0718b55ea375d",
+  "stdout": "{\"gpu_executed\": false, \"passed\": true, \"real_signals_sent\": false, \"scenarios\": 14}\n",
+  "stderr": "",
+  "gpu_executed": false,
+  "real_signals_sent": false
+}
