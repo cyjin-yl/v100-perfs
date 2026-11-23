@@ -395,9 +395,11 @@ int main(int argc, char** argv) {
     set_code(overflow_cancel.b, 0, 32, 64, 7);
     run_case(overflow_cancel, stream.value, totals);
 
-    for (const auto shape : {std::vector<int>{1, 1, 1}, {7, 13, 31}, {17, 19, 33},
-                             {33, 49, 65}, {64, 64, 97}, {65, 97, 65},
-                             {129, 67, 97}, {128, 128, 128}})
+    // Explicit element type also works with NVCC 12.8's range deduction.
+    const int random_shapes[][3] = {{1, 1, 1}, {7, 13, 31}, {17, 19, 33},
+                                    {33, 49, 65}, {64, 64, 97}, {65, 97, 65},
+                                    {129, 67, 97}, {128, 128, 128}};
+    for (const auto& shape : random_shapes)
       run_case(random_case(shape[0], shape[1], shape[2], 20261123u + unsigned(shape[2])),
                stream.value, totals);
     Case odd_address = random_case(65, 97, 65, 20261124);
