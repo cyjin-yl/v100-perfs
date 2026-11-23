@@ -259,7 +259,11 @@ class Runner:
         expected = quantize_mx(source)
         def work():
             x = to_layout(source, self.device, layout)
-            old = ops.quantize_mx_torch(x, rounding='nearest')
+            # The unchanged Torch control uses x.new_tensor(), which this
+            # runtime cannot dispatch through a lazy Negative key. Materialize
+            # only its control input; native wrapper/direct still receive x.
+            old_input = x.resolve_conj().resolve_neg() if (x.is_conj() or x.is_neg()) else x
+            old = ops.quantize_mx_torch(old_input, rounding='nearest')
             new = ops.quantize_mx_cuda_rne(x)
             direct = self.direct(x, expected)
             return x, old, new, direct
@@ -268,6 +272,10 @@ class Runner:
         need(np.array_equal(host_array(x).view(np.uint32), np.ascontiguousarray(source).view(np.uint32)), 'Input was modified')
         return {'layout': layout, 'input_strides': list(x.stride()), 'storage_offset': x.storage_offset(),
             'lazy_negative': x.is_neg(), 'nondefault_stream': True, 'coverage': coverage,
+            'torch_control_lazy_view_resolved': bool(x.is_conj() or x.is_neg()),
+            'torch_control_lazy_view_resolution_reason': (
+                'unchanged Torch control x.new_tensor does not support the Negative dispatch key; compare resolved logical FP32 values'
+                if x.is_neg() else ('resolve logical conjugate values for the unchanged Torch control' if x.is_conj() else None)),
             'torch_vs_numpy': a, 'cuda_rne_vs_numpy': b, 'direct_cuda_vs_numpy': c,
             'direct_output_poison': 'bitwise_inverse_of_every_expected_code_and_scale_byte',
             'direct_initial_error_flag': 123, 'finite_error_flag': 0, 'input_bits_unchanged': True}
