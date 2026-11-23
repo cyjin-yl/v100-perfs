@@ -39,6 +39,9 @@ def main() -> int:
                         help="include the conditional exact Tensor Core backend and its checks")
     parser.add_argument("--with-quantizer-rne", action="store_true",
                         help="include the opt-in native FP32 MX32 RNE quantizer in the shared library")
+    parser.add_argument("--certified-prepare-raw-cache", action="store_true",
+                        help="experimental C2 preparation: cache raw MX32 blocks in shared memory "
+                             "for 0<K<=8192 (requires --with-certified --certified-variant 2)")
     parser.add_argument("--tiled-variant", type=int, choices=(0, 1, 2), default=1,
                         help="0: MX32; 1: MX32 with normal-scale gate; 2: two MX32 blocks per stage")
     parser.add_argument("--certified-variant", type=int, choices=tuple(range(11)), default=2,
@@ -52,6 +55,8 @@ def main() -> int:
     args = parser.parse_args()
     if args.with_fused_benchmark and (not args.with_certified or args.certified_variant < 3):
         parser.error("--with-fused-benchmark requires --with-certified and --certified-variant >=3")
+    if args.certified_prepare_raw_cache and (not args.with_certified or args.certified_variant != 2):
+        parser.error("--certified-prepare-raw-cache requires --with-certified --certified-variant 2")
     cuda_home = os.environ.get("CUDA_HOME") or os.environ.get("CUDA_PATH")
     nvcc = args.nvcc or (str(Path(cuda_home) / "bin/nvcc") if cuda_home else shutil.which("nvcc"))
     if not nvcc:
@@ -65,6 +70,8 @@ def main() -> int:
               "-gencode=arch=compute_70,code=[sm_70,compute_70]",
               f"-DMXFP4_TILED_VARIANT={args.tiled_variant}",
               f"-DMXFP4_CERTIFIED_VARIANT={args.certified_variant}"]
+    if args.certified_prepare_raw_cache:
+        common.append("-DMXFP4_CERTIFIED_PREPARE_RAW_CACHE=1")
     kernels = [str(source / "mxfp4_gemm.cu"), str(source / "mxfp4_gemm_tiled.cu")]
     certified_sources = [str(source / "mxfp4_gemm_certified.cu")] if args.with_certified else []
     if args.with_certified and args.certified_variant >= 3:
@@ -108,6 +115,11 @@ def main() -> int:
         "quantizer_rne_enabled": args.with_quantizer_rne,
         "quantizer_rne_backend": "sm70_mx32_rne_warp_fp32_v1" if args.with_quantizer_rne else None,
         "certified_variant": args.certified_variant if args.with_certified else None,
+        "certified_prepare_raw_cache_enabled": args.certified_prepare_raw_cache,
+        "certified_prepare_raw_cache_backend": (
+            "sm70_c2_row_raw_cache_k8192_v1" if args.certified_prepare_raw_cache else None),
+        "certified_prepare_raw_cache_max_k": 8192 if args.certified_prepare_raw_cache else None,
+        "certified_prepare_raw_cache_bytes_per_mx32": 20 if args.certified_prepare_raw_cache else None,
         "fused_packed_benchmark_enabled": args.with_fused_benchmark,
         "full_training_executed": False, "nvcc_version": version.strip(),
         "source_sha256": {str(p.relative_to(source.parent)): sha256(p)

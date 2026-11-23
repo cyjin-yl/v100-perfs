@@ -19,6 +19,15 @@
 #if MXFP4_CERTIFIED_VARIANT < 0 || MXFP4_CERTIFIED_VARIANT > 10
 #error "MXFP4_CERTIFIED_VARIANT must be 0..2 (cuBLAS) or 3..10 (fused normalized HMMA)"
 #endif
+#ifndef MXFP4_CERTIFIED_PREPARE_RAW_CACHE
+#define MXFP4_CERTIFIED_PREPARE_RAW_CACHE 0
+#endif
+#if MXFP4_CERTIFIED_PREPARE_RAW_CACHE != 0 && MXFP4_CERTIFIED_PREPARE_RAW_CACHE != 1
+#error "MXFP4_CERTIFIED_PREPARE_RAW_CACHE must be 0 or 1"
+#endif
+#if MXFP4_CERTIFIED_PREPARE_RAW_CACHE && MXFP4_CERTIFIED_VARIANT != 2
+#error "MXFP4_CERTIFIED_PREPARE_RAW_CACHE requires certified variant 2"
+#endif
 
 namespace {
 
@@ -29,6 +38,13 @@ constexpr int kPrepareThreads = 128;
 constexpr int kReduceThreads = 256;
 constexpr int kCachedEnergyBlocks = 1024;
 constexpr bool kFused = MXFP4_CERTIFIED_VARIANT >= 3;
+
+#if MXFP4_CERTIFIED_PREPARE_RAW_CACHE
+constexpr int kC2PrepareRawCacheMaxK = 8192;
+constexpr bool use_c2_prepare_raw_cache(int k) {
+  return k > 0 && k <= kC2PrepareRawCacheMaxK;
+}
+#endif
 
 struct RowData {
   unsigned long long energy;
@@ -330,6 +346,145 @@ __global__ __launch_bounds__(kPrepareThreads) void prepare_rows(
   }
 }
 
+#if MXFP4_CERTIFIED_PREPARE_RAW_CACHE
+// Experimental C2 preparation only. Keep prepare_rows<> above untouched so
+// default-off builds, K=0, and K>8192 retain the original implementation.
+// One CTA caches a row's 16-byte raw block plus one packed (scale,Q) word.
+// The SOA layout costs 20*(K/32) dynamic bytes, at most 5120 bytes per CTA.
+__global__ __launch_bounds__(kPrepareThreads) void prepare_rows_raw_cached_c2(
+    const uint8_t* a, const uint8_t* as, const uint8_t* b, const uint8_t* bs,
+    uint16_t* normalized, RowData* row_data, int m, int k) {
+  extern __shared__ uint4 raw_blocks[];
+  const int blocks = k / 32;
+  unsigned* energy_scale = reinterpret_cast<unsigned*>(raw_blocks + blocks);
+  const int row = int(blockIdx.x);
+  const bool is_a = row < m;
+  const int local_row = is_a ? row : row - m;
+  const int tid = int(threadIdx.x), lane = tid & 31, warp = tid >> 5;
+  // Host dispatch guarantees 0<K<=8192. Each original input pointer is valid;
+  // row addresses still use size_t because M and N retain the full ABI range.
+  const uint8_t* codes = (is_a ? a : b) + size_t(local_row) * (k / 2);
+  const uint8_t* scales = (is_a ? as : bs) + size_t(local_row) * blocks;
+  const bool aligned_codes = (reinterpret_cast<uintptr_t>(codes) & 15u) == 0;
+  int minimum = 255, maximum = 0;
+  unsigned nan_count = 0, active = 0;
+  for (int block = tid; block < blocks; block += kPrepareThreads) {
+    const uint8_t* source = codes + block * 16;
+    uint4 words;
+    if (aligned_codes) {
+      words = *reinterpret_cast<const uint4*>(source);
+    } else {
+      words = make_uint4(unaligned_packed_word(source), unaligned_packed_word(source + 4),
+                         unaligned_packed_word(source + 8), unaligned_packed_word(source + 12));
+    }
+    // Exactly the block_q_energy expression, while retaining its loaded words.
+    // Q<=32*12^2=4608 fits the low 16 bits; scale occupies bits 16..23.
+    const unsigned q_squared = (packed_word_q_energy(words.x) + packed_word_q_energy(words.y))
+        + (packed_word_q_energy(words.z) + packed_word_q_energy(words.w));
+    const unsigned scale = scales[block];
+    raw_blocks[block] = words;
+    energy_scale[block] = (scale << 16) | q_squared;
+    if (scale == 255) ++nan_count;
+    const bool nonzero = q_squared != 0;
+    active |= unsigned(nonzero);
+    if (nonzero && scale != 255) {
+      minimum = min(minimum, int(scale));
+      maximum = max(maximum, int(scale));
+    }
+  }
+  #pragma unroll
+  for (int offset = 16; offset; offset >>= 1) {
+    minimum = min(minimum, __shfl_down_sync(0xffffffffu, minimum, offset));
+    maximum = max(maximum, __shfl_down_sync(0xffffffffu, maximum, offset));
+    nan_count += __shfl_down_sync(0xffffffffu, nan_count, offset);
+    active |= __shfl_down_sync(0xffffffffu, active, offset);
+  }
+  __shared__ int warp_min[4], warp_max[4];
+  __shared__ unsigned warp_nan[4], warp_active[4];
+  __shared__ unsigned long long warp_energy[4];
+  __shared__ int row_min, row_span;
+  __shared__ unsigned row_nan, row_active;
+  if (lane == 0) {
+    warp_min[warp] = minimum; warp_max[warp] = maximum;
+    warp_nan[warp] = nan_count; warp_active[warp] = active;
+  }
+  // Publishes raw/energy caches as well as the four warp reductions.
+  __syncthreads();
+  if (warp == 0) {
+    minimum = lane < 4 ? warp_min[lane] : 255;
+    maximum = lane < 4 ? warp_max[lane] : 0;
+    nan_count = lane < 4 ? warp_nan[lane] : 0;
+    active = lane < 4 ? warp_active[lane] : 0;
+    #pragma unroll
+    for (int offset = 16; offset; offset >>= 1) {
+      minimum = min(minimum, __shfl_down_sync(0xffffffffu, minimum, offset));
+      maximum = max(maximum, __shfl_down_sync(0xffffffffu, maximum, offset));
+      nan_count += __shfl_down_sync(0xffffffffu, nan_count, offset);
+      active |= __shfl_down_sync(0xffffffffu, active, offset);
+    }
+    if (lane == 0) {
+      row_min = minimum == 255 ? 127 : minimum;
+      row_span = minimum == 255 ? 0 : maximum - minimum;
+      row_nan = nan_count;
+      row_active = active;
+    }
+  }
+  __syncthreads();
+  unsigned long long energy = 0;
+  for (int block = tid; block < blocks; block += kPrepareThreads) {
+    const unsigned cached = energy_scale[block];
+    const unsigned q_squared = cached & 0xffffu;
+    const unsigned scale = cached >> 16;
+    // Whole q-zero blocks may have scale<row_min: exclude before delta/shift.
+    // Scale 255 remains counted above, even when the block is entirely zero.
+    if (q_squared != 0 && scale != 255) {
+      const int delta = int(scale) - row_min;
+      // Q<=4608 and 2*delta<=48 imply a term<2^61. Above delta 24,
+      // every nonzero term exceeds the unchanged 2^48 energy bound.
+      const unsigned long long term = delta > 24 ? kEnergyCap
+          : (static_cast<unsigned long long>(q_squared) << (2 * delta));
+      energy = sat_add(energy, term);
+    }
+  }
+  const bool safe_half = row_nan == 0 && row_span <= 12;
+  const int groups = k / 4;
+  const unsigned* raw_words = reinterpret_cast<const unsigned*>(raw_blocks);
+  uint2* normalized_vectors = reinterpret_cast<uint2*>(normalized);
+  for (int group = tid; group < groups; group += kPrepareThreads) {
+    // Adjacent threads read the two halves of one shared 32-bit word. This
+    // preserves coalesced 64-bit global output stores and needs no second
+    // global packed/scale read. q-zero subgroups are canonicalized to +0.
+    const unsigned packed = (raw_words[group / 2] >> ((group & 1) * 16)) & 0xffffu;
+    uint2 output_bits = make_uint2(0, 0);
+    if (safe_half && (packed & 0x7777u) != 0) {
+      const unsigned scale = energy_scale[group / 8] >> 16;
+      // A nonzero subgroup implies an active finite block, hence delta>=0;
+      // safe_half guarantees delta<=12. Reuse the unchanged exact decoder.
+      output_bits = normalized_half4_bits(packed, int(scale) - row_min);
+    }
+    normalized_vectors[size_t(row) * groups + group] = output_bits;
+  }
+  #pragma unroll
+  for (int offset = 16; offset; offset >>= 1)
+    energy = sat_add(energy, __shfl_down_sync(0xffffffffu, energy, offset));
+  if (lane == 0) warp_energy[warp] = energy;
+  __syncthreads();
+  if (warp == 0) {
+    energy = lane < 4 ? warp_energy[lane] : 0;
+    #pragma unroll
+    for (int offset = 16; offset; offset >>= 1)
+      energy = sat_add(energy, __shfl_down_sync(0xffffffffu, energy, offset));
+    if (lane == 0) {
+      RowData result;
+      result.energy = energy; result.nan_scales = row_nan;
+      result.min_scale = uint8_t(row_min); result.span = uint8_t(row_span);
+      result.zero = uint8_t(row_active == 0); result.saturated = uint8_t(energy == kEnergyCap);
+      row_data[row] = result;
+    }
+  }
+}
+#endif
+
 __device__ __forceinline__ DeviceMetadata neutral_metadata() {
   DeviceMetadata value{};
   value.min_scale_a = value.min_scale_b = 255;
@@ -605,6 +760,13 @@ extern "C" int mxfp4_certified_gemm(
   }
   c->metadata_valid = false;
   c->last_stream = stream; c->has_stream_work = true;
+#if MXFP4_CERTIFIED_PREPARE_RAW_CACHE
+  if (use_c2_prepare_raw_cache(c->k)) {
+    const size_t cache_bytes = size_t(c->k / 32) * (sizeof(uint4) + sizeof(unsigned));
+    prepare_rows_raw_cached_c2<<<unsigned(c->m + c->n), kPrepareThreads, cache_bytes, stream>>>(
+        a, as, b, bs, c->normalized, c->rows, c->m, c->k);
+  } else
+#endif
 #if MXFP4_CERTIFIED_VARIANT >= 3
   if (c->k / 32 <= kCachedEnergyBlocks) {
     const size_t cache_bytes = size_t(c->k / 32) * sizeof(unsigned);
