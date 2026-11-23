@@ -3,6 +3,8 @@
 The CPU backend is an independent NumPy arithmetic oracle, not acceleration.
 The CUDA backend launches the repository's SM70 kernel on PyTorch's current
 stream. Quantization is currently unfused PyTorch, including validation syncs.
+The opt-in cuda_certified bridge owns a fresh native context per call and
+synchronizes on destruction; it is not a cached asynchronous training backend.
 Weights and optimizer state remain FP32. This is a research building block;
 neither successful backpropagation nor a tiny loss curve proves LLM convergence.
 """
@@ -19,6 +21,25 @@ from torch import nn
 from torch.autograd.function import once_differentiable
 
 from .reference import MXTensor, gemm_mx
+
+
+class _CertifiedInfo(ctypes.Structure):
+    """Exact ABI v1 layout from csrc/mxfp4_gemm_certified.h (128 bytes)."""
+    _fields_ = [
+        ("abi_version", ctypes.c_uint32), ("device", ctypes.c_int32),
+        ("m", ctypes.c_int64), ("n", ctypes.c_int64), ("padded_k", ctypes.c_int64),
+        ("workspace_bytes", ctypes.c_uint64),
+        ("max_energy_a", ctypes.c_uint64), ("max_energy_b", ctypes.c_uint64),
+        ("accepted", ctypes.c_uint32), ("reject_flags", ctypes.c_uint32),
+        ("min_scale_a", ctypes.c_int32), ("max_scale_a", ctypes.c_int32),
+        ("min_scale_b", ctypes.c_int32), ("max_scale_b", ctypes.c_int32),
+        ("max_span_a", ctypes.c_uint32), ("max_span_b", ctypes.c_uint32),
+        ("nan_scales_a", ctypes.c_uint32), ("nan_scales_b", ctypes.c_uint32),
+        ("zero_rows_a", ctypes.c_uint32), ("zero_rows_b", ctypes.c_uint32),
+        ("energy_saturated_a", ctypes.c_uint32), ("energy_saturated_b", ctypes.c_uint32),
+        ("metadata_valid", ctypes.c_uint32), ("reserved", ctypes.c_uint32),
+        ("submitted_calls", ctypes.c_uint64),
+    ]
 
 
 @dataclass(frozen=True)
@@ -114,12 +135,113 @@ def _load_library(path: str, backend: str = "cuda") -> ctypes.CDLL:
             raise RuntimeError("unsupported tiled MXFP4 CUDA ABI")
         kernel.argtypes = lib.mxfp4_gemm_cuda.argtypes
         kernel.restype = ctypes.c_int
+    if backend == "cuda_certified":
+        signatures = {
+            "mxfp4_certified_create": ([ctypes.c_int64] * 3 +
+                                        [ctypes.POINTER(ctypes.c_void_p)], ctypes.c_int),
+            "mxfp4_certified_gemm": ([ctypes.c_void_p] * 7 +
+                                      [ctypes.POINTER(ctypes.c_int)], ctypes.c_int),
+            "mxfp4_certified_get_info": ([ctypes.c_void_p, ctypes.POINTER(_CertifiedInfo)],
+                                          ctypes.c_int),
+            "mxfp4_certified_destroy": ([ctypes.c_void_p], ctypes.c_int),
+            "mxfp4_certified_workspace_bytes": ([ctypes.c_int64] * 3 +
+                                                 [ctypes.POINTER(ctypes.c_uint64)], ctypes.c_int),
+            "mxfp4_certified_error_string": ([ctypes.c_int], ctypes.c_char_p),
+        }
+        for name, (arguments, result) in signatures.items():
+            try:
+                function = getattr(lib, name)
+            except AttributeError as error:
+                raise RuntimeError("CUDA library has no certified API; rebuild with --with-certified") from error
+            function.argtypes, function.restype = arguments, result
     return lib
 
 
+def _certified_error(lib, operation: str, code: int) -> RuntimeError:
+    description = lib.mxfp4_certified_error_string(code)
+    text = description.decode("utf-8", errors="replace") if description else "unknown native status"
+    return RuntimeError(f"MXFP4 certified {operation} failed: status={code}, {text}")
+
+
+def _gemm_certified(lib, a, b, out, stream, diagnostic: dict | None) -> None:
+    """Own create/use/destroy on this host thread and current CUDA device.
+
+    Retain all tensors and the stream until destroy has waited for native work,
+    including when gemm returns an error after partially enqueuing its pipeline.
+    There is deliberately no shared context, finalizer, or cross-thread cache.
+    """
+    tensors = (a.codes, a.scales, b.codes, b.scales, out)
+    for tensor in tensors:
+        tensor.record_stream(stream)  # Register lifetime BEFORE any submission.
+    context = ctypes.c_void_p()
+    failure = None
+    observed = None
+    try:
+        code = lib.mxfp4_certified_create(a.logical_shape[0], b.logical_shape[0],
+                                         a.padded_k, ctypes.byref(context))
+        if code:
+            raise _certified_error(lib, "create", code)
+        if not context.value:
+            raise RuntimeError("MXFP4 certified create returned a null context")
+        initial = _CertifiedInfo()
+        code = lib.mxfp4_certified_get_info(context, ctypes.byref(initial))
+        if code:
+            raise _certified_error(lib, "initial ABI query", code)
+        if (initial.abi_version != 1 or initial.metadata_valid != 0 or initial.submitted_calls != 0
+                or initial.device != a.codes.device.index
+                or (initial.m, initial.n, initial.padded_k) !=
+                (a.logical_shape[0], b.logical_shape[0], a.padded_k)):
+            raise RuntimeError("Unsupported or inconsistent MXFP4 certified ABI v1 context")
+        code = lib.mxfp4_certified_gemm(context, *(t.data_ptr() for t in tensors),
+                                       stream.cuda_stream, None)
+        if code:
+            raise _certified_error(lib, "gemm", code)
+        if diagnostic is not None:
+            info = _CertifiedInfo()
+            code = lib.mxfp4_certified_get_info(context, ctypes.byref(info))
+            if code:
+                raise _certified_error(lib, "diagnostic query", code)
+            if info.abi_version != 1 or info.metadata_valid != 1 or info.submitted_calls != 1:
+                raise RuntimeError("MXFP4 certified diagnostic metadata is invalid")
+            observed = {name: int(getattr(info, name)) for name, _ in info._fields_}
+    except BaseException as error:
+        failure = error
+        raise
+    finally:
+        if context.value:
+            # This call waits on the same stream, on the creating host thread.
+            code = lib.mxfp4_certified_destroy(context)
+            if code:
+                cleanup = _certified_error(lib, "destroy", code)
+                if failure is not None:
+                    raise RuntimeError(f"{failure}; cleanup also failed: {cleanup}") from failure
+                raise cleanup
+    if diagnostic is not None:
+        diagnostic.update(observed)
+        diagnostic["context_lifecycle"] = "per_call_create_gemm_destroy_synchronous"
+
+
 @torch.no_grad()
-def gemm_packed(a: TorchMXTensor, b: TorchMXTensor, *, backend: str = "reference") -> torch.Tensor:
-    """A @ B_rows.T, with exact integer block products and FP32 accumulation."""
+def gemm_packed(a: TorchMXTensor, b: TorchMXTensor, *, backend: str = "reference",
+                certified_info: dict | None = None) -> torch.Tensor:
+    """A @ B_rows.T, with exact integer block products and FP32 accumulation.
+
+    cuda_certified creates and destroys its context per call, synchronously.
+    Its create/free and waiting costs belong in any wrapper/step measurement.
+    An optional empty certified_info dict requests diagnostics for this exact
+    submission. Diagnostic queries synchronize; keep them outside performance
+    timing. Other backends do not accept this argument. CUDA Graph capture is
+    unsupported, as is the native context API. Public packed shapes still
+    require positive K; the native C API alone also supports K=0.
+    """
+    if certified_info is not None:
+        if backend != "cuda_certified" or type(certified_info) is not dict or certified_info:
+            raise ValueError("certified_info requires cuda_certified and an empty dict")
+    # Reject capture before validation can synchronize on padding predicates.
+    if backend == "cuda_certified" and a.codes.device.type == "cuda":
+        with torch.cuda.device(a.codes.device):
+            if torch.cuda.is_current_stream_capturing():
+                raise RuntimeError("cuda_certified does not support CUDA Graph capture")
     a.validate()
     b.validate()
     if a.logical_shape[1] != b.logical_shape[1] or a.codes.device != b.codes.device:
@@ -130,8 +252,8 @@ def gemm_packed(a: TorchMXTensor, b: TorchMXTensor, *, backend: str = "reference
         an = MXTensor(a.codes.numpy(), a.scales.numpy(), a.logical_shape)
         bn = MXTensor(b.codes.numpy(), b.scales.numpy(), b.logical_shape)
         return torch.from_numpy(gemm_mx(an, bn))
-    if backend not in ("cuda", "cuda_tiled"):
-        raise ValueError("backend must be reference, cuda, or cuda_tiled")
+    if backend not in ("cuda", "cuda_tiled", "cuda_certified"):
+        raise ValueError("backend must be reference, cuda, cuda_tiled, or cuda_certified")
     if a.codes.device.type != "cuda":
         raise ValueError("cuda backend requires CUDA inputs")
     if torch.cuda.get_device_capability(a.codes.device) != (7, 0):
@@ -145,6 +267,9 @@ def gemm_packed(a: TorchMXTensor, b: TorchMXTensor, *, backend: str = "reference
         stream = torch.cuda.current_stream(a.codes.device)
         out = torch.empty((a.logical_shape[0], b.logical_shape[0]),
                           device=a.codes.device, dtype=torch.float32)
+        if backend == "cuda_certified":
+            _gemm_certified(lib, a, b, out, stream, certified_info)
+            return out
         tensors = [a.codes, a.scales, b.codes, b.scales, out]
         code = kernel(*(t.data_ptr() for t in tensors),
                       a.logical_shape[0], b.logical_shape[0], a.padded_k,
@@ -169,7 +294,7 @@ class MXRecipe:
     def __post_init__(self) -> None:
         if any(type(v) is not bool for v in (self.forward, self.dgrad, self.wgrad)):
             raise ValueError("forward, dgrad and wgrad must be bool")
-        if self.backend not in ("reference", "cuda", "cuda_tiled"):
+        if self.backend not in ("reference", "cuda", "cuda_tiled", "cuda_certified"):
             raise ValueError("unsupported backend")
         if any(r not in ("nearest", "stochastic") for r in (self.rounding, self.gradient_rounding)):
             raise ValueError("unsupported rounding")

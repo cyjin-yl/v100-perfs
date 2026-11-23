@@ -564,6 +564,259 @@ __global__ __launch_bounds__(256) void fused_certified_prefetch32_halfrow(
   }
 }
 
+// Candidate variant6: same half-row geometry, decode, shared layout and HMMA
+// order as variant5. Four absolute byte cursors advance by fixed strides so
+// next-stage loads need no per-stage row*blocks or block*16 address rebuild.
+// This source-level pipeline experiment needs actual ptxas/SASS/perf gates.
+__global__ __launch_bounds__(256) void fused_certified_prefetch32_halfrow_cursor(
+    const uint8_t* __restrict__ a, const uint8_t* __restrict__ as,
+    const uint8_t* __restrict__ b, const uint8_t* __restrict__ bs,
+    float* __restrict__ out, int m, int n, int k,
+    const uint8_t* __restrict__ row_bases, const int* accepted, int tiles_n) {
+  if (*accepted == 0) return;
+  using Index = int;
+  constexpr bool Tails = false;
+  __shared__ __align__(16) uint2 shared_a[128][9], shared_b[128][9];
+  __shared__ uint8_t base_a[128], base_b[128];
+  const int tid = int(threadIdx.x), lane = tid & 31, warp = tid >> 5;
+  const int warp_row = (warp / 2) * 32, warp_col = (warp % 2) * 64;
+  const Index tile_row = (Index(blockIdx.x) / tiles_n) * 128;
+  const Index tile_col = (Index(blockIdx.x) % tiles_n) * 128;
+  const Index row_bytes = k / 2, blocks = k / 32;
+  const int linear_row = tid >> 1, half = tid & 1;
+  // Swap row bits2/3 without changing the shared layout seen by HMMA.
+  // For each 16-thread STS.64 phase and fixed copy, word-bank starts are
+  // (18*local_row + 8*half + 2*copy)%32: all sixteen even banks exactly once.
+  // This is a source-address model; generated transactions require SASS.
+  const int load_row = (linear_row & ~12) | ((linear_row & 4) << 1)
+      | ((linear_row & 8) >> 1);
+  if (tid < 128) {
+    base_a[tid] = k ? row_bases[tile_row + tid] : 127;
+    base_b[tid] = k ? row_bases[m + tile_col + tid] : 127;
+  }
+  __syncthreads();
+  const int my_base_a = int(base_a[load_row]), my_base_b = int(base_b[load_row]);
+  float accum[2][4][8] = {};
+  uint2 raw_a, raw_b;
+  unsigned raw_as, raw_bs;
+  const uint8_t* cursor_a = a;
+  const uint8_t* cursor_as = as;
+  const uint8_t* cursor_b = b;
+  const uint8_t* cursor_bs = bs;
+  // K0 permits null inputs: do not even form input offsets unless K>0.
+  if (blocks) {
+    cursor_a += (tile_row + load_row) * row_bytes + half * 8;
+    cursor_as += (tile_row + load_row) * blocks;
+    cursor_b += (tile_col + load_row) * row_bytes + half * 8;
+    cursor_bs += (tile_col + load_row) * blocks;
+    raw_a = *reinterpret_cast<const uint2*>(cursor_a);
+    raw_as = unsigned(*cursor_as);
+    raw_b = *reinterpret_cast<const uint2*>(cursor_b);
+    raw_bs = unsigned(*cursor_bs);
+  }
+  for (Index remaining = blocks; remaining > 0; --remaining) {
+    publish_halfrow32(shared_a[load_row], half, raw_a, raw_as, my_base_a);
+    publish_halfrow32(shared_b[load_row], half, raw_b, raw_bs, my_base_b);
+    __syncthreads();
+    // Only the six raw registers and four private cursor values change.
+    // Fixed strides remove per-stage row*blocks and block*16 address setup.
+    // Do not advance on the last stage, including a single-stage call.
+    if (remaining > 1) {
+      cursor_a += 16;
+      cursor_as += 1;
+      cursor_b += 16;
+      cursor_bs += 1;
+      raw_a = *reinterpret_cast<const uint2*>(cursor_a);
+      raw_as = unsigned(*cursor_as);
+      raw_b = *reinterpret_cast<const uint2*>(cursor_b);
+      raw_bs = unsigned(*cursor_bs);
+    }
+    #pragma unroll
+    for (int vector = 0; vector < 8; ++vector) {
+      uint2 av[2], bv[4];
+      #pragma unroll
+      for (int fr = 0; fr < 2; ++fr)
+        av[fr] = shared_a[warp_row + fr * 16 + a_row(lane)][vector];
+      #pragma unroll
+      for (int fc = 0; fc < 4; ++fc)
+        bv[fc] = shared_b[warp_col + fc * 16 + b_col(lane)][vector];
+      #pragma unroll
+      for (int fr = 0; fr < 2; ++fr) {
+        #pragma unroll
+        for (int fc = 0; fc < 4; ++fc)
+          mma_four(accum[fr][fc], av[fr], bv[fc]);
+      }
+    }
+    // All warps must finish current-stage reads before next-stage stores.
+    __syncthreads();
+  }
+
+  const bool vector_output = (reinterpret_cast<uintptr_t>(out) & 7u) == 0 && n % 2 == 0;
+  #pragma unroll
+  for (int fr = 0; fr < 2; ++fr) {
+    #pragma unroll
+    for (int fc = 0; fc < 4; ++fc) {
+      #pragma unroll
+      for (int pair = 0; pair < 4; ++pair) {
+        const int i = pair * 2;
+        const int local_row = warp_row + fr * 16 + c_row(lane, i);
+        const int local_col = warp_col + fc * 16 + c_col(lane, i);
+        const Index row = tile_row + local_row, col = tile_col + local_col;
+        if (!Tails || (row < m && col < n)) {
+          const float x = scale_output(accum[fr][fc][i], base_a[local_row], base_b[local_col]);
+          if (!Tails || col + 1 < n) {
+            const float y = scale_output(accum[fr][fc][i + 1], base_a[local_row], base_b[local_col + 1]);
+            if (vector_output)
+              *reinterpret_cast<float2*>(out + row * n + col) = make_float2(x, y);
+            else {
+              out[row * n + col] = x;
+              out[row * n + col + 1] = y;
+            }
+          } else {
+            out[row * n + col] = x;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Candidate variant7: half2 multiplication replaces per-nibble zero masks.
+// Under the unchanged certificate every active half has delta in [0,12].
+__device__ __forceinline__ unsigned normalized_half2_factor(int delta) {
+  const unsigned half_bits = (unsigned(delta) + 15u) << 10;
+  return half_bits | (half_bits << 16);  // Two exact positive powers of two.
+}
+
+__device__ __forceinline__ uint2 normalized_four_half2_mul(unsigned packed,
+                                                         unsigned factor) {
+  const unsigned lo = q_half_pair(packed & 255u);
+  const unsigned hi = q_half_pair(packed >> 8);
+  unsigned scaled_lo, scaled_hi;
+  asm volatile("mul.rn.f16x2 %0, %1, %2;" : "=r"(scaled_lo) : "r"(lo), "r"(factor));
+  asm volatile("mul.rn.f16x2 %0, %1, %2;" : "=r"(scaled_hi) : "r"(hi), "r"(factor));
+  // Nonzero values are exact normal halves (maximum magnitude 49152).
+  // An isolated code8 can remain -0 internally; final scale_output restores
+  // canonical FP32 +0. No quantization, certificate, or HMMA order changes.
+  return make_uint2(scaled_lo, scaled_hi);
+}
+
+__device__ __forceinline__ void publish_halfrow32_mul(
+    uint2* shared_row, int half, uint2 raw, unsigned scale, int base) {
+  // A wholly zero half can have scale<base. Bypass delta/factor arithmetic.
+  if ((raw.x | raw.y) & 0x77777777u) {
+    const int delta = int(scale) - base;
+    const unsigned factor = normalized_half2_factor(delta);
+    #pragma unroll
+    for (int copy = 0; copy < 4; ++copy) {
+      const unsigned word = copy < 2 ? raw.x : raw.y;
+      const unsigned packed = (word >> ((copy & 1) * 16)) & 0xffffu;
+      shared_row[half * 4 + copy] = normalized_four_half2_mul(packed, factor);
+    }
+  } else {
+    #pragma unroll
+    for (int copy = 0; copy < 4; ++copy)
+      shared_row[half * 4 + copy] = make_uint2(0, 0);
+  }
+}
+
+// Independent decoder experiment: this is variant5's original address
+// generation and register prefetch, not the variant6 cursor experiment.
+__global__ __launch_bounds__(256) void fused_certified_prefetch32_halfrow_mul(
+    const uint8_t* __restrict__ a, const uint8_t* __restrict__ as,
+    const uint8_t* __restrict__ b, const uint8_t* __restrict__ bs,
+    float* __restrict__ out, int m, int n, int k,
+    const uint8_t* __restrict__ row_bases, const int* accepted, int tiles_n) {
+  if (*accepted == 0) return;
+  using Index = int;
+  constexpr bool Tails = false;
+  __shared__ __align__(16) uint2 shared_a[128][9], shared_b[128][9];
+  __shared__ uint8_t base_a[128], base_b[128];
+  const int tid = int(threadIdx.x), lane = tid & 31, warp = tid >> 5;
+  const int warp_row = (warp / 2) * 32, warp_col = (warp % 2) * 64;
+  const Index tile_row = (Index(blockIdx.x) / tiles_n) * 128;
+  const Index tile_col = (Index(blockIdx.x) % tiles_n) * 128;
+  const Index row_bytes = k / 2, blocks = k / 32;
+  const int linear_row = tid >> 1, half = tid & 1;
+  // Swap row bits2/3 without changing the shared layout seen by HMMA.
+  // For each 16-thread STS.64 phase and fixed copy, word-bank starts are
+  // (18*local_row + 8*half + 2*copy)%32: all sixteen even banks exactly once.
+  // This is a source-address model; generated transactions require SASS.
+  const int load_row = (linear_row & ~12) | ((linear_row & 4) << 1)
+      | ((linear_row & 8) >> 1);
+  if (tid < 128) {
+    base_a[tid] = k ? row_bases[tile_row + tid] : 127;
+    base_b[tid] = k ? row_bases[m + tile_col + tid] : 127;
+  }
+  __syncthreads();
+  const int my_base_a = int(base_a[load_row]), my_base_b = int(base_b[load_row]);
+  float accum[2][4][8] = {};
+  uint2 raw_a, raw_b;
+  unsigned raw_as, raw_bs;
+  if (blocks) {
+    prefetch_raw_halfrow32(a, as, tile_row + load_row, row_bytes, blocks, 0, half, raw_a, raw_as);
+    prefetch_raw_halfrow32(b, bs, tile_col + load_row, row_bytes, blocks, 0, half, raw_b, raw_bs);
+  }
+  for (Index block = 0; block < blocks; ++block) {
+    publish_halfrow32_mul(shared_a[load_row], half, raw_a, raw_as, my_base_a);
+    publish_halfrow32_mul(shared_b[load_row], half, raw_b, raw_bs, my_base_b);
+    __syncthreads();
+    // Next-stage reads touch only the six thread-private raw registers.
+    // The prior shared stores have already consumed this stage's raw data.
+    if (block + 1 < blocks) {
+      prefetch_raw_halfrow32(a, as, tile_row + load_row, row_bytes, blocks, block + 1, half, raw_a, raw_as);
+      prefetch_raw_halfrow32(b, bs, tile_col + load_row, row_bytes, blocks, block + 1, half, raw_b, raw_bs);
+    }
+    #pragma unroll
+    for (int vector = 0; vector < 8; ++vector) {
+      uint2 av[2], bv[4];
+      #pragma unroll
+      for (int fr = 0; fr < 2; ++fr)
+        av[fr] = shared_a[warp_row + fr * 16 + a_row(lane)][vector];
+      #pragma unroll
+      for (int fc = 0; fc < 4; ++fc)
+        bv[fc] = shared_b[warp_col + fc * 16 + b_col(lane)][vector];
+      #pragma unroll
+      for (int fr = 0; fr < 2; ++fr) {
+        #pragma unroll
+        for (int fc = 0; fc < 4; ++fc)
+          mma_four(accum[fr][fc], av[fr], bv[fc]);
+      }
+    }
+    // All warps must finish current-stage reads before next-stage stores.
+    __syncthreads();
+  }
+
+  const bool vector_output = (reinterpret_cast<uintptr_t>(out) & 7u) == 0 && n % 2 == 0;
+  #pragma unroll
+  for (int fr = 0; fr < 2; ++fr) {
+    #pragma unroll
+    for (int fc = 0; fc < 4; ++fc) {
+      #pragma unroll
+      for (int pair = 0; pair < 4; ++pair) {
+        const int i = pair * 2;
+        const int local_row = warp_row + fr * 16 + c_row(lane, i);
+        const int local_col = warp_col + fc * 16 + c_col(lane, i);
+        const Index row = tile_row + local_row, col = tile_col + local_col;
+        if (!Tails || (row < m && col < n)) {
+          const float x = scale_output(accum[fr][fc][i], base_a[local_row], base_b[local_col]);
+          if (!Tails || col + 1 < n) {
+            const float y = scale_output(accum[fr][fc][i + 1], base_a[local_row], base_b[local_col + 1]);
+            if (vector_output)
+              *reinterpret_cast<float2*>(out + row * n + col) = make_float2(x, y);
+            else {
+              out[row * n + col] = x;
+              out[row * n + col + 1] = y;
+            }
+          } else {
+            out[row * n + col] = x;
+          }
+        }
+      }
+    }
+  }
+}
+
 bool product_fits(int64_t a, int64_t b, size_t element_size) {
   const uint64_t limit = uint64_t(std::numeric_limits<ptrdiff_t>::max());
   return a == 0 || uint64_t(b) <= limit / element_size / uint64_t(a);
@@ -604,11 +857,19 @@ void dispatch_variant(const uint8_t* a, const uint8_t* as, const uint8_t* b, con
   else if (variant == 4)
     fused_certified_prefetch32_warp64<Index, true><<<grid, 128, 0, stream>>>(
         a, as, b, bs, out, Index(m), Index(n), Index(k), bases, accepted, Index(tiles_n));
-  else if (sizeof(Index) == sizeof(int) && m % 128 == 0 && n % 128 == 0
+  else if (variant == 5 && sizeof(Index) == sizeof(int) && m % 128 == 0 && n % 128 == 0
            && ((reinterpret_cast<uintptr_t>(a) | reinterpret_cast<uintptr_t>(b)) & 7u) == 0)
     fused_certified_prefetch32_halfrow<<<grid, 256, 0, stream>>>(
         a, as, b, bs, out, int(m), int(n), int(k), bases, accepted, int(tiles_n));
-  // Explicit variant5 fallback for wide indices, tails, or unaligned codes.
+  else if (variant == 6 && sizeof(Index) == sizeof(int) && m % 128 == 0 && n % 128 == 0
+           && ((reinterpret_cast<uintptr_t>(a) | reinterpret_cast<uintptr_t>(b)) & 7u) == 0)
+    fused_certified_prefetch32_halfrow_cursor<<<grid, 256, 0, stream>>>(
+        a, as, b, bs, out, int(m), int(n), int(k), bases, accepted, int(tiles_n));
+  else if (variant == 7 && sizeof(Index) == sizeof(int) && m % 128 == 0 && n % 128 == 0
+           && ((reinterpret_cast<uintptr_t>(a) | reinterpret_cast<uintptr_t>(b)) & 7u) == 0)
+    fused_certified_prefetch32_halfrow_mul<<<grid, 256, 0, stream>>>(
+        a, as, b, bs, out, int(m), int(n), int(k), bases, accepted, int(tiles_n));
+  // Explicit variant5/6/7 fallback for wide indices, tails, or unaligned codes.
   else if (m % 128 == 0 && n % 128 == 0)
     fused_certified_prefetch32<Index, false><<<grid, 256, 0, stream>>>(
         a, as, b, bs, out, Index(m), Index(n), Index(k), bases, accepted, Index(tiles_n));
@@ -623,7 +884,7 @@ extern "C" int mxfp4_gemm_fused_cuda(
     const uint8_t* a, const uint8_t* a_scales, const uint8_t* b, const uint8_t* b_scales,
     float* out, int64_t m, int64_t n, int64_t padded_k,
     const uint8_t* row_bases, const int* accepted, int variant, cudaStream_t stream) {
-  if (m < 0 || n < 0 || padded_k < 0 || padded_k % 32 != 0 || variant < 0 || variant > 5)
+  if (m < 0 || n < 0 || padded_k < 0 || padded_k % 32 != 0 || variant < 0 || variant > 7)
     return int(cudaErrorInvalidValue);
   if (m == 0 || n == 0) return int(cudaSuccess);
   if (!out || !accepted || (padded_k && (!a || !a_scales || !b || !b_scales || !row_bases)))
@@ -661,6 +922,8 @@ extern "C" const char* mxfp4_fused_cuda_backend(int variant) {
     case 3: return "sm70_certified_fused128_bk32_prefetch_warp32x64_v1";
     case 4: return "sm70_certified_fused128_bk32_prefetch_warp64x64_v1";
     case 5: return "sm70_certified_fused128_bk32_halfrow_prefetch_warp32x64_v1";
+    case 6: return "sm70_certified_fused128_bk32_halfrow_cursor_prefetch_warp32x64_v1";
+    case 7: return "sm70_certified_fused128_bk32_half2_mul_prefetch_warp32x64_v1";
     default: return "invalid_fused_variant";
   }
 }

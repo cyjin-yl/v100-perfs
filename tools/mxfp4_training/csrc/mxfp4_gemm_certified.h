@@ -19,6 +19,9 @@
 // MXFP4_CERTIFIED_VARIANT=7: variant 6 with 128 threads and 64x64 warp tiles.
 // MXFP4_CERTIFIED_VARIANT=8: variant 6 with half-row vector raw prefetch for
 // aligned int32/full tiles; other inputs retain the variant-6 fused kernel.
+// MXFP4_CERTIFIED_VARIANT=9: variant 8 with fixed-stride packed/scale cursors.
+// MXFP4_CERTIFIED_VARIANT=10: variant 8 with exact half2 power-of-two scaling.
+// Variants 9/10 retain variant 8's dispatch guards and variant-6 fallback.
 // build_cuda.py defaults to 2; direct compilation without a define uses 0.
 // Runtime autotuning is deliberately absent.
 
@@ -34,7 +37,7 @@ typedef struct MXFP4CertifiedInfo {
   int32_t device;
   int64_t m, n, padded_k;
   // Explicit cudaMalloc allocations. Variants 0..2 include normalized FP16
-  // operands and a 4 MiB cuBLAS workspace; variants 3..8 own only row metadata,
+  // operands and a 4 MiB cuBLAS workspace; variants 3..10 own only row metadata,
   // row bases and the certificate, with no global normalized operand storage.
   // Excludes caller inputs/output and library/driver initialization overhead.
   uint64_t workspace_bytes;
@@ -73,7 +76,7 @@ int mxfp4_certified_workspace_bytes(int64_t m, int64_t n, int64_t padded_k,
 // The context is bound to the current device and fixed shape, and owns row
 // minima/energies, GPU certificate metadata and pinned diagnostic metadata.
 // Variants 0..2 also own two normalized-half matrices, a cuBLAS handle and
-// explicit cuBLAS workspace; variants 3..8 instead own compact row bases.
+// explicit cuBLAS workspace; variants 3..10 instead own compact row bases.
 // Creation/destruction are outside per-call timing. This prototype binds a
 // context to its CREATING HOST THREAD as well as device, so per-thread-default
 // stream tokens cannot silently change meaning. Do not use it concurrently.
@@ -95,7 +98,7 @@ int mxfp4_certified_create(int64_t m, int64_t n, int64_t padded_k, void** contex
 // GPU preparation/certificate, conditional fast path, conditional fallback.
 // Variants 0..2 execute cuBLAS even on rejected calls using bounded finite
 // safe inputs, then conditionally postscale; this unused work remains inside
-// fallback timing. Variants 3..8 normalize directly into shared memory in a
+// fallback timing. Variants 3..10 normalize directly into shared memory in a
 // fused HMMA kernel, and rejected calls skip that kernel before input reads.
 // With used_fast!=nullptr the function explicitly synchronizes and returns
 // accepted as 0/1 as well.

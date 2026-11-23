@@ -50,6 +50,11 @@ extern "C" {
 //             Fast kernel requires int32 offsets, M/N multiples of128, and
 //             8-byte aligned A/B; all other cases explicitly use variant3.
 //             Same shared layout, HMMA order, and two barriers per K stage.
+//   variant6: variant5 geometry and fast-path guards, fixed-stride absolute
+//             packed/scale cursors for next-stage prefetch; same C6 fallback.
+//   variant7: variant5 addresses/prefetch, independent half2-multiply decode.
+//             Nonzero normalized halves are bit-exact; internal signed zero
+//             is permitted, and scale_output retains canonical FP32 +0.
 // All variants implement the same certificate-dependent arithmetic.
 // Returns cudaError_t as int after enqueue; does not synchronize.
 int mxfp4_gemm_fused_cuda(const uint8_t* a, const uint8_t* a_scales,

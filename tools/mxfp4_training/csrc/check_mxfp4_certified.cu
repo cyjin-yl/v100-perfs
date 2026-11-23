@@ -21,7 +21,7 @@ MXFP4CertifiedInfo last_info{};
 uint64_t accepted = 0, rejected = 0, empty = 0;
 uint64_t canonical_zero_values = 0;
 bool any_completed = false, pipeline_attempted = false;
-#if MXFP4_CERTIFIED_VARIANT == 8
+#if MXFP4_CERTIFIED_VARIANT >= 8 && MXFP4_CERTIFIED_VARIANT <= 10
 bool c8_fixture_active = false;
 unsigned c8_a_alignment = 0, c8_b_alignment = 0, c8_output_alignment = 0;
 #endif
@@ -51,7 +51,7 @@ int adapter(const uint8_t* a, const uint8_t* as, const uint8_t* b,
     return status >= MXFP4_CERTIFIED_CUBLAS_ERROR_BASE ? int(cudaErrorUnknown) : status;
   }
   int used = -1;
-#if MXFP4_CERTIFIED_VARIANT == 8
+#if MXFP4_CERTIFIED_VARIANT >= 8 && MXFP4_CERTIFIED_VARIANT <= 10
   if (c8_fixture_active) {
     c8_a_alignment = unsigned(reinterpret_cast<uintptr_t>(a) & 7u);
     c8_b_alignment = unsigned(reinterpret_cast<uintptr_t>(b) & 7u);
@@ -260,7 +260,7 @@ void check_context_reuse(cudaStream_t stream) {
   certified_checks::checked(mxfp4_certified_destroy(context), "reuse destroy");
 }
 
-#if MXFP4_CERTIFIED_VARIANT == 8
+#if MXFP4_CERTIFIED_VARIANT >= 8 && MXFP4_CERTIFIED_VARIANT <= 10
 struct C8Fixture {
   Case data;
   bool accepted, vector_eligible;
@@ -346,14 +346,17 @@ int check_c8_loader_fixtures(cudaStream_t stream) {
           && certified_checks::c8_a_alignment == 0 && certified_checks::c8_b_alignment == 0;
       if (vector_eligible != fixture.vector_eligible)
         throw std::runtime_error(c.name + ": incorrect C8 dispatch fixture");
+      const char* halfrow_path = MXFP4_CERTIFIED_VARIANT == 9 ? "c9_halfrow_cursor"
+          : MXFP4_CERTIFIED_VARIANT == 10 ? "c10_halfrow_half2" : "c8_halfrow_loader";
       const char* path = !fixture.accepted ? "exact_tiled_rejection"
           : c.padded_k == 0 ? "empty_k"
-          : vector_eligible ? "c8_halfrow_loader" : "c6_compatible_fused";
+          : vector_eligible ? halfrow_path : "c6_compatible_fused";
       if (!fixture.accepted) ++rejected_calls;
       else if (c.padded_k == 0) ++empty_calls;
       else if (vector_eligible) ++nonempty_c8_calls;
       else ++c6_compatibility_calls;
       std::cout << "{\"type\":\"c8_fixture_dispatch\",\"case\":" << json_string(c.name)
+                << ",\"fixture_family\":\"c8_halfrow_contract\",\"certified_variant\":" << MXFP4_CERTIFIED_VARIANT
                 << ",\"expected_execution_path\":" << json_string(path)
                 << ",\"vector_dispatch_eligible\":" << (vector_eligible ? "true" : "false")
                 << ",\"pointer_alignment_observed\":true,\"kernel_path_instrumented\":false"
@@ -365,8 +368,10 @@ int check_c8_loader_fixtures(cudaStream_t stream) {
         || c6_compatibility_calls != 3 || empty_calls != 1 || rejected_calls != 1)
       throw std::runtime_error("C8 dedicated fixture coverage changed unexpectedly");
     std::cout << "{\"type\":\"c8_fixture_summary\",\"passed\":true,\"gpu_executed\":true"
+              << ",\"fixture_family\":\"c8_halfrow_contract\",\"certified_variant\":" << MXFP4_CERTIFIED_VARIANT
               << ",\"cases\":" << totals.cases << ",\"values\":" << totals.values
-              << ",\"nonempty_c8_loader_cases\":" << nonempty_c8_calls
+              << (MXFP4_CERTIFIED_VARIANT == 8 ? ",\"nonempty_c8_loader_cases\":"
+                                              : ",\"nonempty_derived_halfrow_loader_cases\":") << nonempty_c8_calls
               << ",\"c6_compatibility_cases\":" << c6_compatibility_calls
               << ",\"empty_K_cases\":" << empty_calls << ",\"rejected_cases\":" << rejected_calls
               << ",\"accepted_calls\":" << certified_checks::accepted - accepted_before
@@ -384,6 +389,39 @@ int check_c8_loader_fixtures(cudaStream_t stream) {
               << ",\"error\":" << json_string(error.what()) << "}\n";
     return 1;
   }
+}
+#endif
+
+#if MXFP4_CERTIFIED_VARIANT >= 9 && MXFP4_CERTIFIED_VARIANT <= 10
+void check_two_stage_cancellation(cudaStream_t stream) {
+  Case c("halfrow_two_stage_signed_zero_cancellation", 128, 128, 64);
+  std::fill(c.a.begin(), c.a.end(), uint8_t(0x88));
+  std::fill(c.b.begin(), c.b.end(), uint8_t(0x11));
+  for (int row = 0; row < c.m; ++row)
+    for (int kk = 0; kk < 32; ++kk) if ((kk + row) % 4 != 0) {
+      set_code(c.a, row, kk, c.padded_k, 1);
+      set_code(c.a, row, kk + 32, c.padded_k, 9);
+    }
+  const auto expected = reference(c);
+  for (float value : expected)
+    if (value != 0.0f || std::signbit(value))
+      throw std::runtime_error("Two-stage cancellation oracle must be canonical +0");
+  Totals totals;
+  const auto zeros_before = certified_checks::canonical_zero_values;
+  certified_checks::c8_fixture_active = true;
+  try { run_case(c, stream, totals); }
+  catch (...) { certified_checks::c8_fixture_active = false; throw; }
+  certified_checks::c8_fixture_active = false;
+  expect_certificate(true, 0, c.name.c_str());
+  if (certified_checks::c8_a_alignment || certified_checks::c8_b_alignment
+      || totals.cases != 1 || totals.values != 16384
+      || certified_checks::canonical_zero_values - zeros_before != 16384)
+    throw std::runtime_error("Two-stage half-row cancellation coverage mismatch");
+  std::cout << "{\"type\":\"halfrow_boundary_summary\",\"passed\":true,\"gpu_executed\":true"
+            << ",\"certified_variant\":" << MXFP4_CERTIFIED_VARIANT
+            << ",\"cases\":1,\"values\":16384,\"mismatches\":0"
+            << ",\"accepted\":true,\"K\":64,\"canonical_positive_zero_values\":16384"
+            << ",\"active_half_contains_signed_zero\":true,\"kernel_path_instrumented\":false}\n";
 }
 #endif
 
@@ -522,10 +560,13 @@ int main(int argc, char** argv) {
               << ",\"zero_K_calls\":" << certified_checks::empty
               << ",\"canonical_positive_zero_values\":" << certified_checks::canonical_zero_values
               << ",\"mismatches\":0,\"performance_measured\":false}\n";
-#if MXFP4_CERTIFIED_VARIANT == 8
-    // Preserve the existing 69-call suite's summary and report the C8-only
-    // coverage separately. A failure in either suite returns a failure status.
-    return check_c8_loader_fixtures(stream.value);
+#if MXFP4_CERTIFIED_VARIANT >= 8 && MXFP4_CERTIFIED_VARIANT <= 10
+    // Preserve the 69-call summary and reuse C8's nine input-contract fixtures
+    // for derived half-row kernels, reporting the actual compiled variant.
+    if (check_c8_loader_fixtures(stream.value)) return 1;
+#endif
+#if MXFP4_CERTIFIED_VARIANT >= 9 && MXFP4_CERTIFIED_VARIANT <= 10
+    check_two_stage_cancellation(stream.value);
 #endif
     return 0;
   } catch (const std::exception& error) {
