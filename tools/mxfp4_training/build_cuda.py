@@ -44,14 +44,15 @@ def main() -> int:
                              "for 0<K<=8192 (requires --with-certified --certified-variant 2)")
     parser.add_argument("--tiled-variant", type=int, choices=(0, 1, 2), default=1,
                         help="0: MX32; 1: MX32 with normal-scale gate; 2: two MX32 blocks per stage")
-    parser.add_argument("--certified-variant", type=int, choices=tuple(range(11)), default=2,
+    parser.add_argument("--certified-variant", type=int, choices=tuple(range(12)), default=2,
                         help="0..2: cuBLAS preparation/epilogue variants; "
                              "3: fused 64/BK64; 4: fused 128/BK32; 5: fused 128/BK64; "
                              "6: fused 128/BK32 with register prefetch; "
                              "7: prefetched 128/BK32 with 64x64 warp tiles; "
                              "8: half-row vector raw prefetch with variant-6 fallback; "
                              "9: half-row fixed-stride cursor prefetch; "
-                             "10: half-row exact half2 normalization")
+                             "10: half-row exact half2 normalization; "
+                             "11: C10 with per-128x128 full-K certificates/selective fallback")
     args = parser.parse_args()
     if args.with_fused_benchmark and (not args.with_certified or args.certified_variant < 3):
         parser.error("--with-fused-benchmark requires --with-certified and --certified-variant >=3")
@@ -108,13 +109,16 @@ def main() -> int:
     record = {
         "schema_version": 2, "evidence_type": "cuda_compilation", "gpu_executed": False,
         "backends": ["sm70_mx32_baseline", "sm70_mx32_tiled"] +
-                    ([("sm70_mx32_certified_fused_hmma_or_tiled" if args.certified_variant >= 3
+                    ([("sm70_mx32_certified_tile_fused_hmma_or_tiled" if args.certified_variant == 11
+                       else "sm70_mx32_certified_fused_hmma_or_tiled" if args.certified_variant >= 3
                        else "sm70_mx32_certified_cublas_or_tiled")] if args.with_certified else []),
         "tiled_variant": args.tiled_variant,
         "certified_enabled": args.with_certified,
         "quantizer_rne_enabled": args.with_quantizer_rne,
         "quantizer_rne_backend": "sm70_mx32_rne_warp_fp32_v1" if args.with_quantizer_rne else None,
         "certified_variant": args.certified_variant if args.with_certified else None,
+        "certified_tile_local_enabled": args.with_certified and args.certified_variant == 11,
+        "certified_tile_shape": [128, 128] if args.with_certified and args.certified_variant == 11 else None,
         "certified_prepare_raw_cache_enabled": args.certified_prepare_raw_cache,
         "certified_prepare_raw_cache_backend": (
             "sm70_c2_row_raw_cache_k8192_v1" if args.certified_prepare_raw_cache else None),

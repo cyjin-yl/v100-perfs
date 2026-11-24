@@ -1,0 +1,118 @@
+[
+  {
+    "name": "mxfp4-c8-1124-sshfix-v4",
+    "jobName": "sg-jincy26-261124-4abd5",
+    "owner": "金晨烨",
+    "userInfo": {
+      "username": "jincy26",
+      "nickname": "金晨烨"
+    },
+    "jobType": "custom",
+    "waitingToleranceSeconds": 100000000,
+    "queue": "公共账户",
+    "status": "Failed",
+    "podGroupPhase": "Running",
+    "createdAt": "2026-11-23T20:25:26Z",
+    "startedAt": "2026-11-23T20:25:30Z",
+    "completedAt": "2026-11-24T00:25:17Z",
+    "nodes": [
+      "dell-gpu-24"
+    ],
+    "resources": {
+      "cpu": "4",
+      "memory": "16Gi",
+      "nvidia.com/v100": "1"
+    },
+    "locked": false,
+    "permanentLocked": false,
+    "lockedTimestamp": "0001-01-01T00:00:00Z",
+    "billedPointsTotal": 0
+  },
+  {
+    "name": "mxfp4-c8-1124-sshfix-v3",
+    "jobName": "sg-jincy26-261124-5a8e7",
+    "owner": "金晨烨",
+    "userInfo": {
+      "username": "jincy26",
+      "nickname": "金晨烨"
+    },
+    "jobType": "custom",
+    "waitingToleranceSeconds": 100000000,
+    "queue": "公共账户",
+    "status": "Failed",
+    "podGroupPhase": "Running",
+    "createdAt": "2026-11-23T20:17:37Z",
+    "startedAt": "2026-11-23T20:17:40Z",
+    "completedAt": "2026-11-23T20:17:53Z",
+    "nodes": [
+      "dell-gpu-02"
+    ],
+    "resources": {
+      "cpu": "4",
+      "memory": "16Gi",
+      "nvidia.com/v100": "1"
+    },
+    "locked": false,
+    "permanentLocked": false,
+    "lockedTimestamp": "0001-01-01T00:00:00Z",
+    "billedPointsTotal": 0
+  },
+  {
+    "name": "mxfp4-c8-1124-sshfix",
+    "jobName": "sg-jincy26-261124-de561",
+    "owner": "金晨烨",
+    "userInfo": {
+      "username": "jincy26",
+      "nickname": "金晨烨"
+    },
+    "jobType": "custom",
+    "waitingToleranceSeconds": 100000000,
+    "queue": "公共账户",
+    "status": "Failed",
+    "podGroupPhase": "Running",
+    "createdAt": "2026-11-23T19:41:53Z",
+    "startedAt": "2026-11-23T19:41:57Z",
+    "completedAt": "2026-11-23T19:41:59Z",
+    "nodes": [
+      "dell-gpu-02"
+    ],
+    "resources": {
+      "cpu": "4",
+      "memory": "16Gi",
+      "nvidia.com/v100": "1"
+    },
+    "locked": false,
+    "permanentLocked": false,
+    "lockedTimestamp": "0001-01-01T00:00:00Z",
+    "billedPointsTotal": 0
+  },
+  {
+    "name": "mxfp4-perf-v100-1123",
+    "jobName": "sg-jincy26-261123-e5bb3",
+    "owner": "金晨烨",
+    "userInfo": {
+      "username": "jincy26",
+      "nickname": "金晨烨"
+    },
+    "jobType": "custom",
+    "waitingToleranceSeconds": 100000000,
+    "queue": "公共账户",
+    "status": "Failed",
+    "podGroupPhase": "Running",
+    "createdAt": "2026-11-23T15:57:51Z",
+    "startedAt": "2026-11-23T19:30:59Z",
+    "completedAt": "2026-11-23T19:31:01Z",
+    "nodes": [
+      "dell-gpu-25"
+    ],
+    "resources": {
+      "cpu": "4",
+      "memory": "16Gi",
+      "nvidia.com/v100": "1"
+    },
+    "locked": false,
+    "permanentLocked": false,
+    "lockedTimestamp": "0001-01-01T00:00:00Z",
+    "billedPointsTotal": 0
+  }
+]

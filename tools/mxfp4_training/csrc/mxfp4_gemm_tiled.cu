@@ -50,14 +50,24 @@ __device__ __forceinline__ void mma_four(float (&d)[8], uint2 a, uint2 b) {
       : "r"(a.x), "r"(a.y), "r"(b.x), "r"(b.y));
 }
 
-template<class Index, bool Tails, int Stages, bool NormalGate, bool Conditional>
+template<class Index, bool Tails, int Stages, bool NormalGate, bool Conditional,
+         bool TileLocal = false>
 __global__ __launch_bounds__(kThreads) void gemm_tiled_mx32(
     const uint8_t* __restrict__ a, const uint8_t* __restrict__ a_scales,
     const uint8_t* __restrict__ b, const uint8_t* __restrict__ b_scales,
     float* __restrict__ out,
-    Index m, Index n, Index padded_k, Index tiles_n, const int* skip_if_nonzero) {
+    Index m, Index n, Index padded_k, Index tiles_n, const int* skip_if_nonzero,
+    const int* tile_accepted) {
   if constexpr (Conditional) {
     if (*skip_if_nonzero != 0) return; // Uniform for the entire CTA, pre-barrier.
+    if constexpr (TileLocal) {
+      // Four 64x64 CTAs cover one certified 128x128 tile. This mapping also
+      // holds on partial edge tiles; no output belongs to two parent masks.
+      const Index parent_tiles_n = n / 128 + (n % 128 != 0);
+      const Index parent_row = (Index(blockIdx.x) / tiles_n) / 2;
+      const Index parent_col = (Index(blockIdx.x) % tiles_n) / 2;
+      if (tile_accepted[parent_row * parent_tiles_n + parent_col] != 0) return;
+    }
   }
   // One padding vector gives row strides of 72/136 bytes, rotating by
   // 18/2 banks. The 16 distinct 8-byte fragment row loads cover all banks.
@@ -231,22 +241,24 @@ bool product_fits(int64_t a, int64_t b, size_t element_size) {
   return a == 0 || uint64_t(b) <= limit / element_size / uint64_t(a);
 }
 
-template<class Index, bool Conditional>
+template<class Index, bool Conditional, bool TileLocal = false>
 void launch(const uint8_t* a, const uint8_t* as, const uint8_t* b,
             const uint8_t* bs, float* out, int64_t m, int64_t n, int64_t k,
-            int64_t tiles_n, unsigned grid, cudaStream_t stream, const int* skip_if_nonzero) {
+            int64_t tiles_n, unsigned grid, cudaStream_t stream, const int* skip_if_nonzero,
+            const int* tile_accepted) {
   if (m % kTile == 0 && n % kTile == 0)
-    gemm_tiled_mx32<Index, false, kStages, kNormalGate, Conditional><<<grid, kThreads, 0, stream>>>(
-        a, as, b, bs, out, Index(m), Index(n), Index(k), Index(tiles_n), skip_if_nonzero);
+    gemm_tiled_mx32<Index, false, kStages, kNormalGate, Conditional, TileLocal><<<grid, kThreads, 0, stream>>>(
+        a, as, b, bs, out, Index(m), Index(n), Index(k), Index(tiles_n), skip_if_nonzero, tile_accepted);
   else
-    gemm_tiled_mx32<Index, true, kStages, kNormalGate, Conditional><<<grid, kThreads, 0, stream>>>(
-        a, as, b, bs, out, Index(m), Index(n), Index(k), Index(tiles_n), skip_if_nonzero);
+    gemm_tiled_mx32<Index, true, kStages, kNormalGate, Conditional, TileLocal><<<grid, kThreads, 0, stream>>>(
+        a, as, b, bs, out, Index(m), Index(n), Index(k), Index(tiles_n), skip_if_nonzero, tile_accepted);
 }
 
 int dispatch_tiled(
     const uint8_t* a, const uint8_t* a_scales,
     const uint8_t* b, const uint8_t* b_scales, float* out,
-    int64_t m, int64_t n, int64_t padded_k, cudaStream_t stream, const int* skip_if_nonzero) {
+    int64_t m, int64_t n, int64_t padded_k, cudaStream_t stream,
+    const int* skip_if_nonzero, const int* tile_accepted) {
   if (m < 0 || n < 0 || padded_k < 0 || padded_k % 32 != 0)
     return int(cudaErrorInvalidValue);
   if (m == 0 || n == 0) return int(cudaSuccess);
@@ -268,16 +280,24 @@ int dispatch_tiled(
       && m <= int_limit / n
       && (padded_k == 0 || (m <= int_limit / (padded_k / 2)
                             && n <= int_limit / (padded_k / 2)));
-  if (skip_if_nonzero) {
+  if (tile_accepted) {
+    if (!skip_if_nonzero) return int(cudaErrorInvalidValue);
     if (small)
-      launch<int, true>(a, a_scales, b, b_scales, out, m, n, padded_k, tiles_n, grid, stream, skip_if_nonzero);
+      launch<int, true, true>(a, a_scales, b, b_scales, out, m, n, padded_k, tiles_n,
+          grid, stream, skip_if_nonzero, tile_accepted);
     else
-      launch<int64_t, true>(a, a_scales, b, b_scales, out, m, n, padded_k, tiles_n, grid, stream, skip_if_nonzero);
+      launch<int64_t, true, true>(a, a_scales, b, b_scales, out, m, n, padded_k, tiles_n,
+          grid, stream, skip_if_nonzero, tile_accepted);
+  } else if (skip_if_nonzero) {
+    if (small)
+      launch<int, true>(a, a_scales, b, b_scales, out, m, n, padded_k, tiles_n, grid, stream, skip_if_nonzero, nullptr);
+    else
+      launch<int64_t, true>(a, a_scales, b, b_scales, out, m, n, padded_k, tiles_n, grid, stream, skip_if_nonzero, nullptr);
   } else {
     if (small)
-      launch<int, false>(a, a_scales, b, b_scales, out, m, n, padded_k, tiles_n, grid, stream, nullptr);
+      launch<int, false>(a, a_scales, b, b_scales, out, m, n, padded_k, tiles_n, grid, stream, nullptr, nullptr);
     else
-      launch<int64_t, false>(a, a_scales, b, b_scales, out, m, n, padded_k, tiles_n, grid, stream, nullptr);
+      launch<int64_t, false>(a, a_scales, b, b_scales, out, m, n, padded_k, tiles_n, grid, stream, nullptr, nullptr);
   }
   return int(cudaGetLastError());
 }
@@ -288,7 +308,7 @@ extern "C" int mxfp4_gemm_tiled_cuda(
     const uint8_t* a, const uint8_t* a_scales,
     const uint8_t* b, const uint8_t* b_scales, float* out,
     int64_t m, int64_t n, int64_t padded_k, cudaStream_t stream) {
-  return dispatch_tiled(a, a_scales, b, b_scales, out, m, n, padded_k, stream, nullptr);
+  return dispatch_tiled(a, a_scales, b, b_scales, out, m, n, padded_k, stream, nullptr, nullptr);
 }
 
 extern "C" int mxfp4_gemm_tiled_if_cuda(
@@ -296,7 +316,15 @@ extern "C" int mxfp4_gemm_tiled_if_cuda(
     const uint8_t* b, const uint8_t* b_scales, float* out,
     int64_t m, int64_t n, int64_t padded_k, cudaStream_t stream, const int* skip_if_nonzero) {
   if (!skip_if_nonzero) return int(cudaErrorInvalidValue);
-  return dispatch_tiled(a, a_scales, b, b_scales, out, m, n, padded_k, stream, skip_if_nonzero);
+  return dispatch_tiled(a, a_scales, b, b_scales, out, m, n, padded_k, stream, skip_if_nonzero, nullptr);
+}
+
+extern "C" int mxfp4_gemm_tiled_tiles_if_cuda(
+    const uint8_t* a, const uint8_t* as, const uint8_t* b, const uint8_t* bs,
+    float* out, int64_t m, int64_t n, int64_t k, cudaStream_t stream,
+    const int* global_accepted, const int* tile_accepted) {
+  if (!global_accepted || !tile_accepted) return int(cudaErrorInvalidValue);
+  return dispatch_tiled(a, as, b, bs, out, m, n, k, stream, global_accepted, tile_accepted);
 }
 
 extern "C" int mxfp4_tiled_cuda_abi_version(void) { return 1; }

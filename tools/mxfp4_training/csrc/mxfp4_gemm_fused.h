@@ -63,6 +63,19 @@ int mxfp4_gemm_fused_cuda(const uint8_t* a, const uint8_t* a_scales,
                          const uint8_t* row_bases, const int* accepted,
                          int variant, cudaStream_t stream);
 
+// Variant-7 arithmetic, gated by full-K certificates for 128x128 output
+// tiles. global_accepted=1 bypasses tile flags; otherwise tile_accepted has
+// ceil(M/128)*ceil(N/128) immutable device ints, in row-major tile order.
+// Every nonzero tile flag must establish the same proof above for ALL real
+// A/B rows in that output tile. Tails/unaligned/wide indexing use variant3.
+// Rejected tiles return before operand reads/barriers. The caller enqueues
+// mxfp4_gemm_tiled_tiles_if_cuda with the identical tile mask afterwards.
+int mxfp4_gemm_fused_tiles_cuda(const uint8_t* a, const uint8_t* a_scales,
+                               const uint8_t* b, const uint8_t* b_scales, float* out,
+                               int64_t m, int64_t n, int64_t padded_k,
+                               const uint8_t* row_bases, const int* global_accepted,
+                               const int* tile_accepted, cudaStream_t stream);
+
 int mxfp4_fused_cuda_abi_version(void);
 const char* mxfp4_fused_cuda_backend(int variant);
 

@@ -101,6 +101,16 @@ int mxfp4_gemm_tiled_if_cuda(const uint8_t* a, const uint8_t* a_scales,
                             int64_t m, int64_t n, int64_t padded_k,
                             cudaStream_t stream, const int* skip_if_nonzero);
 
+// Selective exact fallback for 128x128 full-K certificates. A 64x64 CTA
+// returns when global_accepted is nonzero, or when its containing 128x128
+// tile is accepted. Both device guards are finalized earlier on this stream.
+// The tile mask has ceil(M/128)*ceil(N/128) entries in row-major order.
+int mxfp4_gemm_tiled_tiles_if_cuda(const uint8_t* a, const uint8_t* a_scales,
+                                  const uint8_t* b, const uint8_t* b_scales, float* out,
+                                  int64_t m, int64_t n, int64_t padded_k,
+                                  cudaStream_t stream, const int* global_accepted,
+                                  const int* tile_accepted);
+
 int mxfp4_tiled_cuda_abi_version(void);
 const char* mxfp4_tiled_cuda_backend(void);
 

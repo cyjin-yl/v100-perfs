@@ -4,6 +4,7 @@
 #include <stdint.h>
 
 #define MXFP4_CERTIFIED_ABI_VERSION 1
+#define MXFP4_CERTIFIED_TILE_ABI_VERSION 1
 #define MXFP4_CERTIFIED_CUBLAS_ERROR_BASE 10000
 #define MXFP4_CERTIFIED_ENERGY_BOUND UINT64_C(281474976710656)
 #define MXFP4_CERTIFIED_ENERGY_CAP UINT64_C(281474976710657)
@@ -21,6 +22,8 @@
 // aligned int32/full tiles; other inputs retain the variant-6 fused kernel.
 // MXFP4_CERTIFIED_VARIANT=9: variant 8 with fixed-stride packed/scale cursors.
 // MXFP4_CERTIFIED_VARIANT=10: variant 8 with exact half2 power-of-two scaling.
+// MXFP4_CERTIFIED_VARIANT=11: variant 10 with independent full-K certificates
+// for 128x128 output tiles; only rejected tiles use the exact tiled fallback.
 // Variants 9/10 retain variant 8's dispatch guards and variant-6 fallback.
 // build_cuda.py defaults to 2; direct compilation without a define uses 0.
 // Runtime autotuning is deliberately absent.
@@ -37,8 +40,9 @@ typedef struct MXFP4CertifiedInfo {
   int32_t device;
   int64_t m, n, padded_k;
   // Explicit cudaMalloc allocations. Variants 0..2 include normalized FP16
-  // operands and a 4 MiB cuBLAS workspace; variants 3..10 own only row metadata,
+  // operands and a 4 MiB cuBLAS workspace; variants 3..11 own row metadata,
   // row bases and the certificate, with no global normalized operand storage.
+  // Variant 11 additionally owns one int per 128x128 tile and 8-byte counters.
   // Excludes caller inputs/output and library/driver initialization overhead.
   uint64_t workspace_bytes;
   uint64_t max_energy_a, max_energy_b;
@@ -59,6 +63,16 @@ typedef struct MXFP4CertifiedInfo {
   uint64_t submitted_calls;
 } MXFP4CertifiedInfo;
 
+// Optional diagnostics, separate from the stable global certificate ABI.
+// Global MXFP4CertifiedInfo.accepted/reject_flags keep their original meaning:
+// an entirely accepted matrix has accepted=1. Variant 11 can execute some
+// certified tiles even when that GLOBAL certificate is rejected.
+typedef struct MXFP4CertifiedTileInfo {
+  uint32_t abi_version, enabled, metadata_valid, tile_m, tile_n, reserved;
+  uint64_t tiles_m, tiles_n, total_tiles, fast_tiles, fallback_tiles;
+  uint64_t submitted_calls;
+} MXFP4CertifiedTileInfo;
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -76,7 +90,8 @@ int mxfp4_certified_workspace_bytes(int64_t m, int64_t n, int64_t padded_k,
 // The context is bound to the current device and fixed shape, and owns row
 // minima/energies, GPU certificate metadata and pinned diagnostic metadata.
 // Variants 0..2 also own two normalized-half matrices, a cuBLAS handle and
-// explicit cuBLAS workspace; variants 3..10 instead own compact row bases.
+// explicit cuBLAS workspace; variants 3..11 instead own compact row bases.
+// Variant 11 also owns fresh per-call tile certificates and diagnostic counts.
 // Creation/destruction are outside per-call timing. This prototype binds a
 // context to its CREATING HOST THREAD as well as device, so per-thread-default
 // stream tokens cannot silently change meaning. Do not use it concurrently.
@@ -92,7 +107,9 @@ int mxfp4_certified_create(int64_t m, int64_t n, int64_t padded_k, void** contex
 // backend. The certificate checks row scale span <=12, normalized integer
 // row energies U,V with U*V <= 2^48, and common lattice exponent [-126,103].
 // E8M0=255 always rejects, including zero blocks. Rejection dispatches the
-// exact tiled path; it NEVER returns an uncertified fast-path value.
+// exact tiled path; it NEVER returns an uncertified fast-path value. Variant 11
+// applies that same full-K proof independently to 128x128 output tiles after
+// a global rejection. It dispatches exact fallback only for rejected tiles.
 //
 // With used_fast=nullptr this enqueues the complete pipeline asynchronously:
 // GPU preparation/certificate, conditional fast path, conditional fallback.
@@ -100,8 +117,11 @@ int mxfp4_certified_create(int64_t m, int64_t n, int64_t padded_k, void** contex
 // safe inputs, then conditionally postscale; this unused work remains inside
 // fallback timing. Variants 3..10 normalize directly into shared memory in a
 // fused HMMA kernel, and rejected calls skip that kernel before input reads.
+// Variant 11 uses the same on-chip arithmetic for accepted tiles, and both
+// compute paths are gated by matching 128x128 tile decisions before barriers.
 // With used_fast!=nullptr the function explicitly synchronizes and returns
-// accepted as 0/1 as well.
+// GLOBAL accepted as 0/1 as well, including for variant 11. Use the separate
+// tile-info query to distinguish partial fast-path coverage from all-fallback.
 int mxfp4_certified_gemm(void* context,
                         const uint8_t* a, const uint8_t* a_scales,
                         const uint8_t* b, const uint8_t* b_scales, float* out,
@@ -111,6 +131,12 @@ int mxfp4_certified_gemm(void* context,
 // used stream. Keep it OUTSIDE asynchronous performance timing. Values are
 // for the most recently submitted call. Before any call metadata_valid=0.
 int mxfp4_certified_get_info(void* context, MXFP4CertifiedInfo* info);
+
+// Variant 11: counts refer to the last submitted call and partition its
+// ceil(M/128)*ceil(N/128) output tiles. This query explicitly synchronizes;
+// keep it outside timing. Earlier variants return enabled=0 and zero tile
+// dimensions/counts, without changing the original global diagnostics.
+int mxfp4_certified_get_tile_info(void* context, MXFP4CertifiedTileInfo* info);
 
 // Waits for the last used stream before freeing any owned resource. Call on
 // the context's device, after ending all concurrent host use of the context.

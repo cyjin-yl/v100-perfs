@@ -1,0 +1,8 @@
+{
+  "started_at_utc": "2026-11-24T12:59:00.028670+00:00",
+  "display_name": "mxfp4-tile-pair-1124",
+  "owner": "jincy26",
+  "bootstrap_sha256": "417243b315ad79b905536e1abd65f955da77a6a4ca1d8f4f3d69f045a054cb38",
+  "container_lifetime_bound_seconds": 14400,
+  "existing_jobs_modified": false
+}

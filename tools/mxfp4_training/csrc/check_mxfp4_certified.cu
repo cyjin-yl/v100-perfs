@@ -21,7 +21,7 @@ MXFP4CertifiedInfo last_info{};
 uint64_t accepted = 0, rejected = 0, empty = 0;
 uint64_t canonical_zero_values = 0;
 bool any_completed = false, pipeline_attempted = false;
-#if MXFP4_CERTIFIED_VARIANT >= 8 && MXFP4_CERTIFIED_VARIANT <= 10
+#if MXFP4_CERTIFIED_VARIANT >= 8 && MXFP4_CERTIFIED_VARIANT <= 11
 bool c8_fixture_active = false;
 unsigned c8_a_alignment = 0, c8_b_alignment = 0, c8_output_alignment = 0;
 #endif
@@ -51,7 +51,7 @@ int adapter(const uint8_t* a, const uint8_t* as, const uint8_t* b,
     return status >= MXFP4_CERTIFIED_CUBLAS_ERROR_BASE ? int(cudaErrorUnknown) : status;
   }
   int used = -1;
-#if MXFP4_CERTIFIED_VARIANT >= 8 && MXFP4_CERTIFIED_VARIANT <= 10
+#if MXFP4_CERTIFIED_VARIANT >= 8 && MXFP4_CERTIFIED_VARIANT <= 11
   if (c8_fixture_active) {
     c8_a_alignment = unsigned(reinterpret_cast<uintptr_t>(a) & 7u);
     c8_b_alignment = unsigned(reinterpret_cast<uintptr_t>(b) & 7u);
@@ -260,7 +260,7 @@ void check_context_reuse(cudaStream_t stream) {
   certified_checks::checked(mxfp4_certified_destroy(context), "reuse destroy");
 }
 
-#if MXFP4_CERTIFIED_VARIANT >= 8 && MXFP4_CERTIFIED_VARIANT <= 10
+#if MXFP4_CERTIFIED_VARIANT >= 8 && MXFP4_CERTIFIED_VARIANT <= 11
 struct C8Fixture {
   Case data;
   bool accepted, vector_eligible;
@@ -347,7 +347,8 @@ int check_c8_loader_fixtures(cudaStream_t stream) {
       if (vector_eligible != fixture.vector_eligible)
         throw std::runtime_error(c.name + ": incorrect C8 dispatch fixture");
       const char* halfrow_path = MXFP4_CERTIFIED_VARIANT == 9 ? "c9_halfrow_cursor"
-          : MXFP4_CERTIFIED_VARIANT == 10 ? "c10_halfrow_half2" : "c8_halfrow_loader";
+          : MXFP4_CERTIFIED_VARIANT == 10 ? "c10_halfrow_half2"
+          : MXFP4_CERTIFIED_VARIANT == 11 ? "c11_tile_halfrow_half2" : "c8_halfrow_loader";
       const char* path = !fixture.accepted ? "exact_tiled_rejection"
           : c.padded_k == 0 ? "empty_k"
           : vector_eligible ? halfrow_path : "c6_compatible_fused";
@@ -392,7 +393,7 @@ int check_c8_loader_fixtures(cudaStream_t stream) {
 }
 #endif
 
-#if MXFP4_CERTIFIED_VARIANT >= 9 && MXFP4_CERTIFIED_VARIANT <= 10
+#if MXFP4_CERTIFIED_VARIANT >= 9 && MXFP4_CERTIFIED_VARIANT <= 11
 void check_two_stage_cancellation(cudaStream_t stream) {
   Case c("halfrow_two_stage_signed_zero_cancellation", 128, 128, 64);
   std::fill(c.a.begin(), c.a.end(), uint8_t(0x88));
@@ -560,12 +561,12 @@ int main(int argc, char** argv) {
               << ",\"zero_K_calls\":" << certified_checks::empty
               << ",\"canonical_positive_zero_values\":" << certified_checks::canonical_zero_values
               << ",\"mismatches\":0,\"performance_measured\":false}\n";
-#if MXFP4_CERTIFIED_VARIANT >= 8 && MXFP4_CERTIFIED_VARIANT <= 10
+#if MXFP4_CERTIFIED_VARIANT >= 8 && MXFP4_CERTIFIED_VARIANT <= 11
     // Preserve the 69-call summary and reuse C8's nine input-contract fixtures
     // for derived half-row kernels, reporting the actual compiled variant.
     if (check_c8_loader_fixtures(stream.value)) return 1;
 #endif
-#if MXFP4_CERTIFIED_VARIANT >= 9 && MXFP4_CERTIFIED_VARIANT <= 10
+#if MXFP4_CERTIFIED_VARIANT >= 9 && MXFP4_CERTIFIED_VARIANT <= 11
     check_two_stage_cancellation(stream.value);
 #endif
     return 0;

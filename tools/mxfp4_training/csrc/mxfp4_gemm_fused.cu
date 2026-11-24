@@ -1,5 +1,5 @@
 // Certificate-dependent fused MXFP4 normalization + all-K SM70 HMMA.
-// Rejected calls return before reading inputs; caller enqueues exact fallback.
+// Rejected calls/tiles return before input reads; caller enqueues exact fallback.
 #include "mxfp4_gemm_fused.h"
 
 #include <cuda_runtime.h>
@@ -196,16 +196,25 @@ __device__ __forceinline__ void prefetch_raw32(
   }
 }
 
+template<bool TileLocal>
+__device__ __forceinline__ bool full_k_tile_accepted(
+    const int* global_accepted, const int* tile_accepted) {
+  if (*global_accepted != 0) return true;
+  if constexpr (TileLocal) return tile_accepted[blockIdx.x] != 0;
+  return false;
+}
+
 // A separate kernel keeps the existing variants' source paths unchanged.
 // Only raw packed/scale data are prefetched. The single shared-memory stage,
 // HMMA order, and two barriers per K stage are identical to variant1.
-template<class Index, bool Tails>
+template<class Index, bool Tails, bool TileLocal = false>
 __global__ __launch_bounds__(256) void fused_certified_prefetch32(
     const uint8_t* __restrict__ a, const uint8_t* __restrict__ as,
     const uint8_t* __restrict__ b, const uint8_t* __restrict__ bs,
     float* __restrict__ out, Index m, Index n, Index k,
-    const uint8_t* __restrict__ row_bases, const int* accepted, Index tiles_n) {
-  if (*accepted == 0) return;
+    const uint8_t* __restrict__ row_bases, const int* accepted, Index tiles_n,
+    const int* tile_accepted) {
+  if (!full_k_tile_accepted<TileLocal>(accepted, tile_accepted)) return;
   __shared__ __align__(16) uint2 shared_a[128][9], shared_b[128][9];
   __shared__ uint8_t base_a[128], base_b[128];
   const int tid = int(threadIdx.x), lane = tid & 31, warp = tid >> 5;
@@ -722,12 +731,14 @@ __device__ __forceinline__ void publish_halfrow32_mul(
 
 // Independent decoder experiment: this is variant5's original address
 // generation and register prefetch, not the variant6 cursor experiment.
+template<bool TileLocal = false>
 __global__ __launch_bounds__(256) void fused_certified_prefetch32_halfrow_mul(
     const uint8_t* __restrict__ a, const uint8_t* __restrict__ as,
     const uint8_t* __restrict__ b, const uint8_t* __restrict__ bs,
     float* __restrict__ out, int m, int n, int k,
-    const uint8_t* __restrict__ row_bases, const int* accepted, int tiles_n) {
-  if (*accepted == 0) return;
+    const uint8_t* __restrict__ row_bases, const int* accepted, int tiles_n,
+    const int* tile_accepted) {
+  if (!full_k_tile_accepted<TileLocal>(accepted, tile_accepted)) return;
   using Index = int;
   constexpr bool Tails = false;
   __shared__ __align__(16) uint2 shared_a[128][9], shared_b[128][9];
@@ -847,10 +858,10 @@ void dispatch_variant(const uint8_t* a, const uint8_t* as, const uint8_t* b, con
     launch<Index, 128, 128, 64, 256, 32, 64>(a, as, b, bs, out, m, n, k, bases, accepted, tiles_n, grid, stream);
   else if (variant == 3 && m % 128 == 0 && n % 128 == 0)
     fused_certified_prefetch32<Index, false><<<grid, 256, 0, stream>>>(
-        a, as, b, bs, out, Index(m), Index(n), Index(k), bases, accepted, Index(tiles_n));
+        a, as, b, bs, out, Index(m), Index(n), Index(k), bases, accepted, Index(tiles_n), nullptr);
   else if (variant == 3)
     fused_certified_prefetch32<Index, true><<<grid, 256, 0, stream>>>(
-        a, as, b, bs, out, Index(m), Index(n), Index(k), bases, accepted, Index(tiles_n));
+        a, as, b, bs, out, Index(m), Index(n), Index(k), bases, accepted, Index(tiles_n), nullptr);
   else if (variant == 4 && m % 128 == 0 && n % 128 == 0)
     fused_certified_prefetch32_warp64<Index, false><<<grid, 128, 0, stream>>>(
         a, as, b, bs, out, Index(m), Index(n), Index(k), bases, accepted, Index(tiles_n));
@@ -867,15 +878,33 @@ void dispatch_variant(const uint8_t* a, const uint8_t* as, const uint8_t* b, con
         a, as, b, bs, out, int(m), int(n), int(k), bases, accepted, int(tiles_n));
   else if (variant == 7 && sizeof(Index) == sizeof(int) && m % 128 == 0 && n % 128 == 0
            && ((reinterpret_cast<uintptr_t>(a) | reinterpret_cast<uintptr_t>(b)) & 7u) == 0)
-    fused_certified_prefetch32_halfrow_mul<<<grid, 256, 0, stream>>>(
-        a, as, b, bs, out, int(m), int(n), int(k), bases, accepted, int(tiles_n));
+    fused_certified_prefetch32_halfrow_mul<false><<<grid, 256, 0, stream>>>(
+        a, as, b, bs, out, int(m), int(n), int(k), bases, accepted, int(tiles_n), nullptr);
   // Explicit variant5/6/7 fallback for wide indices, tails, or unaligned codes.
   else if (m % 128 == 0 && n % 128 == 0)
     fused_certified_prefetch32<Index, false><<<grid, 256, 0, stream>>>(
-        a, as, b, bs, out, Index(m), Index(n), Index(k), bases, accepted, Index(tiles_n));
+        a, as, b, bs, out, Index(m), Index(n), Index(k), bases, accepted, Index(tiles_n), nullptr);
   else
     fused_certified_prefetch32<Index, true><<<grid, 256, 0, stream>>>(
-        a, as, b, bs, out, Index(m), Index(n), Index(k), bases, accepted, Index(tiles_n));
+        a, as, b, bs, out, Index(m), Index(n), Index(k), bases, accepted, Index(tiles_n), nullptr);
+}
+
+template<class Index>
+void dispatch_tile_variant(const uint8_t* a, const uint8_t* as, const uint8_t* b,
+                           const uint8_t* bs, float* out, int64_t m, int64_t n,
+                           int64_t k, const uint8_t* bases, const int* accepted,
+                           const int* tile_accepted, int64_t tiles_n,
+                           unsigned grid, cudaStream_t stream) {
+  if (sizeof(Index) == sizeof(int) && m % 128 == 0 && n % 128 == 0
+      && ((reinterpret_cast<uintptr_t>(a) | reinterpret_cast<uintptr_t>(b)) & 7u) == 0)
+    fused_certified_prefetch32_halfrow_mul<true><<<grid, 256, 0, stream>>>(
+        a, as, b, bs, out, int(m), int(n), int(k), bases, accepted, int(tiles_n), tile_accepted);
+  else if (m % 128 == 0 && n % 128 == 0)
+    fused_certified_prefetch32<Index, false, true><<<grid, 256, 0, stream>>>(
+        a, as, b, bs, out, Index(m), Index(n), Index(k), bases, accepted, Index(tiles_n), tile_accepted);
+  else
+    fused_certified_prefetch32<Index, true, true><<<grid, 256, 0, stream>>>(
+        a, as, b, bs, out, Index(m), Index(n), Index(k), bases, accepted, Index(tiles_n), tile_accepted);
 }
 
 }  // namespace
@@ -910,6 +939,35 @@ extern "C" int mxfp4_gemm_fused_cuda(
   else
     dispatch_variant<int64_t>(a, a_scales, b, b_scales, out, m, n, padded_k, row_bases,
                               accepted, variant, tiles_n, grid, stream);
+  return int(cudaGetLastError());
+}
+
+extern "C" int mxfp4_gemm_fused_tiles_cuda(
+    const uint8_t* a, const uint8_t* as, const uint8_t* b, const uint8_t* bs,
+    float* out, int64_t m, int64_t n, int64_t k, const uint8_t* row_bases,
+    const int* global_accepted, const int* tile_accepted, cudaStream_t stream) {
+  if (m < 0 || n < 0 || k < 0 || k % 32 != 0) return int(cudaErrorInvalidValue);
+  if (m == 0 || n == 0) return int(cudaSuccess);
+  if (!out || !global_accepted || !tile_accepted
+      || (k && (!a || !as || !b || !bs || !row_bases))) return int(cudaErrorInvalidValue);
+  const int64_t index_limit = std::numeric_limits<ptrdiff_t>::max();
+  if (m > index_limit - n || !product_fits(m, n, sizeof(float))
+      || !product_fits(m, k / 2, 1) || !product_fits(n, k / 2, 1))
+    return int(cudaErrorInvalidValue);
+  const int64_t tiles_m = m / 128 + (m % 128 != 0);
+  const int64_t tiles_n = n / 128 + (n % 128 != 0);
+  constexpr int64_t max_grid = 2147483647;
+  if (tiles_m > max_grid / tiles_n) return int(cudaErrorInvalidValue);
+  const unsigned grid = unsigned(tiles_m * tiles_n);
+  const int64_t int_limit = std::numeric_limits<int>::max();
+  const bool small = m + n <= int_limit && k <= int_limit && m <= int_limit / n
+      && (k == 0 || (m <= int_limit / (k / 2) && n <= int_limit / (k / 2)));
+  if (small)
+    dispatch_tile_variant<int>(a, as, b, bs, out, m, n, k, row_bases,
+        global_accepted, tile_accepted, tiles_n, grid, stream);
+  else
+    dispatch_tile_variant<int64_t>(a, as, b, bs, out, m, n, k, row_bases,
+        global_accepted, tile_accepted, tiles_n, grid, stream);
   return int(cudaGetLastError());
 }
 
