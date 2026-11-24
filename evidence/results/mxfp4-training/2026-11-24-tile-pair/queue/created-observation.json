@@ -1,0 +1,25 @@
+{
+  "job": {
+    "name": "mxfp4-tile-pair-1124",
+    "namespace": "crater-workspace",
+    "username": "jincy26",
+    "nickname": "金晨烨",
+    "userInfo": {
+      "username": "jincy26",
+      "nickname": "金晨烨"
+    },
+    "jobName": "sg-jincy26-261124-ae156",
+    "jobType": "custom",
+    "waitingToleranceSeconds": 100000000,
+    "queue": "公共账户",
+    "resources": {
+      "cpu": "4",
+      "memory": "16Gi",
+      "nvidia.com/v100": "1"
+    },
+    "status": "Pending",
+    "createdAt": "2026-11-24T12:59:00Z",
+    "startedAt": "0001-01-01T00:00:00Z",
+    "completedAt": "0001-01-01T00:00:00Z"
+  }
+}
