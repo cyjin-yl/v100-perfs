@@ -190,6 +190,96 @@ def quantize_mx_cuda_rne(x: torch.Tensor) -> TorchMXTensor:
         return TorchMXTensor(codes, scales, (rows, k))
 
 
+@torch.no_grad()
+def quantize_pair_mx_cuda_rne(a: torch.Tensor, b: torch.Tensor) -> tuple[TorchMXTensor, TorchMXTensor]:
+    """Quantize two independent SM70 inputs with one finite-flag host read.
+
+    This opt-in wrapper uses the unchanged native RNE kernel twice on the
+    current stream. Both inputs are validated before either native call, and
+    every native buffer is registered with that stream before submission.
+    A single two-int device-to-host copy waits for both results; either
+    nonfinite input rejects the entire pair without exposing packed outputs.
+
+    Shapes may differ. Inputs must share one CUDA device; row/column strides,
+    lazy negative views and K padding follow quantize_mx_cuda_rne. Errors after
+    a native call was attempted synchronize this stream while buffers remain
+    alive. This function does not change the single-input API, MXRecipe,
+    stochastic rounding, or the GEMM arithmetic contract.
+    """
+    limit = 2**63 - 1
+    pointer_limit = 2**(ctypes.sizeof(ctypes.c_void_p) * 8 - 1) - 1
+
+    def validate(x: torch.Tensor) -> tuple[int, int]:
+        if (not isinstance(x, torch.Tensor) or x.layout != torch.strided
+                or x.dtype != torch.float32 or x.ndim != 2 or min(x.shape) <= 0):
+            raise ValueError("paired cuda_rne requires nonempty strided FP32 matrices")
+        if x.device.type != "cuda":
+            raise ValueError("paired cuda_rne requires CUDA inputs; no device fallback")
+        rows, k = x.shape
+        strides = x.stride()
+        if (any(s < 0 or s > limit for s in strides) or rows > limit or k > limit - 31):
+            raise ValueError("paired cuda_rne requires nonnegative strides and signed-64-bit-safe dimensions")
+        # Mirror the native ABI extent checks for BOTH inputs before the
+        # first native enqueue. Python integers make the products overflow-safe.
+        if (rows * ((k + 31) // 32) * 16 > pointer_limit
+                or (rows - 1) * strides[0] + (k - 1) * strides[1] > pointer_limit // 4):
+            raise ValueError("paired cuda_rne input extent exceeds the native pointer range")
+        return rows, k
+
+    shapes = (validate(a), validate(b))
+    if a.device != b.device:
+        raise ValueError("paired cuda_rne inputs must share one CUDA device")
+    with torch.cuda.device(a.device):
+        if torch.cuda.is_current_stream_capturing():
+            raise RuntimeError("paired cuda_rne does not support CUDA Graph capture")
+        if torch.cuda.get_device_capability(a.device) != (7, 0):
+            raise ValueError("this experimental paired RNE quantizer is gated to SM70")
+        path = os.environ.get("MXFP4_CUDA_LIBRARY")
+        if not path:
+            raise RuntimeError("set MXFP4_CUDA_LIBRARY to a library built with --with-quantizer-rne")
+        lib = _load_quantizer_library(path)
+        stream = torch.cuda.current_stream(a.device)
+        for x in (a, b):
+            x.record_stream(stream)  # Includes original storage of lazy views.
+        sources = tuple(x.detach().resolve_conj().resolve_neg() for x in (a, b))
+        # A lazy-view resolution can change strides; check its actual metadata
+        # too, still before the first native enqueue.
+        for source in sources:
+            validate(source)
+        outputs = tuple(TorchMXTensor(
+            torch.empty((rows, ((k + 31) // 32) * 16), dtype=torch.uint8, device=a.device),
+            torch.empty((rows, (k + 31) // 32), dtype=torch.uint8, device=a.device),
+            (rows, k)) for rows, k in shapes)
+        flags = torch.empty((2,), dtype=torch.int32, device=a.device)
+        for tensor in (*sources, outputs[0].codes, outputs[0].scales,
+                       outputs[1].codes, outputs[1].scales, flags):
+            tensor.record_stream(stream)
+        attempted = False
+        try:
+            for index, (source, output, (rows, k)) in enumerate(zip(sources, outputs, shapes)):
+                attempted = True  # A failing ABI call may already have enqueued work.
+                code = lib.mxfp4_quantize_rne_cuda(
+                    source.data_ptr(), output.codes.data_ptr(), output.scales.data_ptr(),
+                    flags.data_ptr() + index * flags.element_size(),
+                    rows, k, *source.stride(), stream.cuda_stream)
+                if code:
+                    raise RuntimeError(f"MXFP4 paired CUDA RNE launch {index} failed with cudaError_t={code}")
+            # One blocking D2H transfer, not two independent .item() waits.
+            # Both flags share storage but the unchanged ABI clears only its
+            # own aligned int, so the second call cannot erase the first error.
+            flag_values = flags.cpu().tolist()
+        except BaseException as error:
+            if attempted:
+                try:
+                    stream.synchronize()
+                except BaseException as cleanup:
+                    raise RuntimeError(f"{error}; paired quantizer cleanup failed: {cleanup}") from error
+            raise
+        if flag_values != [0, 0]:
+            raise ValueError("paired quantization rejects non-finite inputs")
+        return outputs
+
+
 @lru_cache(maxsize=8)
 def _load_library(path: str, backend: str = "cuda") -> ctypes.CDLL:
     lib = ctypes.CDLL(str(Path(path).expanduser().resolve(strict=True)))

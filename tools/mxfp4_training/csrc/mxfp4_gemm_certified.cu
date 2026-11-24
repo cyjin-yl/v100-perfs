@@ -16,8 +16,8 @@
 #ifndef MXFP4_CERTIFIED_VARIANT
 #define MXFP4_CERTIFIED_VARIANT 0
 #endif
-#if MXFP4_CERTIFIED_VARIANT < 0 || MXFP4_CERTIFIED_VARIANT > 10
-#error "MXFP4_CERTIFIED_VARIANT must be 0..2 (cuBLAS) or 3..10 (fused normalized HMMA)"
+#if MXFP4_CERTIFIED_VARIANT < 0 || MXFP4_CERTIFIED_VARIANT > 11
+#error "MXFP4_CERTIFIED_VARIANT must be 0..2 (cuBLAS) or 3..11 (fused normalized HMMA)"
 #endif
 #ifndef MXFP4_CERTIFIED_PREPARE_RAW_CACHE
 #define MXFP4_CERTIFIED_PREPARE_RAW_CACHE 0
@@ -38,6 +38,8 @@ constexpr int kPrepareThreads = 128;
 constexpr int kReduceThreads = 256;
 constexpr int kCachedEnergyBlocks = 1024;
 constexpr bool kFused = MXFP4_CERTIFIED_VARIANT >= 3;
+constexpr bool kTileLocal = MXFP4_CERTIFIED_VARIANT == 11;
+constexpr int kCertificateTile = 128;
 
 #if MXFP4_CERTIFIED_PREPARE_RAW_CACHE
 constexpr int kC2PrepareRawCacheMaxK = 8192;
@@ -62,6 +64,12 @@ struct DeviceMetadata {
   int accepted;
 };
 
+struct TileCounters {
+  unsigned accepted, rejected;
+};
+static_assert(sizeof(TileCounters) == 8, "stable tile counter allocation");
+static_assert(sizeof(MXFP4CertifiedTileInfo) == 72, "stable optional tile diagnostics ABI");
+
 struct Context {
   const std::thread::id owner_thread = std::this_thread::get_id();
   int device = -1;
@@ -72,6 +80,10 @@ struct Context {
   RowData* rows = nullptr;
   DeviceMetadata* metadata = nullptr;
   DeviceMetadata* host_metadata = nullptr;
+  int* tile_accepted = nullptr;
+  TileCounters* tile_counters = nullptr;
+  TileCounters* host_tile_counters = nullptr;
+  uint64_t tiles_m = 0, tiles_n = 0, total_tiles = 0;
   void* blas_workspace = nullptr;
   cublasHandle_t blas = nullptr;
   cudaStream_t last_stream = nullptr;
@@ -512,8 +524,23 @@ __device__ __forceinline__ DeviceMetadata warp_reduce_metadata(DeviceMetadata v)
   return v;
 }
 
+__device__ __forceinline__ unsigned certificate_flags(const DeviceMetadata& v) {
+  unsigned flags = 0;
+  if (v.nan_scales_a || v.nan_scales_b) flags |= MXFP4_CERT_REJECT_NAN_SCALE;
+  if (v.max_span_a > 12 || v.max_span_b > 12) flags |= MXFP4_CERT_REJECT_SCALE_SPAN;
+  // Nonnegative exact/saturated integer energies. Division avoids u64 overflow.
+  if (v.max_energy_a && v.max_energy_b &&
+      (v.max_energy_b > kEnergyBound || v.max_energy_a > kEnergyBound / v.max_energy_b))
+    flags |= MXFP4_CERT_REJECT_ENERGY_BOUND;
+  const int lattice_min = v.min_scale_a + v.min_scale_b - 256;
+  const int lattice_max = v.max_scale_a + v.max_scale_b - 256;
+  if (lattice_min < -126 || lattice_max > 103) flags |= MXFP4_CERT_REJECT_LATTICE_RANGE;
+  return flags;
+}
+
 __global__ __launch_bounds__(kReduceThreads) void finalize_certificate(
-    const RowData* rows, DeviceMetadata* output, int m, int n) {
+    const RowData* rows, DeviceMetadata* output, int m, int n,
+    TileCounters* tile_counters, unsigned total_tiles) {
   const int tid = int(threadIdx.x), lane = tid & 31, warp = tid >> 5;
   DeviceMetadata v = neutral_metadata();
   for (int64_t row = tid; row < int64_t(m) + n; row += kReduceThreads) {
@@ -542,23 +569,62 @@ __global__ __launch_bounds__(kReduceThreads) void finalize_certificate(
     v = lane < kReduceThreads / 32 ? partial[lane] : neutral_metadata();
     v = warp_reduce_metadata(v);
     if (lane == 0) {
-      unsigned flags = 0;
-      if (v.nan_scales_a || v.nan_scales_b) flags |= MXFP4_CERT_REJECT_NAN_SCALE;
-      if (v.max_span_a > 12 || v.max_span_b > 12) flags |= MXFP4_CERT_REJECT_SCALE_SPAN;
-      // Every normalized energy is an integer. If both sides are nonzero,
-      // saturation above 2^48 implies rejection. Never multiply two u64s.
-      if (v.max_energy_a && v.max_energy_b &&
-          (v.max_energy_b > kEnergyBound || v.max_energy_a > kEnergyBound / v.max_energy_b))
-        flags |= MXFP4_CERT_REJECT_ENERGY_BOUND;
-      const int lattice_min = v.min_scale_a + v.min_scale_b - 256;
-      const int lattice_max = v.max_scale_a + v.max_scale_b - 256;
-      if (lattice_min < -126 || lattice_max > 103) flags |= MXFP4_CERT_REJECT_LATTICE_RANGE;
+      const unsigned flags = certificate_flags(v);
       v.reject_flags = flags;
       v.accepted = flags == 0;
       *output = v;
+      if constexpr (kTileLocal) {
+        // The following kernel is on the same stream. Accepted global calls
+        // need no mask writes: both compute kernels short-circuit on this flag.
+        tile_counters->accepted = v.accepted ? total_tiles : 0;
+        tile_counters->rejected = 0;
+      }
     }
   }
 }
+
+#if MXFP4_CERTIFIED_VARIANT == 11
+// Restrict the SAME full-K proof to a subset of rows; never split/reorder K
+// beyond what that proof permits. No padded/tail row participates in minima.
+__global__ __launch_bounds__(kCertificateTile) void finalize_tile_certificates(
+    const RowData* rows, const DeviceMetadata* global, int* accepted,
+    TileCounters* counts, int m, int n, int tiles_n) {
+  if (global->accepted) return;
+  const int tid = int(threadIdx.x), lane = tid & 31, warp = tid >> 5;
+  const int ar = int(blockIdx.x / unsigned(tiles_n)) * kCertificateTile + tid;
+  const int br = int(blockIdx.x % unsigned(tiles_n)) * kCertificateTile + tid;
+  DeviceMetadata v = neutral_metadata();
+  if (ar < m) {
+    const RowData item = rows[ar];
+    v.max_energy_a = item.energy;
+    v.min_scale_a = v.max_scale_a = item.min_scale;
+    v.max_span_a = item.span; v.nan_scales_a = item.nan_scales;
+    v.zero_rows_a = item.zero; v.energy_saturated_a = item.saturated;
+  }
+  if (br < n) {
+    const RowData item = rows[m + br];
+    v.max_energy_b = item.energy;
+    v.min_scale_b = v.max_scale_b = item.min_scale;
+    v.max_span_b = item.span; v.nan_scales_b = item.nan_scales;
+    v.zero_rows_b = item.zero; v.energy_saturated_b = item.saturated;
+  }
+  v = warp_reduce_metadata(v);
+  __shared__ DeviceMetadata partial[kCertificateTile / 32];
+  if (lane == 0) partial[warp] = v;
+  __syncthreads();
+  if (warp == 0) {
+    v = lane < kCertificateTile / 32 ? partial[lane] : neutral_metadata();
+    v = warp_reduce_metadata(v);
+    if (lane == 0) {
+      const unsigned pass = certificate_flags(v) == 0;
+      accepted[blockIdx.x] = int(pass);
+      // total_tiles<=INT_MAX, so neither unsigned counter can overflow.
+      if (pass) atomicAdd(&counts->accepted, 1u);
+      else atomicAdd(&counts->rejected, 1u);
+    }
+  }
+}
+#endif
 
 __global__ void postscale_if_certified(float* out, const RowData* rows,
                                        const DeviceMetadata* metadata, int m, int n) {
@@ -621,8 +687,15 @@ int validate_shape(int64_t m, int64_t n, int64_t k, uint64_t* bytes) {
   const uint64_t limit = uint64_t(std::numeric_limits<ptrdiff_t>::max());
   const uint64_t rows = uint64_t(m) + uint64_t(n);
   if (uint64_t(m) > limit / sizeof(float) / uint64_t(n)) return int(cudaErrorInvalidValue);
+  uint64_t tile_bytes = 0;
+  if constexpr (kTileLocal) {
+    const uint64_t tm = (uint64_t(m) + kCertificateTile - 1) / kCertificateTile;
+    const uint64_t tn = (uint64_t(n) + kCertificateTile - 1) / kCertificateTile;
+    if (tm > uint64_t(std::numeric_limits<int>::max()) / tn) return int(cudaErrorInvalidValue);
+    tile_bytes = tm * tn * sizeof(int) + sizeof(TileCounters);
+  }
   const uint64_t fixed = (kFused ? 0 : kBlasWorkspace) + sizeof(DeviceMetadata)
-      + rows * (sizeof(RowData) + (kFused ? sizeof(uint8_t) : 0));
+      + rows * (sizeof(RowData) + (kFused ? sizeof(uint8_t) : 0)) + tile_bytes;
   if (fixed > limit || (k && rows > (limit - fixed) / (2 * uint64_t(k))))
     return int(cudaErrorInvalidValue);
   *bytes = fixed + (kFused ? 0 : rows * uint64_t(k) * 2);
@@ -650,8 +723,11 @@ int release(Context* c, bool synchronize) {
   if (c->row_bases) remember(int(cudaFree(c->row_bases)));
   if (c->rows) remember(int(cudaFree(c->rows)));
   if (c->metadata) remember(int(cudaFree(c->metadata)));
+  if (c->tile_accepted) remember(int(cudaFree(c->tile_accepted)));
+  if (c->tile_counters) remember(int(cudaFree(c->tile_counters)));
   if (c->blas_workspace) remember(int(cudaFree(c->blas_workspace)));
   if (c->host_metadata) remember(int(cudaFreeHost(c->host_metadata)));
+  if (c->host_tile_counters) remember(int(cudaFreeHost(c->host_tile_counters)));
   delete c;
   return first;
 }
@@ -718,6 +794,11 @@ extern "C" int mxfp4_certified_create(int64_t m, int64_t n, int64_t k, void** co
   Context* c = new (std::nothrow) Context;
   if (!c) return int(cudaErrorMemoryAllocation);
   c->m = int(m); c->n = int(n); c->k = int(k); c->workspace_bytes = bytes;
+  if constexpr (kTileLocal) {
+    c->tiles_m = (uint64_t(m) + kCertificateTile - 1) / kCertificateTile;
+    c->tiles_n = (uint64_t(n) + kCertificateTile - 1) / kCertificateTile;
+    c->total_tiles = c->tiles_m * c->tiles_n;
+  }
   status = int(cudaGetDevice(&c->device));
   if (!status) {
     cudaDeviceProp properties{};
@@ -731,8 +812,14 @@ extern "C" int mxfp4_certified_create(int64_t m, int64_t n, int64_t k, void** co
     status = int(cudaMalloc(reinterpret_cast<void**>(&c->row_bases), row_count));
   if (!status) status = int(cudaMalloc(reinterpret_cast<void**>(&c->rows), row_count * sizeof(RowData)));
   if (!status) status = int(cudaMalloc(reinterpret_cast<void**>(&c->metadata), sizeof(DeviceMetadata)));
+  if (!status && kTileLocal)
+    status = int(cudaMalloc(reinterpret_cast<void**>(&c->tile_accepted), c->total_tiles * sizeof(int)));
+  if (!status && kTileLocal)
+    status = int(cudaMalloc(reinterpret_cast<void**>(&c->tile_counters), sizeof(TileCounters)));
   if (!status && !kFused) status = int(cudaMalloc(&c->blas_workspace, kBlasWorkspace));
   if (!status) status = int(cudaMallocHost(reinterpret_cast<void**>(&c->host_metadata), sizeof(DeviceMetadata)));
+  if (!status && kTileLocal)
+    status = int(cudaMallocHost(reinterpret_cast<void**>(&c->host_tile_counters), sizeof(TileCounters)));
   if (!status && !kFused) status = blas_status(cublasCreate(&c->blas));
   if (!status && !kFused) status = blas_status(cublasSetPointerMode(c->blas, CUBLAS_POINTER_MODE_HOST));
   if (!status && !kFused) status = blas_status(cublasSetMathMode(c->blas, cublasMath_t(
@@ -780,12 +867,21 @@ extern "C" int mxfp4_certified_gemm(
   }
   status = int(cudaGetLastError());
   if (status) return status;
-  finalize_certificate<<<1, kReduceThreads, 0, stream>>>(c->rows, c->metadata, c->m, c->n);
+  finalize_certificate<<<1, kReduceThreads, 0, stream>>>(c->rows, c->metadata, c->m, c->n,
+      c->tile_counters, unsigned(c->total_tiles));
   status = int(cudaGetLastError());
   if (status) return status;
   const int* accepted = reinterpret_cast<const int*>(
       reinterpret_cast<const char*>(c->metadata) + offsetof(DeviceMetadata, accepted));
-#if MXFP4_CERTIFIED_VARIANT >= 3
+#if MXFP4_CERTIFIED_VARIANT == 11
+  finalize_tile_certificates<<<unsigned(c->total_tiles), kCertificateTile, 0, stream>>>(
+      c->rows, c->metadata, c->tile_accepted, c->tile_counters, c->m, c->n, int(c->tiles_n));
+  status = int(cudaGetLastError());
+  if (status) return status;
+  status = mxfp4_gemm_fused_tiles_cuda(a, as, b, bs, out, c->m, c->n, c->k,
+      c->row_bases, accepted, c->tile_accepted, stream);
+  if (status) return status;
+#elif MXFP4_CERTIFIED_VARIANT >= 3
   status = mxfp4_gemm_fused_cuda(a, as, b, bs, out, c->m, c->n, c->k,
       c->row_bases, accepted, MXFP4_CERTIFIED_VARIANT - 3, stream);
   if (status) return status;
@@ -822,7 +918,12 @@ extern "C" int mxfp4_certified_gemm(
   status = int(cudaGetLastError());
   if (status) return status;
 #endif
+#if MXFP4_CERTIFIED_VARIANT == 11
+  status = mxfp4_gemm_tiled_tiles_if_cuda(a, as, b, bs, out, c->m, c->n, c->k,
+      stream, accepted, c->tile_accepted);
+#else
   status = mxfp4_gemm_tiled_if_cuda(a, as, b, bs, out, c->m, c->n, c->k, stream, accepted);
+#endif
   if (status) return status;
   ++c->submitted_calls;
   c->metadata_valid = true;
@@ -843,6 +944,36 @@ extern "C" int mxfp4_certified_get_info(void* context, MXFP4CertifiedInfo* info)
   const int status = check_device(c);
   if (status) return status;
   return query_info_locked(c, info);
+}
+
+extern "C" int mxfp4_certified_get_tile_info(void* context, MXFP4CertifiedTileInfo* info) {
+  if (!context || !info) return int(cudaErrorInvalidValue);
+  Context* c = static_cast<Context*>(context);
+  Lock lock(c);
+  if (!lock.acquired) return int(cudaErrorNotReady);
+  const int check = check_device(c);
+  if (check) return check;
+  *info = MXFP4CertifiedTileInfo{};
+  info->abi_version = MXFP4_CERTIFIED_TILE_ABI_VERSION;
+  info->enabled = unsigned(kTileLocal);
+  info->submitted_calls = c->submitted_calls;
+  if constexpr (kTileLocal) {
+    info->tile_m = info->tile_n = kCertificateTile;
+    info->tiles_m = c->tiles_m; info->tiles_n = c->tiles_n;
+    info->total_tiles = c->total_tiles;
+    if (c->metadata_valid) {
+      cudaError_t status = cudaMemcpyAsync(c->host_tile_counters, c->tile_counters,
+          sizeof(TileCounters), cudaMemcpyDeviceToHost, c->last_stream);
+      if (status != cudaSuccess) return int(status);
+      status = cudaStreamSynchronize(c->last_stream);
+      if (status != cudaSuccess) return int(status);
+      info->fast_tiles = c->host_tile_counters->accepted;
+      info->fallback_tiles = c->host_tile_counters->rejected;
+    }
+  }
+  // A failed D2H copy or stream wait must not advertise valid diagnostics.
+  info->metadata_valid = unsigned(c->metadata_valid);
+  return 0;
 }
 
 extern "C" int mxfp4_certified_destroy(void* context) {
