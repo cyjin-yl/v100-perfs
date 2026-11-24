@@ -1,0 +1,370 @@
+{
+  "scope": "Actual CPU-run cycle simulation. No physical GPU execution; synthetic traces contain no numerical outputs.",
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 12277,
+      "sha256": "6cb8184e29c7b742e582b5a910feb22c646e3d481ff450884d687de7fea1ca52"
+    },
+    {
+      "path": "build-deps-pip.log",
+      "bytes": 597,
+      "sha256": "c63c4ecb878b277c7776b6d156b851300b1cc3f1e7a19c78e27b6093bf42898e"
+    },
+    {
+      "path": "build-resume.log",
+      "bytes": 4306,
+      "sha256": "6daa472fde0f1b8c59e196126b94bd911207793a52fb40e43bc5d01290e03841"
+    },
+    {
+      "path": "build.log",
+      "bytes": 12740,
+      "sha256": "3a0a86bb862f5132eb97abb7f6af3ee6db18685696ec899dcf09188358e724f8"
+    },
+    {
+      "path": "build/accel-sim.out",
+      "bytes": 4514568,
+      "sha256": "5de36dc76df77270f05893cc4c37c0f6249b20d3fee89a2c508a49def83f1711"
+    },
+    {
+      "path": "configs/latency8-whatif.config",
+      "bytes": 121,
+      "sha256": "33b74aa7c0613d48512c8ac570d050ef5e83ef4ea29e7cede952243cd72b326c"
+    },
+    {
+      "path": "configs/qv100-upstream-trace.config",
+      "bytes": 672,
+      "sha256": "19dd14b3a4b6c1a1cb2833bd091f0dbd485ad79336ef7d4b0c9db1f7c46f504e"
+    },
+    {
+      "path": "configs/qv100-upstream.config",
+      "bytes": 9367,
+      "sha256": "8ccad878b6abfec8254ecd6c7e0efee2714908dc3a04f611ff8787000e277bd3"
+    },
+    {
+      "path": "configure.log",
+      "bytes": 16995,
+      "sha256": "ecaf3d5131f6a6558a2700eea2882937107ee5d48c10e2a0168fc7240729d43f"
+    },
+    {
+      "path": "cuda_profiler_api-source.json",
+      "bytes": 408,
+      "sha256": "0244c141eb9b16d9d000bbe258fbd121d2ff6edc8d1fd1c8df99f31ef8a2bd45"
+    },
+    {
+      "path": "environment.sh",
+      "bytes": 877,
+      "sha256": "2519359be52937a1b568ea3b6c4d1ba89baa153a2535ffb72f17cd9309de763f"
+    },
+    {
+      "path": "licenses/Accel-Sim-LICENSE.txt",
+      "bytes": 1762,
+      "sha256": "edde45ed9edef82d6ab56d4844ce981b5be74505cbc9ddfe6b5af3695a616807"
+    },
+    {
+      "path": "licenses/GPGPU-Sim-COPYRIGHT.txt",
+      "bytes": 4522,
+      "sha256": "19de140576b1333c9a06aa4c749d244f7c9b818ab7813bd10d0620429df92a36"
+    },
+    {
+      "path": "licenses/pybind11-LICENSE.txt",
+      "bytes": 1684,
+      "sha256": "83965b843b98f670d3a85bd041ed4b372c8ec50d7b4a5995a83ac697ba675dcb"
+    },
+    {
+      "path": "logs/official-lud64-qv100.log",
+      "bytes": 1342852,
+      "sha256": "87c22cc21fb99de67c4a9370a9d6eacb70784a560f5415c0241369ef9bff9e96"
+    },
+    {
+      "path": "logs/upstream_qv100-hmma256_chains1_warps1.log",
+      "bytes": 148776,
+      "sha256": "4dd42fbacb8d0f9b114b38d8f330c62aa0db534d7b7d5f6d8baf101df31b1d23"
+    },
+    {
+      "path": "logs/upstream_qv100-hmma256_chains1_warps16.log",
+      "bytes": 148933,
+      "sha256": "7c7aff856e8cab35cfd4296ca83792b55c4e282e1a99283486f8d1cf9678c0c4"
+    },
+    {
+      "path": "logs/upstream_qv100-hmma256_chains1_warps4.log",
+      "bytes": 148812,
+      "sha256": "6cd83c14849c5171338d301bed507ff09a3120e8b3997dc7a02eb6371958bcac"
+    },
+    {
+      "path": "logs/upstream_qv100-hmma256_chains4_warps1.log",
+      "bytes": 148775,
+      "sha256": "5fd3cbc3e05de8fdf7e2caf1f1bced12483126e64b1243b60080280b9c65941b"
+    },
+    {
+      "path": "logs/upstream_qv100-hmma256_chains8_warps1.log",
+      "bytes": 148777,
+      "sha256": "faab9a90a4d8d843e32c487b6bb48e85d5eab5d59fcb3898a7eaee79046f40d3"
+    },
+    {
+      "path": "logs/upstream_qv100-no_hmma_warps1.log",
+      "bytes": 148706,
+      "sha256": "9f73952344bfb5f68df1f3348445739eb11802d044f315d05482dc842cabb206"
+    },
+    {
+      "path": "logs/whatif_hmma_latency8_init2-hmma256_chains1_warps1.log",
+      "bytes": 148776,
+      "sha256": "3dd98ab5f10be870aec5d868befbf6fbd6e19a5649081e289041db1b5bd5c95f"
+    },
+    {
+      "path": "logs/whatif_hmma_latency8_init2-hmma256_chains4_warps1.log",
+      "bytes": 148775,
+      "sha256": "d2548184dadb20532379036f1264bf2ecd290e225e0dd517ade88fb65b93e693"
+    },
+    {
+      "path": "logs/whatif_hmma_latency8_init2-hmma256_chains8_warps1.log",
+      "bytes": 148776,
+      "sha256": "4a44dd70fae7eba2129600d178df44c5f630513f6b12bc0c35752be2fc9f537e"
+    },
+    {
+      "path": "logs/whatif_hmma_latency8_init2-no_hmma_warps1.log",
+      "bytes": 148706,
+      "sha256": "d2482c9abe3d08fc263c92b7fdb2c5e494d8a6043fb65fc47c81bdfeb7ade292"
+    },
+    {
+      "path": "make_synthetic_traces.py",
+      "bytes": 2632,
+      "sha256": "4cde76ae298f403f876d500a46dfcf7f3698af1caeecf4327a7d16e3240d3178"
+    },
+    {
+      "path": "official-lud64-results.csv",
+      "bytes": 578,
+      "sha256": "170538d81b1bafd130c284013d026347612c7e5a086a75d511c564780b89e31b"
+    },
+    {
+      "path": "official-lud64-results.json",
+      "bytes": 2683,
+      "sha256": "50be90ba30706cf7988776697f2898e12f8f575e377c21e6a9c0fef95316c981"
+    },
+    {
+      "path": "official-lud64/kernel-1.traceg",
+      "bytes": 226032,
+      "sha256": "1df558b3851584fc4cd23852f7f260016c198465c61bab6373657d2afd8f09ac"
+    },
+    {
+      "path": "official-lud64/kernel-10.traceg",
+      "bytes": 226033,
+      "sha256": "f374f225612fd1204cedf3bccccba5847e477f3a75c90d493a9c6c7ef696aadc"
+    },
+    {
+      "path": "official-lud64/kernel-2.traceg",
+      "bytes": 164090,
+      "sha256": "f679397160113ddcf86b7b2d06dee7b0c73b6ebaf0439e01f6e5bfe233de7fc2"
+    },
+    {
+      "path": "official-lud64/kernel-3.traceg",
+      "bytes": 1279477,
+      "sha256": "040844e5aec6b551163b1ed8275cb383a88f025c0bc889e66cff444283ac61c0"
+    },
+    {
+      "path": "official-lud64/kernel-4.traceg",
+      "bytes": 226032,
+      "sha256": "1499541bd76853686fc6de28587692f2c4d0c54d2d8142906282e0f814261502"
+    },
+    {
+      "path": "official-lud64/kernel-5.traceg",
+      "bytes": 109496,
+      "sha256": "1a292532667436453898eabffcc8aadbacf5640be7a1bfb5c79e5c15d42ec067"
+    },
+    {
+      "path": "official-lud64/kernel-6.traceg",
+      "bytes": 568827,
+      "sha256": "f4f038ebd62db675eb1b57b5866f49ed8cd76ed80bb19c6728c59a66b10df27a"
+    },
+    {
+      "path": "official-lud64/kernel-7.traceg",
+      "bytes": 226032,
+      "sha256": "e53bb6af603262a00305687e8aed19972c65897ea072f8c219e06bc9cb44e0a7"
+    },
+    {
+      "path": "official-lud64/kernel-8.traceg",
+      "bytes": 54902,
+      "sha256": "4f294ca4ac4c5b3f557e13b7cc9106a80b2dfa2cff84623c0707cce778cfbf33"
+    },
+    {
+      "path": "official-lud64/kernel-9.traceg",
+      "bytes": 142437,
+      "sha256": "27f43996c4ffc1bf8ddd3d13c9735a46b931d10820ab97ce8c1193d96d8c9dbf"
+    },
+    {
+      "path": "official-lud64/kernelslist",
+      "bytes": 187,
+      "sha256": "2217cfc051495b1f30a1a943826c4718fbf05fbd773815019ce98900a1206c56"
+    },
+    {
+      "path": "official-lud64/kernelslist.g",
+      "bytes": 197,
+      "sha256": "8b8cd7f1eeeedcdb48311fa33c949282904421d57f6342ca82fa1fe81716d952"
+    },
+    {
+      "path": "official-lud64/stats.csv",
+      "bytes": 748,
+      "sha256": "c2d5e8158be67942a1d1d40ffe90528aeede4a4fbc8c9f481e76e926cfd4f629"
+    },
+    {
+      "path": "official-lud64/upstream-files.json",
+      "bytes": 1815,
+      "sha256": "7d7a71226eb5e761087948fb8b16441fa0576c6b6ce5d4dd4c833293a81f24c8"
+    },
+    {
+      "path": "official-trace-head.json",
+      "bytes": 484,
+      "sha256": "adbe399369b69b9730efc4ca92812e4b98b1cadcec2fa959f2de52221581a44b"
+    },
+    {
+      "path": "official-trace-manifest.json",
+      "bytes": 48327,
+      "sha256": "8845f5ed96048027313fad68e664d707f1d5c7c22bed4961228b77a3c916baad"
+    },
+    {
+      "path": "packages-selected.json",
+      "bytes": 2657,
+      "sha256": "80ee0f4c69f21e359a989e96156f359f8a757a6f40eaaa072ebd7ff48828f19a"
+    },
+    {
+      "path": "provenance.json",
+      "bytes": 3397,
+      "sha256": "c2cb6e50c727b24f0a4272b3506ce0c7de417569830589689fa536694b142fed"
+    },
+    {
+      "path": "ptx_accumulator_formula_check.cpp",
+      "bytes": 1013,
+      "sha256": "ec2b617c4cda097e283720a8dd6f76883a34e0a01f63ed2ba5e8d0e9878bcc2a"
+    },
+    {
+      "path": "ptx_accumulator_formula_check.json",
+      "bytes": 177,
+      "sha256": "e4d6c2d8fd5d0170f211dc1b9601d95a37bb32b712c2e35b9a33b7bd7983db69"
+    },
+    {
+      "path": "run_existing_binary.sh",
+      "bytes": 416,
+      "sha256": "bf05d125c0b6f80cfffa46d57ca96acfaa2adf88862c8c4888a91a9a95a65c22"
+    },
+    {
+      "path": "run_synthetic.py",
+      "bytes": 2576,
+      "sha256": "bd634a6f4ba186ebc3b4a030932deaba27bc5f70d171ca70b4f2b4d666bb8b94"
+    },
+    {
+      "path": "source-evidence/half.hpp",
+      "bytes": 149300,
+      "sha256": "ccd824d6931413fe992688750550bdea24860ff26cf98c9acc8362970603e355"
+    },
+    {
+      "path": "source-evidence/instructions.cc",
+      "bytes": 199740,
+      "sha256": "6201b96c27a071f4043a9c0777a9ac244d93843e1df67b94ad19c0e68ddc66bb"
+    },
+    {
+      "path": "source-evidence/trace_driven.cc",
+      "bytes": 45089,
+      "sha256": "48d071e7fdccbeeddefbdf092a7de3c48abafacfca647e01b8a5f15528a6286e"
+    },
+    {
+      "path": "source-evidence/tracer_tool.cu",
+      "bytes": 64449,
+      "sha256": "92b55d50e8cfafa447ede1cd2f008e7e0b399751f3e9c13364c8e9e734979e95"
+    },
+    {
+      "path": "source-evidence/volta_opcode.h",
+      "bytes": 7168,
+      "sha256": "dc88c632ab09210faf8239bd9eb988056641e0643642d622dc43304c4b787da4"
+    },
+    {
+      "path": "summarize_evidence.py",
+      "bytes": 1856,
+      "sha256": "f05def6c80680e43fcf0a74130db762801f97ae94b257b1235c7839705accc4f"
+    },
+    {
+      "path": "synthetic-generation.json",
+      "bytes": 1976,
+      "sha256": "f3dc9d06c05a2643bc9bcab1f4e9909135c6295eced941dca9d41d1151e70867"
+    },
+    {
+      "path": "synthetic-results.csv",
+      "bytes": 1451,
+      "sha256": "0aa262d2e63b6840f6b9bc2b95f6506a3928cd082e79799724f3288a1560b5bf"
+    },
+    {
+      "path": "synthetic-results.json",
+      "bytes": 13350,
+      "sha256": "c697629a5811d5448b7769ad11014ea565fba08a8c9c7f3a31c7be2adc2dd893"
+    },
+    {
+      "path": "synthetic-run-console.log",
+      "bytes": 1773,
+      "sha256": "a6cabc7cba2644edce889c98cde86afc3d31e0c68007fba0b58926eca71245b1"
+    },
+    {
+      "path": "synthetic/hmma256_chains1_warps1/kernel-1.traceg",
+      "bytes": 15861,
+      "sha256": "081e6a1b367e93862d6db45ba92aa016251df937cdd011187e6b32bcafe7cf40"
+    },
+    {
+      "path": "synthetic/hmma256_chains1_warps1/kernelslist.g",
+      "bytes": 16,
+      "sha256": "beb03d46bd1f5a6c20fdb34aaaeed37de3fc31e5010ff2c5657a7778e3e9a40c"
+    },
+    {
+      "path": "synthetic/hmma256_chains1_warps16/kernel-1.traceg",
+      "bytes": 247574,
+      "sha256": "40ce653bb3025e8487b210b67f083dddb6d5f5d08aea5878b3d76f151fdf2e53"
+    },
+    {
+      "path": "synthetic/hmma256_chains1_warps16/kernelslist.g",
+      "bytes": 16,
+      "sha256": "beb03d46bd1f5a6c20fdb34aaaeed37de3fc31e5010ff2c5657a7778e3e9a40c"
+    },
+    {
+      "path": "synthetic/hmma256_chains1_warps4/kernel-1.traceg",
+      "bytes": 62203,
+      "sha256": "69ba728b04df4558a799a13a3dbd0f4ebf264b603cdfccfb08ebd8fe4ff13476"
+    },
+    {
+      "path": "synthetic/hmma256_chains1_warps4/kernelslist.g",
+      "bytes": 16,
+      "sha256": "beb03d46bd1f5a6c20fdb34aaaeed37de3fc31e5010ff2c5657a7778e3e9a40c"
+    },
+    {
+      "path": "synthetic/hmma256_chains4_warps1/kernel-1.traceg",
+      "bytes": 15861,
+      "sha256": "eb326c47d3eb119cf60a7bd5326cedfd994f076d101b3db80f47919b677f97ef"
+    },
+    {
+      "path": "synthetic/hmma256_chains4_warps1/kernelslist.g",
+      "bytes": 16,
+      "sha256": "beb03d46bd1f5a6c20fdb34aaaeed37de3fc31e5010ff2c5657a7778e3e9a40c"
+    },
+    {
+      "path": "synthetic/hmma256_chains8_warps1/kernel-1.traceg",
+      "bytes": 16053,
+      "sha256": "673c0b5d12ba182decf98ff88c4848c094fa451c19cf0d76d32e884cbd72987a"
+    },
+    {
+      "path": "synthetic/hmma256_chains8_warps1/kernelslist.g",
+      "bytes": 16,
+      "sha256": "beb03d46bd1f5a6c20fdb34aaaeed37de3fc31e5010ff2c5657a7778e3e9a40c"
+    },
+    {
+      "path": "synthetic/manifest.json",
+      "bytes": 1976,
+      "sha256": "f3dc9d06c05a2643bc9bcab1f4e9909135c6295eced941dca9d41d1151e70867"
+    },
+    {
+      "path": "synthetic/no_hmma_warps1/kernel-1.traceg",
+      "bytes": 748,
+      "sha256": "e27f3a34b50be95663099667da08fc7ffe54fe1f516ec4a746484f38d2c27e38"
+    },
+    {
+      "path": "synthetic/no_hmma_warps1/kernelslist.g",
+      "bytes": 16,
+      "sha256": "beb03d46bd1f5a6c20fdb34aaaeed37de3fc31e5010ff2c5657a7778e3e9a40c"
+    }
+  ]
+}

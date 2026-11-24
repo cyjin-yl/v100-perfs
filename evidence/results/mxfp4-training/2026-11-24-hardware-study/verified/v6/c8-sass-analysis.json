@@ -1,0 +1,1325 @@
+{
+  "schema_version": 1,
+  "evidence_type": "same_v6_binary_static_sass_comparison_c8_halfrow_vs_c6",
+  "recorded_at_utc": "2026-11-23T19:20:51.739278+00:00",
+  "passed": true,
+  "gpu_executed_by_analysis": false,
+  "cuda_compilation_executed_by_analysis": false,
+  "kernel_source_modified": false,
+  "scope": "C8 int32/full-128-tile/8-byte-aligned fast function and C6 int32/no-tail function extracted from the same V6 build-c8 packed benchmark binary. C8 fallback functions and GPU timings are separate evidence.",
+  "bindings": {
+    "source_archive_sha256": "077953136dd2cf00faabde0ae4bd9910761cedb059f85c44473fe5ede838c251",
+    "source_archive_rehashed_locally": true,
+    "source_files_rehashed_from_archive": {
+      "tools/mxfp4_training/csrc/mxfp4_gemm_fused.cu": "b81e780adddcb87b1a548ecda583e1a1e030041c74cf89999ec2270bc7123708",
+      "tools/mxfp4_training/csrc/mxfp4_gemm_fused.h": "34ebe0d912a1e85f975093d81c3dc23feed70a88e0cf48499b26278ba4ad1442"
+    },
+    "binary": "build-c8/bench_mxfp4_fused",
+    "binary_sha256": "ad3f496ad3cae7c9aa576bf655b5c70629336641abcc4dc56c16222bb7a16056",
+    "binary_hash_agrees_between_disassembly_provenance_and_build_manifest": true,
+    "binary_rehashed_by_this_analysis": false,
+    "sass_provenance_sha256": "349e36a1f57f68acca2442a1c41902e87175d657a237996a633eb79356bba821",
+    "source_state_sha256": "eb6cafe885cd4b0178c88e80363f2863940278269495eb7e92eeaca3f2b15eb6",
+    "compile_evidence_sha256": "b6e1d3c8c1a92b78e5dbd0a60129c40350f5aa251bae64e6a8010ec6e6ce679e",
+    "ptxas_log_file": "build-c8/fused_packed_benchmark.log",
+    "ptxas_log_sha256": "e76d86342b4ddfa3a29f0789fb43791c7fb57aea87ec9cb97fa43431c1411134",
+    "nvcc_version": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2025 NVIDIA Corporation\nBuilt on Tue_May_27_02:21:03_PDT_2025\nCuda compilation tools, release 12.9, V12.9.86\nBuild cuda_12.9.r12.9/compiler.36037853_0",
+    "cuobjdump_version": "cuobjdump: NVIDIA (R) fat binary listing tool\nCopyright (c) 2005-2024 NVIDIA Corporation\nBuilt on Fri_Mar_15_14:38:03_PDT_2024\nCuda compilation tools, release 12.4, V12.4.127\nBuild cuda_12.4.r12.4/compiler.34043715_0\n",
+    "sections": [
+      {
+        "name": "c6-int32-no-tail.sass.txt",
+        "function": "Function : _ZN52_GLOBAL__N__702f8fc1_19_mxfp4_gemm_fused_cu_da86c26226fused_certified_prefetch32IiLb0EEEvPKhS2_S2_S2_PfT_S4_S4_S2_PKiS4_",
+        "sha256": "1fb3a49b06a862888de4d17902e89769d8f22fa30b733672d5b1d48ccaf131ea",
+        "bytes": 534839,
+        "kernel_symbol": "_ZN52_GLOBAL__N__702f8fc1_19_mxfp4_gemm_fused_cu_da86c26226fused_certified_prefetch32IiLb0EEEvPKhS2_S2_S2_PfT_S4_S4_S2_PKiS4_"
+      },
+      {
+        "name": "c8-halfrow.sass.txt",
+        "function": "Function : _ZN52_GLOBAL__N__702f8fc1_19_mxfp4_gemm_fused_cu_da86c26234fused_certified_prefetch32_halfrowEPKhS1_S1_S1_PfiiiS1_PKii",
+        "sha256": "2999d8db387863648d03e9d776ab93b63b2aae3cb47f0af4ac63226f8b93f945",
+        "bytes": 430038,
+        "kernel_symbol": "_ZN52_GLOBAL__N__702f8fc1_19_mxfp4_gemm_fused_cu_da86c26234fused_certified_prefetch32_halfrowEPKhS1_S1_S1_PfiiiS1_PKii"
+      }
+    ]
+  },
+  "resources": {
+    "c6": {
+      "registers_per_thread": 128,
+      "named_barrier_resources": 1,
+      "shared_bytes_per_cta": 18688,
+      "stack_frame_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0,
+      "local_load_or_store_instructions_in_function": 0,
+      "ptxas_log_excerpt": "ptxas info    : Function properties for _ZN52_GLOBAL__N__702f8fc1_19_mxfp4_gemm_fused_cu_da86c26226fused_certified_prefetch32IiLb0EEEvPKhS2_S2_S2_PfT_S4_S4_S2_PKiS4_\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 128 registers, used 1 barriers, 18688 bytes smem, 428 bytes cmem[0]"
+    },
+    "c8": {
+      "registers_per_thread": 119,
+      "named_barrier_resources": 1,
+      "shared_bytes_per_cta": 18688,
+      "stack_frame_bytes": 0,
+      "spill_store_bytes": 0,
+      "spill_load_bytes": 0,
+      "local_load_or_store_instructions_in_function": 0,
+      "ptxas_log_excerpt": "ptxas info    : Function properties for _ZN52_GLOBAL__N__702f8fc1_19_mxfp4_gemm_fused_cu_da86c26234fused_certified_prefetch32_halfrowEPKhS1_S1_S1_PfiiiS1_PKii\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 119 registers, used 1 barriers, 18688 bytes smem, 428 bytes cmem[0]"
+    }
+  },
+  "resources_interpretation": "119 registers passes the <=128/no-spill gate. This does not itself increase the two-CTA register limit versus C6: with 64K registers/SM and 256-register/warp allocation, C8 rounds to 30,720 registers/CTA and C6 to 32,768. This is an allocation model, not measured occupancy.",
+  "c8_prologue": {
+    "accepted_flag_load": "0x0040",
+    "rejected_return": "0x0060: @!P0 EXIT",
+    "row_base_publish_barrier": "0x0460",
+    "cached_row_base_loads": [
+      {
+        "offset": "0x0470",
+        "register": "R110",
+        "operand": "A"
+      },
+      {
+        "offset": "0x0490",
+        "register": "R108",
+        "operand": "B"
+      }
+    ],
+    "initial_raw_loads": [
+      "0x0640",
+      "0x0650",
+      "0x0660",
+      "0x0670"
+    ],
+    "zero_k_skips_initial_raw_loads": "0x0520 branches to 0x0680; 0x0680 selects zero-accumulator path and 0x0890 jumps to epilogue at 0x3300.",
+    "counter_initialization": "0x09b0: R106=0",
+    "block_count_definition": "R101=Kp/32, computed from c[0x0][0x190] at 0x0480..0x0510",
+    "first_loop_entry": "0x0c40"
+  },
+  "c8_loop": {
+    "entry": "0x0c40",
+    "backedge": "0x32f0: @!P0 BRA 0xc40",
+    "publish_barrier": "0x1e90",
+    "next_block_increment": "0x1eb0: R106 += 1",
+    "last_stage_predicate": "0x1ed0: P0=(R106>=R101); all four next-stage LDG instructions use @!P0",
+    "packed_next_stage_offset": "0x23b0: R93=R106*16",
+    "b_packed_pointer": "0x2430 and 0x2500 form R92:R93 from B base c[0x0][0x170:174], row/half offset R96:R95 and next-block offset.",
+    "a_packed_pointer": "0x2450 and 0x3140 form R114:R115 from A base c[0x0][0x160:164], row/half offset R98:R97 and next-block offset.",
+    "a_scale_pointer": "0x1f20, 0x1f50, 0x1f80 form row*R101+R106+A_scales.",
+    "b_scale_pointer": "0x1f10, 0x1f40, 0x1f70 form row*R101+R106+B_scales.",
+    "first_shared_fragment_load": "0x1ea0",
+    "first_hmma": "0x1fd0",
+    "last_shared_fragment_load": "0x2ec0",
+    "shared_reuse_barrier": "0x3200",
+    "last_hmma": "0x32e0",
+    "hmma_instructions_after_shared_reuse_barrier": 13,
+    "reuse_barrier_interpretation": "The compiler schedules the barrier after all shared reads but before the last 13 HMMA instructions, whose operands are already in registers. No shared read follows this barrier in the iteration.",
+    "hmma_instruction_count": 256,
+    "shared_64bit_fragment_load_count": 48,
+    "barrier_instruction_count": 2,
+    "row_base_shared_byte_loads_in_loop": 0
+  },
+  "steady_state_prefetch": {
+    "verified": true,
+    "raw_register_payload_count": 6,
+    "nonfinal_stage_ldg_per_thread": 4,
+    "packed_ldg_width_bits": 64,
+    "packed_ldg_count": 2,
+    "scale_ldg_count": 2,
+    "final_stage_ldg_executed": 0,
+    "dataflow": [
+      {
+        "operand": "A",
+        "kind": "packed_halfrow",
+        "registers": [
+          "R68",
+          "R69"
+        ],
+        "prologue_ldg": "0x0660",
+        "prologue_instruction": "LDG.E.64.CONSTANT.SYS R68, [R68]",
+        "steady_state_ldg": "0x3190",
+        "steady_state_instruction": "@!P0 LDG.E.64.CONSTANT.SYS R68, [R114]",
+        "hmma_instructions_after_steady_load_before_backedge": 18,
+        "no_register_reference_or_overlapping_wide_write_after_load_until_backedge": true,
+        "next_iteration_first_raw_consumer": "0x0c50",
+        "consumer_instruction": "LOP3.LUT P0, RZ, R68, 0x77777777, R69, 0xc8, !PT",
+        "next_iteration_active_shared_stores": [
+          "0x14a0",
+          "0x14b0",
+          "0x14c0",
+          "0x14d0"
+        ]
+      },
+      {
+        "operand": "A",
+        "kind": "scale",
+        "registers": [
+          "R107"
+        ],
+        "prologue_ldg": "0x0640",
+        "prologue_instruction": "LDG.E.U8.CONSTANT.SYS R107, [R4]",
+        "steady_state_ldg": "0x1fc0",
+        "steady_state_instruction": "@!P0 LDG.E.U8.CONSTANT.SYS R107, [R72]",
+        "hmma_instructions_after_steady_load_before_backedge": 256,
+        "no_register_reference_or_overlapping_wide_write_after_load_until_backedge": true,
+        "next_iteration_first_raw_consumer": "0x0c90",
+        "consumer_instruction": "IMAD.IADD R70, R107, 0x1, -R110",
+        "next_iteration_active_shared_stores": [
+          "0x14a0",
+          "0x14b0",
+          "0x14c0",
+          "0x14d0"
+        ]
+      },
+      {
+        "operand": "B",
+        "kind": "packed_halfrow",
+        "registers": [
+          "R2",
+          "R3"
+        ],
+        "prologue_ldg": "0x0670",
+        "prologue_instruction": "LDG.E.64.CONSTANT.SYS R2, [R2]",
+        "steady_state_ldg": "0x2560",
+        "steady_state_instruction": "@!P0 LDG.E.64.CONSTANT.SYS R2, [R92]",
+        "hmma_instructions_after_steady_load_before_backedge": 186,
+        "no_register_reference_or_overlapping_wide_write_after_load_until_backedge": true,
+        "next_iteration_first_raw_consumer": "0x1540",
+        "consumer_instruction": "LOP3.LUT P0, RZ, R2, 0x77777777, R3, 0xc8, !PT",
+        "next_iteration_active_shared_stores": [
+          "0x1dd0",
+          "0x1df0",
+          "0x1e00",
+          "0x1e10"
+        ]
+      },
+      {
+        "operand": "B",
+        "kind": "scale",
+        "registers": [
+          "R105"
+        ],
+        "prologue_ldg": "0x0650",
+        "prologue_instruction": "LDG.E.U8.CONSTANT.SYS R105, [R6]",
+        "steady_state_ldg": "0x1fb0",
+        "steady_state_instruction": "@!P0 LDG.E.U8.CONSTANT.SYS R105, [R74]",
+        "hmma_instructions_after_steady_load_before_backedge": 256,
+        "no_register_reference_or_overlapping_wide_write_after_load_until_backedge": true,
+        "next_iteration_first_raw_consumer": "0x1650",
+        "consumer_instruction": "IMAD.IADD R70, R105, 0x1, -R108",
+        "next_iteration_active_shared_stores": [
+          "0x1dd0",
+          "0x1df0",
+          "0x1e00",
+          "0x1e10"
+        ]
+      }
+    ],
+    "interpretation": "The scale loads precede the first HMMA. Packed B and A loads are interleaved into current-stage computation, with 186 and 18 subsequent HMMA instructions respectively. All six raw registers survive to the next loop and are consumed by its half guards/delta computation. This is true steady-state prefetch, not only a prologue load; it is not evidence that the entire memory latency is hidden."
+  },
+  "same_binary_c6_baseline": {
+    "entry": "0x1920",
+    "publish_barrier": "0x3110",
+    "first_hmma": "0x3960",
+    "last_hmma": "0x4c00",
+    "reuse_barrier": "0x4c20",
+    "backedge": "0x4c30: @!P0 BRA 0x1920",
+    "aligned_nonfinal_stage_ldg_per_thread": 16,
+    "packed_16bit_ldg_count": 8,
+    "scale_byte_ldg_count": 8,
+    "raw_registers": [
+      "R105",
+      "R106",
+      "R107",
+      "R108",
+      "R109",
+      "R110",
+      "R111",
+      "R112",
+      "R113",
+      "R114",
+      "R115",
+      "R116",
+      "R117",
+      "R118",
+      "R119",
+      "R120"
+    ],
+    "aligned_steady_state_ldg_offsets": [
+      "0x3350",
+      "0x3360",
+      "0x33e0",
+      "0x3420",
+      "0x3440",
+      "0x3480",
+      "0x34a0",
+      "0x34c0",
+      "0x37a0",
+      "0x37d0",
+      "0x37e0",
+      "0x3860",
+      "0x38b0",
+      "0x38d0",
+      "0x38e0",
+      "0x38f0"
+    ],
+    "raw_registers_preserved_after_load_to_backedge": true,
+    "hmma_instruction_count": 256,
+    "shared_64bit_fragment_load_count": 48,
+    "barrier_instruction_count": 2,
+    "row_base_shared_byte_loads_in_loop": 8
+  },
+  "decode_publish_comparison": {
+    "counting_method": "All disassembled instruction slots from loop entry inclusive to publish barrier exclusive; alternate active/zero paths are both included. Counts are not dynamic issue counts or cycle measurements.",
+    "c6": {
+      "start_inclusive": "0x1920",
+      "end_exclusive": "0x3110",
+      "static_instruction_count": 383,
+      "opcode_histogram": {
+        "BMOV.32.CLEAR": 8,
+        "BRA": 8,
+        "BSSY": 8,
+        "BSYNC": 8,
+        "CS2R": 5,
+        "IADD3": 1,
+        "IMAD": 12,
+        "IMAD.IADD": 40,
+        "IMAD.MOV.U32": 15,
+        "IMAD.SHL.U32": 52,
+        "IMAD.U32": 8,
+        "LDS.U.U8": 8,
+        "LOP3.LUT": 144,
+        "NOP": 1,
+        "PRMT": 16,
+        "SEL": 32,
+        "SHF.R.U32.HI": 8,
+        "SHFL.IDX": 1,
+        "STS.64": 8
+      }
+    },
+    "c8": {
+      "start_inclusive": "0x0c40",
+      "end_exclusive": "0x1e90",
+      "static_instruction_count": 293,
+      "opcode_histogram": {
+        "BMOV.32.CLEAR": 2,
+        "BRA": 4,
+        "BSSY": 2,
+        "BSYNC": 2,
+        "IMAD": 5,
+        "IMAD.IADD": 35,
+        "IMAD.MOV.U32": 3,
+        "IMAD.SHL.U32": 21,
+        "LEA.HI": 4,
+        "LOP3.LUT": 129,
+        "NOP": 1,
+        "PRMT": 16,
+        "SEL": 32,
+        "SHF.R.U32.HI": 20,
+        "SHFL.IDX": 1,
+        "STS.64": 16
+      }
+    },
+    "static_instruction_reduction": 90,
+    "static_instruction_reduction_percent": 23.49869451697128,
+    "c8_static_stores_vs_per_thread": "16 STS.64 opcodes include mutually exclusive active/zero paths. Each thread executes four A and four B stores per stage; eight alternate zero-store slots are skipped for the all-active branch path.",
+    "modeled_all_active_control_path_slots": {
+      "c6": 383,
+      "c8": 285
+    },
+    "guard_reconvergence_groups": {
+      "c6": 8,
+      "c8": 2
+    },
+    "shared_store_opcode_in_c8": "STS.64; no STS.128 in the loop",
+    "bank_model_caveat": "Actual STS.64 width agrees with the host 16-thread-phase address model, but this analysis does not measure bank transactions or replay/conflict counts."
+  },
+  "shared_fragment_load_scheduling": {
+    "c6": {
+      "definition": "Sequential 16-byte SASS instruction slots strictly between LDS and first HMMA using its register pair; not cycles or measured stalls.",
+      "count": 48,
+      "minimum": 0,
+      "median": 12.0,
+      "maximum": 15,
+      "distinct_destination_register_pairs": 5,
+      "no_pair_overwritten_before_first_consumer": true,
+      "loads": [
+        {
+          "load": "0x3900",
+          "register_pair": [
+            "R84",
+            "R85"
+          ],
+          "shared_address": "[R96]",
+          "first_hmma_consumer": "0x3960",
+          "intervening_static_instruction_slots": 5
+        },
+        {
+          "load": "0x3920",
+          "register_pair": [
+            "R78",
+            "R79"
+          ],
+          "shared_address": "[R95]",
+          "first_hmma_consumer": "0x3960",
+          "intervening_static_instruction_slots": 3
+        },
+        {
+          "load": "0x3930",
+          "register_pair": [
+            "R74",
+            "R75"
+          ],
+          "shared_address": "[R95+0x480]",
+          "first_hmma_consumer": "0x39a0",
+          "intervening_static_instruction_slots": 6
+        },
+        {
+          "load": "0x3940",
+          "register_pair": [
+            "R68",
+            "R69"
+          ],
+          "shared_address": "[R95+0x900]",
+          "first_hmma_consumer": "0x39e0",
+          "intervening_static_instruction_slots": 9
+        },
+        {
+          "load": "0x3950",
+          "register_pair": [
+            "R2",
+            "R3"
+          ],
+          "shared_address": "[R95+0xd80]",
+          "first_hmma_consumer": "0x3a20",
+          "intervening_static_instruction_slots": 12
+        },
+        {
+          "load": "0x3a60",
+          "register_pair": [
+            "R84",
+            "R85"
+          ],
+          "shared_address": "[R96+0x480]",
+          "first_hmma_consumer": "0x3a70",
+          "intervening_static_instruction_slots": 0
+        },
+        {
+          "load": "0x3ac0",
+          "register_pair": [
+            "R78",
+            "R79"
+          ],
+          "shared_address": "[R95+0x8]",
+          "first_hmma_consumer": "0x3bc0",
+          "intervening_static_instruction_slots": 15
+        },
+        {
+          "load": "0x3b10",
+          "register_pair": [
+            "R74",
+            "R75"
+          ],
+          "shared_address": "[R95+0x488]",
+          "first_hmma_consumer": "0x3c00",
+          "intervening_static_instruction_slots": 14
+        },
+        {
+          "load": "0x3b60",
+          "register_pair": [
+            "R68",
+            "R69"
+          ],
+          "shared_address": "[R95+0x908]",
+          "first_hmma_consumer": "0x3c40",
+          "intervening_static_instruction_slots": 13
+        },
+        {
+          "load": "0x3ba0",
+          "register_pair": [
+            "R84",
+            "R85"
+          ],
+          "shared_address": "[R96+0x8]",
+          "first_hmma_consumer": "0x3bc0",
+          "intervening_static_instruction_slots": 1
+        },
+        {
+          "load": "0x3bb0",
+          "register_pair": [
+            "R2",
+            "R3"
+          ],
+          "shared_address": "[R95+0xd88]",
+          "first_hmma_consumer": "0x3c80",
+          "intervening_static_instruction_slots": 12
+        },
+        {
+          "load": "0x3cc0",
+          "register_pair": [
+            "R84",
+            "R85"
+          ],
+          "shared_address": "[R96+0x488]",
+          "first_hmma_consumer": "0x3cd0",
+          "intervening_static_instruction_slots": 0
+        },
+        {
+          "load": "0x3d20",
+          "register_pair": [
+            "R78",
+            "R79"
+          ],
+          "shared_address": "[R95+0x10]",
+          "first_hmma_consumer": "0x3e20",
+          "intervening_static_instruction_slots": 15
+        },
+        {
+          "load": "0x3d70",
+          "register_pair": [
+            "R74",
+            "R75"
+          ],
+          "shared_address": "[R95+0x490]",
+          "first_hmma_consumer": "0x3e60",
+          "intervening_static_instruction_slots": 14
+        },
+        {
+          "load": "0x3dc0",
+          "register_pair": [
+            "R68",
+            "R69"
+          ],
+          "shared_address": "[R95+0x910]",
+          "first_hmma_consumer": "0x3ea0",
+          "intervening_static_instruction_slots": 13
+        },
+        {
+          "load": "0x3e00",
+          "register_pair": [
+            "R84",
+            "R85"
+          ],
+          "shared_address": "[R96+0x10]",
+          "first_hmma_consumer": "0x3e20",
+          "intervening_static_instruction_slots": 1
+        },
+        {
+          "load": "0x3e10",
+          "register_pair": [
+            "R2",
+            "R3"
+          ],
+          "shared_address": "[R95+0xd90]",
+          "first_hmma_consumer": "0x3ee0",
+          "intervening_static_instruction_slots": 12
+        },
+        {
+          "load": "0x3f20",
+          "register_pair": [
+            "R84",
+            "R85"
+          ],
+          "shared_address": "[R96+0x490]",
+          "first_hmma_consumer": "0x3f30",
+          "intervening_static_instruction_slots": 0
+        },
+        {
+          "load": "0x3f80",
+          "register_pair": [
+            "R78",
+            "R79"
+          ],
+          "shared_address": "[R95+0x18]",
+          "first_hmma_consumer": "0x4080",
+          "intervening_static_instruction_slots": 15
+        },
+        {
+          "load": "0x3fd0",
+          "register_pair": [
+            "R74",
+            "R75"
+          ],
+          "shared_address": "[R95+0x498]",
+          "first_hmma_consumer": "0x40c0",
+          "intervening_static_instruction_slots": 14
+        },
+        {
+          "load": "0x4020",
+          "register_pair": [
+            "R68",
+            "R69"
+          ],
+          "shared_address": "[R95+0x918]",
+          "first_hmma_consumer": "0x4100",
+          "intervening_static_instruction_slots": 13
+        },
+        {
+          "load": "0x4060",
+          "register_pair": [
+            "R84",
+            "R85"
+          ],
+          "shared_address": "[R96+0x18]",
+          "first_hmma_consumer": "0x4080",
+          "intervening_static_instruction_slots": 1
+        },
+        {
+          "load": "0x4070",
+          "register_pair": [
+            "R2",
+            "R3"
+          ],
+          "shared_address": "[R95+0xd98]",
+          "first_hmma_consumer": "0x4140",
+          "intervening_static_instruction_slots": 12
+        },
+        {
+          "load": "0x4180",
+          "register_pair": [
+            "R84",
+            "R85"
+          ],
+          "shared_address": "[R96+0x498]",
+          "first_hmma_consumer": "0x4190",
+          "intervening_static_instruction_slots": 0
+        },
+        {
+          "load": "0x41e0",
+          "register_pair": [
+            "R78",
+            "R79"
+          ],
+          "shared_address": "[R95+0x20]",
+          "first_hmma_consumer": "0x42e0",
+          "intervening_static_instruction_slots": 15
+        },
+        {
+          "load": "0x4230",
+          "register_pair": [
+            "R74",
+            "R75"
+          ],
+          "shared_address": "[R95+0x4a0]",
+          "first_hmma_consumer": "0x4320",
+          "intervening_static_instruction_slots": 14
+        },
+        {
+          "load": "0x4280",
+          "register_pair": [
+            "R68",
+            "R69"
+          ],
+          "shared_address": "[R95+0x920]",
+          "first_hmma_consumer": "0x4360",
+          "intervening_static_instruction_slots": 13
+        },
+        {
+          "load": "0x42c0",
+          "register_pair": [
+            "R84",
+            "R85"
+          ],
+          "shared_address": "[R96+0x20]",
+          "first_hmma_consumer": "0x42e0",
+          "intervening_static_instruction_slots": 1
+        },
+        {
+          "load": "0x42d0",
+          "register_pair": [
+            "R2",
+            "R3"
+          ],
+          "shared_address": "[R95+0xda0]",
+          "first_hmma_consumer": "0x43a0",
+          "intervening_static_instruction_slots": 12
+        },
+        {
+          "load": "0x43e0",
+          "register_pair": [
+            "R84",
+            "R85"
+          ],
+          "shared_address": "[R96+0x4a0]",
+          "first_hmma_consumer": "0x43f0",
+          "intervening_static_instruction_slots": 0
+        },
+        {
+          "load": "0x4440",
+          "register_pair": [
+            "R78",
+            "R79"
+          ],
+          "shared_address": "[R95+0x28]",
+          "first_hmma_consumer": "0x4540",
+          "intervening_static_instruction_slots": 15
+        },
+        {
+          "load": "0x4490",
+          "register_pair": [
+            "R74",
+            "R75"
+          ],
+          "shared_address": "[R95+0x4a8]",
+          "first_hmma_consumer": "0x4580",
+          "intervening_static_instruction_slots": 14
+        },
+        {
+          "load": "0x44e0",
+          "register_pair": [
+            "R68",
+            "R69"
+          ],
+          "shared_address": "[R95+0x928]",
+          "first_hmma_consumer": "0x45c0",
+          "intervening_static_instruction_slots": 13
+        },
+        {
+          "load": "0x4520",
+          "register_pair": [
+            "R84",
+            "R85"
+          ],
+          "shared_address": "[R96+0x28]",
+          "first_hmma_consumer": "0x4540",
+          "intervening_static_instruction_slots": 1
+        },
+        {
+          "load": "0x4530",
+          "register_pair": [
+            "R2",
+            "R3"
+          ],
+          "shared_address": "[R95+0xda8]",
+          "first_hmma_consumer": "0x4600",
+          "intervening_static_instruction_slots": 12
+        },
+        {
+          "load": "0x4640",
+          "register_pair": [
+            "R84",
+            "R85"
+          ],
+          "shared_address": "[R96+0x4a8]",
+          "first_hmma_consumer": "0x4650",
+          "intervening_static_instruction_slots": 0
+        },
+        {
+          "load": "0x46a0",
+          "register_pair": [
+            "R78",
+            "R79"
+          ],
+          "shared_address": "[R95+0x30]",
+          "first_hmma_consumer": "0x47a0",
+          "intervening_static_instruction_slots": 15
+        },
+        {
+          "load": "0x46f0",
+          "register_pair": [
+            "R74",
+            "R75"
+          ],
+          "shared_address": "[R95+0x4b0]",
+          "first_hmma_consumer": "0x47e0",
+          "intervening_static_instruction_slots": 14
+        },
+        {
+          "load": "0x4740",
+          "register_pair": [
+            "R68",
+            "R69"
+          ],
+          "shared_address": "[R95+0x930]",
+          "first_hmma_consumer": "0x4820",
+          "intervening_static_instruction_slots": 13
+        },
+        {
+          "load": "0x4780",
+          "register_pair": [
+            "R84",
+            "R85"
+          ],
+          "shared_address": "[R96+0x30]",
+          "first_hmma_consumer": "0x47a0",
+          "intervening_static_instruction_slots": 1
+        },
+        {
+          "load": "0x4790",
+          "register_pair": [
+            "R2",
+            "R3"
+          ],
+          "shared_address": "[R95+0xdb0]",
+          "first_hmma_consumer": "0x4860",
+          "intervening_static_instruction_slots": 12
+        },
+        {
+          "load": "0x48a0",
+          "register_pair": [
+            "R84",
+            "R85"
+          ],
+          "shared_address": "[R96+0x4b0]",
+          "first_hmma_consumer": "0x48b0",
+          "intervening_static_instruction_slots": 0
+        },
+        {
+          "load": "0x4900",
+          "register_pair": [
+            "R78",
+            "R79"
+          ],
+          "shared_address": "[R95+0x38]",
+          "first_hmma_consumer": "0x4a00",
+          "intervening_static_instruction_slots": 15
+        },
+        {
+          "load": "0x4950",
+          "register_pair": [
+            "R74",
+            "R75"
+          ],
+          "shared_address": "[R95+0x4b8]",
+          "first_hmma_consumer": "0x4a40",
+          "intervening_static_instruction_slots": 14
+        },
+        {
+          "load": "0x49a0",
+          "register_pair": [
+            "R68",
+            "R69"
+          ],
+          "shared_address": "[R95+0x938]",
+          "first_hmma_consumer": "0x4a80",
+          "intervening_static_instruction_slots": 13
+        },
+        {
+          "load": "0x49e0",
+          "register_pair": [
+            "R84",
+            "R85"
+          ],
+          "shared_address": "[R96+0x38]",
+          "first_hmma_consumer": "0x4a00",
+          "intervening_static_instruction_slots": 1
+        },
+        {
+          "load": "0x49f0",
+          "register_pair": [
+            "R2",
+            "R3"
+          ],
+          "shared_address": "[R95+0xdb8]",
+          "first_hmma_consumer": "0x4ac0",
+          "intervening_static_instruction_slots": 12
+        },
+        {
+          "load": "0x4b00",
+          "register_pair": [
+            "R84",
+            "R85"
+          ],
+          "shared_address": "[R96+0x4b8]",
+          "first_hmma_consumer": "0x4b10",
+          "intervening_static_instruction_slots": 0
+        }
+      ]
+    },
+    "c8": {
+      "definition": "Sequential 16-byte SASS instruction slots strictly between LDS and first HMMA using its register pair; not cycles or measured stalls.",
+      "count": 48,
+      "minimum": 16,
+      "median": 48.0,
+      "maximum": 75,
+      "distinct_destination_register_pairs": 12,
+      "no_pair_overwritten_before_first_consumer": true,
+      "loads": [
+        {
+          "load": "0x1ea0",
+          "register_pair": [
+            "R80",
+            "R81"
+          ],
+          "shared_address": "[R103]",
+          "first_hmma_consumer": "0x1fd0",
+          "intervening_static_instruction_slots": 18
+        },
+        {
+          "load": "0x1ec0",
+          "register_pair": [
+            "R90",
+            "R91"
+          ],
+          "shared_address": "[R102]",
+          "first_hmma_consumer": "0x1fd0",
+          "intervening_static_instruction_slots": 16
+        },
+        {
+          "load": "0x1ee0",
+          "register_pair": [
+            "R86",
+            "R87"
+          ],
+          "shared_address": "[R102+0x480]",
+          "first_hmma_consumer": "0x2030",
+          "intervening_static_instruction_slots": 20
+        },
+        {
+          "load": "0x1ef0",
+          "register_pair": [
+            "R84",
+            "R85"
+          ],
+          "shared_address": "[R102+0x900]",
+          "first_hmma_consumer": "0x2070",
+          "intervening_static_instruction_slots": 23
+        },
+        {
+          "load": "0x1f00",
+          "register_pair": [
+            "R78",
+            "R79"
+          ],
+          "shared_address": "[R102+0xd80]",
+          "first_hmma_consumer": "0x20b0",
+          "intervening_static_instruction_slots": 26
+        },
+        {
+          "load": "0x1f30",
+          "register_pair": [
+            "R82",
+            "R83"
+          ],
+          "shared_address": "[R103+0x480]",
+          "first_hmma_consumer": "0x2100",
+          "intervening_static_instruction_slots": 28
+        },
+        {
+          "load": "0x1f60",
+          "register_pair": [
+            "R88",
+            "R89"
+          ],
+          "shared_address": "[R103+0x8]",
+          "first_hmma_consumer": "0x2230",
+          "intervening_static_instruction_slots": 44
+        },
+        {
+          "load": "0x1f90",
+          "register_pair": [
+            "R76",
+            "R77"
+          ],
+          "shared_address": "[R102+0x8]",
+          "first_hmma_consumer": "0x2230",
+          "intervening_static_instruction_slots": 41
+        },
+        {
+          "load": "0x1fa0",
+          "register_pair": [
+            "R70",
+            "R71"
+          ],
+          "shared_address": "[R102+0x488]",
+          "first_hmma_consumer": "0x2290",
+          "intervening_static_instruction_slots": 46
+        },
+        {
+          "load": "0x1fe0",
+          "register_pair": [
+            "R74",
+            "R75"
+          ],
+          "shared_address": "[R102+0x908]",
+          "first_hmma_consumer": "0x22d0",
+          "intervening_static_instruction_slots": 46
+        },
+        {
+          "load": "0x2010",
+          "register_pair": [
+            "R72",
+            "R73"
+          ],
+          "shared_address": "[R102+0xd88]",
+          "first_hmma_consumer": "0x2310",
+          "intervening_static_instruction_slots": 47
+        },
+        {
+          "load": "0x20f0",
+          "register_pair": [
+            "R80",
+            "R81"
+          ],
+          "shared_address": "[R103+0x488]",
+          "first_hmma_consumer": "0x2360",
+          "intervening_static_instruction_slots": 38
+        },
+        {
+          "load": "0x2150",
+          "register_pair": [
+            "R90",
+            "R91"
+          ],
+          "shared_address": "[R103+0x10]",
+          "first_hmma_consumer": "0x24e0",
+          "intervening_static_instruction_slots": 56
+        },
+        {
+          "load": "0x21a0",
+          "register_pair": [
+            "R86",
+            "R87"
+          ],
+          "shared_address": "[R102+0x10]",
+          "first_hmma_consumer": "0x24e0",
+          "intervening_static_instruction_slots": 51
+        },
+        {
+          "load": "0x21f0",
+          "register_pair": [
+            "R84",
+            "R85"
+          ],
+          "shared_address": "[R102+0x490]",
+          "first_hmma_consumer": "0x2540",
+          "intervening_static_instruction_slots": 52
+        },
+        {
+          "load": "0x2240",
+          "register_pair": [
+            "R82",
+            "R83"
+          ],
+          "shared_address": "[R102+0x910]",
+          "first_hmma_consumer": "0x2590",
+          "intervening_static_instruction_slots": 52
+        },
+        {
+          "load": "0x2270",
+          "register_pair": [
+            "R78",
+            "R79"
+          ],
+          "shared_address": "[R102+0xd90]",
+          "first_hmma_consumer": "0x25e0",
+          "intervening_static_instruction_slots": 54
+        },
+        {
+          "load": "0x2350",
+          "register_pair": [
+            "R88",
+            "R89"
+          ],
+          "shared_address": "[R103+0x490]",
+          "first_hmma_consumer": "0x2620",
+          "intervening_static_instruction_slots": 44
+        },
+        {
+          "load": "0x23d0",
+          "register_pair": [
+            "R76",
+            "R77"
+          ],
+          "shared_address": "[R102+0x18]",
+          "first_hmma_consumer": "0x2780",
+          "intervening_static_instruction_slots": 58
+        },
+        {
+          "load": "0x2470",
+          "register_pair": [
+            "R70",
+            "R71"
+          ],
+          "shared_address": "[R102+0xd98]",
+          "first_hmma_consumer": "0x2840",
+          "intervening_static_instruction_slots": 60
+        },
+        {
+          "load": "0x24a0",
+          "register_pair": [
+            "R74",
+            "R75"
+          ],
+          "shared_address": "[R102+0x498]",
+          "first_hmma_consumer": "0x27c0",
+          "intervening_static_instruction_slots": 49
+        },
+        {
+          "load": "0x24d0",
+          "register_pair": [
+            "R80",
+            "R81"
+          ],
+          "shared_address": "[R103+0x18]",
+          "first_hmma_consumer": "0x2780",
+          "intervening_static_instruction_slots": 42
+        },
+        {
+          "load": "0x2520",
+          "register_pair": [
+            "R72",
+            "R73"
+          ],
+          "shared_address": "[R102+0x918]",
+          "first_hmma_consumer": "0x2800",
+          "intervening_static_instruction_slots": 45
+        },
+        {
+          "load": "0x25c0",
+          "register_pair": [
+            "R92",
+            "R93"
+          ],
+          "shared_address": "[R103+0x498]",
+          "first_hmma_consumer": "0x2880",
+          "intervening_static_instruction_slots": 43
+        },
+        {
+          "load": "0x2630",
+          "register_pair": [
+            "R90",
+            "R91"
+          ],
+          "shared_address": "[R103+0x4a0]",
+          "first_hmma_consumer": "0x2af0",
+          "intervening_static_instruction_slots": 75
+        },
+        {
+          "load": "0x2680",
+          "register_pair": [
+            "R86",
+            "R87"
+          ],
+          "shared_address": "[R102+0x4a0]",
+          "first_hmma_consumer": "0x2a20",
+          "intervening_static_instruction_slots": 57
+        },
+        {
+          "load": "0x26d0",
+          "register_pair": [
+            "R84",
+            "R85"
+          ],
+          "shared_address": "[R102+0x920]",
+          "first_hmma_consumer": "0x2a60",
+          "intervening_static_instruction_slots": 56
+        },
+        {
+          "load": "0x2720",
+          "register_pair": [
+            "R82",
+            "R83"
+          ],
+          "shared_address": "[R102+0xda0]",
+          "first_hmma_consumer": "0x2aa0",
+          "intervening_static_instruction_slots": 55
+        },
+        {
+          "load": "0x2760",
+          "register_pair": [
+            "R78",
+            "R79"
+          ],
+          "shared_address": "[R103+0x20]",
+          "first_hmma_consumer": "0x29c0",
+          "intervening_static_instruction_slots": 37
+        },
+        {
+          "load": "0x2770",
+          "register_pair": [
+            "R88",
+            "R89"
+          ],
+          "shared_address": "[R102+0x20]",
+          "first_hmma_consumer": "0x29c0",
+          "intervening_static_instruction_slots": 36
+        },
+        {
+          "load": "0x2890",
+          "register_pair": [
+            "R80",
+            "R81"
+          ],
+          "shared_address": "[R103+0x28]",
+          "first_hmma_consumer": "0x2c20",
+          "intervening_static_instruction_slots": 56
+        },
+        {
+          "load": "0x28e0",
+          "register_pair": [
+            "R76",
+            "R77"
+          ],
+          "shared_address": "[R102+0x28]",
+          "first_hmma_consumer": "0x2c20",
+          "intervening_static_instruction_slots": 51
+        },
+        {
+          "load": "0x2930",
+          "register_pair": [
+            "R74",
+            "R75"
+          ],
+          "shared_address": "[R102+0x4a8]",
+          "first_hmma_consumer": "0x2c80",
+          "intervening_static_instruction_slots": 52
+        },
+        {
+          "load": "0x2980",
+          "register_pair": [
+            "R72",
+            "R73"
+          ],
+          "shared_address": "[R102+0x928]",
+          "first_hmma_consumer": "0x2cc0",
+          "intervening_static_instruction_slots": 51
+        },
+        {
+          "load": "0x29d0",
+          "register_pair": [
+            "R70",
+            "R71"
+          ],
+          "shared_address": "[R102+0xda8]",
+          "first_hmma_consumer": "0x2d00",
+          "intervening_static_instruction_slots": 50
+        },
+        {
+          "load": "0x2a00",
+          "register_pair": [
+            "R92",
+            "R93"
+          ],
+          "shared_address": "[R103+0x30]",
+          "first_hmma_consumer": "0x2e80",
+          "intervening_static_instruction_slots": 71
+        },
+        {
+          "load": "0x2ae0",
+          "register_pair": [
+            "R78",
+            "R79"
+          ],
+          "shared_address": "[R103+0x4a8]",
+          "first_hmma_consumer": "0x2d40",
+          "intervening_static_instruction_slots": 37
+        },
+        {
+          "load": "0x2b40",
+          "register_pair": [
+            "R88",
+            "R89"
+          ],
+          "shared_address": "[R102+0x30]",
+          "first_hmma_consumer": "0x2e80",
+          "intervening_static_instruction_slots": 51
+        },
+        {
+          "load": "0x2b90",
+          "register_pair": [
+            "R86",
+            "R87"
+          ],
+          "shared_address": "[R102+0x4b0]",
+          "first_hmma_consumer": "0x2ee0",
+          "intervening_static_instruction_slots": 52
+        },
+        {
+          "load": "0x2be0",
+          "register_pair": [
+            "R84",
+            "R85"
+          ],
+          "shared_address": "[R102+0x930]",
+          "first_hmma_consumer": "0x2f20",
+          "intervening_static_instruction_slots": 51
+        },
+        {
+          "load": "0x2c30",
+          "register_pair": [
+            "R82",
+            "R83"
+          ],
+          "shared_address": "[R102+0xdb0]",
+          "first_hmma_consumer": "0x2f60",
+          "intervening_static_instruction_slots": 50
+        },
+        {
+          "load": "0x2c60",
+          "register_pair": [
+            "R90",
+            "R91"
+          ],
+          "shared_address": "[R103+0x4b0]",
+          "first_hmma_consumer": "0x2fa0",
+          "intervening_static_instruction_slots": 51
+        },
+        {
+          "load": "0x2d50",
+          "register_pair": [
+            "R80",
+            "R81"
+          ],
+          "shared_address": "[R103+0x38]",
+          "first_hmma_consumer": "0x30a0",
+          "intervening_static_instruction_slots": 52
+        },
+        {
+          "load": "0x2da0",
+          "register_pair": [
+            "R76",
+            "R77"
+          ],
+          "shared_address": "[R102+0x38]",
+          "first_hmma_consumer": "0x30a0",
+          "intervening_static_instruction_slots": 47
+        },
+        {
+          "load": "0x2df0",
+          "register_pair": [
+            "R74",
+            "R75"
+          ],
+          "shared_address": "[R102+0x4b8]",
+          "first_hmma_consumer": "0x30e0",
+          "intervening_static_instruction_slots": 46
+        },
+        {
+          "load": "0x2e40",
+          "register_pair": [
+            "R72",
+            "R73"
+          ],
+          "shared_address": "[R102+0x938]",
+          "first_hmma_consumer": "0x3120",
+          "intervening_static_instruction_slots": 45
+        },
+        {
+          "load": "0x2e90",
+          "register_pair": [
+            "R70",
+            "R71"
+          ],
+          "shared_address": "[R102+0xdb8]",
+          "first_hmma_consumer": "0x3170",
+          "intervening_static_instruction_slots": 45
+        },
+        {
+          "load": "0x2ec0",
+          "register_pair": [
+            "R78",
+            "R79"
+          ],
+          "shared_address": "[R103+0x4b8]",
+          "first_hmma_consumer": "0x31c0",
+          "intervening_static_instruction_slots": 47
+        }
+      ]
+    },
+    "interpretation": "C8 gives LDS fragment values substantially more static instruction slots before first HMMA use even though its compute source is unchanged. This is evidence of different compiler scheduling and register reuse, not measured stall reduction or attribution of a fraction of the benchmark speedup."
+  },
+  "limitations": [
+    "No GPU or profiler was run by this analysis; correctness and ABBA timings are separate actual-GPU records.",
+    "Instruction counts, dependency distances and bank address models do not measure latency overlap, stall cycles, shared-memory conflicts, cache hit rates or achieved occupancy.",
+    "The measured performance change includes multiple source/compiler changes; this analysis does not isolate one causal contribution.",
+    "The C6 comparison function here is extracted from the same build-c8 binary, as requested; this record is not a separate disassembly of build-c6/bench_mxfp4_fused.",
+    "C8 wide-index, unaligned and incomplete-tile calls dispatch to the preserved C6 implementation and are outside the new function analyzed here."
+  ]
+}

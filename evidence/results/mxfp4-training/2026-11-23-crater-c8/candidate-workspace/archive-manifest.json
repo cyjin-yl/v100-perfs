@@ -1,0 +1,17 @@
+{
+  "bytes": 111196,
+  "cache_build": "off",
+  "compiled_in_this_run": false,
+  "completion_sha256": "44c342efb6944c89befcb9bf0344d95a52c5b5db0dc798aa6317a301bdc88121",
+  "gpu_executed": true,
+  "passed": true,
+  "prior_cache_runner_sha256": "65e23628156a4430421cd6ad21359a62e4f2ab922f9daf58ee7d1621b5ecdde7",
+  "results_archive": "/workspace/user/mxfp4-workspace-20261123T2300/results.tar.gz",
+  "reviewed_native_helper_sha256": "f7f45628bcf7616a7e7915823c77f2f75602cff66be29bf640c5ec3be8ecce1e",
+  "reviewed_quantizer_helper_sha256": "96d3db40d25426370cfc8542dff908edf00a385c0055019c727c9c005fb8a548",
+  "runner_sha256": "4018f7b5b08d3493ee746458cd98dea58925e1bc233b4e456b4adfea2fc9ee03",
+  "sha256": "ac5998366a536800bac705eb03c185e01b089b0e7b24b29d84aa8e5aa2b65c30",
+  "source_archive_sha256": "aa7ac287d389d1e8705fdeef60713bae1927116c85bb7355a52a817e4a806a89",
+  "source_commit": "f74de5be95687d75758c1f636ffbd00d6b63d161",
+  "status": "passed"
+}

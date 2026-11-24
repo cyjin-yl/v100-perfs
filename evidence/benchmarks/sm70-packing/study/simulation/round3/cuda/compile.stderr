@@ -1,0 +1,132 @@
+nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+ptxas info    : 0 bytes gmem
+ptxas info    : Compiling entry function '_Z13mapped_kernelILi4ELi7ELi2ELb0ELb1EEvPK6__halfPKhPfiiii' for 'sm_70'
+ptxas info    : Function properties for _Z13mapped_kernelILi4ELi7ELi2ELb0ELb1EEvPK6__halfPKhPfiiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 64 registers, used 0 barriers, 392 bytes cmem[0]
+ptxas info    : Compile time = 8.852 ms
+ptxas info    : Compiling entry function '_Z13mapped_kernelILi4ELi7ELi1ELb0ELb1EEvPK6__halfPKhPfiiii' for 'sm_70'
+ptxas info    : Function properties for _Z13mapped_kernelILi4ELi7ELi1ELb0ELb1EEvPK6__halfPKhPfiiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 64 registers, used 0 barriers, 392 bytes cmem[0]
+ptxas info    : Compile time = 7.066 ms
+ptxas info    : Compiling entry function '_Z13mapped_kernelILi4ELi7ELi0ELb0ELb1EEvPK6__halfPKhPfiiii' for 'sm_70'
+ptxas info    : Function properties for _Z13mapped_kernelILi4ELi7ELi0ELb0ELb1EEvPK6__halfPKhPfiiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 64 registers, used 0 barriers, 392 bytes cmem[0]
+ptxas info    : Compile time = 6.146 ms
+ptxas info    : Compiling entry function '_Z13mapped_kernelILi4ELi7ELi2ELb0ELb0EEvPK6__halfPKhPfiiii' for 'sm_70'
+ptxas info    : Function properties for _Z13mapped_kernelILi4ELi7ELi2ELb0ELb0EEvPK6__halfPKhPfiiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 64 registers, used 0 barriers, 392 bytes cmem[0]
+ptxas info    : Compile time = 7.461 ms
+ptxas info    : Compiling entry function '_Z13mapped_kernelILi4ELi7ELi2ELb1ELb1EEvPK6__halfPKhPfiiii' for 'sm_70'
+ptxas info    : Function properties for _Z13mapped_kernelILi4ELi7ELi2ELb1ELb1EEvPK6__halfPKhPfiiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 72 registers, used 0 barriers, 392 bytes cmem[0]
+ptxas info    : Compile time = 11.749 ms
+ptxas info    : Compiling entry function '_Z13mapped_kernelILi4ELi7ELi1ELb1ELb1EEvPK6__halfPKhPfiiii' for 'sm_70'
+ptxas info    : Function properties for _Z13mapped_kernelILi4ELi7ELi1ELb1ELb1EEvPK6__halfPKhPfiiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 72 registers, used 0 barriers, 392 bytes cmem[0]
+ptxas info    : Compile time = 9.908 ms
+ptxas info    : Compiling entry function '_Z13mapped_kernelILi4ELi7ELi0ELb1ELb1EEvPK6__halfPKhPfiiii' for 'sm_70'
+ptxas info    : Function properties for _Z13mapped_kernelILi4ELi7ELi0ELb1ELb1EEvPK6__halfPKhPfiiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 72 registers, used 0 barriers, 392 bytes cmem[0]
+ptxas info    : Compile time = 9.096 ms
+ptxas info    : Compiling entry function '_Z13mapped_kernelILi4ELi7ELi2ELb1ELb0EEvPK6__halfPKhPfiiii' for 'sm_70'
+ptxas info    : Function properties for _Z13mapped_kernelILi4ELi7ELi2ELb1ELb0EEvPK6__halfPKhPfiiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 72 registers, used 0 barriers, 392 bytes cmem[0]
+ptxas info    : Compile time = 10.269 ms
+ptxas info    : Compiling entry function '_Z13mapped_kernelILi4ELi8ELi2ELb0ELb1EEvPK6__halfPKhPfiiii' for 'sm_70'
+ptxas info    : Function properties for _Z13mapped_kernelILi4ELi8ELi2ELb0ELb1EEvPK6__halfPKhPfiiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 64 registers, used 0 barriers, 392 bytes cmem[0]
+ptxas info    : Compile time = 6.749 ms
+ptxas info    : Compiling entry function '_Z13mapped_kernelILi4ELi8ELi1ELb0ELb1EEvPK6__halfPKhPfiiii' for 'sm_70'
+ptxas info    : Function properties for _Z13mapped_kernelILi4ELi8ELi1ELb0ELb1EEvPK6__halfPKhPfiiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 64 registers, used 0 barriers, 392 bytes cmem[0]
+ptxas info    : Compile time = 6.600 ms
+ptxas info    : Compiling entry function '_Z13mapped_kernelILi4ELi8ELi0ELb0ELb1EEvPK6__halfPKhPfiiii' for 'sm_70'
+ptxas info    : Function properties for _Z13mapped_kernelILi4ELi8ELi0ELb0ELb1EEvPK6__halfPKhPfiiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 64 registers, used 0 barriers, 392 bytes cmem[0]
+ptxas info    : Compile time = 6.375 ms
+ptxas info    : Compiling entry function '_Z13mapped_kernelILi4ELi8ELi2ELb0ELb0EEvPK6__halfPKhPfiiii' for 'sm_70'
+ptxas info    : Function properties for _Z13mapped_kernelILi4ELi8ELi2ELb0ELb0EEvPK6__halfPKhPfiiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 64 registers, used 0 barriers, 392 bytes cmem[0]
+ptxas info    : Compile time = 6.821 ms
+ptxas info    : Compiling entry function '_Z13mapped_kernelILi4ELi8ELi2ELb1ELb1EEvPK6__halfPKhPfiiii' for 'sm_70'
+ptxas info    : Function properties for _Z13mapped_kernelILi4ELi8ELi2ELb1ELb1EEvPK6__halfPKhPfiiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 72 registers, used 0 barriers, 392 bytes cmem[0]
+ptxas info    : Compile time = 9.861 ms
+ptxas info    : Compiling entry function '_Z13mapped_kernelILi4ELi8ELi1ELb1ELb1EEvPK6__halfPKhPfiiii' for 'sm_70'
+ptxas info    : Function properties for _Z13mapped_kernelILi4ELi8ELi1ELb1ELb1EEvPK6__halfPKhPfiiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 72 registers, used 0 barriers, 392 bytes cmem[0]
+ptxas info    : Compile time = 13.400 ms
+ptxas info    : Compiling entry function '_Z13mapped_kernelILi4ELi8ELi0ELb1ELb1EEvPK6__halfPKhPfiiii' for 'sm_70'
+ptxas info    : Function properties for _Z13mapped_kernelILi4ELi8ELi0ELb1ELb1EEvPK6__halfPKhPfiiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 72 registers, used 0 barriers, 392 bytes cmem[0]
+ptxas info    : Compile time = 10.713 ms
+ptxas info    : Compiling entry function '_Z13mapped_kernelILi4ELi8ELi2ELb1ELb0EEvPK6__halfPKhPfiiii' for 'sm_70'
+ptxas info    : Function properties for _Z13mapped_kernelILi4ELi8ELi2ELb1ELb0EEvPK6__halfPKhPfiiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 72 registers, used 0 barriers, 392 bytes cmem[0]
+ptxas info    : Compile time = 11.177 ms
+ptxas info    : Compiling entry function '_Z13mapped_kernelILi32ELi8ELi2ELb0ELb1EEvPK6__halfPKhPfiiii' for 'sm_70'
+ptxas info    : Function properties for _Z13mapped_kernelILi32ELi8ELi2ELb0ELb1EEvPK6__halfPKhPfiiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 62 registers, used 0 barriers, 392 bytes cmem[0]
+ptxas info    : Compile time = 8.651 ms
+ptxas info    : Compiling entry function '_Z13mapped_kernelILi32ELi8ELi1ELb0ELb1EEvPK6__halfPKhPfiiii' for 'sm_70'
+ptxas info    : Function properties for _Z13mapped_kernelILi32ELi8ELi1ELb0ELb1EEvPK6__halfPKhPfiiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 62 registers, used 0 barriers, 392 bytes cmem[0]
+ptxas info    : Compile time = 8.884 ms
+ptxas info    : Compiling entry function '_Z13mapped_kernelILi32ELi8ELi0ELb0ELb1EEvPK6__halfPKhPfiiii' for 'sm_70'
+ptxas info    : Function properties for _Z13mapped_kernelILi32ELi8ELi0ELb0ELb1EEvPK6__halfPKhPfiiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 60 registers, used 0 barriers, 392 bytes cmem[0]
+ptxas info    : Compile time = 8.722 ms
+ptxas info    : Compiling entry function '_Z13mapped_kernelILi32ELi8ELi2ELb0ELb0EEvPK6__halfPKhPfiiii' for 'sm_70'
+ptxas info    : Function properties for _Z13mapped_kernelILi32ELi8ELi2ELb0ELb0EEvPK6__halfPKhPfiiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 62 registers, used 0 barriers, 392 bytes cmem[0]
+ptxas info    : Compile time = 8.887 ms
+ptxas info    : Compiling entry function '_Z13mapped_kernelILi32ELi8ELi2ELb1ELb1EEvPK6__halfPKhPfiiii' for 'sm_70'
+ptxas info    : Function properties for _Z13mapped_kernelILi32ELi8ELi2ELb1ELb1EEvPK6__halfPKhPfiiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 64 registers, used 0 barriers, 392 bytes cmem[0]
+ptxas info    : Compile time = 11.625 ms
+ptxas info    : Compiling entry function '_Z13mapped_kernelILi32ELi8ELi1ELb1ELb1EEvPK6__halfPKhPfiiii' for 'sm_70'
+ptxas info    : Function properties for _Z13mapped_kernelILi32ELi8ELi1ELb1ELb1EEvPK6__halfPKhPfiiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 64 registers, used 0 barriers, 392 bytes cmem[0]
+ptxas info    : Compile time = 12.409 ms
+ptxas info    : Compiling entry function '_Z13mapped_kernelILi32ELi8ELi0ELb1ELb1EEvPK6__halfPKhPfiiii' for 'sm_70'
+ptxas info    : Function properties for _Z13mapped_kernelILi32ELi8ELi0ELb1ELb1EEvPK6__halfPKhPfiiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 64 registers, used 0 barriers, 392 bytes cmem[0]
+ptxas info    : Compile time = 11.920 ms
+ptxas info    : Compiling entry function '_Z13mapped_kernelILi32ELi8ELi2ELb1ELb0EEvPK6__halfPKhPfiiii' for 'sm_70'
+ptxas info    : Function properties for _Z13mapped_kernelILi32ELi8ELi2ELb1ELb0EEvPK6__halfPKhPfiiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 64 registers, used 0 barriers, 392 bytes cmem[0]
+ptxas info    : Compile time = 16.333 ms
+ptxas info    : Compiling entry function '_Z14prepare_packedPKhP6__halfiiiii' for 'sm_70'
+ptxas info    : Function properties for _Z14prepare_packedPKhP6__halfiiiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 20 registers, used 0 barriers, 388 bytes cmem[0]
+ptxas info    : Compile time = 4.344 ms
+ptxas info    : Compiling entry function '_Z12prepare_halfPKhS0_P6__halfiii' for 'sm_70'
+ptxas info    : Function properties for _Z12prepare_halfPKhS0_P6__halfiii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 18 registers, used 0 barriers, 388 bytes cmem[0]
+ptxas info    : Compile time = 4.639 ms

@@ -1,0 +1,15 @@
+{
+  "url": "https://engineering.purdue.edu/tgrogers/accel-sim/traces/tesla-v100/latest/rodinia_2.0-ft.tgz",
+  "status": 200,
+  "headers": {
+    "date": "Sun, 22 Nov 2026 12:57:05 GMT",
+    "server": "envoy",
+    "last-modified": "Tue, 07 Jul 2020 03:09:12 GMT",
+    "etag": "\"1409ad0-5a9d150c68600\"",
+    "accept-ranges": "bytes",
+    "content-length": "21011152",
+    "content-type": "application/x-gzip",
+    "x-envoy-upstream-service-time": "74",
+    "connection": "close"
+  }
+}

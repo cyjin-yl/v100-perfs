@@ -1,0 +1,21 @@
+{
+  "argv": [
+    "/usr/local/cuda-12.9/bin/nvcc",
+    "-O3",
+    "-std=c++17",
+    "--ftz=false",
+    "-gencode=arch=compute_70,code=[sm_70,compute_70]",
+    "/tmp/v100-mxfp4-perf-3cc0562b0106/tools/mxfp4_training/csrc/check_mxfp4_certified.cu",
+    "-L/tmp/v100-mxfp4-perf-3cc0562b0106/build-certified-v1",
+    "-lmxfp4_sm70",
+    "-Xlinker=-rpath",
+    "-Xlinker=/tmp/v100-mxfp4-perf-3cc0562b0106/build-certified-v1",
+    "-o",
+    "/tmp/v100-mxfp4-perf-3cc0562b0106/build-certified-v1/check_mxfp4_certified-final"
+  ],
+  "returncode": 0,
+  "seconds": 4.1543034900096245,
+  "source_sha256": "1fc4fdc7f935302026c68aea009dfd198963fb3f4fc69fd0bc8b32b8db775367",
+  "library_sha256": "1876dee3860f9235930385e608df25c0910462621c0d53cec5e134ae048776ae",
+  "artifact_sha256": "2fb039a842f77e1587bcb64c1f137289aa4725052a603908cde5ae4f82b94b91"
+}

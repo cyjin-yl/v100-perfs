@@ -1,0 +1,69 @@
+{
+  "experiment_kind": "CPU synthetic-input eligibility certificate statistics; no GPU execution or timing",
+  "experiment_date_utc": "2026-11-23",
+  "exact_experiment_start_timestamp_recorded": false,
+  "archive_timestamp_utc": "2026-11-23T16:09:35.409356+00:00",
+  "evidence_directory_date_timezone": "Asia/Shanghai (UTC+08:00), 2026-11-24",
+  "source_capture": "Original command stdout from this session, losslessly transcribed from ten three-trial batches into thirty seed-labelled JSONL rows; experiment was not rerun for archival.",
+  "source_repository": "https://github.com/cyjin-yl/v100-perfs",
+  "source_git_head_at_archive": "55dfec399b2c3584577570e8b21c69c3a73409b3",
+  "source_file": "tools/mxfp4_training/reference.py",
+  "source_file_sha256_at_archive": "eeba6d661ad051c6caaa9e192d0dbe2c9666369faf31c384b88fc42556b02b8b",
+  "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "numpy": "2.3.5",
+  "python_executable_used": "/workspace/scratch/3cc0562b0106/mxfp4-venv/bin/python",
+  "rounding": "nearest, current quantize_mx RNE recipe",
+  "q_domain": "Full E2M1 q=2*value, chosen by quantize_mx; no narrow-alphabet filter",
+  "seeds": [
+    1000,
+    1001,
+    1002
+  ],
+  "rows_per_operand": 256,
+  "reduction_lengths": [
+    4096,
+    16384
+  ],
+  "distributions": [
+    "gaussian",
+    "gradient_1e-5",
+    "student_t3",
+    "outlier_100_p0005",
+    "block_range_16"
+  ],
+  "scale_minimum_method": "Includes all blocks, including q-zero blocks; more conservative than ignoring q-zero blocks.",
+  "energy_method": "Exact signed-int64 q^2 per block times 4^(scale-row_min), summed by row, max across rows; safe for K<=16384 and span<=12. Energy not computed when max span>12.",
+  "eligibility_comparison": "Python unbounded integer product U*V <= 2^48; rounded bound_fraction is display-only.",
+  "lambda_range": "The observed overall scale ranges imply every row-min pair lambda is in [-126,103]; no per-row lambda metadata was printed by the original experiment.",
+  "result_rows": 30,
+  "passed_span_and_energy_rows": 21,
+  "limitations": [
+    "Synthetic data only; three seeds per shape/distribution do not estimate real LLM eligibility probability.",
+    "No GPU correctness, GPU wrapper, throughput or convergence conclusion.",
+    "No clipping, lowered tolerance, or narrowed q alphabet was used to make certificates pass."
+  ],
+  "primary_sources": [
+    {
+      "url": "https://docs.nvidia.com/cuda/archive/12.9.0/parallel-thread-execution/index.html",
+      "used_for": "FP16 multiply / FP32 accumulator precision and unspecified accumulation order, rounding, subnormal behavior."
+    },
+    {
+      "url": "https://docs.nvidia.com/cuda/archive/12.9.0/cublas/index.html",
+      "used_for": "CUBLAS_COMPUTE_32F, FP32 output, reduced-precision reduction control, Tensor Core eligibility and SetStream workspace reset."
+    },
+    {
+      "url": "https://www.opencompute.org/documents/ocp-microscaling-formats-mx-v1-0-spec-final-pdf/",
+      "used_for": "E2M1 and E8M0 storage formats; project arithmetic and certificate are separately defined."
+    }
+  ],
+  "files": {
+    "cpu-certified-distribution.jsonl": {
+      "sha256": "5f3c62b571c128f221db976b726eb07acab320763314d1043f40ab16c610c8f2",
+      "role": "Original 30 trial measurements"
+    },
+    "cpu-certified-distribution.py": {
+      "sha256": "86e6f66b657f6b481b146b2fce370d79e19b09b616c67858a587c6d3c7089c1d",
+      "role": "Standalone faithful reproduction of the original distribution/certificate computation; output reshaped to one trial per line"
+    }
+  }
+}

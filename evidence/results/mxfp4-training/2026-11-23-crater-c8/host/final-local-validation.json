@@ -1,0 +1,17 @@
+{
+  "source_commit": "f74de5be95687d75758c1f636ffbd00d6b63d161",
+  "gpu_executed": false,
+  "ast_validated_files": {
+    "tools/mxfp4_training/certified_workspace.py": "03a2222d6efb4ddf5369e01220041c16923da05ceb40235a92e48d3269cfe6cf",
+    "tools/mxfp4_training/check_certified_workspace.py": "00b59608ad22b2d2d236b20c1fa64c0f7110481fac1d6525e4ef74d77bf797fc",
+    "tools/mxfp4_training/bench_certified_workspace.py": "b0d1a07dc08b8856a31c6226ec25c367264fe438c9559256739fff90247ac4bc",
+    "tools/mxfp4_training/build_cuda.py": "416b69c561b30827bf7e739bd928a25e63e4903d3061881abaa4f802855d6c36"
+  },
+  "cpu_contract_tests": {
+    "ran": 43,
+    "passed": 24,
+    "skipped": 19,
+    "skip_reason": "optional PyTorch is not installed in local runtime",
+    "log": "final-cpu-contract-tests.log"
+  }
+}

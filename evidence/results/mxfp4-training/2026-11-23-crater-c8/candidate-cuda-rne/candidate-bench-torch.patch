@@ -1,0 +1,13 @@
+--- a/tools/mxfp4_training/bench_torch_cuda.py
++++ b/tools/mxfp4_training/bench_torch_cuda.py
+@@ -396,8 +396,8 @@
+         parser.error("device must name an explicit CUDA index, for example cuda:0")
+     if not all(1 <= d <= 4096 for d in (args.m, args.n, args.k)):
+         parser.error("each matrix dimension must be in [1, 4096]")
+-    if not (3 <= args.rounds <= 9 and 1 <= args.iters <= 20 and 0 <= args.warmup <= 3):
+-        parser.error("require rounds=3..9, iters=1..20, warmup=0..3")
++    if not (3 <= args.rounds <= 9 and 1 <= args.iters <= 20 and 0 <= args.warmup <= 10):
++        parser.error("require rounds=3..9, iters=1..20, warmup=0..10")
+     if not 0 <= args.seed <= 2**32 - 1:
+         parser.error("seed must be in [0, 2**32 - 1]")
+     return args

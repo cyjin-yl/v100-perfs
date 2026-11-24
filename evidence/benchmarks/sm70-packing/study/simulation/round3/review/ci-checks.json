@@ -1,0 +1,628 @@
+{
+  "schema_version": 1,
+  "scope": "Repository-owned explicit round-three CPU checks. Execute sequentially; the fresh generated fragment-map from the CUDA check is input to the independent rectangular-layout check.",
+  "checks": [
+    {
+      "name": "round3-math-model-and-admission",
+      "files": [
+        "simulation/round3/math/round3_math.py"
+      ],
+      "argv": [
+        "{python}",
+        "{stage}/simulation/round3/math/round3_math.py"
+      ],
+      "result_json": "simulation/round3/math/round3_math_results.json",
+      "scope": "Fresh round-three bound/model/admission experiments, not GPU timing",
+      "assertions": [
+        {
+          "path": [
+            "metadata",
+            "gpu_execution"
+          ],
+          "equals": false
+        },
+        {
+          "path": [
+            "metadata",
+            "performance_measured"
+          ],
+          "equals": false
+        },
+        {
+          "path": [
+            "search",
+            "candidates_checked"
+          ],
+          "equals": 47040
+        },
+        {
+          "path": [
+            "candidates"
+          ],
+          "length": 5
+        },
+        {
+          "path": [
+            "same_scale_mx32_middle_pipeline",
+            "failures"
+          ],
+          "equals": 0
+        },
+        {
+          "path": [
+            "candidates",
+            0,
+            "decoded_failures"
+          ],
+          "equals": 0
+        },
+        {
+          "path": [
+            "candidates",
+            0,
+            "independent_scale_failures"
+          ],
+          "equals": 0
+        },
+        {
+          "path": [
+            "candidates",
+            0,
+            "proof",
+            "sufficient_conditions_pass"
+          ],
+          "equals": true
+        },
+        {
+          "path": [
+            "candidates",
+            0,
+            "maximum_observed_packed_sum_error"
+          ],
+          "maximum": 0
+        },
+        {
+          "path": [
+            "candidates",
+            1,
+            "decoded_failures"
+          ],
+          "equals": 0
+        },
+        {
+          "path": [
+            "candidates",
+            1,
+            "independent_scale_failures"
+          ],
+          "equals": 0
+        },
+        {
+          "path": [
+            "candidates",
+            1,
+            "proof",
+            "sufficient_conditions_pass"
+          ],
+          "equals": true
+        },
+        {
+          "path": [
+            "candidates",
+            1,
+            "maximum_observed_packed_sum_error"
+          ],
+          "maximum": 0
+        },
+        {
+          "path": [
+            "candidates",
+            2,
+            "decoded_failures"
+          ],
+          "equals": 0
+        },
+        {
+          "path": [
+            "candidates",
+            2,
+            "independent_scale_failures"
+          ],
+          "equals": 0
+        },
+        {
+          "path": [
+            "candidates",
+            2,
+            "proof",
+            "sufficient_conditions_pass"
+          ],
+          "equals": true
+        },
+        {
+          "path": [
+            "candidates",
+            2,
+            "maximum_observed_packed_sum_error"
+          ],
+          "maximum": 0
+        },
+        {
+          "path": [
+            "candidates",
+            3,
+            "decoded_failures"
+          ],
+          "equals": 0
+        },
+        {
+          "path": [
+            "candidates",
+            3,
+            "independent_scale_failures"
+          ],
+          "equals": 0
+        },
+        {
+          "path": [
+            "candidates",
+            3,
+            "proof",
+            "sufficient_conditions_pass"
+          ],
+          "equals": true
+        },
+        {
+          "path": [
+            "candidates",
+            3,
+            "maximum_observed_packed_sum_error"
+          ],
+          "maximum": 12
+        },
+        {
+          "path": [
+            "candidates",
+            4,
+            "decoded_failures"
+          ],
+          "equals": 0
+        },
+        {
+          "path": [
+            "candidates",
+            4,
+            "independent_scale_failures"
+          ],
+          "equals": 0
+        },
+        {
+          "path": [
+            "candidates",
+            4,
+            "proof",
+            "sufficient_conditions_pass"
+          ],
+          "equals": true
+        },
+        {
+          "path": [
+            "candidates",
+            4,
+            "maximum_observed_packed_sum_error"
+          ],
+          "maximum": 18
+        },
+        {
+          "path": [
+            "candidates",
+            3,
+            "packed_sum_not_exact_cases"
+          ],
+          "minimum": 1
+        },
+        {
+          "path": [
+            "candidates",
+            4,
+            "packed_sum_not_exact_cases"
+          ],
+          "minimum": 1
+        },
+        {
+          "path": [
+            "admission_and_repair",
+            "datasets"
+          ],
+          "length": 5
+        },
+        {
+          "path": [
+            "admission_and_repair",
+            "datasets",
+            0,
+            "repair_failures"
+          ],
+          "equals": 0
+        },
+        {
+          "path": [
+            "admission_and_repair",
+            "datasets",
+            1,
+            "repair_failures"
+          ],
+          "equals": 0
+        },
+        {
+          "path": [
+            "admission_and_repair",
+            "datasets",
+            2,
+            "repair_failures"
+          ],
+          "equals": 0
+        },
+        {
+          "path": [
+            "admission_and_repair",
+            "datasets",
+            3,
+            "repair_failures"
+          ],
+          "equals": 0
+        },
+        {
+          "path": [
+            "admission_and_repair",
+            "datasets",
+            4,
+            "repair_failures"
+          ],
+          "equals": 0
+        },
+        {
+          "path": [
+            "candidates",
+            0,
+            "bitfield_decoder_failures"
+          ],
+          "equals": 0
+        },
+        {
+          "path": [
+            "candidates",
+            3,
+            "bitfield_decoder_failures"
+          ],
+          "equals": 0
+        },
+        {
+          "path": [
+            "candidates",
+            4,
+            "bitfield_decoder_failures"
+          ],
+          "equals": 0
+        }
+      ]
+    },
+    {
+      "name": "round3-cuda-fragment-cpu-contract",
+      "files": [
+        "simulation/round3/cuda/validate_fragments.py",
+        "simulation/round3/cuda/fragment_mapping.hpp",
+        "simulation/round3/cuda/emit_header_map.cpp"
+      ],
+      "argv": [
+        "{python}",
+        "{stage}/simulation/round3/cuda/validate_fragments.py"
+      ],
+      "result_json": "simulation/round3/cuda/cpu-fragment-validation.json",
+      "scope": "Fresh CPU fragment/scale/decode checks plus actual host-compiled header, not CUDA execution",
+      "assertions": [
+        {
+          "path": [
+            "errors_total"
+          ],
+          "equals": 0
+        },
+        {
+          "path": [
+            "host_compiled_header_map_verified"
+          ],
+          "equals": true
+        },
+        {
+          "path": [
+            "impulse_cases"
+          ],
+          "equals": 1024
+        },
+        {
+          "path": [
+            "case_count"
+          ],
+          "equals": 44
+        },
+        {
+          "path": [
+            "full_E2M1_by_full_E2M1_rejected_candidates"
+          ],
+          "equals": 3
+        },
+        {
+          "path": [
+            "gpu_executed"
+          ],
+          "equals": false
+        }
+      ]
+    },
+    {
+      "name": "round3-recorded-sm70-static-cost",
+      "files": [
+        "simulation/round3/cuda/summarize_sass.py",
+        "simulation/round3/cuda/mapped_packing.cu",
+        "simulation/round3/cuda/fragment_mapping.hpp",
+        "simulation/round3/cuda/validate_fragments.py",
+        "simulation/round3/cuda/mapped_packing.o",
+        "simulation/round3/cuda/sm70-sass.txt",
+        "simulation/round3/cuda/resources.txt"
+      ],
+      "argv": [
+        "{python}",
+        "{stage}/simulation/round3/cuda/summarize_sass.py"
+      ],
+      "result_json": "simulation/round3/cuda/compile-evidence.json",
+      "scope": "Reparse recorded round-three SASS and enforce magic/vector-store counts, no GPU timing",
+      "assertions": [
+        {
+          "path": [
+            "kernel_count"
+          ],
+          "equals": 26
+        },
+        {
+          "path": [
+            "mapped_kernel_count"
+          ],
+          "equals": 24
+        },
+        {
+          "path": [
+            "gpu_executed"
+          ],
+          "equals": false
+        },
+        {
+          "path": [
+            "hardware_status"
+          ],
+          "equals": "pending"
+        }
+      ]
+    },
+    {
+      "name": "round3-independent-preparation-review",
+      "files": [
+        "simulation/round3/review/preparation_review.py"
+      ],
+      "argv": [
+        "{python}",
+        "{stage}/simulation/round3/review/preparation_review.py"
+      ],
+      "result_json": "simulation/round3/review/preparation-review-results.json",
+      "scope": "Fresh CPU nibble/LUT/scale counterexample and byte-accounting checks, not measured preparation speed",
+      "assertions": [
+        {
+          "path": [
+            "all_checks_passed"
+          ],
+          "equals": true
+        },
+        {
+          "path": [
+            "gpu_executed"
+          ],
+          "equals": false
+        },
+        {
+          "path": [
+            "timing_measured"
+          ],
+          "equals": false
+        },
+        {
+          "path": [
+            "cross_scale_middle_counterexample",
+            "collision_confirmed"
+          ],
+          "equals": true
+        },
+        {
+          "path": [
+            "scaled_half_baseline_domain",
+            "safe_interval_inclusive"
+          ],
+          "equals": [
+            -23,
+            13
+          ]
+        }
+      ]
+    },
+    {
+      "name": "round3-independent-rectangular-layout-review",
+      "files": [
+        "simulation/round3/review/check_layout_contract.py",
+        "simulation/round3/cuda/mapped_packing.cu",
+        "simulation/round3/cuda/fragment_mapping.hpp"
+      ],
+      "argv": [
+        "{python}",
+        "{stage}/simulation/round3/review/check_layout_contract.py",
+        "--cuda-dir",
+        "{stage}/simulation/round3/cuda"
+      ],
+      "result_json": "simulation/round3/review/layout-contract-results.json",
+      "scope": "Fresh CPU C++ header/scale-reuse/vector-store and non-square cuBLAS storage contract, not actual cuBLAS execution",
+      "assertions": [
+        {
+          "path": [
+            "all_checks_passed"
+          ],
+          "equals": true
+        },
+        {
+          "path": [
+            "cpp_python_lane_mapping_mismatches"
+          ],
+          "equals": 0
+        },
+        {
+          "path": [
+            "rectangular_cublas_storage_contract_cases"
+          ],
+          "length": 3
+        },
+        {
+          "path": [
+            "gpu_executed"
+          ],
+          "equals": false
+        },
+        {
+          "path": [
+            "actual_cublas_executed"
+          ],
+          "equals": false
+        }
+      ]
+    },
+    {
+      "name": "round3-middle-decoder-coefficient-box",
+      "files": [
+        "simulation/round3/middle_decode/validate_decoders.py"
+      ],
+      "argv": [
+        "{python}",
+        "{stage}/simulation/round3/middle_decode/validate_decoders.py"
+      ],
+      "result_json": "simulation/round3/middle_decode/cpu-decoder-validation.json",
+      "scope": "Fresh CPU decoder identities on admissible FP32 coefficient box, not GPU or new BFMA simulation",
+      "assertions": [
+        {
+          "path": [
+            "passed"
+          ],
+          "equals": true
+        },
+        {
+          "path": [
+            "admitted"
+          ],
+          "equals": 18916471
+        },
+        {
+          "path": [
+            "nonrepresentable_rejected"
+          ],
+          "equals": 4855662
+        },
+        {
+          "path": [
+            "full_cartesian_combinations"
+          ],
+          "equals": 23772133
+        },
+        {
+          "path": [
+            "float_errors"
+          ],
+          "equals": 0
+        },
+        {
+          "path": [
+            "bfe_errors"
+          ],
+          "equals": 0
+        },
+        {
+          "path": [
+            "shift_errors"
+          ],
+          "equals": 0
+        },
+        {
+          "path": [
+            "gpu_executed"
+          ],
+          "equals": false
+        }
+      ]
+    },
+    {
+      "name": "round3-middle-recorded-static-cost",
+      "files": [
+        "simulation/round3/middle_decode/summarize_sass.py",
+        "simulation/round3/middle_decode/middle_decode.cu",
+        "simulation/round3/middle_decode/middle_decode.o",
+        "simulation/round3/middle_decode/sm70-sass.txt",
+        "simulation/round3/middle_decode/resources.txt",
+        "simulation/round3/middle_decode/compile.stderr"
+      ],
+      "argv": [
+        "{python}",
+        "{stage}/simulation/round3/middle_decode/summarize_sass.py"
+      ],
+      "result_json": "simulation/round3/middle_decode/compile-evidence.json",
+      "scope": "Reparse historical compiler output for matched middle decoder endpoints; no compilation rerun or measured speedup",
+      "assertions": [
+        {
+          "path": [
+            "compile_success"
+          ],
+          "equals": true
+        },
+        {
+          "path": [
+            "all_spills_zero"
+          ],
+          "equals": true
+        },
+        {
+          "path": [
+            "matched_float_output_decoder_counts"
+          ],
+          "equals": {
+            "original_round": 5,
+            "ptx_bfe": 5,
+            "shift_lea": 4
+          }
+        },
+        {
+          "path": [
+            "integer_output_endpoint_counts"
+          ],
+          "equals": {
+            "ptx_bfe": 4,
+            "shift_lea": 3
+          }
+        },
+        {
+          "path": [
+            "kernel_timing_ms"
+          ],
+          "equals": null
+        },
+        {
+          "path": [
+            "gpu_executed"
+          ],
+          "equals": false
+        }
+      ]
+    }
+  ]
+}

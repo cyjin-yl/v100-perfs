@@ -1,0 +1,37 @@
+{
+  "executed_at_utc": "2026-11-23T15:26:16.480329+00:00",
+  "returncode": 0,
+  "stdout_sha256": "580445da61358a8b79488c61d88cdbb8b5829969bbe496ad587fdd1c5735fefa",
+  "stderr": "",
+  "environment": {
+    "type": "environment",
+    "device": 0,
+    "name": "Tesla V100-PCIE-32GB",
+    "compute_capability": "7.0",
+    "actual_V100": true,
+    "driver_version": 12040,
+    "runtime_version": 12090,
+    "free_bytes_after_context": 151191552,
+    "total_bytes": 34072559616,
+    "backend": "sm70_e2m1_mx32_hmma_fp32_v1",
+    "gpu_executed": false
+  },
+  "summary": {
+    "type": "summary",
+    "passed": true,
+    "gpu_executed": true,
+    "kernel_launch_attempted": true,
+    "kernel_launch_submitted": true,
+    "kernel_execution_completed": true,
+    "actual_V100": true,
+    "cases": 42,
+    "values": 137792,
+    "finite_values": 120506,
+    "nan_values": 1026,
+    "infinite_values": 16260,
+    "subnormal_values": 5388,
+    "mismatches": 0,
+    "full_training_executed": false,
+    "speedup": null
+  }
+}

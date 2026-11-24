@@ -1,0 +1,61 @@
+{
+  "argv_sha256": "b8980618d10034e605c63505dc1bc0d0f6c1fca5be306f3edcbc52d201327b5c",
+  "backup_dir": "/tank/shared/projects/research/v100-mxfp4-20261123/queue-refresh-91e7760-backup",
+  "backup_paths": {
+    "archive": "/tank/shared/projects/research/v100-mxfp4-20261123/queue-refresh-91e7760-backup/archive",
+    "payload": "/tank/shared/projects/research/v100-mxfp4-20261123/queue-refresh-91e7760-backup/payload",
+    "ready": "/tank/shared/projects/research/v100-mxfp4-20261123/queue-refresh-91e7760-backup/ready"
+  },
+  "committed": true,
+  "committed_at": "2026-11-23T19:29:25.663+00:00",
+  "config_sha256": "2974dbb2bd34083bae4a401e3415f3e6173c920eb5947ce72db75b0e8a535454",
+  "cwd": "/tank/shared/projects/research/v100-mxfp4-20261123",
+  "euid": 1000,
+  "finished_at": "2026-11-23T19:29:25.663+00:00",
+  "gpu_executed": false,
+  "job": "sg-jincy26-261123-e5bb3",
+  "new_commit": "91e776034aba6e215b085a373affb5c71f2a79e6",
+  "new_hashes": {
+    "archive": "50a4d7a0444bf6544b2ea2f269d26013e36a6f18356fb0c53e5ab5116abedf8a",
+    "payload": "023b140da884955f3e36c308215b930a9c0a9269761feb06d85c8f66dc5bcf73",
+    "ready": "b58afdc911c60eb39b57b7f3790179829737980a7d05e7dc28abdf168280a44c"
+  },
+  "new_source_paths": {
+    "archive": "/tank/shared/projects/research/v100-mxfp4-20261123/queue-inputs-91e7760/source.tar.gz",
+    "payload": "/tank/shared/projects/research/v100-mxfp4-20261123/queue-inputs-91e7760/crater_remote_run.py",
+    "ready": "/tank/shared/projects/research/v100-mxfp4-20261123/queue-inputs-91e7760/ready.json"
+  },
+  "old_commit": "4d7ff3b95768ff0e4833a336931e3e80265c897d",
+  "old_hashes": {
+    "archive": "5957ac035acc004e37b840310c1e51cb800666c790ea0935f39330251181425a",
+    "payload": "9002694a66329a17c4e6e3ee8355660b77fa137f30c794bda1812cec77cb27a0",
+    "ready": "cc8f2def3f19c3c4c9e1c13dc56c18fcc3a9623ae7e4d683018ea3c57cf661dc"
+  },
+  "owner": "jincy26",
+  "pid": 2630233,
+  "prepared_at": "2026-11-23T19:29:24.778+00:00",
+  "published_paths": {
+    "archive": "/tank/shared/projects/research/v100-mxfp4-20261123/queued-source.tar.gz",
+    "payload": "/tank/shared/projects/research/v100-mxfp4-20261123/crater_remote_run.py",
+    "ready": "/tank/shared/projects/research/v100-mxfp4-20261123/queue-source-ready.json"
+  },
+  "resumed": true,
+  "resumed_at": "2026-11-23T19:29:25.663+00:00",
+  "rollback_paths": {
+    "archive": "/tank/shared/projects/research/v100-mxfp4-20261123/.queued-source.tar.gz.refresh-3a3c3b87775981cc-old",
+    "payload": "/tank/shared/projects/research/v100-mxfp4-20261123/.crater_remote_run.py.refresh-3a3c3b87775981cc-old",
+    "ready": "/tank/shared/projects/research/v100-mxfp4-20261123/.queue-source-ready.json.refresh-3a3c3b87775981cc-old"
+  },
+  "run_id": "20261123T190830Z-5f5e8cd5",
+  "staged_paths": {
+    "archive": "/tank/shared/projects/research/v100-mxfp4-20261123/.queued-source.tar.gz.refresh-3a3c3b87775981cc-new",
+    "payload": "/tank/shared/projects/research/v100-mxfp4-20261123/.crater_remote_run.py.refresh-3a3c3b87775981cc-new",
+    "ready": "/tank/shared/projects/research/v100-mxfp4-20261123/.queue-source-ready.json.refresh-3a3c3b87775981cc-new"
+  },
+  "started_at": "2026-11-23T19:29:23.235+00:00",
+  "starttime": 37907240,
+  "status": "refreshed",
+  "stop_attempted": true,
+  "stop_sent": true,
+  "stopped_at": "2026-11-23T19:29:24.957+00:00"
+}

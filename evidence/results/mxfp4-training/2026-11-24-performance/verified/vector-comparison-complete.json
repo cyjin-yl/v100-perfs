@@ -1,0 +1,48 @@
+{
+  "builds": [
+    [
+      0,
+      0
+    ],
+    [
+      1,
+      0
+    ],
+    [
+      2,
+      0
+    ]
+  ],
+  "runs": [
+    {
+      "variant": 0,
+      "label": "correctness",
+      "exit": 0
+    },
+    {
+      "variant": 0,
+      "label": "varied-2048",
+      "exit": 0
+    },
+    {
+      "variant": 1,
+      "label": "correctness",
+      "exit": 0
+    },
+    {
+      "variant": 1,
+      "label": "varied-2048",
+      "exit": 0
+    },
+    {
+      "variant": 2,
+      "label": "correctness",
+      "exit": 0
+    },
+    {
+      "variant": 2,
+      "label": "varied-2048",
+      "exit": 0
+    }
+  ]
+}

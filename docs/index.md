@@ -25,7 +25,7 @@ Use this documentation to understand, operate, and verify the repository's singl
 
 ## Research
 
-Research notes are supporting material, not production state. Start with [performance research](research/performance/short-prefill-plan.md) or [storage research](research/storage/optane-l3.md), then verify every conclusion against its linked evidence and capture date.
+Research notes are supporting material, not production state. Start with [performance research](research/performance/short-prefill-plan.md), [SM70 packed low-precision arithmetic](research/performance/sm70-packing/index.md), or [storage research](research/storage/optane-l3.md), then verify every conclusion against its linked evidence and capture date.
 
 ## Archive
 

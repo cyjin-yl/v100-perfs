@@ -1,0 +1,58 @@
+[  3%] Built target gen_ptx_parser_decode
+[  3%] Generating build string file to /workspace/scratch/f8d9571c451b/simulation/architecture/build/gpgpu-sim
+[  3%] Built target gen_instructions_h
+[  3%] Built target gen_build_string
+[ 16%] Built target gpgpusim
+[ 16%] Building CXX object gpgpu-sim/src/accelwattch/CMakeFiles/accelwattch.dir/cacti/technology.cc.o
+[ 53%] Built target intersim
+[ 53%] Building CXX object gpgpu-sim/libcuda/CMakeFiles/cuda.dir/cuda_runtime_api.cc.o
+[ 74%] Building CXX object gpgpu-sim/src/accelwattch/CMakeFiles/accelwattch.dir/cacti/wire.cc.o
+[ 74%] Linking CXX static library libaccelwattch.a
+[ 74%] Built target accelwattch
+[ 74%] Building CXX object gpgpu-sim/src/CMakeFiles/gpgpusim_entrypoint.dir/abstract_hardware_model.cc.o
+[ 75%] Building CXX object gpgpu-sim/libcuda/CMakeFiles/cuda.dir/cuobjdump_parser.c.o
+[ 75%] Building CXX object gpgpu-sim/libcuda/CMakeFiles/cuda.dir/cuobjdump_lexer.c.o
+[ 76%] Linking CXX static library libcuda.a
+[ 78%] Built target cuda
+[ 79%] Building CXX object trace-driven/CMakeFiles/trace-driven.dir/trace_driven.cc.o
+[ 80%] Building CXX object gpgpu-sim/src/CMakeFiles/gpgpusim_entrypoint.dir/debug.cc.o
+[ 81%] Building CXX object gpgpu-sim/src/CMakeFiles/gpgpusim_entrypoint.dir/gpgpusim_entrypoint.cc.o
+[ 81%] Building CXX object gpgpu-sim/src/CMakeFiles/gpgpusim_entrypoint.dir/option_parser.cc.o
+[ 82%] Building CXX object gpgpu-sim/src/CMakeFiles/gpgpusim_entrypoint.dir/statwrapper.cc.o
+[ 82%] Building CXX object gpgpu-sim/src/CMakeFiles/gpgpusim_entrypoint.dir/stream_manager.cc.o
+[ 82%] Linking CXX static library libtrace-driven.a
+[ 82%] Built target trace-driven
+[ 83%] Building CXX object trace-parser/CMakeFiles/trace-parser.dir/trace_parser.cc.o
+[ 84%] Building CXX object gpgpu-sim/src/CMakeFiles/gpgpusim_entrypoint.dir/trace.cc.o
+[ 85%] Building CXX object gpgpu-sim/src/CMakeFiles/gpgpusim_entrypoint.dir/utils.cc.o
+[ 85%] Built target gpgpusim_entrypoint
+[ 86%] [BISON][ptxinfo_parser] Building parser with bison 3.8.2
+/workspace/scratch/f8d9571c451b/simulation/architecture/accel-sim-framework/gpu-simulator/gpgpu-sim/src/cuda-sim/ptxinfo.y: warning: 2 reduce/reduce conflicts [-Wconflicts-rr]
+/workspace/scratch/f8d9571c451b/simulation/architecture/accel-sim-framework/gpu-simulator/gpgpu-sim/src/cuda-sim/ptxinfo.y: note: rerun with option '-Wcounterexamples' to generate conflict counterexamples
+[ 86%] [FLEX][ptx_lexer] Building scanner with flex 2.6.4
+[ 87%] [FLEX][ptxinfo_lexer] Building scanner with flex 2.6.4
+[ 87%] Building CXX object gpgpu-sim/src/cuda-sim/CMakeFiles/ptxsim.dir/cuda_device_printf.cc.o
+[ 88%] Linking CXX static library libtrace-parser.a
+[ 88%] Built target trace-parser
+[ 89%] Building CXX object gpgpu-sim/src/cuda-sim/CMakeFiles/ptxsim.dir/cuda_device_runtime.cc.o
+[ 89%] Building CXX object gpgpu-sim/src/cuda-sim/CMakeFiles/ptxsim.dir/cuda-sim.cc.o
+[ 90%] Building CXX object gpgpu-sim/src/cuda-sim/CMakeFiles/ptxsim.dir/instructions.cc.o
+[ 91%] Building CXX object gpgpu-sim/src/cuda-sim/CMakeFiles/ptxsim.dir/memory.cc.o
+[ 91%] Building CXX object gpgpu-sim/src/cuda-sim/CMakeFiles/ptxsim.dir/ptx_ir.cc.o
+[ 92%] Building CXX object gpgpu-sim/src/cuda-sim/CMakeFiles/ptxsim.dir/ptx_loader.cc.o
+[ 92%] Building CXX object gpgpu-sim/src/cuda-sim/CMakeFiles/ptxsim.dir/ptx_parser.cc.o
+[ 93%] Building CXX object gpgpu-sim/src/cuda-sim/CMakeFiles/ptxsim.dir/ptx_sim.cc.o
+[ 94%] Building CXX object gpgpu-sim/src/cuda-sim/CMakeFiles/ptxsim.dir/ptx-stats.cc.o
+[ 94%] Building CXX object gpgpu-sim/src/cuda-sim/CMakeFiles/ptxsim.dir/decuda_pred_table/decuda_pred_table.cc.o
+[ 95%] Building CXX object gpgpu-sim/src/cuda-sim/CMakeFiles/ptxsim.dir/ptx.tab.c.o
+[ 95%] Building CXX object gpgpu-sim/src/cuda-sim/CMakeFiles/ptxsim.dir/lex.ptx_.c.o
+[ 96%] Building CXX object gpgpu-sim/src/cuda-sim/CMakeFiles/ptxsim.dir/ptxinfo.tab.c.o
+[ 97%] Building CXX object gpgpu-sim/src/cuda-sim/CMakeFiles/ptxsim.dir/lex.ptxinfo_.c.o
+[ 97%] Linking CXX static library libptxsim.a
+[ 98%] Built target ptxsim
+[ 98%] Linking CXX static library libentrypoint.a
+[ 98%] Built target entrypoint
+[100%] Building CXX object CMakeFiles/accel-sim.out.dir/main.cc.o
+[100%] Building CXX object CMakeFiles/accel-sim.out.dir/accel-sim.cc.o
+[100%] Linking CXX executable accel-sim.out
+[100%] Built target accel-sim.out

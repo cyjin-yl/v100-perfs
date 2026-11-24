@@ -1,0 +1,616 @@
+{
+  "schema_version": 1,
+  "evidence_type": "c8_host_integration_checks",
+  "gpu_executed": false,
+  "cuda_device_code_compiled": false,
+  "cuda_linked": false,
+  "build_compiler_is_test_stub": true,
+  "started_utc": "2026-11-23T19:08:52.775856+00:00",
+  "script_sha256": "a82cbf3938d56eec87733afe537cc33901435635e9709a01b79ed97a1868bcbd",
+  "source_sha256": {
+    "tools/mxfp4_training/build_cuda.py": "7d0f9038bbb6601895326de6eb64a56828c8f382ba79c8c05968894f5b79c783",
+    "tools/mxfp4_training/csrc/mxfp4_gemm_certified.cu": "462f0601801f588fe7b948b30da87d4d84a6f36bfe42ebb47055099cbdd94dc6",
+    "tools/mxfp4_training/csrc/mxfp4_gemm_certified.h": "4044ab192cbef6879d28f77bcdb7b71d5d97897e51e0dde01c3627975af9388a",
+    "tools/mxfp4_training/csrc/mxfp4_gemm_fused.cu": "b81e780adddcb87b1a548ecda583e1a1e030041c74cf89999ec2270bc7123708",
+    "tools/mxfp4_training/csrc/check_mxfp4.cu": "476a24671ac3ac6c9ed28562f9357e570cb50c1a9244533df5cba94c9a701a71",
+    "tools/mxfp4_training/csrc/check_mxfp4_certified.cu": "1d4f4d6139e2c626a0877629fa4a1a30205a985c9847e727d230e370ea22dfbe",
+    "tools/mxfp4_training/csrc/bench_mxfp4.cu": "d07e73cbb50edf3cacabb20e610b278a9cfff33fd5fe3cb289c8589c0493d3fe",
+    "tools/mxfp4_training/csrc/bench_mxfp4_fused.cu": "22dbeb4f13fa981c574ee458ef1ab7138ad522ec23cadf6922b4ce450d54331e",
+    "tools/mxfp4_training/crater_remote_run.py": "9002694a66329a17c4e6e3ee8355660b77fa137f30c794bda1812cec77cb27a0"
+  },
+  "build_cli_checks": [
+    {
+      "case": "default_c2",
+      "options": [
+        "--with-certified",
+        "--library-only"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "planned_jobs": [
+        {
+          "name": "shared_library",
+          "argv": [
+            "/host-only-test-stub/nvcc",
+            "-O3",
+            "-std=c++17",
+            "--ftz=false",
+            "-lineinfo",
+            "-Xptxas=-v",
+            "-gencode=arch=compute_70,code=[sm_70,compute_70]",
+            "-DMXFP4_TILED_VARIANT=1",
+            "-DMXFP4_CERTIFIED_VARIANT=2",
+            "-shared",
+            "-Xcompiler=-fPIC",
+            "/workspace/scratch/3cc0562b0106/v100-perfs/tools/mxfp4_training/csrc/mxfp4_gemm.cu",
+            "/workspace/scratch/3cc0562b0106/v100-perfs/tools/mxfp4_training/csrc/mxfp4_gemm_tiled.cu",
+            "/workspace/scratch/3cc0562b0106/v100-perfs/tools/mxfp4_training/csrc/mxfp4_gemm_certified.cu",
+            "-lcublas",
+            "-o",
+            "/tmp/mxfp4-c8-host-integration-wj6fhr8p/default_c2/libmxfp4_sm70.so"
+          ],
+          "returncode": 0,
+          "wall_seconds": 8.562899893149734e-05,
+          "log": "shared_library.log",
+          "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "certified_variant": 2,
+      "tiled_variant": 1
+    },
+    {
+      "case": "c8_full",
+      "options": [
+        "--with-certified",
+        "--certified-variant",
+        "8",
+        "--with-benchmark",
+        "--with-fused-benchmark"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "planned_jobs": [
+        {
+          "name": "shared_library",
+          "argv": [
+            "/host-only-test-stub/nvcc",
+            "-O3",
+            "-std=c++17",
+            "--ftz=false",
+            "-lineinfo",
+            "-Xptxas=-v",
+            "-gencode=arch=compute_70,code=[sm_70,compute_70]",
+            "-DMXFP4_TILED_VARIANT=1",
+            "-DMXFP4_CERTIFIED_VARIANT=8",
+            "-shared",
+            "-Xcompiler=-fPIC",
+            "/workspace/scratch/3cc0562b0106/v100-perfs/tools/mxfp4_training/csrc/mxfp4_gemm.cu",
+            "/workspace/scratch/3cc0562b0106/v100-perfs/tools/mxfp4_training/csrc/mxfp4_gemm_tiled.cu",
+            "/workspace/scratch/3cc0562b0106/v100-perfs/tools/mxfp4_training/csrc/mxfp4_gemm_certified.cu",
+            "/workspace/scratch/3cc0562b0106/v100-perfs/tools/mxfp4_training/csrc/mxfp4_gemm_fused.cu",
+            "-lcublas",
+            "-o",
+            "/tmp/mxfp4-c8-host-integration-wj6fhr8p/c8_full/libmxfp4_sm70.so"
+          ],
+          "returncode": 0,
+          "wall_seconds": 0.00010050099990621675,
+          "log": "shared_library.log",
+          "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "standalone_harness",
+          "argv": [
+            "/host-only-test-stub/nvcc",
+            "-O3",
+            "-std=c++17",
+            "--ftz=false",
+            "-lineinfo",
+            "-Xptxas=-v",
+            "-gencode=arch=compute_70,code=[sm_70,compute_70]",
+            "-DMXFP4_TILED_VARIANT=1",
+            "-DMXFP4_CERTIFIED_VARIANT=8",
+            "/workspace/scratch/3cc0562b0106/v100-perfs/tools/mxfp4_training/csrc/mxfp4_gemm.cu",
+            "/workspace/scratch/3cc0562b0106/v100-perfs/tools/mxfp4_training/csrc/check_mxfp4.cu",
+            "-o",
+            "/tmp/mxfp4-c8-host-integration-wj6fhr8p/c8_full/check_mxfp4"
+          ],
+          "returncode": 0,
+          "wall_seconds": 3.8406999010476284e-05,
+          "log": "standalone_harness.log",
+          "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "tiled_harness",
+          "argv": [
+            "/host-only-test-stub/nvcc",
+            "-O3",
+            "-std=c++17",
+            "--ftz=false",
+            "-lineinfo",
+            "-Xptxas=-v",
+            "-gencode=arch=compute_70,code=[sm_70,compute_70]",
+            "-DMXFP4_TILED_VARIANT=1",
+            "-DMXFP4_CERTIFIED_VARIANT=8",
+            "-Dmxfp4_gemm_cuda=mxfp4_gemm_tiled_cuda",
+            "-Dmxfp4_cuda_abi_version=mxfp4_tiled_cuda_abi_version",
+            "-Dmxfp4_cuda_backend=mxfp4_tiled_cuda_backend",
+            "/workspace/scratch/3cc0562b0106/v100-perfs/tools/mxfp4_training/csrc/mxfp4_gemm_tiled.cu",
+            "/workspace/scratch/3cc0562b0106/v100-perfs/tools/mxfp4_training/csrc/check_mxfp4.cu",
+            "-o",
+            "/tmp/mxfp4-c8-host-integration-wj6fhr8p/c8_full/check_mxfp4_tiled"
+          ],
+          "returncode": 0,
+          "wall_seconds": 2.6810999770532362e-05,
+          "log": "tiled_harness.log",
+          "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "certified_harness",
+          "argv": [
+            "/host-only-test-stub/nvcc",
+            "-O3",
+            "-std=c++17",
+            "--ftz=false",
+            "-lineinfo",
+            "-Xptxas=-v",
+            "-gencode=arch=compute_70,code=[sm_70,compute_70]",
+            "-DMXFP4_TILED_VARIANT=1",
+            "-DMXFP4_CERTIFIED_VARIANT=8",
+            "/workspace/scratch/3cc0562b0106/v100-perfs/tools/mxfp4_training/csrc/mxfp4_gemm_tiled.cu",
+            "/workspace/scratch/3cc0562b0106/v100-perfs/tools/mxfp4_training/csrc/mxfp4_gemm_certified.cu",
+            "/workspace/scratch/3cc0562b0106/v100-perfs/tools/mxfp4_training/csrc/mxfp4_gemm_fused.cu",
+            "/workspace/scratch/3cc0562b0106/v100-perfs/tools/mxfp4_training/csrc/check_mxfp4_certified.cu",
+            "-lcublas",
+            "-o",
+            "/tmp/mxfp4-c8-host-integration-wj6fhr8p/c8_full/check_mxfp4_certified"
+          ],
+          "returncode": 0,
+          "wall_seconds": 2.3394999516312964e-05,
+          "log": "certified_harness.log",
+          "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "performance_benchmark",
+          "argv": [
+            "/host-only-test-stub/nvcc",
+            "-O3",
+            "-std=c++17",
+            "--ftz=false",
+            "-lineinfo",
+            "-Xptxas=-v",
+            "-gencode=arch=compute_70,code=[sm_70,compute_70]",
+            "-DMXFP4_TILED_VARIANT=1",
+            "-DMXFP4_CERTIFIED_VARIANT=8",
+            "-DMXFP4_BENCH_TILED",
+            "/workspace/scratch/3cc0562b0106/v100-perfs/tools/mxfp4_training/csrc/mxfp4_gemm.cu",
+            "/workspace/scratch/3cc0562b0106/v100-perfs/tools/mxfp4_training/csrc/mxfp4_gemm_tiled.cu",
+            "-DMXFP4_BENCH_CERTIFIED",
+            "/workspace/scratch/3cc0562b0106/v100-perfs/tools/mxfp4_training/csrc/mxfp4_gemm_certified.cu",
+            "/workspace/scratch/3cc0562b0106/v100-perfs/tools/mxfp4_training/csrc/mxfp4_gemm_fused.cu",
+            "/workspace/scratch/3cc0562b0106/v100-perfs/tools/mxfp4_training/csrc/bench_mxfp4.cu",
+            "-lcublas",
+            "-ldl",
+            "-o",
+            "/tmp/mxfp4-c8-host-integration-wj6fhr8p/c8_full/bench_mxfp4"
+          ],
+          "returncode": 0,
+          "wall_seconds": 3.4672000765567645e-05,
+          "log": "performance_benchmark.log",
+          "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "fused_packed_benchmark",
+          "argv": [
+            "/host-only-test-stub/nvcc",
+            "-O3",
+            "-std=c++17",
+            "--ftz=false",
+            "-lineinfo",
+            "-Xptxas=-v",
+            "-gencode=arch=compute_70,code=[sm_70,compute_70]",
+            "-DMXFP4_TILED_VARIANT=1",
+            "-DMXFP4_CERTIFIED_VARIANT=8",
+            "-DMXFP4_BENCH_TILED",
+            "-DMXFP4_BENCH_CERTIFIED",
+            "/workspace/scratch/3cc0562b0106/v100-perfs/tools/mxfp4_training/csrc/mxfp4_gemm.cu",
+            "/workspace/scratch/3cc0562b0106/v100-perfs/tools/mxfp4_training/csrc/mxfp4_gemm_tiled.cu",
+            "/workspace/scratch/3cc0562b0106/v100-perfs/tools/mxfp4_training/csrc/mxfp4_gemm_certified.cu",
+            "/workspace/scratch/3cc0562b0106/v100-perfs/tools/mxfp4_training/csrc/mxfp4_gemm_fused.cu",
+            "/workspace/scratch/3cc0562b0106/v100-perfs/tools/mxfp4_training/csrc/bench_mxfp4_fused.cu",
+            "-lcublas",
+            "-ldl",
+            "-o",
+            "/tmp/mxfp4-c8-host-integration-wj6fhr8p/c8_full/bench_mxfp4_fused"
+          ],
+          "returncode": 0,
+          "wall_seconds": 2.547899930505082e-05,
+          "log": "fused_packed_benchmark.log",
+          "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "certified_variant": 8,
+      "tiled_variant": 1
+    },
+    {
+      "case": "c8_library_and_packed",
+      "options": [
+        "--with-certified",
+        "--certified-variant",
+        "8",
+        "--library-only",
+        "--with-fused-benchmark"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "planned_jobs": [
+        {
+          "name": "shared_library",
+          "argv": [
+            "/host-only-test-stub/nvcc",
+            "-O3",
+            "-std=c++17",
+            "--ftz=false",
+            "-lineinfo",
+            "-Xptxas=-v",
+            "-gencode=arch=compute_70,code=[sm_70,compute_70]",
+            "-DMXFP4_TILED_VARIANT=1",
+            "-DMXFP4_CERTIFIED_VARIANT=8",
+            "-shared",
+            "-Xcompiler=-fPIC",
+            "/workspace/scratch/3cc0562b0106/v100-perfs/tools/mxfp4_training/csrc/mxfp4_gemm.cu",
+            "/workspace/scratch/3cc0562b0106/v100-perfs/tools/mxfp4_training/csrc/mxfp4_gemm_tiled.cu",
+            "/workspace/scratch/3cc0562b0106/v100-perfs/tools/mxfp4_training/csrc/mxfp4_gemm_certified.cu",
+            "/workspace/scratch/3cc0562b0106/v100-perfs/tools/mxfp4_training/csrc/mxfp4_gemm_fused.cu",
+            "-lcublas",
+            "-o",
+            "/tmp/mxfp4-c8-host-integration-wj6fhr8p/c8_library_and_packed/libmxfp4_sm70.so"
+          ],
+          "returncode": 0,
+          "wall_seconds": 0.00010630899851094,
+          "log": "shared_library.log",
+          "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "fused_packed_benchmark",
+          "argv": [
+            "/host-only-test-stub/nvcc",
+            "-O3",
+            "-std=c++17",
+            "--ftz=false",
+            "-lineinfo",
+            "-Xptxas=-v",
+            "-gencode=arch=compute_70,code=[sm_70,compute_70]",
+            "-DMXFP4_TILED_VARIANT=1",
+            "-DMXFP4_CERTIFIED_VARIANT=8",
+            "-DMXFP4_BENCH_TILED",
+            "-DMXFP4_BENCH_CERTIFIED",
+            "/workspace/scratch/3cc0562b0106/v100-perfs/tools/mxfp4_training/csrc/mxfp4_gemm.cu",
+            "/workspace/scratch/3cc0562b0106/v100-perfs/tools/mxfp4_training/csrc/mxfp4_gemm_tiled.cu",
+            "/workspace/scratch/3cc0562b0106/v100-perfs/tools/mxfp4_training/csrc/mxfp4_gemm_certified.cu",
+            "/workspace/scratch/3cc0562b0106/v100-perfs/tools/mxfp4_training/csrc/mxfp4_gemm_fused.cu",
+            "/workspace/scratch/3cc0562b0106/v100-perfs/tools/mxfp4_training/csrc/bench_mxfp4_fused.cu",
+            "-lcublas",
+            "-ldl",
+            "-o",
+            "/tmp/mxfp4-c8-host-integration-wj6fhr8p/c8_library_and_packed/bench_mxfp4_fused"
+          ],
+          "returncode": 0,
+          "wall_seconds": 3.657500019471627e-05,
+          "log": "fused_packed_benchmark.log",
+          "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "certified_variant": 8,
+      "tiled_variant": 1
+    },
+    {
+      "case": "c3_legacy",
+      "options": [
+        "--with-certified",
+        "--certified-variant",
+        "3",
+        "--library-only"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "planned_jobs": [
+        {
+          "name": "shared_library",
+          "argv": [
+            "/host-only-test-stub/nvcc",
+            "-O3",
+            "-std=c++17",
+            "--ftz=false",
+            "-lineinfo",
+            "-Xptxas=-v",
+            "-gencode=arch=compute_70,code=[sm_70,compute_70]",
+            "-DMXFP4_TILED_VARIANT=1",
+            "-DMXFP4_CERTIFIED_VARIANT=3",
+            "-shared",
+            "-Xcompiler=-fPIC",
+            "/workspace/scratch/3cc0562b0106/v100-perfs/tools/mxfp4_training/csrc/mxfp4_gemm.cu",
+            "/workspace/scratch/3cc0562b0106/v100-perfs/tools/mxfp4_training/csrc/mxfp4_gemm_tiled.cu",
+            "/workspace/scratch/3cc0562b0106/v100-perfs/tools/mxfp4_training/csrc/mxfp4_gemm_certified.cu",
+            "/workspace/scratch/3cc0562b0106/v100-perfs/tools/mxfp4_training/csrc/mxfp4_gemm_fused.cu",
+            "-lcublas",
+            "-o",
+            "/tmp/mxfp4-c8-host-integration-wj6fhr8p/c3_legacy/libmxfp4_sm70.so"
+          ],
+          "returncode": 0,
+          "wall_seconds": 0.0002975770003104117,
+          "log": "shared_library.log",
+          "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "certified_variant": 3,
+      "tiled_variant": 1
+    },
+    {
+      "case": "c8_without_certified",
+      "options": [
+        "--certified-variant",
+        "8",
+        "--with-fused-benchmark"
+      ],
+      "returncode": 2,
+      "stderr": "usage: build_cuda.py [-h] --output-dir OUTPUT_DIR [--nvcc NVCC]\n                     [--library-only] [--with-benchmark]\n                     [--with-fused-benchmark] [--with-certified]\n                     [--tiled-variant {0,1,2}]\n                     [--certified-variant {0,1,2,3,4,5,6,7,8}]\nbuild_cuda.py: error: --with-fused-benchmark requires --with-certified and --certified-variant >=3\n",
+      "planned_jobs": []
+    },
+    {
+      "case": "c2_packed_refused",
+      "options": [
+        "--with-certified",
+        "--certified-variant",
+        "2",
+        "--with-fused-benchmark"
+      ],
+      "returncode": 2,
+      "stderr": "usage: build_cuda.py [-h] --output-dir OUTPUT_DIR [--nvcc NVCC]\n                     [--library-only] [--with-benchmark]\n                     [--with-fused-benchmark] [--with-certified]\n                     [--tiled-variant {0,1,2}]\n                     [--certified-variant {0,1,2,3,4,5,6,7,8}]\nbuild_cuda.py: error: --with-fused-benchmark requires --with-certified and --certified-variant >=3\n",
+      "planned_jobs": []
+    },
+    {
+      "case": "variant9_refused",
+      "options": [
+        "--with-certified",
+        "--certified-variant",
+        "9"
+      ],
+      "returncode": 2,
+      "stderr": "usage: build_cuda.py [-h] --output-dir OUTPUT_DIR [--nvcc NVCC]\n                     [--library-only] [--with-benchmark]\n                     [--with-fused-benchmark] [--with-certified]\n                     [--tiled-variant {0,1,2}]\n                     [--certified-variant {0,1,2,3,4,5,6,7,8}]\nbuild_cuda.py: error: argument --certified-variant: invalid choice: '9' (choose from 0, 1, 2, 3, 4, 5, 6, 7, 8)\n",
+      "planned_jobs": []
+    },
+    {
+      "case": "negative_variant_refused",
+      "options": [
+        "--with-certified",
+        "--certified-variant",
+        "-1"
+      ],
+      "returncode": 2,
+      "stderr": "usage: build_cuda.py [-h] --output-dir OUTPUT_DIR [--nvcc NVCC]\n                     [--library-only] [--with-benchmark]\n                     [--with-fused-benchmark] [--with-certified]\n                     [--tiled-variant {0,1,2}]\n                     [--certified-variant {0,1,2,3,4,5,6,7,8}]\nbuild_cuda.py: error: argument --certified-variant: invalid choice: '-1' (choose from 0, 1, 2, 3, 4, 5, 6, 7, 8)\n",
+      "planned_jobs": []
+    }
+  ],
+  "preprocessor_gate_checks": [
+    {
+      "variant_define": null,
+      "returncode": 0,
+      "stdout": "0\n",
+      "stderr": ""
+    },
+    {
+      "variant_define": -1,
+      "returncode": 1,
+      "stdout": "-1\n",
+      "stderr": "/tmp/mxfp4-c8-host-integration-wj6fhr8p/actual_certified_variant_gate.cpp:5:2: error: #error \"MXFP4_CERTIFIED_VARIANT must be 0..2 (cuBLAS) or 3..8 (fused normalized HMMA)\"\n    5 | #error \"MXFP4_CERTIFIED_VARIANT must be 0..2 (cuBLAS) or 3..8 (fused normalized HMMA)\"\n      |  ^~~~~\n"
+    },
+    {
+      "variant_define": 0,
+      "returncode": 0,
+      "stdout": "0\n",
+      "stderr": ""
+    },
+    {
+      "variant_define": 2,
+      "returncode": 0,
+      "stdout": "2\n",
+      "stderr": ""
+    },
+    {
+      "variant_define": 3,
+      "returncode": 0,
+      "stdout": "3\n",
+      "stderr": ""
+    },
+    {
+      "variant_define": 7,
+      "returncode": 0,
+      "stdout": "7\n",
+      "stderr": ""
+    },
+    {
+      "variant_define": 8,
+      "returncode": 0,
+      "stdout": "8\n",
+      "stderr": ""
+    },
+    {
+      "variant_define": 9,
+      "returncode": 1,
+      "stdout": "9\n",
+      "stderr": "/tmp/mxfp4-c8-host-integration-wj6fhr8p/actual_certified_variant_gate.cpp:5:2: error: #error \"MXFP4_CERTIFIED_VARIANT must be 0..2 (cuBLAS) or 3..8 (fused normalized HMMA)\"\n    5 | #error \"MXFP4_CERTIFIED_VARIANT must be 0..2 (cuBLAS) or 3..8 (fused normalized HMMA)\"\n      |  ^~~~~\n"
+    }
+  ],
+  "python_syntax_passed": true,
+  "c8_fixture_and_dispatch_checks": {
+    "host_compile_argv": [
+      "g++",
+      "-std=c++17",
+      "-O2",
+      "/tmp/mxfp4-c8-host-integration-wj6fhr8p/actual_c8_fixtures.cpp",
+      "-o",
+      "/tmp/mxfp4-c8-host-integration-wj6fhr8p/actual_c8_fixtures"
+    ],
+    "host_compile_stderr": "",
+    "generated_host_source_sha256": "e12b7c084e35d1cc0659ea7a48adb247a0761d30fb5bbb196ac087d144aa278f",
+    "records": [
+      {
+        "type": "host_fixture",
+        "case": "c8_empty_k_128x128",
+        "values": 16384,
+        "required_bytes": 69960,
+        "accepted": true,
+        "energy_a": 0,
+        "energy_b": 0,
+        "energy_product": 0,
+        "max_span_a": 0,
+        "max_span_b": 0,
+        "lambda_min": -2,
+        "lambda_max": -2,
+        "reference_zero_values": 16384
+      },
+      {
+        "type": "host_fixture",
+        "case": "c8_aligned_128x128x32",
+        "values": 16384,
+        "required_bytes": 74312,
+        "accepted": true,
+        "energy_a": 1096,
+        "energy_b": 1096,
+        "energy_product": 1201216,
+        "max_span_a": 0,
+        "max_span_b": 0,
+        "lambda_min": -29,
+        "lambda_max": 34,
+        "reference_zero_values": 6094
+      },
+      {
+        "type": "host_fixture",
+        "case": "c8_aligned_row_bases_256x128x96",
+        "values": 32768,
+        "required_bytes": 157256,
+        "accepted": true,
+        "energy_a": 75624,
+        "energy_b": 75624,
+        "energy_product": 5718989376,
+        "max_span_a": 3,
+        "max_span_b": 3,
+        "lambda_min": -29,
+        "lambda_max": 31,
+        "reference_zero_values": 2387
+      },
+      {
+        "type": "host_fixture",
+        "case": "c8_aligned_delta12_128x256x160",
+        "values": 32768,
+        "required_bytes": 170312,
+        "accepted": true,
+        "energy_a": 2415919258,
+        "energy_b": 4384,
+        "energy_product": 10591390027072,
+        "max_span_a": 12,
+        "max_span_b": 0,
+        "lambda_min": -29,
+        "lambda_max": 31,
+        "reference_zero_values": 6184
+      },
+      {
+        "type": "host_fixture",
+        "case": "c8_delta12_output_offset4",
+        "values": 16384,
+        "required_bytes": 91724,
+        "accepted": true,
+        "energy_a": 2415919258,
+        "energy_b": 4384,
+        "energy_product": 10591390027072,
+        "max_span_a": 12,
+        "max_span_b": 0,
+        "lambda_min": -29,
+        "lambda_max": 31,
+        "reference_zero_values": 3147
+      },
+      {
+        "type": "host_fixture",
+        "case": "c8_input_offset_c61",
+        "values": 16384,
+        "required_bytes": 83018,
+        "accepted": true,
+        "energy_a": 75624,
+        "energy_b": 75624,
+        "energy_product": 5718989376,
+        "max_span_a": 3,
+        "max_span_b": 3,
+        "lambda_min": -29,
+        "lambda_max": 31,
+        "reference_zero_values": 1255
+      },
+      {
+        "type": "host_fixture",
+        "case": "c8_input_offset_c62",
+        "values": 16384,
+        "required_bytes": 83020,
+        "accepted": true,
+        "energy_a": 75624,
+        "energy_b": 75624,
+        "energy_product": 5718989376,
+        "max_span_a": 3,
+        "max_span_b": 3,
+        "lambda_min": -29,
+        "lambda_max": 31,
+        "reference_zero_values": 1255
+      },
+      {
+        "type": "host_fixture",
+        "case": "c8_input_offset_c64",
+        "values": 16384,
+        "required_bytes": 83024,
+        "accepted": true,
+        "energy_a": 75624,
+        "energy_b": 75624,
+        "energy_product": 5718989376,
+        "max_span_a": 3,
+        "max_span_b": 3,
+        "lambda_min": -29,
+        "lambda_max": 31,
+        "reference_zero_values": 1255
+      },
+      {
+        "type": "host_fixture",
+        "case": "c8_zero_block_nan_scale_rejected",
+        "values": 16384,
+        "required_bytes": 83016,
+        "accepted": false,
+        "energy_a": 75624,
+        "energy_b": 75624,
+        "energy_product": 5718989376,
+        "max_span_a": 3,
+        "max_span_b": 3,
+        "lambda_min": -29,
+        "lambda_max": 31,
+        "reference_zero_values": 1127
+      },
+      {
+        "type": "host_fixture_summary",
+        "cases": 9,
+        "values": 180224,
+        "accepted_cases": 8,
+        "peak_bytes": 170312,
+        "reference_zero_values": 39088,
+        "actual_source_dispatch_cases": 2310,
+        "gpu_executed": false,
+        "passed": true
+      }
+    ],
+    "stderr": "",
+    "passed": true
+  },
+  "unchanged_vs_head": {
+    "tools/mxfp4_training/csrc/check_mxfp4.cu": true,
+    "tools/mxfp4_training/csrc/bench_mxfp4.cu": true,
+    "tools/mxfp4_training/csrc/bench_mxfp4_fused.cu": true,
+    "tools/mxfp4_training/crater_remote_run.py": true
+  },
+  "passed": true,
+  "finished_utc": "2026-11-23T19:08:54.282220+00:00",
+  "cases_checked": 16
+}

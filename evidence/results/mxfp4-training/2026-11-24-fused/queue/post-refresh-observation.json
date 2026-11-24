@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "collected_at_utc": "2026-11-23T18:37:44.815917+00:00",
+  "evidence_type": "post_refresh_process_and_queue_observation",
+  "gpu_executed": false,
+  "process": {
+    "pid": 2150246,
+    "starttime": 37090653,
+    "state": "S",
+    "cwd": "/tank/shared/projects/research/v100-mxfp4-20261123",
+    "argv": [
+      "python3",
+      "-u",
+      "/tank/shared/projects/research/v100-mxfp4-20261123/crater_queue_runner.py",
+      "--cli",
+      "/home/ezra/verdant-dev4-transfer/tools/crater-1.4.1",
+      "--job",
+      "sg-jincy26-261123-e5bb3",
+      "--owner",
+      "jincy26",
+      "--namespace",
+      "crater-workspace",
+      "--pod",
+      "sg-jincy26-261123-e5bb3-default0-0",
+      "--source-archive",
+      "/tank/shared/projects/research/v100-mxfp4-20261123/queued-source.tar.gz",
+      "--remote-script",
+      "/tank/shared/projects/research/v100-mxfp4-20261123/crater_remote_run.py",
+      "--ready-json",
+      "/tank/shared/projects/research/v100-mxfp4-20261123/queue-source-ready.json",
+      "--outdir",
+      "/tank/shared/projects/research/v100-mxfp4-20261123/queue-watch-20261124",
+      "--proxy-command",
+      "ssh -T -o BatchMode=yes -o StrictHostKeyChecking=yes -o ForwardAgent=no doescontainer docker exec -i act-easyconnect /usr/bin/socat STDIO TCP:%h:%p,connect-timeout=10"
+    ]
+  },
+  "published_ready": {
+    "schema_version": 1,
+    "ready": true,
+    "job_name": "sg-jincy26-261123-e5bb3",
+    "source_commit": "4d7ff3b95768ff0e4833a336931e3e80265c897d",
+    "source_sha256": "5957ac035acc004e37b840310c1e51cb800666c790ea0935f39330251181425a",
+    "remote_script_sha256": "9002694a66329a17c4e6e3ee8355660b77fa137f30c794bda1812cec77cb27a0",
+    "created_at_utc": "2026-11-23T18:37:07.411682+00:00"
+  },
+  "published_sha256": {
+    "queued-source.tar.gz": "5957ac035acc004e37b840310c1e51cb800666c790ea0935f39330251181425a",
+    "crater_remote_run.py": "9002694a66329a17c4e6e3ee8355660b77fa137f30c794bda1812cec77cb27a0",
+    "queue-source-ready.json": "cc8f2def3f19c3c4c9e1c13dc56c18fcc3a9623ae7e4d683018ea3c57cf661dc"
+  },
+  "watcher_state": {
+    "cli_commit": "8232a995908027a65cab2e7a22851ac091ee1a29",
+    "cli_version": "1.4.1",
+    "gpu_executed": null,
+    "job": "sg-jincy26-261123-e5bb3",
+    "namespace": "crater-workspace",
+    "owner": "jincy26",
+    "phase": "waiting",
+    "reason": "Owned job status is Pending",
+    "remote_dir": "/workspace/user/mxfp4-sg-jincy26-261123-e5bb3-20261123T165224Z-a09e966c",
+    "remote_payload_attempted": false,
+    "remote_payload_completed": false,
+    "run_id": "20261123T165224Z-a09e966c",
+    "schema_version": 1,
+    "started_at": "2026-11-23T16:52:24+00:00",
+    "updated_at": "2026-11-23T18:36:47+00:00"
+  },
+  "job": {
+    "jobName": "sg-jincy26-261123-e5bb3",
+    "name": "mxfp4-perf-v100-1123",
+    "namespace": "crater-workspace",
+    "username": "jincy26",
+    "resources": {
+      "cpu": "4",
+      "memory": "16Gi",
+      "nvidia.com/v100": "1"
+    },
+    "status": "Pending",
+    "podGroupPhase": "Inqueue",
+    "createdAt": "2026-11-23T15:57:51Z",
+    "startedAt": "0001-01-01T00:00:00Z",
+    "completedAt": "0001-01-01T00:00:00Z"
+  },
+  "runner_sha256": "d53282e098400575b499f3e3a82ce0790220b72a3fb62c8a5ae0cd75ade575fb",
+  "unchanged_wait_limit_seconds": 43200,
+  "unchanged_poll_seconds": 60,
+  "followup_heartbeat": {
+    "observed_at_utc": "2026-11-23T18:38:23.571113+00:00",
+    "process_state": "S",
+    "pid": 2150246,
+    "starttime": 37090653,
+    "watcher_state": {
+      "cli_commit": "8232a995908027a65cab2e7a22851ac091ee1a29",
+      "cli_version": "1.4.1",
+      "gpu_executed": null,
+      "job": "sg-jincy26-261123-e5bb3",
+      "namespace": "crater-workspace",
+      "owner": "jincy26",
+      "phase": "waiting",
+      "reason": "Owned job status is Pending",
+      "remote_dir": "/workspace/user/mxfp4-sg-jincy26-261123-e5bb3-20261123T165224Z-a09e966c",
+      "remote_payload_attempted": false,
+      "remote_payload_completed": false,
+      "run_id": "20261123T165224Z-a09e966c",
+      "schema_version": 1,
+      "started_at": "2026-11-23T16:52:24+00:00",
+      "updated_at": "2026-11-23T18:37:47+00:00"
+    }
+  }
+}

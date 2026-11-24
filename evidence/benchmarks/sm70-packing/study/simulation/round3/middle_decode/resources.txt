@@ -1,0 +1,32 @@
+
+Fatbin ptx code:
+================
+arch = sm_70
+code version = [8,7]
+host = linux
+compile_size = 64bit
+compressed
+identifier = /workspace/scratch/f8d9571c451b/simulation/round3/middle_decode/middle_decode.cu
+ptxasOptions = -v  --generate-line-info 
+
+Fatbin elf code:
+================
+arch = sm_70
+code version = [1,7]
+host = linux
+compile_size = 64bit
+identifier = /workspace/scratch/f8d9571c451b/simulation/round3/middle_decode/middle_decode.cu
+
+Resource usage:
+ Common:
+  GLOBAL:0
+ Function middle_shift_integer_output:
+  REG:10 STACK:0 SHARED:0 LOCAL:0 CONSTANT[0]:372 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function middle_bfe_integer_output:
+  REG:10 STACK:0 SHARED:0 LOCAL:0 CONSTANT[0]:372 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function middle_shift_float_output:
+  REG:10 STACK:0 SHARED:0 LOCAL:0 CONSTANT[0]:372 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function middle_bfe_float_output:
+  REG:10 STACK:0 SHARED:0 LOCAL:0 CONSTANT[0]:372 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function middle_float_output:
+  REG:12 STACK:0 SHARED:0 LOCAL:0 CONSTANT[0]:372 TEXTURE:0 SURFACE:0 SAMPLER:0

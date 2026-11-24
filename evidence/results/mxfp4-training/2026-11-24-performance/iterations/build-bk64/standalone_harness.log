@@ -1,0 +1,8 @@
+nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+ptxas info    : 0 bytes gmem
+ptxas info    : Compiling entry function '_ZN46_GLOBAL__N__528793f6_13_mxfp4_gemm_cu_eee9de659gemm_mx32EPKhS1_S1_S1_Pflllll' for 'sm_70'
+ptxas info    : Function properties for _ZN46_GLOBAL__N__528793f6_13_mxfp4_gemm_cu_eee9de659gemm_mx32EPKhS1_S1_S1_Pflllll
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 64 registers, used 0 barriers, 432 bytes cmem[0]
+ptxas info    : Compile time = 71.676 ms
+ptxas info    : 0 bytes gmem

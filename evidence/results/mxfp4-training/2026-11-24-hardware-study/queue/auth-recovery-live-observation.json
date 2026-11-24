@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "observed_at_utc": "2026-11-23T20:00:03.656590+00:00",
+  "launch_audit": {
+    "schema_version": 1,
+    "phase": "launched",
+    "prepared_at_utc": "2026-11-23T19:59:35.119606+00:00",
+    "original_deadline_utc": "2026-11-24T04:52:24+00:00",
+    "tmux_session": "mxfp4-c8-auth-recovery",
+    "argv": [
+      "python3",
+      "-u",
+      "/tank/shared/projects/research/v100-mxfp4-20261123/wait-auth-and-recover-c8.py",
+      "--outdir",
+      "/tank/shared/projects/research/v100-mxfp4-20261123/c8-auth-recovery-20261124",
+      "--launcher",
+      "/tank/shared/projects/research/v100-mxfp4-20261123/submit-c8-replacement-v3.py",
+      "--expected-launcher-sha256",
+      "faf11c4e7ce896b10f110d08abba78ef13d94c266ba97c0dbcf1f6e2aadcab74"
+    ],
+    "source_hashes": {
+      "submit-c8-replacement-v3.py": "faf11c4e7ce896b10f110d08abba78ef13d94c266ba97c0dbcf1f6e2aadcab74",
+      "wait-auth-and-recover-c8.py": "d0a634ab5a513d30bd1934de3c1c8737acd9ca664e2bbae298f8bf23fa596676",
+      "crater-bootstrap-c8-recovery-v2.sh": "0572620dc6d2f62412fc343c1571fae153af160ea2d7c7ef583875b945986962"
+    },
+    "login_attempted": false,
+    "account_changed": false,
+    "purpose": "Read-only authentication wait, then one reviewed recovery launch under the existing authorization",
+    "launched_at_utc": "2026-11-23T19:59:35.453170+00:00",
+    "pid": 2849785,
+    "starttime": 38213678,
+    "process_state": "D"
+  },
+  "state": {
+    "account_changed": false,
+    "cli": "/home/ezra/verdant-dev4-transfer/tools/crater-1.4.1",
+    "deadline_utc": "2026-11-24T04:52:24+00:00",
+    "expected_launcher_sha256": "faf11c4e7ce896b10f110d08abba78ef13d94c266ba97c0dbcf1f6e2aadcab74",
+    "launcher": "/tank/shared/projects/research/v100-mxfp4-20261123/submit-c8-replacement-v3.py",
+    "launcher_attempt_count": 0,
+    "launcher_attempted": false,
+    "launcher_returncode": null,
+    "login_attempted": false,
+    "original_job": "sg-jincy26-261123-e5bb3",
+    "owner": "jincy26",
+    "phase": "waiting_for_auth",
+    "pid": 2849785,
+    "platform": "https://gpu.act.buaa.edu.cn",
+    "poll_seconds": 60,
+    "reason": "ERR_UNAUTHORIZED_401",
+    "schema_version": 1,
+    "started_at_utc": "2026-11-23T19:59:35.183657+00:00",
+    "token_read": false,
+    "updated_at_utc": "2026-11-23T19:59:35.895343+00:00",
+    "waiting_for_auth_count": 1
+  },
+  "process": {
+    "pid": 2849785,
+    "starttime": 38213678,
+    "state": "S",
+    "argv": [
+      "python3",
+      "-u",
+      "/tank/shared/projects/research/v100-mxfp4-20261123/wait-auth-and-recover-c8.py",
+      "--outdir",
+      "/tank/shared/projects/research/v100-mxfp4-20261123/c8-auth-recovery-20261124",
+      "--launcher",
+      "/tank/shared/projects/research/v100-mxfp4-20261123/submit-c8-replacement-v3.py",
+      "--expected-launcher-sha256",
+      "faf11c4e7ce896b10f110d08abba78ef13d94c266ba97c0dbcf1f6e2aadcab74"
+    ]
+  },
+  "new_job_launch_audit_exists": false
+}

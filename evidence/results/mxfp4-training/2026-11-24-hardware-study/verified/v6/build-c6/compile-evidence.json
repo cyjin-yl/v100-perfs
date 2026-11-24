@@ -1,0 +1,184 @@
+{
+  "schema_version": 2,
+  "evidence_type": "cuda_compilation",
+  "gpu_executed": false,
+  "backends": [
+    "sm70_mx32_baseline",
+    "sm70_mx32_tiled",
+    "sm70_mx32_certified_fused_hmma_or_tiled"
+  ],
+  "tiled_variant": 1,
+  "certified_enabled": true,
+  "certified_variant": 6,
+  "fused_packed_benchmark_enabled": true,
+  "full_training_executed": false,
+  "nvcc_version": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2025 NVIDIA Corporation\nBuilt on Tue_May_27_02:21:03_PDT_2025\nCuda compilation tools, release 12.9, V12.9.86\nBuild cuda_12.9.r12.9/compiler.36037853_0",
+  "source_sha256": {
+    "csrc/bench_mxfp4.cu": "d07e73cbb50edf3cacabb20e610b278a9cfff33fd5fe3cb289c8589c0493d3fe",
+    "csrc/bench_mxfp4_fused.cu": "22dbeb4f13fa981c574ee458ef1ab7138ad522ec23cadf6922b4ce450d54331e",
+    "csrc/check_mxfp4.cu": "476a24671ac3ac6c9ed28562f9357e570cb50c1a9244533df5cba94c9a701a71",
+    "csrc/check_mxfp4_certified.cu": "1d4f4d6139e2c626a0877629fa4a1a30205a985c9847e727d230e370ea22dfbe",
+    "csrc/mxfp4_gemm.cu": "d1902ef6313f82a3a829596b7fd3708f3552363dcee72ab5b400be63ba66d11c",
+    "csrc/mxfp4_gemm.h": "083b85365544016f591de46c8e9e0e9ed9db3ad9faba7f771756d50515d753fd",
+    "csrc/mxfp4_gemm_certified.cu": "462f0601801f588fe7b948b30da87d4d84a6f36bfe42ebb47055099cbdd94dc6",
+    "csrc/mxfp4_gemm_certified.h": "4044ab192cbef6879d28f77bcdb7b71d5d97897e51e0dde01c3627975af9388a",
+    "csrc/mxfp4_gemm_fused.cu": "b81e780adddcb87b1a548ecda583e1a1e030041c74cf89999ec2270bc7123708",
+    "csrc/mxfp4_gemm_fused.h": "34ebe0d912a1e85f975093d81c3dc23feed70a88e0cf48499b26278ba4ad1442",
+    "csrc/mxfp4_gemm_tiled.cu": "be1655e12671bb8940f61f9b519e9199738e598033d248e29c795bccf0861e84",
+    "csrc/mxfp4_gemm_tiled.h": "e765ccd49f45a0a4a6a8a9d3ffecbf86dcd37df8685891143af53d78f21a2b3d"
+  },
+  "fragment_mapping_sha256": "78ca809cc6606912724982559c31ed82b6141ec74651cf65324015ecd901f4b1",
+  "jobs": [
+    {
+      "name": "shared_library",
+      "argv": [
+        "/usr/local/cuda-12.9/bin/nvcc",
+        "-O3",
+        "-std=c++17",
+        "--ftz=false",
+        "-lineinfo",
+        "-Xptxas=-v",
+        "-gencode=arch=compute_70,code=[sm_70,compute_70]",
+        "-DMXFP4_TILED_VARIANT=1",
+        "-DMXFP4_CERTIFIED_VARIANT=6",
+        "-shared",
+        "-Xcompiler=-fPIC",
+        "/tmp/v100-mxfp4-fused-3cc0562b0106/v6/tools/mxfp4_training/csrc/mxfp4_gemm.cu",
+        "/tmp/v100-mxfp4-fused-3cc0562b0106/v6/tools/mxfp4_training/csrc/mxfp4_gemm_tiled.cu",
+        "/tmp/v100-mxfp4-fused-3cc0562b0106/v6/tools/mxfp4_training/csrc/mxfp4_gemm_certified.cu",
+        "/tmp/v100-mxfp4-fused-3cc0562b0106/v6/tools/mxfp4_training/csrc/mxfp4_gemm_fused.cu",
+        "-lcublas",
+        "-o",
+        "/tmp/v100-mxfp4-fused-3cc0562b0106/v6/build-c6/libmxfp4_sm70.so"
+      ],
+      "returncode": 0,
+      "wall_seconds": 24.292781775002368,
+      "log": "shared_library.log",
+      "log_sha256": "d9420ba5424cbc6cd92eec4a42d0f4154c93392cb494c584b2b22038faa3ddd5"
+    },
+    {
+      "name": "standalone_harness",
+      "argv": [
+        "/usr/local/cuda-12.9/bin/nvcc",
+        "-O3",
+        "-std=c++17",
+        "--ftz=false",
+        "-lineinfo",
+        "-Xptxas=-v",
+        "-gencode=arch=compute_70,code=[sm_70,compute_70]",
+        "-DMXFP4_TILED_VARIANT=1",
+        "-DMXFP4_CERTIFIED_VARIANT=6",
+        "/tmp/v100-mxfp4-fused-3cc0562b0106/v6/tools/mxfp4_training/csrc/mxfp4_gemm.cu",
+        "/tmp/v100-mxfp4-fused-3cc0562b0106/v6/tools/mxfp4_training/csrc/check_mxfp4.cu",
+        "-o",
+        "/tmp/v100-mxfp4-fused-3cc0562b0106/v6/build-c6/check_mxfp4"
+      ],
+      "returncode": 0,
+      "wall_seconds": 5.208716954977717,
+      "log": "standalone_harness.log",
+      "log_sha256": "cb0bf0b8db1d0432604ea569d5726c5e755156157a6f7bf216b410735ac2fda0"
+    },
+    {
+      "name": "tiled_harness",
+      "argv": [
+        "/usr/local/cuda-12.9/bin/nvcc",
+        "-O3",
+        "-std=c++17",
+        "--ftz=false",
+        "-lineinfo",
+        "-Xptxas=-v",
+        "-gencode=arch=compute_70,code=[sm_70,compute_70]",
+        "-DMXFP4_TILED_VARIANT=1",
+        "-DMXFP4_CERTIFIED_VARIANT=6",
+        "-Dmxfp4_gemm_cuda=mxfp4_gemm_tiled_cuda",
+        "-Dmxfp4_cuda_abi_version=mxfp4_tiled_cuda_abi_version",
+        "-Dmxfp4_cuda_backend=mxfp4_tiled_cuda_backend",
+        "/tmp/v100-mxfp4-fused-3cc0562b0106/v6/tools/mxfp4_training/csrc/mxfp4_gemm_tiled.cu",
+        "/tmp/v100-mxfp4-fused-3cc0562b0106/v6/tools/mxfp4_training/csrc/check_mxfp4.cu",
+        "-o",
+        "/tmp/v100-mxfp4-fused-3cc0562b0106/v6/build-c6/check_mxfp4_tiled"
+      ],
+      "returncode": 0,
+      "wall_seconds": 7.899144904979039,
+      "log": "tiled_harness.log",
+      "log_sha256": "65e55e2f3db8ec35a9864cb859f28d92e273bbd4cb62b9640ee9a69ed68d3a6b"
+    },
+    {
+      "name": "certified_harness",
+      "argv": [
+        "/usr/local/cuda-12.9/bin/nvcc",
+        "-O3",
+        "-std=c++17",
+        "--ftz=false",
+        "-lineinfo",
+        "-Xptxas=-v",
+        "-gencode=arch=compute_70,code=[sm_70,compute_70]",
+        "-DMXFP4_TILED_VARIANT=1",
+        "-DMXFP4_CERTIFIED_VARIANT=6",
+        "/tmp/v100-mxfp4-fused-3cc0562b0106/v6/tools/mxfp4_training/csrc/mxfp4_gemm_tiled.cu",
+        "/tmp/v100-mxfp4-fused-3cc0562b0106/v6/tools/mxfp4_training/csrc/mxfp4_gemm_certified.cu",
+        "/tmp/v100-mxfp4-fused-3cc0562b0106/v6/tools/mxfp4_training/csrc/mxfp4_gemm_fused.cu",
+        "/tmp/v100-mxfp4-fused-3cc0562b0106/v6/tools/mxfp4_training/csrc/check_mxfp4_certified.cu",
+        "-lcublas",
+        "-o",
+        "/tmp/v100-mxfp4-fused-3cc0562b0106/v6/build-c6/check_mxfp4_certified"
+      ],
+      "returncode": 0,
+      "wall_seconds": 27.08271219395101,
+      "log": "certified_harness.log",
+      "log_sha256": "253e34e2a7ffddcb2519f56d342fa0d12e61ec8e4a15aea10a665ef54f2dd8a8"
+    },
+    {
+      "name": "fused_packed_benchmark",
+      "argv": [
+        "/usr/local/cuda-12.9/bin/nvcc",
+        "-O3",
+        "-std=c++17",
+        "--ftz=false",
+        "-lineinfo",
+        "-Xptxas=-v",
+        "-gencode=arch=compute_70,code=[sm_70,compute_70]",
+        "-DMXFP4_TILED_VARIANT=1",
+        "-DMXFP4_CERTIFIED_VARIANT=6",
+        "-DMXFP4_BENCH_TILED",
+        "-DMXFP4_BENCH_CERTIFIED",
+        "/tmp/v100-mxfp4-fused-3cc0562b0106/v6/tools/mxfp4_training/csrc/mxfp4_gemm.cu",
+        "/tmp/v100-mxfp4-fused-3cc0562b0106/v6/tools/mxfp4_training/csrc/mxfp4_gemm_tiled.cu",
+        "/tmp/v100-mxfp4-fused-3cc0562b0106/v6/tools/mxfp4_training/csrc/mxfp4_gemm_certified.cu",
+        "/tmp/v100-mxfp4-fused-3cc0562b0106/v6/tools/mxfp4_training/csrc/mxfp4_gemm_fused.cu",
+        "/tmp/v100-mxfp4-fused-3cc0562b0106/v6/tools/mxfp4_training/csrc/bench_mxfp4_fused.cu",
+        "-lcublas",
+        "-ldl",
+        "-o",
+        "/tmp/v100-mxfp4-fused-3cc0562b0106/v6/build-c6/bench_mxfp4_fused"
+      ],
+      "returncode": 0,
+      "wall_seconds": 35.56288896204205,
+      "log": "fused_packed_benchmark.log",
+      "log_sha256": "d5ea7978b797a233d9847b89071916321b82e3b016c70a89e2a04c99c8defe39"
+    }
+  ],
+  "artifacts": {
+    "libmxfp4_sm70.so": {
+      "sha256": "f8aa5c4c850c9edc39148c44aacd8b2ddc58030c8628bf9ca4f68d26a1810d18",
+      "bytes": 8602728
+    },
+    "check_mxfp4": {
+      "sha256": "b78b06f381019a26e8babfa764f1b128299d1efd13b4e4950e55ef4b34da88a1",
+      "bytes": 1190792
+    },
+    "check_mxfp4_tiled": {
+      "sha256": "1c967e9c9809d51881c8cc2d869e441c1d274469a6a714cd3a04d43681e1227e",
+      "bytes": 2774504
+    },
+    "check_mxfp4_certified": {
+      "sha256": "0c3f606e633774940d1e77de3aad540fb81ac1f6cd8f6d85f26a1462a4a57ae6",
+      "bytes": 8564784
+    },
+    "bench_mxfp4_fused": {
+      "sha256": "282bc0a0dc5acc2fb8996a7d9d4dd9f2bdd8cc773fb693d82fa66b13fe2b342e",
+      "bytes": 8831088
+    }
+  },
+  "passed": true
+}

@@ -1,0 +1,5 @@
+cuobjdump: NVIDIA (R) fat binary listing tool
+Copyright (c) 2005-2025 NVIDIA Corporation
+Built on Thu_Feb_13_02:19:26_PST_2025
+Cuda compilation tools, release 12.8, V12.8.90
+Build cuda_12.8.r12.8/compiler.35538042_0

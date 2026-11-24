@@ -1,0 +1,17 @@
+{
+  "scope": "Official published Tesla-V100-directory trace replay in upstream QV100 cycle model; not packing-kernel execution, not numeric validation, not hardware timing",
+  "completed": true,
+  "kernel_count": 10,
+  "gpu_tot_sim_cycle": 127309,
+  "gpu_tot_sim_insn": 418884,
+  "argv": [
+    "./build/accel-sim.out",
+    "-trace",
+    "./official-lud64/kernelslist.g",
+    "-config",
+    "./configs/qv100-upstream.config",
+    "-config",
+    "./configs/qv100-upstream-trace.config"
+  ],
+  "log_sha256": "87c22cc21fb99de67c4a9370a9d6eacb70784a560f5415c0241369ef9bff9e96"
+}

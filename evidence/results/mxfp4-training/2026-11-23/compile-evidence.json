@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "evidence_type": "cuda_compilation",
+  "gpu_executed": false,
+  "full_training_executed": false,
+  "nvcc_version": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2025 NVIDIA Corporation\nBuilt on Tue_May_27_02:21:03_PDT_2025\nCuda compilation tools, release 12.9, V12.9.86\nBuild cuda_12.9.r12.9/compiler.36037853_0",
+  "source_sha256": {
+    "csrc/check_mxfp4.cu": "d9296a8e534ca5862a4116dffd066620a61a9b9142a9735c85491e94572e787c",
+    "csrc/mxfp4_gemm.cu": "d1902ef6313f82a3a829596b7fd3708f3552363dcee72ab5b400be63ba66d11c",
+    "csrc/mxfp4_gemm.h": "083b85365544016f591de46c8e9e0e9ed9db3ad9faba7f771756d50515d753fd"
+  },
+  "fragment_mapping_sha256": "78ca809cc6606912724982559c31ed82b6141ec74651cf65324015ecd901f4b1",
+  "jobs": [
+    {
+      "name": "shared_library",
+      "argv": [
+        "/usr/local/cuda-12.9/bin/nvcc",
+        "-O3",
+        "-std=c++17",
+        "--ftz=false",
+        "-lineinfo",
+        "-Xptxas=-v",
+        "-gencode=arch=compute_70,code=[sm_70,compute_70]",
+        "-shared",
+        "-Xcompiler=-fPIC",
+        "/tmp/v100-mxfp4-3cc0562b0106/tools/mxfp4_training/csrc/mxfp4_gemm.cu",
+        "-o",
+        "/tmp/v100-mxfp4-3cc0562b0106/build/libmxfp4_sm70.so"
+      ],
+      "returncode": 0,
+      "wall_seconds": 1.5886651129694656,
+      "log": "shared_library.log",
+      "log_sha256": "c9ecbfd3a68a5a7c0413502ce0301d10f9b87d4542a619fe08ca7c3632cbf5e2"
+    },
+    {
+      "name": "standalone_harness",
+      "argv": [
+        "/usr/local/cuda-12.9/bin/nvcc",
+        "-O3",
+        "-std=c++17",
+        "--ftz=false",
+        "-lineinfo",
+        "-Xptxas=-v",
+        "-gencode=arch=compute_70,code=[sm_70,compute_70]",
+        "/tmp/v100-mxfp4-3cc0562b0106/tools/mxfp4_training/csrc/mxfp4_gemm.cu",
+        "/tmp/v100-mxfp4-3cc0562b0106/tools/mxfp4_training/csrc/check_mxfp4.cu",
+        "-o",
+        "/tmp/v100-mxfp4-3cc0562b0106/build/check_mxfp4"
+      ],
+      "returncode": 0,
+      "wall_seconds": 4.949439158022869,
+      "log": "standalone_harness.log",
+      "log_sha256": "fe259a9a36654ffd4bbc12b53f8e2191da23296dfde91ac28a761f1a37a50d1e"
+    }
+  ],
+  "artifacts": {
+    "libmxfp4_sm70.so": {
+      "sha256": "e731c22f6156948b6fe3e97979ebba7c36a5523a1f6fd8844b179345bfeee61f",
+      "bytes": 1136536
+    },
+    "check_mxfp4": {
+      "sha256": "055a980fa8af20e8e14eb2f210b261dc9fbf5ddfeea9adee20e64dd16f9cf76f",
+      "bytes": 1190368
+    }
+  },
+  "passed": true
+}

@@ -1,0 +1,47 @@
+{
+  "gpu_executed": false,
+  "cuda_compiled": false,
+  "started_at_utc": "2026-11-23T21:37:59.024559+00:00",
+  "base_commit": "ed39b0d715271e7b359672a081d758b4e4d5070f",
+  "unchanged_torch_nodes": [
+    "TorchMXTensor",
+    "quantize_mx_torch",
+    "_load_library",
+    "_gemm_certified",
+    "gemm_packed",
+    "_MXLinear",
+    "mxfp4_linear",
+    "MXLinear"
+  ],
+  "unchanged_smoke_nodes": [
+    "TinyDecoder",
+    "batch_for",
+    "loss_for",
+    "run_arm"
+  ],
+  "all_five_smoke_recipes_explicit_quantizer": true,
+  "defaults": {
+    "forward": true,
+    "dgrad": true,
+    "wgrad": true,
+    "rounding": "nearest",
+    "gradient_rounding": "nearest",
+    "backend": "reference",
+    "quantizer_backend": "torch"
+  },
+  "candidate_sha256": {
+    "torch_ops.py": "37838ea16b34bd4e5f39307b0d9661c47616f0a1a69f9dd2de632b22e86fa400",
+    "build_cuda.py": "58523660b85219fce702977acbb084d34ac66eaaef4e00273bae2e94d7cf03ff",
+    "pretrain_smoke.py": "d51c92c19ec6c53072c0b98c077cbca5a417f59d5c988f553fda3719ee9d0201",
+    "csrc/mxfp4_quantize_rne.cu": "cb9e8437a4f310e37cf5ca48eab761bf7bbd8d4effe846f9376ad284f112ca92",
+    "csrc/mxfp4_quantize_rne.h": "7d4743a9560c0fb960813a9e2933b372c08d8086a863b48793f4260603892624"
+  },
+  "original_sha256": {
+    "torch_ops.py": "b80bc9f5f606880cc758276af0fbce5fb4f543cd84ea6d38e9295c9324887ba9",
+    "build_cuda.py": "13822ff2aadad1dae866d35295f4418a54ca6933807f53495750680bfbc1f727",
+    "pretrain_smoke.py": "5498f99f779e091c71b03a82cd48049e45b3bf2fc65c09e195df4a9632f5e1c6"
+  },
+  "script_sha256": "f2408e32c97a9da5d689dd741c70d74786d38f9304e91f12b7e848debaf17bea",
+  "passed": true,
+  "finished_at_utc": "2026-11-23T21:37:59.065054+00:00"
+}

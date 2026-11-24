@@ -11,6 +11,7 @@ Start with the [canonical documentation index](docs/index.md). It separates curr
 - FastLLM request adaptation and model-template boundaries
 - Qwen3.8 sampling, template, operations, and performance methodology
 - reproducible evidence and benchmark artifacts
+- [SM70 packed low-precision arithmetic research](docs/research/performance/sm70-packing/index.md), with numerical models, CUDA probes, and explicit measurement status
 - lossless historical archive and migration ledgers
 - a Git-index-backed Astro documentation site
 

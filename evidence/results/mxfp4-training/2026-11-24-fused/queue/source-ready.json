@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "ready": true,
+  "job_name": "sg-jincy26-261123-e5bb3",
+  "source_commit": "4d7ff3b95768ff0e4833a336931e3e80265c897d",
+  "source_sha256": "5957ac035acc004e37b840310c1e51cb800666c790ea0935f39330251181425a",
+  "remote_script_sha256": "9002694a66329a17c4e6e3ee8355660b77fa137f30c794bda1812cec77cb27a0",
+  "created_at_utc": "2026-11-23T18:37:07.411682+00:00"
+}

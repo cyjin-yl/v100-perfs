@@ -1,0 +1,45 @@
+{
+  "date_user_timezone": "2026-11-22",
+  "timezone": "Asia/Shanghai",
+  "task": "SM70 V100 numerical simulation and structure-guided low-precision packing exploration",
+  "new_gpu_execution": false,
+  "new_v100_hardware_timing": false,
+  "new_training_run": false,
+  "executed": {
+    "python_integer_v100_numerical_model": true,
+    "unchanged_author_model_in_gnu_octave": true,
+    "public_hardware_fixture_count": 5000,
+    "python_fixture_bit_mismatches": 0,
+    "octave_fixture_bit_mismatches": 0,
+    "octave_custom_case_count": 885,
+    "octave_custom_case_bit_mismatches": 0,
+    "packing_parameter_sets": 6,
+    "packing_vector_cases": 30940,
+    "packing_decode_failures": 0,
+    "structural_parameter_bound_checks": 21504,
+    "sm70_cuda_compilation": true,
+    "sm70_m8n8k4_compilation": true,
+    "root_reproduction_of_cost_compile_script_exit_code": 0,
+    "accel_sim_built_locally": true,
+    "accel_sim_public_lud64_kernels_replayed": 10,
+    "accel_sim_public_lud64_model_cycles": 127309,
+    "accel_sim_synthetic_hmma_dependency_traces": true
+  },
+  "models": {
+    "numerical_repo": "https://github.com/north-numerical-computing/MATLAB-tensor-core",
+    "numerical_commit": "6fd0520850164bdd1c37f901954e27ec63eada56",
+    "accel_sim_repo": "https://github.com/accel-sim/accel-sim-framework",
+    "accel_sim_commit": "7ba54ded60c4ba0083410c37d22d719166acd6dc",
+    "gpgpu_sim_repo": "https://github.com/accel-sim/gpgpu-sim_distribution",
+    "gpgpu_sim_commit": "4195dd4f229cbf03f4f38c49139ae94d01d23f03",
+    "cycle_model_configuration": "upstream SM7_QV100; not calibrated to user Tesla V100",
+    "compiler": "NVIDIA CUDA 12.8.93 sm_70"
+  },
+  "scope": [
+    "Published hardware fixtures were supplied by the model authors; these are not fresh measurements on the user computer.",
+    "Numerical and cycle models are separate. Accel-Sim synthetic traces contain no arithmetic data or packing correctness results.",
+    "No dynamic trace of the new packing kernels was obtained; their evidence is compilation and static cost.",
+    "Full-range MXFP4 packing, end-to-end speedup, convergence and training usefulness remain unestablished.",
+    "The original GPU probe is supplied as pending hardware work; the new m8n8k4 program is a compile/layout-register probe only."
+  ]
+}

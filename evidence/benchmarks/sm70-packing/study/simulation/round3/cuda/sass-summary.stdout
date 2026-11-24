@@ -1,0 +1,26 @@
+{
+  "gpu_executed": false,
+  "hardware_status": "pending",
+  "object_compile": "passed",
+  "target": "sm_70",
+  "evidence_kind": "Real CUDA compilation / static SASS counts only",
+  "kernel_count": 26,
+  "mapped_kernel_count": 24,
+  "notes": [
+    "Looped kernels: static instruction count is not a dynamic trace or execution time.",
+    "The 16 E2M1 nibble codes are decoded arithmetically; no constant-LUT throughput assumption.",
+    "Compiler can retain address/control instructions; none of the counts imply an end-to-end speedup."
+  ]
+}
+4 7 False True 64 4 8
+4 7 False False 64 4 16
+4 7 True True 72 4 8
+4 7 True False 72 4 16
+4 8 False True 64 4 8
+4 8 False False 64 4 16
+4 8 True True 72 4 8
+4 8 True False 72 4 16
+32 8 False True 62 32 8
+32 8 False False 62 32 16
+32 8 True True 64 32 8
+32 8 True False 64 32 16

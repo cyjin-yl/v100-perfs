@@ -1,0 +1,74 @@
+{
+  "bison": {
+    "Package": "bison",
+    "Version": "2:3.8.2+dfsg-1+b2",
+    "Filename": "pool/main/b/bison/bison_3.8.2+dfsg-1+b2_amd64.deb",
+    "SHA256": "ce6eb1f7aad18850e32d223a68f54bcbe756d74f138c8ec5460ad9d220f4d335",
+    "Size": "1169636",
+    "Depends": "m4, libc6 (>= 2.38)"
+  },
+  "libboost1.83-dev": {
+    "Package": "libboost1.83-dev",
+    "Version": "1.83.0-4.2",
+    "Filename": "pool/main/b/boost1.83/libboost1.83-dev_1.83.0-4.2_amd64.deb",
+    "SHA256": "1f11fc6fb2ffe9378a0f0ebc8f2fd9223fb958b4a40bb9381c67a8857d947ca3",
+    "Size": "10588968",
+    "Depends": "libstdc++-14-dev"
+  },
+  "libboost1.88-dev": {
+    "Package": "libboost1.88-dev",
+    "Version": "1.88.0-1",
+    "Filename": "pool/main/b/boost1.88/libboost1.88-dev_1.88.0-1_amd64.deb",
+    "SHA256": "4f9599afe8039a130320325e6bcb41b135f3c607ab678c643ae1ef29f411cada",
+    "Size": "11163968",
+    "Depends": "libstdc++-14-dev"
+  },
+  "flex": {
+    "Package": "flex",
+    "Version": "2.6.4-8.2+b4",
+    "Filename": "pool/main/f/flex/flex_2.6.4-8.2+b4_amd64.deb",
+    "SHA256": "75f963765232c356d0a2fb70e780dfa9de2425aca036ec60eefb7fc98a2c905b",
+    "Size": "423136",
+    "Depends": "libc6 (>= 2.38), m4"
+  },
+  "libfl-dev": {
+    "Package": "libfl-dev",
+    "Version": "2.6.4-8.2+b4",
+    "Filename": "pool/main/f/flex/libfl-dev_2.6.4-8.2+b4_amd64.deb",
+    "SHA256": "1b40033660656acd5c2f85d2c45a4e02bf57a0facc5e0623327474cb911b3136",
+    "Size": "85600",
+    "Depends": "flex (= 2.6.4-8.2+b4), libfl2 (= 2.6.4-8.2+b4)"
+  },
+  "libfl2": {
+    "Package": "libfl2",
+    "Version": "2.6.4-8.2+b4",
+    "Filename": "pool/main/f/flex/libfl2_2.6.4-8.2+b4_amd64.deb",
+    "SHA256": "4c6946a46df35fbf044a376f398499205d160d814806e9bec6cc7cc7cb554e77",
+    "Size": "84304",
+    "Depends": "libc6 (>= 2.2.5)"
+  },
+  "libgl-dev": {
+    "Package": "libgl-dev",
+    "Version": "1.7.0-1+b2",
+    "Filename": "pool/main/libg/libglvnd/libgl-dev_1.7.0-1+b2_amd64.deb",
+    "SHA256": "2c5044a44bc7cd7a196d554ca6ff78ae0358fbb98b7d2cce49176bdc6a816fe4",
+    "Size": "100680",
+    "Depends": "libgl1 (= 1.7.0-1+b2), libglx-dev"
+  },
+  "libglx-dev": {
+    "Package": "libglx-dev",
+    "Version": "1.7.0-1+b2",
+    "Filename": "pool/main/libg/libglvnd/libglx-dev_1.7.0-1+b2_amd64.deb",
+    "SHA256": "93d456321c07009491b942783db8c57065b616db713ef5f6a0c629ca078c4ea0",
+    "Size": "15804",
+    "Depends": "libglx0 (= 1.7.0-1+b2), libx11-dev"
+  },
+  "m4": {
+    "Package": "m4",
+    "Version": "1.4.19-8",
+    "Filename": "pool/main/m/m4/m4_1.4.19-8_amd64.deb",
+    "SHA256": "221b3e224708c1da2a1a88b6824380593579b2254ae7d914afa14cbd5d343334",
+    "Size": "293956",
+    "Depends": "libc6 (>= 2.38)"
+  }
+}

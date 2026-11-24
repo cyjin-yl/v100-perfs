@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "observed_at_utc": "2026-11-23T20:17:11.762489+00:00",
+  "username": "jincy26",
+  "platform": "https://gpu.act.buaa.edu.cn",
+  "method": "ldap",
+  "interactive_password_prompt_used": true,
+  "password_in_process_argv": false,
+  "password_or_token_output_recorded": false,
+  "login_exit_code": 0,
+  "error_codes": [],
+  "explicit_user_authorization": true,
+  "authenticated_read_verified": true,
+  "original_job_status": "Failed"
+}

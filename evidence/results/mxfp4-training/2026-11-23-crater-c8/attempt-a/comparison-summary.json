@@ -1,0 +1,1321 @@
+{
+  "schema_version": 1,
+  "audit_status": "verified",
+  "created_at_utc": "2026-11-23T20:47:50.069342+00:00",
+  "auditor_sha256": "c2b4a13c2f96ef709521044bfdc22760c694d88a65dac643131161e2ea8bd23a",
+  "payload_status": "failed",
+  "issues": [],
+  "warnings": [],
+  "provenance": {
+    "results_archive": {
+      "path": "/workspace/scratch/3cc0562b0106/v100-perfs/evidence/results/mxfp4-training/2026-11-23-crater-c8/attempt-a/results.tar.gz",
+      "sha256": "50a29a861733629d05bd532e609e0575cf86132e0ab86b21c80ca4ccdd817ac7",
+      "bytes": 5673,
+      "expanded_bytes": 29320,
+      "regular_members": 8,
+      "member_sha256": {
+        "build/compile-evidence.json": "910daab35952dab6d788780d157bc86e063a24d67ef38a7e4ff657e4dcd5b076",
+        "build/shared_library.log": "a56ba1ac52a52a9eca65defd424bdca1cf3702d8663ccbd2b4b0ca8d6a43fa38",
+        "build/standalone_harness.log": "779354e25684292879348ce0e381d037d533a5ccd667575ae50a0c56c9fda00c",
+        "completion.json": "2dbd5e32dcfae108552506249bd7db0463e4b53bd060f1e53fe0b349f577bb7c",
+        "cuda_build.stderr": "b21f8df22f19d898dda8d38ae5745452de11a32488588624c959c6aa62f9578f",
+        "cuda_build.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "gpu_environment.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "gpu_environment.stdout": "bd65cdc459a045b513d22b48801da02966a12682fc0eeff9d2c0a34fe279a695"
+      }
+    },
+    "source_archive": {
+      "path": "/workspace/scratch/3cc0562b0106/v100-perfs/evidence/results/mxfp4-training/2026-11-23-crater-c8/attempt-a/source.tar.gz",
+      "sha256": "50a4d7a0444bf6544b2ea2f269d26013e36a6f18356fb0c53e5ab5116abedf8a",
+      "bytes": 108801,
+      "expanded_bytes": 396098,
+      "regular_members": 23,
+      "member_sha256": {
+        "evidence/benchmarks/sm70-packing/study/simulation/round3/cuda/fragment_mapping.hpp": "78ca809cc6606912724982559c31ed82b6141ec74651cf65324015ecd901f4b1",
+        "tools/mxfp4_training/README.md": "9ec8dc025f7d230feb5c4641e02c114081db86b116b807c1b9ecda26f9342095",
+        "tools/mxfp4_training/__init__.py": "ae369746a798b3ba067012f6dba6df218db0c9547d22786b9589026d1e2047cb",
+        "tools/mxfp4_training/bench_torch_cuda.py": "9c5cc1d0af1c22b36e1970d329b6f2f08a09564b383e174822340976eb2a26dc",
+        "tools/mxfp4_training/build_cuda.py": "7d0f9038bbb6601895326de6eb64a56828c8f382ba79c8c05968894f5b79c783",
+        "tools/mxfp4_training/check_torch_cuda.py": "7c6f03690ca9b5f554071f5a2f29c39ac5cb8404cdbf9bb278ed25e0263a4c42",
+        "tools/mxfp4_training/crater_queue_runner.py": "d53282e098400575b499f3e3a82ce0790220b72a3fb62c8a5ae0cd75ade575fb",
+        "tools/mxfp4_training/crater_remote_run.py": "023b140da884955f3e36c308215b930a9c0a9269761feb06d85c8f66dc5bcf73",
+        "tools/mxfp4_training/csrc/bench_mxfp4.cu": "d07e73cbb50edf3cacabb20e610b278a9cfff33fd5fe3cb289c8589c0493d3fe",
+        "tools/mxfp4_training/csrc/bench_mxfp4_fused.cu": "22dbeb4f13fa981c574ee458ef1ab7138ad522ec23cadf6922b4ce450d54331e",
+        "tools/mxfp4_training/csrc/check_mxfp4.cu": "476a24671ac3ac6c9ed28562f9357e570cb50c1a9244533df5cba94c9a701a71",
+        "tools/mxfp4_training/csrc/check_mxfp4_certified.cu": "1d4f4d6139e2c626a0877629fa4a1a30205a985c9847e727d230e370ea22dfbe",
+        "tools/mxfp4_training/csrc/mxfp4_gemm.cu": "d1902ef6313f82a3a829596b7fd3708f3552363dcee72ab5b400be63ba66d11c",
+        "tools/mxfp4_training/csrc/mxfp4_gemm.h": "083b85365544016f591de46c8e9e0e9ed9db3ad9faba7f771756d50515d753fd",
+        "tools/mxfp4_training/csrc/mxfp4_gemm_certified.cu": "462f0601801f588fe7b948b30da87d4d84a6f36bfe42ebb47055099cbdd94dc6",
+        "tools/mxfp4_training/csrc/mxfp4_gemm_certified.h": "4044ab192cbef6879d28f77bcdb7b71d5d97897e51e0dde01c3627975af9388a",
+        "tools/mxfp4_training/csrc/mxfp4_gemm_fused.cu": "b81e780adddcb87b1a548ecda583e1a1e030041c74cf89999ec2270bc7123708",
+        "tools/mxfp4_training/csrc/mxfp4_gemm_fused.h": "34ebe0d912a1e85f975093d81c3dc23feed70a88e0cf48499b26278ba4ad1442",
+        "tools/mxfp4_training/csrc/mxfp4_gemm_tiled.cu": "be1655e12671bb8940f61f9b519e9199738e598033d248e29c795bccf0861e84",
+        "tools/mxfp4_training/csrc/mxfp4_gemm_tiled.h": "e765ccd49f45a0a4a6a8a9d3ffecbf86dcd37df8685891143af53d78f21a2b3d",
+        "tools/mxfp4_training/pretrain_smoke.py": "5498f99f779e091c71b03a82cd48049e45b3bf2fc65c09e195df4a9632f5e1c6",
+        "tools/mxfp4_training/reference.py": "eeba6d661ad051c6caaa9e192d0dbe2c9666369faf31c384b88fc42556b02b8b",
+        "tools/mxfp4_training/torch_ops.py": "cdc8fa7ffbf63546f12427cada352048d1d438af219037b9cc2105be199f1487"
+      }
+    },
+    "source_publication": {
+      "file": {
+        "path": "/workspace/scratch/3cc0562b0106/v100-perfs/evidence/results/mxfp4-training/2026-11-23-crater-c8/attempt-a/source-publication.json",
+        "sha256": "48a7ec70f06c5bbb1fe3b1e53813e27325f22a1fd635294cef802b65d2376ae3",
+        "bytes": 384
+      },
+      "record": {
+        "created_at_utc": "2026-11-23T20:25:26.682840+00:00",
+        "job_name": "sg-jincy26-261124-4abd5",
+        "ready": true,
+        "remote_script_sha256": "023b140da884955f3e36c308215b930a9c0a9269761feb06d85c8f66dc5bcf73",
+        "schema_version": 1,
+        "source_commit": "91e776034aba6e215b085a373affb5c71f2a79e6",
+        "source_sha256": "50a4d7a0444bf6544b2ea2f269d26013e36a6f18356fb0c53e5ab5116abedf8a"
+      }
+    },
+    "run_manifest": {
+      "file": {
+        "path": "/workspace/scratch/3cc0562b0106/v100-perfs/evidence/results/mxfp4-training/2026-11-23-crater-c8/attempt-a/run-manifest.json",
+        "sha256": "6853ecb11ffabff53db660e3b23c3500c847c5193d0a04620402d5de0df12116",
+        "bytes": 912
+      },
+      "record": {
+        "endpoint": {
+          "container": "custom",
+          "container_port": 22,
+          "host": "192.168.5.24",
+          "host_key_sha256": "SHA256:1LHfGE0heUi8B8Biwv/HE3ePpG6eidQszHUB5cwzMIM",
+          "job": "sg-jincy26-261124-4abd5",
+          "job_created_at": "2026-11-23T20:25:26Z",
+          "namespace": "crater-workspace",
+          "node": "dell-gpu-24",
+          "owner": "jincy26",
+          "pod": "sg-jincy26-261124-4abd5-default0-0",
+          "port": 30098,
+          "user": "mxfp4owner"
+        },
+        "job": "sg-jincy26-261124-4abd5",
+        "owner": "jincy26",
+        "remote_dir": "/workspace/user/mxfp4-sg-jincy26-261124-4abd5-20261123T204131Z-1b81b26e",
+        "remote_script_sha256": "023b140da884955f3e36c308215b930a9c0a9269761feb06d85c8f66dc5bcf73",
+        "run_id": "20261123T204131Z-1b81b26e",
+        "schema_version": 1,
+        "source_archive_sha256": "50a4d7a0444bf6544b2ea2f269d26013e36a6f18356fb0c53e5ab5116abedf8a",
+        "source_commit": "91e776034aba6e215b085a373affb5c71f2a79e6"
+      }
+    },
+    "result_member_hashes_verified": true,
+    "source_member_hashes_reported_and_verified": true,
+    "source_commit_binding_scope": "expected publication/manifest label plus verified source tar bytes; no git object checkout performed",
+    "bootstrap_scope": "payload packages_installed=false does not describe SSH bootstrap setup"
+  },
+  "completion": {
+    "schema_version": 1,
+    "started_at_utc": "2026-11-23T20:41:38.719630+00:00",
+    "status": "failed",
+    "source_archive_sha256": "50a4d7a0444bf6544b2ea2f269d26013e36a6f18356fb0c53e5ab5116abedf8a",
+    "deadline_seconds": 2700,
+    "stages": [
+      {
+        "name": "gpu_environment",
+        "argv": [
+          "nvidia-smi",
+          "--query-gpu=name,memory.total,memory.free,utilization.gpu,clocks.current.sm,clocks.current.memory,power.draw,power.limit",
+          "--format=csv"
+        ],
+        "started_at_utc": "2026-11-23T20:41:38.785412+00:00",
+        "status": "passed",
+        "executed": true,
+        "stdout": "gpu_environment.stdout",
+        "stderr": "gpu_environment.stderr",
+        "returncode": 0,
+        "wall_seconds": 0.11555828299606219,
+        "finished_at_utc": "2026-11-23T20:41:38.902425+00:00"
+      },
+      {
+        "name": "cuda_build",
+        "argv": [
+          "/opt/venv/bin/python3",
+          "tools/mxfp4_training/build_cuda.py",
+          "--nvcc",
+          "/usr/local/cuda-12.8/bin/nvcc",
+          "--output-dir",
+          "/workspace/user/mxfp4-sg-jincy26-261124-4abd5-20261123T204131Z-1b81b26e/build",
+          "--with-benchmark",
+          "--with-certified",
+          "--tiled-variant",
+          "1",
+          "--certified-variant",
+          "2"
+        ],
+        "started_at_utc": "2026-11-23T20:41:38.921122+00:00",
+        "status": "failed",
+        "executed": true,
+        "stdout": "cuda_build.stdout",
+        "stderr": "cuda_build.stderr",
+        "returncode": 2,
+        "wall_seconds": 16.340525517007336,
+        "finished_at_utc": "2026-11-23T20:41:55.264335+00:00"
+      },
+      {
+        "name": "torch_integration",
+        "status": "blocked",
+        "reason": "The current native library has not passed all correctness gates",
+        "executed": false,
+        "gpu_executed": false
+      },
+      {
+        "name": "torch_benchmark",
+        "status": "blocked",
+        "reason": "Requires the current native and framework correctness gates",
+        "executed": false,
+        "gpu_executed": false
+      },
+      {
+        "name": "gpu_training_smoke",
+        "status": "blocked",
+        "reason": "Requires the current native and framework correctness gates",
+        "executed": false,
+        "gpu_executed": false
+      },
+      {
+        "name": "control_c2_benchmark_2048",
+        "status": "blocked",
+        "reason": "The main certified2 library did not pass all native correctness gates",
+        "executed": false,
+        "gpu_executed": false
+      },
+      {
+        "name": "control_c2_benchmark_4096",
+        "status": "blocked",
+        "reason": "The main certified2 library did not pass all native correctness gates",
+        "executed": false,
+        "gpu_executed": false
+      },
+      {
+        "name": "fused_c3_build",
+        "status": "blocked",
+        "reason": "The main certified2 library did not pass all native correctness gates",
+        "executed": false,
+        "gpu_executed": false
+      },
+      {
+        "name": "fused_c3_correctness",
+        "status": "blocked",
+        "reason": "The main certified2 library did not pass all native correctness gates",
+        "executed": false,
+        "gpu_executed": false
+      },
+      {
+        "name": "fused_c3_benchmark_2048",
+        "status": "blocked",
+        "reason": "The main certified2 library did not pass all native correctness gates",
+        "executed": false,
+        "gpu_executed": false
+      },
+      {
+        "name": "fused_c3_benchmark_4096",
+        "status": "blocked",
+        "reason": "The main certified2 library did not pass all native correctness gates",
+        "executed": false,
+        "gpu_executed": false
+      },
+      {
+        "name": "fused_c4_build",
+        "status": "blocked",
+        "reason": "The main certified2 library did not pass all native correctness gates",
+        "executed": false,
+        "gpu_executed": false
+      },
+      {
+        "name": "fused_c4_correctness",
+        "status": "blocked",
+        "reason": "The main certified2 library did not pass all native correctness gates",
+        "executed": false,
+        "gpu_executed": false
+      },
+      {
+        "name": "fused_c4_benchmark_2048",
+        "status": "blocked",
+        "reason": "The main certified2 library did not pass all native correctness gates",
+        "executed": false,
+        "gpu_executed": false
+      },
+      {
+        "name": "fused_c4_benchmark_4096",
+        "status": "blocked",
+        "reason": "The main certified2 library did not pass all native correctness gates",
+        "executed": false,
+        "gpu_executed": false
+      },
+      {
+        "name": "fused_c5_build",
+        "status": "blocked",
+        "reason": "The main certified2 library did not pass all native correctness gates",
+        "executed": false,
+        "gpu_executed": false
+      },
+      {
+        "name": "fused_c5_correctness",
+        "status": "blocked",
+        "reason": "The main certified2 library did not pass all native correctness gates",
+        "executed": false,
+        "gpu_executed": false
+      },
+      {
+        "name": "fused_c5_benchmark_2048",
+        "status": "blocked",
+        "reason": "The main certified2 library did not pass all native correctness gates",
+        "executed": false,
+        "gpu_executed": false
+      },
+      {
+        "name": "fused_c5_benchmark_4096",
+        "status": "blocked",
+        "reason": "The main certified2 library did not pass all native correctness gates",
+        "executed": false,
+        "gpu_executed": false
+      },
+      {
+        "name": "fused_c6_build",
+        "status": "blocked",
+        "reason": "The main certified2 library did not pass all native correctness gates",
+        "executed": false,
+        "gpu_executed": false
+      },
+      {
+        "name": "fused_c6_correctness",
+        "status": "blocked",
+        "reason": "The main certified2 library did not pass all native correctness gates",
+        "executed": false,
+        "gpu_executed": false
+      },
+      {
+        "name": "fused_c6_benchmark_2048",
+        "status": "blocked",
+        "reason": "The main certified2 library did not pass all native correctness gates",
+        "executed": false,
+        "gpu_executed": false
+      },
+      {
+        "name": "fused_c6_benchmark_4096",
+        "status": "blocked",
+        "reason": "The main certified2 library did not pass all native correctness gates",
+        "executed": false,
+        "gpu_executed": false
+      },
+      {
+        "name": "fused_c7_build",
+        "status": "blocked",
+        "reason": "The main certified2 library did not pass all native correctness gates",
+        "executed": false,
+        "gpu_executed": false
+      },
+      {
+        "name": "fused_c7_correctness",
+        "status": "blocked",
+        "reason": "The main certified2 library did not pass all native correctness gates",
+        "executed": false,
+        "gpu_executed": false
+      },
+      {
+        "name": "fused_c7_benchmark_2048",
+        "status": "blocked",
+        "reason": "The main certified2 library did not pass all native correctness gates",
+        "executed": false,
+        "gpu_executed": false
+      },
+      {
+        "name": "fused_c7_benchmark_4096",
+        "status": "blocked",
+        "reason": "The main certified2 library did not pass all native correctness gates",
+        "executed": false,
+        "gpu_executed": false
+      },
+      {
+        "name": "fused_c8_build",
+        "status": "blocked",
+        "reason": "The main certified2 library did not pass all native correctness gates",
+        "executed": false,
+        "gpu_executed": false
+      },
+      {
+        "name": "fused_c8_correctness",
+        "status": "blocked",
+        "reason": "The main certified2 library did not pass all native correctness gates",
+        "executed": false,
+        "gpu_executed": false
+      },
+      {
+        "name": "fused_c8_benchmark_2048",
+        "status": "blocked",
+        "reason": "The main certified2 library did not pass all native correctness gates",
+        "executed": false,
+        "gpu_executed": false
+      },
+      {
+        "name": "fused_c8_benchmark_4096",
+        "status": "blocked",
+        "reason": "The main certified2 library did not pass all native correctness gates",
+        "executed": false,
+        "gpu_executed": false
+      }
+    ],
+    "services_stopped": false,
+    "clock_or_power_changes": false,
+    "packages_installed": false,
+    "training_scope": "synthetic tiny causal-decoder smoke, not LLM pretraining",
+    "fused_comparison": {
+      "control_certified_variant": 2,
+      "candidate_certified_variants": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "shapes": [
+        [
+          2048,
+          2048,
+          2048
+        ],
+        [
+          4096,
+          4096,
+          4096
+        ]
+      ],
+      "mode": "random_block_scales",
+      "seed": 20261123,
+      "iters": 10,
+      "rounds": 5,
+      "warmup": 3,
+      "candidate_correctness_gate": "full check_mxfp4_certified --correctness-only",
+      "framework_library_certified_variant": 2,
+      "stage_order": [
+        "control_c2_benchmark_2048",
+        "control_c2_benchmark_4096",
+        "fused_c3_build",
+        "fused_c3_correctness",
+        "fused_c3_benchmark_2048",
+        "fused_c3_benchmark_4096",
+        "fused_c4_build",
+        "fused_c4_correctness",
+        "fused_c4_benchmark_2048",
+        "fused_c4_benchmark_4096",
+        "fused_c5_build",
+        "fused_c5_correctness",
+        "fused_c5_benchmark_2048",
+        "fused_c5_benchmark_4096",
+        "fused_c6_build",
+        "fused_c6_correctness",
+        "fused_c6_benchmark_2048",
+        "fused_c6_benchmark_4096",
+        "fused_c7_build",
+        "fused_c7_correctness",
+        "fused_c7_benchmark_2048",
+        "fused_c7_benchmark_4096",
+        "fused_c8_build",
+        "fused_c8_correctness",
+        "fused_c8_benchmark_2048",
+        "fused_c8_benchmark_4096"
+      ],
+      "deadline_scope": "shared with all preceding native, framework and smoke stages"
+    },
+    "source_files_sha256": {
+      "evidence/benchmarks/sm70-packing/study/simulation/round3/cuda/fragment_mapping.hpp": "78ca809cc6606912724982559c31ed82b6141ec74651cf65324015ecd901f4b1",
+      "tools/mxfp4_training/README.md": "9ec8dc025f7d230feb5c4641e02c114081db86b116b807c1b9ecda26f9342095",
+      "tools/mxfp4_training/__init__.py": "ae369746a798b3ba067012f6dba6df218db0c9547d22786b9589026d1e2047cb",
+      "tools/mxfp4_training/bench_torch_cuda.py": "9c5cc1d0af1c22b36e1970d329b6f2f08a09564b383e174822340976eb2a26dc",
+      "tools/mxfp4_training/build_cuda.py": "7d0f9038bbb6601895326de6eb64a56828c8f382ba79c8c05968894f5b79c783",
+      "tools/mxfp4_training/check_torch_cuda.py": "7c6f03690ca9b5f554071f5a2f29c39ac5cb8404cdbf9bb278ed25e0263a4c42",
+      "tools/mxfp4_training/crater_queue_runner.py": "d53282e098400575b499f3e3a82ce0790220b72a3fb62c8a5ae0cd75ade575fb",
+      "tools/mxfp4_training/crater_remote_run.py": "023b140da884955f3e36c308215b930a9c0a9269761feb06d85c8f66dc5bcf73",
+      "tools/mxfp4_training/csrc/bench_mxfp4.cu": "d07e73cbb50edf3cacabb20e610b278a9cfff33fd5fe3cb289c8589c0493d3fe",
+      "tools/mxfp4_training/csrc/bench_mxfp4_fused.cu": "22dbeb4f13fa981c574ee458ef1ab7138ad522ec23cadf6922b4ce450d54331e",
+      "tools/mxfp4_training/csrc/check_mxfp4.cu": "476a24671ac3ac6c9ed28562f9357e570cb50c1a9244533df5cba94c9a701a71",
+      "tools/mxfp4_training/csrc/check_mxfp4_certified.cu": "1d4f4d6139e2c626a0877629fa4a1a30205a985c9847e727d230e370ea22dfbe",
+      "tools/mxfp4_training/csrc/mxfp4_gemm.cu": "d1902ef6313f82a3a829596b7fd3708f3552363dcee72ab5b400be63ba66d11c",
+      "tools/mxfp4_training/csrc/mxfp4_gemm.h": "083b85365544016f591de46c8e9e0e9ed9db3ad9faba7f771756d50515d753fd",
+      "tools/mxfp4_training/csrc/mxfp4_gemm_certified.cu": "462f0601801f588fe7b948b30da87d4d84a6f36bfe42ebb47055099cbdd94dc6",
+      "tools/mxfp4_training/csrc/mxfp4_gemm_certified.h": "4044ab192cbef6879d28f77bcdb7b71d5d97897e51e0dde01c3627975af9388a",
+      "tools/mxfp4_training/csrc/mxfp4_gemm_fused.cu": "b81e780adddcb87b1a548ecda583e1a1e030041c74cf89999ec2270bc7123708",
+      "tools/mxfp4_training/csrc/mxfp4_gemm_fused.h": "34ebe0d912a1e85f975093d81c3dc23feed70a88e0cf48499b26278ba4ad1442",
+      "tools/mxfp4_training/csrc/mxfp4_gemm_tiled.cu": "be1655e12671bb8940f61f9b519e9199738e598033d248e29c795bccf0861e84",
+      "tools/mxfp4_training/csrc/mxfp4_gemm_tiled.h": "e765ccd49f45a0a4a6a8a9d3ffecbf86dcd37df8685891143af53d78f21a2b3d",
+      "tools/mxfp4_training/pretrain_smoke.py": "5498f99f779e091c71b03a82cd48049e45b3bf2fc65c09e195df4a9632f5e1c6",
+      "tools/mxfp4_training/reference.py": "eeba6d661ad051c6caaa9e192d0dbe2c9666369faf31c384b88fc42556b02b8b",
+      "tools/mxfp4_training/torch_ops.py": "cdc8fa7ffbf63546f12427cada352048d1d438af219037b9cc2105be199f1487"
+    },
+    "installed_nvcc_probes": [
+      {
+        "path": "/usr/local/cuda-12.8/bin/nvcc",
+        "returncode": 0,
+        "version": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2025 NVIDIA Corporation\nBuilt on Fri_Feb_21_20:23:50_PST_2025\nCuda compilation tools, release 12.8, V12.8.93\nBuild cuda_12.8.r12.8/compiler.35583870_0\n",
+        "stderr": ""
+      }
+    ],
+    "finished_at_utc": "2026-11-23T20:41:55.418500+00:00",
+    "result_files_sha256": {
+      "build/compile-evidence.json": "910daab35952dab6d788780d157bc86e063a24d67ef38a7e4ff657e4dcd5b076",
+      "build/shared_library.log": "a56ba1ac52a52a9eca65defd424bdca1cf3702d8663ccbd2b4b0ca8d6a43fa38",
+      "build/standalone_harness.log": "779354e25684292879348ce0e381d037d533a5ccd667575ae50a0c56c9fda00c",
+      "cuda_build.stderr": "b21f8df22f19d898dda8d38ae5745452de11a32488588624c959c6aa62f9578f",
+      "cuda_build.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gpu_environment.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gpu_environment.stdout": "bd65cdc459a045b513d22b48801da02966a12682fc0eeff9d2c0a34fe279a695"
+    }
+  },
+  "stage_counts": {
+    "passed": 1,
+    "failed": 1,
+    "blocked": 29
+  },
+  "failed_stage_log_tails": [
+    {
+      "stage": "cuda_build",
+      "artifact": "cuda_build.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "tail_max_bytes": 8192,
+      "text": ""
+    },
+    {
+      "stage": "cuda_build",
+      "artifact": "cuda_build.stderr",
+      "sha256": "b21f8df22f19d898dda8d38ae5745452de11a32488588624c959c6aa62f9578f",
+      "tail_max_bytes": 8192,
+      "text": "nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).\nptxas info    : 0 bytes gmem\nptxas info    : Compiling entry function '_ZN46_GLOBAL__N__6d2f757c_13_mxfp4_gemm_cu_eee9de659gemm_mx32EPKhS1_S1_S1_Pflllll' for 'sm_70'\nptxas info    : Function properties for _ZN46_GLOBAL__N__6d2f757c_13_mxfp4_gemm_cu_eee9de659gemm_mx32EPKhS1_S1_S1_Pflllll\n    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads\nptxas info    : Used 64 registers, used 0 barriers, 432 bytes cmem[0]\nptxas info    : Compile time = 106.060 ms\n/workspace/user/mxfp4-sg-jincy26-261124-4abd5-20261123T204131Z-1b81b26e/source/tools/mxfp4_training/csrc/check_mxfp4.cu(398): error: cannot deduce type of range in range-based \"for\" loop\n      for (const auto shape : {std::vector<int>{1, 1, 1}, {7, 13, 31}, {17, 19, 33},\n                              ^\n\n1 error detected in the compilation of \"/workspace/user/mxfp4-sg-jincy26-261124-4abd5-20261123T204131Z-1b81b26e/source/tools/mxfp4_training/csrc/check_mxfp4.cu\".\n\n"
+    }
+  ],
+  "unrecorded_normal_stages": [
+    "native_baseline",
+    "native_tiled",
+    "native_certified",
+    "native_benchmark",
+    "smoke_cuda",
+    "smoke_cuda_tiled"
+  ],
+  "builds": {
+    "2": {
+      "stage": {
+        "name": "cuda_build",
+        "argv": [
+          "/opt/venv/bin/python3",
+          "tools/mxfp4_training/build_cuda.py",
+          "--nvcc",
+          "/usr/local/cuda-12.8/bin/nvcc",
+          "--output-dir",
+          "/workspace/user/mxfp4-sg-jincy26-261124-4abd5-20261123T204131Z-1b81b26e/build",
+          "--with-benchmark",
+          "--with-certified",
+          "--tiled-variant",
+          "1",
+          "--certified-variant",
+          "2"
+        ],
+        "started_at_utc": "2026-11-23T20:41:38.921122+00:00",
+        "status": "failed",
+        "executed": true,
+        "stdout": "cuda_build.stdout",
+        "stderr": "cuda_build.stderr",
+        "returncode": 2,
+        "wall_seconds": 16.340525517007336,
+        "finished_at_utc": "2026-11-23T20:41:55.264335+00:00"
+      },
+      "artifact": "build/compile-evidence.json",
+      "manifest": {
+        "schema_version": 2,
+        "evidence_type": "cuda_compilation",
+        "gpu_executed": false,
+        "backends": [
+          "sm70_mx32_baseline",
+          "sm70_mx32_tiled",
+          "sm70_mx32_certified_cublas_or_tiled"
+        ],
+        "tiled_variant": 1,
+        "certified_enabled": true,
+        "certified_variant": 2,
+        "fused_packed_benchmark_enabled": false,
+        "full_training_executed": false,
+        "nvcc_version": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2025 NVIDIA Corporation\nBuilt on Fri_Feb_21_20:23:50_PST_2025\nCuda compilation tools, release 12.8, V12.8.93\nBuild cuda_12.8.r12.8/compiler.35583870_0",
+        "source_sha256": {
+          "csrc/bench_mxfp4.cu": "d07e73cbb50edf3cacabb20e610b278a9cfff33fd5fe3cb289c8589c0493d3fe",
+          "csrc/bench_mxfp4_fused.cu": "22dbeb4f13fa981c574ee458ef1ab7138ad522ec23cadf6922b4ce450d54331e",
+          "csrc/check_mxfp4.cu": "476a24671ac3ac6c9ed28562f9357e570cb50c1a9244533df5cba94c9a701a71",
+          "csrc/check_mxfp4_certified.cu": "1d4f4d6139e2c626a0877629fa4a1a30205a985c9847e727d230e370ea22dfbe",
+          "csrc/mxfp4_gemm.cu": "d1902ef6313f82a3a829596b7fd3708f3552363dcee72ab5b400be63ba66d11c",
+          "csrc/mxfp4_gemm.h": "083b85365544016f591de46c8e9e0e9ed9db3ad9faba7f771756d50515d753fd",
+          "csrc/mxfp4_gemm_certified.cu": "462f0601801f588fe7b948b30da87d4d84a6f36bfe42ebb47055099cbdd94dc6",
+          "csrc/mxfp4_gemm_certified.h": "4044ab192cbef6879d28f77bcdb7b71d5d97897e51e0dde01c3627975af9388a",
+          "csrc/mxfp4_gemm_fused.cu": "b81e780adddcb87b1a548ecda583e1a1e030041c74cf89999ec2270bc7123708",
+          "csrc/mxfp4_gemm_fused.h": "34ebe0d912a1e85f975093d81c3dc23feed70a88e0cf48499b26278ba4ad1442",
+          "csrc/mxfp4_gemm_tiled.cu": "be1655e12671bb8940f61f9b519e9199738e598033d248e29c795bccf0861e84",
+          "csrc/mxfp4_gemm_tiled.h": "e765ccd49f45a0a4a6a8a9d3ffecbf86dcd37df8685891143af53d78f21a2b3d"
+        },
+        "fragment_mapping_sha256": "78ca809cc6606912724982559c31ed82b6141ec74651cf65324015ecd901f4b1",
+        "jobs": [
+          {
+            "name": "shared_library",
+            "argv": [
+              "/usr/local/cuda-12.8/bin/nvcc",
+              "-O3",
+              "-std=c++17",
+              "--ftz=false",
+              "-lineinfo",
+              "-Xptxas=-v",
+              "-gencode=arch=compute_70,code=[sm_70,compute_70]",
+              "-DMXFP4_TILED_VARIANT=1",
+              "-DMXFP4_CERTIFIED_VARIANT=2",
+              "-shared",
+              "-Xcompiler=-fPIC",
+              "/workspace/user/mxfp4-sg-jincy26-261124-4abd5-20261123T204131Z-1b81b26e/source/tools/mxfp4_training/csrc/mxfp4_gemm.cu",
+              "/workspace/user/mxfp4-sg-jincy26-261124-4abd5-20261123T204131Z-1b81b26e/source/tools/mxfp4_training/csrc/mxfp4_gemm_tiled.cu",
+              "/workspace/user/mxfp4-sg-jincy26-261124-4abd5-20261123T204131Z-1b81b26e/source/tools/mxfp4_training/csrc/mxfp4_gemm_certified.cu",
+              "-lcublas",
+              "-o",
+              "/workspace/user/mxfp4-sg-jincy26-261124-4abd5-20261123T204131Z-1b81b26e/build/libmxfp4_sm70.so"
+            ],
+            "returncode": 0,
+            "wall_seconds": 12.91966548099299,
+            "log": "shared_library.log",
+            "log_sha256": "a56ba1ac52a52a9eca65defd424bdca1cf3702d8663ccbd2b4b0ca8d6a43fa38"
+          },
+          {
+            "name": "standalone_harness",
+            "argv": [
+              "/usr/local/cuda-12.8/bin/nvcc",
+              "-O3",
+              "-std=c++17",
+              "--ftz=false",
+              "-lineinfo",
+              "-Xptxas=-v",
+              "-gencode=arch=compute_70,code=[sm_70,compute_70]",
+              "-DMXFP4_TILED_VARIANT=1",
+              "-DMXFP4_CERTIFIED_VARIANT=2",
+              "/workspace/user/mxfp4-sg-jincy26-261124-4abd5-20261123T204131Z-1b81b26e/source/tools/mxfp4_training/csrc/mxfp4_gemm.cu",
+              "/workspace/user/mxfp4-sg-jincy26-261124-4abd5-20261123T204131Z-1b81b26e/source/tools/mxfp4_training/csrc/check_mxfp4.cu",
+              "-o",
+              "/workspace/user/mxfp4-sg-jincy26-261124-4abd5-20261123T204131Z-1b81b26e/build/check_mxfp4"
+            ],
+            "returncode": 2,
+            "wall_seconds": 3.268517457996495,
+            "log": "standalone_harness.log",
+            "log_sha256": "779354e25684292879348ce0e381d037d533a5ccd667575ae50a0c56c9fda00c"
+          }
+        ],
+        "artifacts": {
+          "libmxfp4_sm70.so": {
+            "sha256": "30a65e3b1aea75d801c43491df60f85d6d456dd9dc784d00a30e330025feb7b8",
+            "bytes": 2995840
+          }
+        },
+        "passed": false
+      },
+      "complete_pass": false,
+      "binary_hash_scope": "compiler manifest only; binaries are not in results archive",
+      "audit_verified": true
+    },
+    "3": {
+      "stage": {
+        "name": "fused_c3_build",
+        "status": "blocked",
+        "reason": "The main certified2 library did not pass all native correctness gates",
+        "executed": false,
+        "gpu_executed": false
+      },
+      "artifact": "fused-c3/build/compile-evidence.json",
+      "manifest": null,
+      "complete_pass": false,
+      "binary_hash_scope": "compiler manifest only; binaries are not in results archive",
+      "audit_verified": true
+    },
+    "4": {
+      "stage": {
+        "name": "fused_c4_build",
+        "status": "blocked",
+        "reason": "The main certified2 library did not pass all native correctness gates",
+        "executed": false,
+        "gpu_executed": false
+      },
+      "artifact": "fused-c4/build/compile-evidence.json",
+      "manifest": null,
+      "complete_pass": false,
+      "binary_hash_scope": "compiler manifest only; binaries are not in results archive",
+      "audit_verified": true
+    },
+    "5": {
+      "stage": {
+        "name": "fused_c5_build",
+        "status": "blocked",
+        "reason": "The main certified2 library did not pass all native correctness gates",
+        "executed": false,
+        "gpu_executed": false
+      },
+      "artifact": "fused-c5/build/compile-evidence.json",
+      "manifest": null,
+      "complete_pass": false,
+      "binary_hash_scope": "compiler manifest only; binaries are not in results archive",
+      "audit_verified": true
+    },
+    "6": {
+      "stage": {
+        "name": "fused_c6_build",
+        "status": "blocked",
+        "reason": "The main certified2 library did not pass all native correctness gates",
+        "executed": false,
+        "gpu_executed": false
+      },
+      "artifact": "fused-c6/build/compile-evidence.json",
+      "manifest": null,
+      "complete_pass": false,
+      "binary_hash_scope": "compiler manifest only; binaries are not in results archive",
+      "audit_verified": true
+    },
+    "7": {
+      "stage": {
+        "name": "fused_c7_build",
+        "status": "blocked",
+        "reason": "The main certified2 library did not pass all native correctness gates",
+        "executed": false,
+        "gpu_executed": false
+      },
+      "artifact": "fused-c7/build/compile-evidence.json",
+      "manifest": null,
+      "complete_pass": false,
+      "binary_hash_scope": "compiler manifest only; binaries are not in results archive",
+      "audit_verified": true
+    },
+    "8": {
+      "stage": {
+        "name": "fused_c8_build",
+        "status": "blocked",
+        "reason": "The main certified2 library did not pass all native correctness gates",
+        "executed": false,
+        "gpu_executed": false
+      },
+      "artifact": "fused-c8/build/compile-evidence.json",
+      "manifest": null,
+      "complete_pass": false,
+      "binary_hash_scope": "compiler manifest only; binaries are not in results archive",
+      "audit_verified": true
+    }
+  },
+  "native_correctness": {
+    "native_baseline": {
+      "stage": {
+        "name": "native_baseline",
+        "status": "not_recorded",
+        "executed": false
+      },
+      "artifact": null,
+      "records": [],
+      "complete_pass": false,
+      "audit_verified": true
+    },
+    "native_tiled": {
+      "stage": {
+        "name": "native_tiled",
+        "status": "not_recorded",
+        "executed": false
+      },
+      "artifact": null,
+      "records": [],
+      "complete_pass": false,
+      "audit_verified": true
+    },
+    "native_certified": {
+      "stage": {
+        "name": "native_certified",
+        "status": "not_recorded",
+        "executed": false
+      },
+      "artifact": null,
+      "records": [],
+      "complete_pass": false,
+      "audit_verified": true
+    },
+    "fused_c3_correctness": {
+      "stage": {
+        "name": "fused_c3_correctness",
+        "status": "blocked",
+        "reason": "The main certified2 library did not pass all native correctness gates",
+        "executed": false,
+        "gpu_executed": false
+      },
+      "artifact": null,
+      "records": [],
+      "complete_pass": false,
+      "audit_verified": true
+    },
+    "fused_c4_correctness": {
+      "stage": {
+        "name": "fused_c4_correctness",
+        "status": "blocked",
+        "reason": "The main certified2 library did not pass all native correctness gates",
+        "executed": false,
+        "gpu_executed": false
+      },
+      "artifact": null,
+      "records": [],
+      "complete_pass": false,
+      "audit_verified": true
+    },
+    "fused_c5_correctness": {
+      "stage": {
+        "name": "fused_c5_correctness",
+        "status": "blocked",
+        "reason": "The main certified2 library did not pass all native correctness gates",
+        "executed": false,
+        "gpu_executed": false
+      },
+      "artifact": null,
+      "records": [],
+      "complete_pass": false,
+      "audit_verified": true
+    },
+    "fused_c6_correctness": {
+      "stage": {
+        "name": "fused_c6_correctness",
+        "status": "blocked",
+        "reason": "The main certified2 library did not pass all native correctness gates",
+        "executed": false,
+        "gpu_executed": false
+      },
+      "artifact": null,
+      "records": [],
+      "complete_pass": false,
+      "audit_verified": true
+    },
+    "fused_c7_correctness": {
+      "stage": {
+        "name": "fused_c7_correctness",
+        "status": "blocked",
+        "reason": "The main certified2 library did not pass all native correctness gates",
+        "executed": false,
+        "gpu_executed": false
+      },
+      "artifact": null,
+      "records": [],
+      "complete_pass": false,
+      "audit_verified": true
+    },
+    "fused_c8_correctness": {
+      "stage": {
+        "name": "fused_c8_correctness",
+        "status": "blocked",
+        "reason": "The main certified2 library did not pass all native correctness gates",
+        "executed": false,
+        "gpu_executed": false
+      },
+      "artifact": null,
+      "records": [],
+      "complete_pass": false,
+      "audit_verified": true
+    }
+  },
+  "native_default_benchmark": {
+    "stage": {
+      "name": "native_benchmark",
+      "status": "not_recorded",
+      "executed": false
+    },
+    "artifact": "native-benchmark.jsonl",
+    "records": [],
+    "complete_pass": false,
+    "cases": [],
+    "audit_verified": true
+  },
+  "native_comparison_rows": [
+    {
+      "variant": 2,
+      "M": 2048,
+      "N": 2048,
+      "logical_K": 2048,
+      "stage_status": "blocked",
+      "measurement_eligible": false,
+      "wall_median_ms": null,
+      "wall_useful_tflops": null,
+      "event_median_ms": null,
+      "event_useful_tflops": null,
+      "wall_round_ms": [],
+      "event_round_ms": [],
+      "speed_ratio_vs_c2_wall": null,
+      "throughput_change_vs_c2_percent": null,
+      "evidence": {
+        "stage": {
+          "name": "control_c2_benchmark_2048",
+          "status": "blocked",
+          "reason": "The main certified2 library did not pass all native correctness gates",
+          "executed": false,
+          "gpu_executed": false
+        },
+        "artifact": "control-c2/benchmark-2048.jsonl",
+        "records": [],
+        "complete_pass": false,
+        "cases": [],
+        "audit_verified": true
+      }
+    },
+    {
+      "variant": 2,
+      "M": 4096,
+      "N": 4096,
+      "logical_K": 4096,
+      "stage_status": "blocked",
+      "measurement_eligible": false,
+      "wall_median_ms": null,
+      "wall_useful_tflops": null,
+      "event_median_ms": null,
+      "event_useful_tflops": null,
+      "wall_round_ms": [],
+      "event_round_ms": [],
+      "speed_ratio_vs_c2_wall": null,
+      "throughput_change_vs_c2_percent": null,
+      "evidence": {
+        "stage": {
+          "name": "control_c2_benchmark_4096",
+          "status": "blocked",
+          "reason": "The main certified2 library did not pass all native correctness gates",
+          "executed": false,
+          "gpu_executed": false
+        },
+        "artifact": "control-c2/benchmark-4096.jsonl",
+        "records": [],
+        "complete_pass": false,
+        "cases": [],
+        "audit_verified": true
+      }
+    },
+    {
+      "variant": 3,
+      "M": 2048,
+      "N": 2048,
+      "logical_K": 2048,
+      "stage_status": "blocked",
+      "measurement_eligible": false,
+      "wall_median_ms": null,
+      "wall_useful_tflops": null,
+      "event_median_ms": null,
+      "event_useful_tflops": null,
+      "wall_round_ms": [],
+      "event_round_ms": [],
+      "speed_ratio_vs_c2_wall": null,
+      "throughput_change_vs_c2_percent": null,
+      "evidence": {
+        "stage": {
+          "name": "fused_c3_benchmark_2048",
+          "status": "blocked",
+          "reason": "The main certified2 library did not pass all native correctness gates",
+          "executed": false,
+          "gpu_executed": false
+        },
+        "artifact": "fused-c3/benchmark-2048.jsonl",
+        "records": [],
+        "complete_pass": false,
+        "cases": [],
+        "audit_verified": true
+      }
+    },
+    {
+      "variant": 3,
+      "M": 4096,
+      "N": 4096,
+      "logical_K": 4096,
+      "stage_status": "blocked",
+      "measurement_eligible": false,
+      "wall_median_ms": null,
+      "wall_useful_tflops": null,
+      "event_median_ms": null,
+      "event_useful_tflops": null,
+      "wall_round_ms": [],
+      "event_round_ms": [],
+      "speed_ratio_vs_c2_wall": null,
+      "throughput_change_vs_c2_percent": null,
+      "evidence": {
+        "stage": {
+          "name": "fused_c3_benchmark_4096",
+          "status": "blocked",
+          "reason": "The main certified2 library did not pass all native correctness gates",
+          "executed": false,
+          "gpu_executed": false
+        },
+        "artifact": "fused-c3/benchmark-4096.jsonl",
+        "records": [],
+        "complete_pass": false,
+        "cases": [],
+        "audit_verified": true
+      }
+    },
+    {
+      "variant": 4,
+      "M": 2048,
+      "N": 2048,
+      "logical_K": 2048,
+      "stage_status": "blocked",
+      "measurement_eligible": false,
+      "wall_median_ms": null,
+      "wall_useful_tflops": null,
+      "event_median_ms": null,
+      "event_useful_tflops": null,
+      "wall_round_ms": [],
+      "event_round_ms": [],
+      "speed_ratio_vs_c2_wall": null,
+      "throughput_change_vs_c2_percent": null,
+      "evidence": {
+        "stage": {
+          "name": "fused_c4_benchmark_2048",
+          "status": "blocked",
+          "reason": "The main certified2 library did not pass all native correctness gates",
+          "executed": false,
+          "gpu_executed": false
+        },
+        "artifact": "fused-c4/benchmark-2048.jsonl",
+        "records": [],
+        "complete_pass": false,
+        "cases": [],
+        "audit_verified": true
+      }
+    },
+    {
+      "variant": 4,
+      "M": 4096,
+      "N": 4096,
+      "logical_K": 4096,
+      "stage_status": "blocked",
+      "measurement_eligible": false,
+      "wall_median_ms": null,
+      "wall_useful_tflops": null,
+      "event_median_ms": null,
+      "event_useful_tflops": null,
+      "wall_round_ms": [],
+      "event_round_ms": [],
+      "speed_ratio_vs_c2_wall": null,
+      "throughput_change_vs_c2_percent": null,
+      "evidence": {
+        "stage": {
+          "name": "fused_c4_benchmark_4096",
+          "status": "blocked",
+          "reason": "The main certified2 library did not pass all native correctness gates",
+          "executed": false,
+          "gpu_executed": false
+        },
+        "artifact": "fused-c4/benchmark-4096.jsonl",
+        "records": [],
+        "complete_pass": false,
+        "cases": [],
+        "audit_verified": true
+      }
+    },
+    {
+      "variant": 5,
+      "M": 2048,
+      "N": 2048,
+      "logical_K": 2048,
+      "stage_status": "blocked",
+      "measurement_eligible": false,
+      "wall_median_ms": null,
+      "wall_useful_tflops": null,
+      "event_median_ms": null,
+      "event_useful_tflops": null,
+      "wall_round_ms": [],
+      "event_round_ms": [],
+      "speed_ratio_vs_c2_wall": null,
+      "throughput_change_vs_c2_percent": null,
+      "evidence": {
+        "stage": {
+          "name": "fused_c5_benchmark_2048",
+          "status": "blocked",
+          "reason": "The main certified2 library did not pass all native correctness gates",
+          "executed": false,
+          "gpu_executed": false
+        },
+        "artifact": "fused-c5/benchmark-2048.jsonl",
+        "records": [],
+        "complete_pass": false,
+        "cases": [],
+        "audit_verified": true
+      }
+    },
+    {
+      "variant": 5,
+      "M": 4096,
+      "N": 4096,
+      "logical_K": 4096,
+      "stage_status": "blocked",
+      "measurement_eligible": false,
+      "wall_median_ms": null,
+      "wall_useful_tflops": null,
+      "event_median_ms": null,
+      "event_useful_tflops": null,
+      "wall_round_ms": [],
+      "event_round_ms": [],
+      "speed_ratio_vs_c2_wall": null,
+      "throughput_change_vs_c2_percent": null,
+      "evidence": {
+        "stage": {
+          "name": "fused_c5_benchmark_4096",
+          "status": "blocked",
+          "reason": "The main certified2 library did not pass all native correctness gates",
+          "executed": false,
+          "gpu_executed": false
+        },
+        "artifact": "fused-c5/benchmark-4096.jsonl",
+        "records": [],
+        "complete_pass": false,
+        "cases": [],
+        "audit_verified": true
+      }
+    },
+    {
+      "variant": 6,
+      "M": 2048,
+      "N": 2048,
+      "logical_K": 2048,
+      "stage_status": "blocked",
+      "measurement_eligible": false,
+      "wall_median_ms": null,
+      "wall_useful_tflops": null,
+      "event_median_ms": null,
+      "event_useful_tflops": null,
+      "wall_round_ms": [],
+      "event_round_ms": [],
+      "speed_ratio_vs_c2_wall": null,
+      "throughput_change_vs_c2_percent": null,
+      "evidence": {
+        "stage": {
+          "name": "fused_c6_benchmark_2048",
+          "status": "blocked",
+          "reason": "The main certified2 library did not pass all native correctness gates",
+          "executed": false,
+          "gpu_executed": false
+        },
+        "artifact": "fused-c6/benchmark-2048.jsonl",
+        "records": [],
+        "complete_pass": false,
+        "cases": [],
+        "audit_verified": true
+      }
+    },
+    {
+      "variant": 6,
+      "M": 4096,
+      "N": 4096,
+      "logical_K": 4096,
+      "stage_status": "blocked",
+      "measurement_eligible": false,
+      "wall_median_ms": null,
+      "wall_useful_tflops": null,
+      "event_median_ms": null,
+      "event_useful_tflops": null,
+      "wall_round_ms": [],
+      "event_round_ms": [],
+      "speed_ratio_vs_c2_wall": null,
+      "throughput_change_vs_c2_percent": null,
+      "evidence": {
+        "stage": {
+          "name": "fused_c6_benchmark_4096",
+          "status": "blocked",
+          "reason": "The main certified2 library did not pass all native correctness gates",
+          "executed": false,
+          "gpu_executed": false
+        },
+        "artifact": "fused-c6/benchmark-4096.jsonl",
+        "records": [],
+        "complete_pass": false,
+        "cases": [],
+        "audit_verified": true
+      }
+    },
+    {
+      "variant": 7,
+      "M": 2048,
+      "N": 2048,
+      "logical_K": 2048,
+      "stage_status": "blocked",
+      "measurement_eligible": false,
+      "wall_median_ms": null,
+      "wall_useful_tflops": null,
+      "event_median_ms": null,
+      "event_useful_tflops": null,
+      "wall_round_ms": [],
+      "event_round_ms": [],
+      "speed_ratio_vs_c2_wall": null,
+      "throughput_change_vs_c2_percent": null,
+      "evidence": {
+        "stage": {
+          "name": "fused_c7_benchmark_2048",
+          "status": "blocked",
+          "reason": "The main certified2 library did not pass all native correctness gates",
+          "executed": false,
+          "gpu_executed": false
+        },
+        "artifact": "fused-c7/benchmark-2048.jsonl",
+        "records": [],
+        "complete_pass": false,
+        "cases": [],
+        "audit_verified": true
+      }
+    },
+    {
+      "variant": 7,
+      "M": 4096,
+      "N": 4096,
+      "logical_K": 4096,
+      "stage_status": "blocked",
+      "measurement_eligible": false,
+      "wall_median_ms": null,
+      "wall_useful_tflops": null,
+      "event_median_ms": null,
+      "event_useful_tflops": null,
+      "wall_round_ms": [],
+      "event_round_ms": [],
+      "speed_ratio_vs_c2_wall": null,
+      "throughput_change_vs_c2_percent": null,
+      "evidence": {
+        "stage": {
+          "name": "fused_c7_benchmark_4096",
+          "status": "blocked",
+          "reason": "The main certified2 library did not pass all native correctness gates",
+          "executed": false,
+          "gpu_executed": false
+        },
+        "artifact": "fused-c7/benchmark-4096.jsonl",
+        "records": [],
+        "complete_pass": false,
+        "cases": [],
+        "audit_verified": true
+      }
+    },
+    {
+      "variant": 8,
+      "M": 2048,
+      "N": 2048,
+      "logical_K": 2048,
+      "stage_status": "blocked",
+      "measurement_eligible": false,
+      "wall_median_ms": null,
+      "wall_useful_tflops": null,
+      "event_median_ms": null,
+      "event_useful_tflops": null,
+      "wall_round_ms": [],
+      "event_round_ms": [],
+      "speed_ratio_vs_c2_wall": null,
+      "throughput_change_vs_c2_percent": null,
+      "evidence": {
+        "stage": {
+          "name": "fused_c8_benchmark_2048",
+          "status": "blocked",
+          "reason": "The main certified2 library did not pass all native correctness gates",
+          "executed": false,
+          "gpu_executed": false
+        },
+        "artifact": "fused-c8/benchmark-2048.jsonl",
+        "records": [],
+        "complete_pass": false,
+        "cases": [],
+        "audit_verified": true
+      }
+    },
+    {
+      "variant": 8,
+      "M": 4096,
+      "N": 4096,
+      "logical_K": 4096,
+      "stage_status": "blocked",
+      "measurement_eligible": false,
+      "wall_median_ms": null,
+      "wall_useful_tflops": null,
+      "event_median_ms": null,
+      "event_useful_tflops": null,
+      "wall_round_ms": [],
+      "event_round_ms": [],
+      "speed_ratio_vs_c2_wall": null,
+      "throughput_change_vs_c2_percent": null,
+      "evidence": {
+        "stage": {
+          "name": "fused_c8_benchmark_4096",
+          "status": "blocked",
+          "reason": "The main certified2 library did not pass all native correctness gates",
+          "executed": false,
+          "gpu_executed": false
+        },
+        "artifact": "fused-c8/benchmark-4096.jsonl",
+        "records": [],
+        "complete_pass": false,
+        "cases": [],
+        "audit_verified": true
+      }
+    }
+  ],
+  "eligible_comparison_rows": 0,
+  "framework_119": {
+    "stage": {
+      "name": "torch_integration",
+      "status": "blocked",
+      "reason": "The current native library has not passed all correctness gates",
+      "executed": false,
+      "gpu_executed": false
+    },
+    "artifact": "torch-cuda-check.json",
+    "report": null,
+    "complete_pass": false,
+    "native_certified_path_tested": false,
+    "audit_verified": true
+  },
+  "framework_benchmark": {
+    "stage": {
+      "name": "torch_benchmark",
+      "status": "blocked",
+      "reason": "Requires the current native and framework correctness gates",
+      "executed": false,
+      "gpu_executed": false
+    },
+    "artifact": "torch-benchmark.json",
+    "report": null,
+    "complete_pass": false,
+    "audit_verified": true
+  },
+  "smokes": {
+    "cuda": {
+      "stage": {
+        "name": "smoke_cuda",
+        "status": "not_recorded",
+        "executed": false
+      },
+      "artifact": "smoke-cuda.json",
+      "report": null,
+      "complete_pass": false,
+      "scope": "synthetic causal-decoder integration smoke; no LLM convergence or training throughput claim",
+      "library_binding": "payload environment and main build; smoke has no direct library SHA field",
+      "audit_verified": true
+    },
+    "cuda_tiled": {
+      "stage": {
+        "name": "smoke_cuda_tiled",
+        "status": "not_recorded",
+        "executed": false
+      },
+      "artifact": "smoke-cuda_tiled.json",
+      "report": null,
+      "complete_pass": false,
+      "scope": "synthetic causal-decoder integration smoke; no LLM convergence or training throughput claim",
+      "library_binding": "payload environment and main build; smoke has no direct library SHA field",
+      "audit_verified": true
+    }
+  },
+  "gpu_environment_csv": "name, memory.total [MiB], memory.free [MiB], utilization.gpu [%], clocks.current.sm [MHz], clocks.current.memory [MHz], power.draw [W], power.limit [W]\nTesla V100-SXM2-32GB, 32768 MiB, 32495 MiB, 0 %, 135 MHz, 877 MHz, 42.50 W, 300.00 W\n",
+  "interpretation": [
+    "14 comparison slots are C2 through C8 at 2048^3 and 4096^3; unavailable values remain null.",
+    "Every comparison uses synchronized wall time for the entire certified pipeline; event times remain separate.",
+    "Five raw rounds are repeated measurements in one process, not five independent runs; each round averages 10 invocations.",
+    "Variants run in fixed C2-to-C8 order, not ABBA; clock/load changes can confound cross-variant ratios.",
+    "Large native comparison shapes use 256 independent CPU-oracle outputs; small default cases are exhaustive. All also check baseline equality and final timed certified output equality.",
+    "A rejected certificate measures the exact tiled fallback, not the fused accepted path.",
+    "The default 15-case benchmark has different seeds; it is never pooled with explicit comparison rows or prior 1536 results.",
+    "Framework119 and both synthetic smokes exercise cuda/cuda_tiled, not the certified C2-C8 C API.",
+    "Torch FP16 matmul returns FP16; native cuBLAS returns FP32. These are different scopes.",
+    "Native telemetry consists of snapshots, not a continuous NVML trace. Preserve actual V100 model and node identity.",
+    "Build binary hashes are manifest claims; compiled binaries are not members of the result archive."
+  ]
+}

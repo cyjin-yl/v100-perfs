@@ -1,0 +1,208 @@
+{
+  "schema_version": 1,
+  "checked_at_utc": "2026-11-23T18:29:29.894096+00:00",
+  "evidence_type": "host_file_hash_verification",
+  "gpu_executed": false,
+  "all_match": true,
+  "records": [
+    {
+      "variant": 6,
+      "manifest": "evidence/results/mxfp4-training/2026-11-24-fused/verified/v5/build-c6/compile-evidence.json",
+      "manifest_sha256": "3e44f40dc204f4c07e704fcdf1aa0d7d739916a5ae2ce012bc30f0d347f9d7c2",
+      "sources": [
+        {
+          "path": "tools/mxfp4_training/csrc/bench_mxfp4.cu",
+          "sha256": "d07e73cbb50edf3cacabb20e610b278a9cfff33fd5fe3cb289c8589c0493d3fe",
+          "matches_frozen_compile_manifest": true
+        },
+        {
+          "path": "tools/mxfp4_training/csrc/bench_mxfp4_fused.cu",
+          "sha256": "22dbeb4f13fa981c574ee458ef1ab7138ad522ec23cadf6922b4ce450d54331e",
+          "matches_frozen_compile_manifest": true
+        },
+        {
+          "path": "tools/mxfp4_training/csrc/check_mxfp4.cu",
+          "sha256": "476a24671ac3ac6c9ed28562f9357e570cb50c1a9244533df5cba94c9a701a71",
+          "matches_frozen_compile_manifest": true
+        },
+        {
+          "path": "tools/mxfp4_training/csrc/check_mxfp4_certified.cu",
+          "sha256": "b8d20fbd73a7ebc1c8cb792c835f69ee560cc9ae9dc6aeedd59d36e2c70dbcf6",
+          "matches_frozen_compile_manifest": true
+        },
+        {
+          "path": "tools/mxfp4_training/csrc/mxfp4_gemm.cu",
+          "sha256": "d1902ef6313f82a3a829596b7fd3708f3552363dcee72ab5b400be63ba66d11c",
+          "matches_frozen_compile_manifest": true
+        },
+        {
+          "path": "tools/mxfp4_training/csrc/mxfp4_gemm.h",
+          "sha256": "083b85365544016f591de46c8e9e0e9ed9db3ad9faba7f771756d50515d753fd",
+          "matches_frozen_compile_manifest": true
+        },
+        {
+          "path": "tools/mxfp4_training/csrc/mxfp4_gemm_certified.cu",
+          "sha256": "c13f6cabc23ee0b8d01aad45d33dd75b0b3f2488a94cb4815f84a2e2874d334f",
+          "matches_frozen_compile_manifest": true
+        },
+        {
+          "path": "tools/mxfp4_training/csrc/mxfp4_gemm_certified.h",
+          "sha256": "66fbb8887223ff66dc714a92764966cb4cfe0acd10fe99d7564da537058755f2",
+          "matches_frozen_compile_manifest": true
+        },
+        {
+          "path": "tools/mxfp4_training/csrc/mxfp4_gemm_fused.cu",
+          "sha256": "90e6252c455c099df510505a25edc63e3f5146e16357a03211af339727cbd3ad",
+          "matches_frozen_compile_manifest": true
+        },
+        {
+          "path": "tools/mxfp4_training/csrc/mxfp4_gemm_fused.h",
+          "sha256": "b52633aeb346379562c5d93ba9ca8306c68aaff2c5de7a6b749808afece50b6c",
+          "matches_frozen_compile_manifest": true
+        },
+        {
+          "path": "tools/mxfp4_training/csrc/mxfp4_gemm_tiled.cu",
+          "sha256": "be1655e12671bb8940f61f9b519e9199738e598033d248e29c795bccf0861e84",
+          "matches_frozen_compile_manifest": true
+        },
+        {
+          "path": "tools/mxfp4_training/csrc/mxfp4_gemm_tiled.h",
+          "sha256": "e765ccd49f45a0a4a6a8a9d3ffecbf86dcd37df8685891143af53d78f21a2b3d",
+          "matches_frozen_compile_manifest": true
+        }
+      ],
+      "compilation_logs": [
+        {
+          "path": "evidence/results/mxfp4-training/2026-11-24-fused/verified/v5/build-c6/shared_library.log",
+          "sha256": "28f04bd0baa987ec4c1e11f9205bcfb56d3a359354be26183ad21977c111ee5d",
+          "matches_compile_manifest": true,
+          "returncode": 0
+        },
+        {
+          "path": "evidence/results/mxfp4-training/2026-11-24-fused/verified/v5/build-c6/standalone_harness.log",
+          "sha256": "0e3ad1e45bd37bdfc805e6600a138335e4218a18c76f226dff5b8bead0275887",
+          "matches_compile_manifest": true,
+          "returncode": 0
+        },
+        {
+          "path": "evidence/results/mxfp4-training/2026-11-24-fused/verified/v5/build-c6/tiled_harness.log",
+          "sha256": "c34955943a5d22cb6352ace2bd2ca0a73298a2ea39c68d39bbd31bfd0d16f28b",
+          "matches_compile_manifest": true,
+          "returncode": 0
+        },
+        {
+          "path": "evidence/results/mxfp4-training/2026-11-24-fused/verified/v5/build-c6/certified_harness.log",
+          "sha256": "1079df521dca607039a0a73fcfd6d4669bfa44506bf4f1b8c1bea5618ad49dca",
+          "matches_compile_manifest": true,
+          "returncode": 0
+        },
+        {
+          "path": "evidence/results/mxfp4-training/2026-11-24-fused/verified/v5/build-c6/fused_packed_benchmark.log",
+          "sha256": "37a5a40486e218cc9ea84c48650e4f32e6ad60ca8f3738f435c9b34cd2a1b17c",
+          "matches_compile_manifest": true,
+          "returncode": 0
+        }
+      ]
+    },
+    {
+      "variant": 7,
+      "manifest": "evidence/results/mxfp4-training/2026-11-24-fused/verified/v5/build-c7/compile-evidence.json",
+      "manifest_sha256": "06c7d056fecd13d78b389f93457aa9b36a35cec0f5953ff18cf8e26d5ca6d543",
+      "sources": [
+        {
+          "path": "tools/mxfp4_training/csrc/bench_mxfp4.cu",
+          "sha256": "d07e73cbb50edf3cacabb20e610b278a9cfff33fd5fe3cb289c8589c0493d3fe",
+          "matches_frozen_compile_manifest": true
+        },
+        {
+          "path": "tools/mxfp4_training/csrc/bench_mxfp4_fused.cu",
+          "sha256": "22dbeb4f13fa981c574ee458ef1ab7138ad522ec23cadf6922b4ce450d54331e",
+          "matches_frozen_compile_manifest": true
+        },
+        {
+          "path": "tools/mxfp4_training/csrc/check_mxfp4.cu",
+          "sha256": "476a24671ac3ac6c9ed28562f9357e570cb50c1a9244533df5cba94c9a701a71",
+          "matches_frozen_compile_manifest": true
+        },
+        {
+          "path": "tools/mxfp4_training/csrc/check_mxfp4_certified.cu",
+          "sha256": "b8d20fbd73a7ebc1c8cb792c835f69ee560cc9ae9dc6aeedd59d36e2c70dbcf6",
+          "matches_frozen_compile_manifest": true
+        },
+        {
+          "path": "tools/mxfp4_training/csrc/mxfp4_gemm.cu",
+          "sha256": "d1902ef6313f82a3a829596b7fd3708f3552363dcee72ab5b400be63ba66d11c",
+          "matches_frozen_compile_manifest": true
+        },
+        {
+          "path": "tools/mxfp4_training/csrc/mxfp4_gemm.h",
+          "sha256": "083b85365544016f591de46c8e9e0e9ed9db3ad9faba7f771756d50515d753fd",
+          "matches_frozen_compile_manifest": true
+        },
+        {
+          "path": "tools/mxfp4_training/csrc/mxfp4_gemm_certified.cu",
+          "sha256": "c13f6cabc23ee0b8d01aad45d33dd75b0b3f2488a94cb4815f84a2e2874d334f",
+          "matches_frozen_compile_manifest": true
+        },
+        {
+          "path": "tools/mxfp4_training/csrc/mxfp4_gemm_certified.h",
+          "sha256": "66fbb8887223ff66dc714a92764966cb4cfe0acd10fe99d7564da537058755f2",
+          "matches_frozen_compile_manifest": true
+        },
+        {
+          "path": "tools/mxfp4_training/csrc/mxfp4_gemm_fused.cu",
+          "sha256": "90e6252c455c099df510505a25edc63e3f5146e16357a03211af339727cbd3ad",
+          "matches_frozen_compile_manifest": true
+        },
+        {
+          "path": "tools/mxfp4_training/csrc/mxfp4_gemm_fused.h",
+          "sha256": "b52633aeb346379562c5d93ba9ca8306c68aaff2c5de7a6b749808afece50b6c",
+          "matches_frozen_compile_manifest": true
+        },
+        {
+          "path": "tools/mxfp4_training/csrc/mxfp4_gemm_tiled.cu",
+          "sha256": "be1655e12671bb8940f61f9b519e9199738e598033d248e29c795bccf0861e84",
+          "matches_frozen_compile_manifest": true
+        },
+        {
+          "path": "tools/mxfp4_training/csrc/mxfp4_gemm_tiled.h",
+          "sha256": "e765ccd49f45a0a4a6a8a9d3ffecbf86dcd37df8685891143af53d78f21a2b3d",
+          "matches_frozen_compile_manifest": true
+        }
+      ],
+      "compilation_logs": [
+        {
+          "path": "evidence/results/mxfp4-training/2026-11-24-fused/verified/v5/build-c7/shared_library.log",
+          "sha256": "99d2739cecd94a742e5c8c9e20c8eebde929d4230a30c10e158a11992211790c",
+          "matches_compile_manifest": true,
+          "returncode": 0
+        },
+        {
+          "path": "evidence/results/mxfp4-training/2026-11-24-fused/verified/v5/build-c7/standalone_harness.log",
+          "sha256": "52d4e47d85b2c296d7c79d542f3ab081fface4213a11260658f6327c9e55a8f5",
+          "matches_compile_manifest": true,
+          "returncode": 0
+        },
+        {
+          "path": "evidence/results/mxfp4-training/2026-11-24-fused/verified/v5/build-c7/tiled_harness.log",
+          "sha256": "ff72a0f591210fed53eed4410679f5e6d1474d001bb151c57c26ece5f2859405",
+          "matches_compile_manifest": true,
+          "returncode": 0
+        },
+        {
+          "path": "evidence/results/mxfp4-training/2026-11-24-fused/verified/v5/build-c7/certified_harness.log",
+          "sha256": "a9ee86f0a881a4d4f5ece87b5f1ca17ab4103be2f975d734aed30f216da111d7",
+          "matches_compile_manifest": true,
+          "returncode": 0
+        },
+        {
+          "path": "evidence/results/mxfp4-training/2026-11-24-fused/verified/v5/build-c7/fused_packed_benchmark.log",
+          "sha256": "dbbe80e17fa3a37ffeae17e617b320214a63a06a597ad31dea207b9830acf554",
+          "matches_compile_manifest": true,
+          "returncode": 0
+        }
+      ]
+    }
+  ],
+  "v5_collected_evidence_tar_sha256_verified_against_remote": "97e41d00562535a33250b9ac26ca284bde50ca4c88708edbd86ba3a00e28149f"
+}

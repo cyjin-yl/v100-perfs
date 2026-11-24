@@ -1,0 +1,147 @@
+{
+  "schema_version": 1,
+  "evidence_type": "host_bit_pattern_and_layout_checks",
+  "recorded_at_utc": "2026-11-23T17:50:51.286270+00:00",
+  "gpu_executed": false,
+  "cuda_compilation_executed": false,
+  "provenance_note": "Durable rerun of previously in-session checks; earlier raw stdout was not saved.",
+  "source_sha256": {
+    "tools/mxfp4_training/csrc/mxfp4_gemm_fused.cu": "e99b3b4444b8ebdbb6df1f25358b358a88c038fc2d211d1d86d3b029ea0f54b6",
+    "tools/mxfp4_training/csrc/mxfp4_gemm_fused.h": "65230a2b2329e096b2112ccf0d44de118c81f767edd4d9836721149003714b69",
+    "evidence/benchmarks/sm70-packing/study/simulation/round3/cuda/fragment_mapping.hpp": "78ca809cc6606912724982559c31ed82b6141ec74651cf65324015ecd901f4b1"
+  },
+  "script_sha256": "9d9b7840b804458d36abde205b09b0463dc882f1fac80a77b3c8e6d3e33d5941",
+  "numpy_version": "2.3.5",
+  "limitations": "Host helper models and mapping enumeration only; no GPU correctness or performance claim.",
+  "normalization": {
+    "packed_four_nibble_inputs": 65536,
+    "deltas": [
+      0,
+      12
+    ],
+    "half_bit_comparisons": 3407872,
+    "mismatches": 0,
+    "canonical_positive_zero_checked": true,
+    "by_delta": [
+      {
+        "delta": 0,
+        "half_bit_comparisons": 262144,
+        "mismatches": 0
+      },
+      {
+        "delta": 1,
+        "half_bit_comparisons": 262144,
+        "mismatches": 0
+      },
+      {
+        "delta": 2,
+        "half_bit_comparisons": 262144,
+        "mismatches": 0
+      },
+      {
+        "delta": 3,
+        "half_bit_comparisons": 262144,
+        "mismatches": 0
+      },
+      {
+        "delta": 4,
+        "half_bit_comparisons": 262144,
+        "mismatches": 0
+      },
+      {
+        "delta": 5,
+        "half_bit_comparisons": 262144,
+        "mismatches": 0
+      },
+      {
+        "delta": 6,
+        "half_bit_comparisons": 262144,
+        "mismatches": 0
+      },
+      {
+        "delta": 7,
+        "half_bit_comparisons": 262144,
+        "mismatches": 0
+      },
+      {
+        "delta": 8,
+        "half_bit_comparisons": 262144,
+        "mismatches": 0
+      },
+      {
+        "delta": 9,
+        "half_bit_comparisons": 262144,
+        "mismatches": 0
+      },
+      {
+        "delta": 10,
+        "half_bit_comparisons": 262144,
+        "mismatches": 0
+      },
+      {
+        "delta": 11,
+        "half_bit_comparisons": 262144,
+        "mismatches": 0
+      },
+      {
+        "delta": 12,
+        "half_bit_comparisons": 262144,
+        "mismatches": 0
+      }
+    ]
+  },
+  "layouts": [
+    {
+      "internal_variant": 0,
+      "certified_variant": 3,
+      "tile": [
+        64,
+        64,
+        64
+      ],
+      "threads": 128,
+      "fp32_accumulator_elements_per_thread": 32,
+      "output_elements_checked": 4096,
+      "stores_per_output_element": 1,
+      "adjacent_same_row_even_column_pairs_checked": 2048,
+      "shared_bank_cases_checked": 32,
+      "distinct_banks_per_16_unique_row_half4_loads": 32,
+      "static_shared_bytes_from_source": 17536
+    },
+    {
+      "internal_variant": 1,
+      "certified_variant": 4,
+      "tile": [
+        128,
+        128,
+        32
+      ],
+      "threads": 256,
+      "fp32_accumulator_elements_per_thread": 64,
+      "output_elements_checked": 16384,
+      "stores_per_output_element": 1,
+      "adjacent_same_row_even_column_pairs_checked": 8192,
+      "shared_bank_cases_checked": 16,
+      "distinct_banks_per_16_unique_row_half4_loads": 32,
+      "static_shared_bytes_from_source": 18688
+    },
+    {
+      "internal_variant": 2,
+      "certified_variant": 5,
+      "tile": [
+        128,
+        128,
+        64
+      ],
+      "threads": 256,
+      "fp32_accumulator_elements_per_thread": 64,
+      "output_elements_checked": 16384,
+      "stores_per_output_element": 1,
+      "adjacent_same_row_even_column_pairs_checked": 8192,
+      "shared_bank_cases_checked": 32,
+      "distinct_banks_per_16_unique_row_half4_loads": 32,
+      "static_shared_bytes_from_source": 35072
+    }
+  ],
+  "passed": true
+}

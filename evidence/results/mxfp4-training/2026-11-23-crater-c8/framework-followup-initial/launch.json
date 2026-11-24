@@ -1,0 +1,25 @@
+{
+  "phase": "launched",
+  "argv": [
+    "timeout",
+    "--signal=TERM",
+    "--kill-after=15s",
+    "1860s",
+    "/opt/venv/bin/python3",
+    "-B",
+    "/workspace/user/mxfp4-framework-followup-b-20261123T2104.py",
+    "--native-root",
+    "/workspace/user/mxfp4-sg-jincy26-261124-4abd5-20261123T204443Z-9fb4ed47",
+    "--run-directory",
+    "/workspace/user/mxfp4-framework-followup-b-20261123T2104",
+    "--python",
+    "/opt/venv/bin/python3"
+  ],
+  "helper_sha256": "fdcb85e9bc4a04bee504c6f1ec409f9f62728c6852bb3386fcdecf7fc019c302",
+  "node_uid": 1001,
+  "created_utc": "2026-11-23T21:05:38.013675+00:00",
+  "output_directory": "/workspace/user/mxfp4-framework-followup-b-20261123T2104",
+  "pid": 4284,
+  "starttime": 25819937,
+  "launched_utc": "2026-11-23T21:05:38.021752+00:00"
+}

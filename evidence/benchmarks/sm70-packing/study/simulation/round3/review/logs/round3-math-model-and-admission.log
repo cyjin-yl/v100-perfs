@@ -1,0 +1,55 @@
+{
+  "candidates": [
+    {
+      "label": "asymmetric_ternary_by_full_e2m1",
+      "total_cases": 4154,
+      "decoded_failures": 0,
+      "packed_sum_not_exact_cases": 0,
+      "maximum_observed_packed_sum_error": 0
+    },
+    {
+      "label": "shared_q3_by_full_e2m1",
+      "total_cases": 2810,
+      "decoded_failures": 0,
+      "packed_sum_not_exact_cases": 0,
+      "maximum_observed_packed_sum_error": 0
+    },
+    {
+      "label": "shared_ternary_by_full_e2m1_longer_k",
+      "total_cases": 2210,
+      "decoded_failures": 0,
+      "packed_sum_not_exact_cases": 0,
+      "maximum_observed_packed_sum_error": 0
+    },
+    {
+      "label": "middle_q3_compressed_k8",
+      "total_cases": 4531,
+      "decoded_failures": 0,
+      "packed_sum_not_exact_cases": 1,
+      "maximum_observed_packed_sum_error": 1.0
+    },
+    {
+      "label": "middle_q3_compressed_k12",
+      "total_cases": 4531,
+      "decoded_failures": 0,
+      "packed_sum_not_exact_cases": 81,
+      "maximum_observed_packed_sum_error": 4.0
+    }
+  ],
+  "mx32_pipeline": {
+    "original_k": 32,
+    "packed_k_total": 16,
+    "packed_k_per_decode": 8,
+    "decodes_per_original_block": 2,
+    "bfma4_groups_per_decode": 2,
+    "packed_bfma4_groups_total": 4,
+    "ordinary_bfma4_groups_total": 8,
+    "cases": 2049,
+    "failures": 0,
+    "maximum_intermediate_packed_error": 0,
+    "scale_rule": "Both halves belong to the same original MX32 scale product; multiply decoded sum by scaleA*scaleB/4.",
+    "qualification": "Arithmetic operation counts only. Packing, epilogue, memory and register costs are not timed."
+  },
+  "search_candidates": 47040,
+  "elapsed_seconds": 2.5627625429988257
+}

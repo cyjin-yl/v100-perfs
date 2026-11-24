@@ -1,0 +1,79 @@
+{
+  "rows": [
+    {
+      "file": "abba-00-c4-1536.jsonl",
+      "variant": 4,
+      "wall_median_ms": 0.287264,
+      "wall_tflops": 25.230301437,
+      "wall_round_ms": [
+        0.2896442,
+        0.2891482,
+        0.287264,
+        0.286521,
+        0.286221
+      ],
+      "event_ms": 0.28620800972,
+      "fingerprint": "8729bc8ef4895a63",
+      "values": 2359296,
+      "mismatches": 0
+    },
+    {
+      "file": "abba-01-c6-1536.jsonl",
+      "variant": 6,
+      "wall_median_ms": 0.2194255,
+      "wall_tflops": 33.0306063425,
+      "wall_round_ms": [
+        0.2199546,
+        0.2194255,
+        0.2268379,
+        0.2191385,
+        0.2190754
+      ],
+      "event_ms": 0.218214392662,
+      "fingerprint": "8729bc8ef4895a63",
+      "values": 2359296,
+      "mismatches": 0
+    },
+    {
+      "file": "abba-02-c6-1536.jsonl",
+      "variant": 6,
+      "wall_median_ms": 0.2193695,
+      "wall_tflops": 33.0390382984,
+      "wall_round_ms": [
+        0.2187355,
+        0.2184465,
+        0.2193695,
+        0.2196174,
+        0.2193945
+      ],
+      "event_ms": 0.218009591103,
+      "fingerprint": "8729bc8ef4895a63",
+      "values": 2359296,
+      "mismatches": 0
+    },
+    {
+      "file": "abba-03-c4-1536.jsonl",
+      "variant": 4,
+      "wall_median_ms": 0.286884,
+      "wall_tflops": 25.2637209186,
+      "wall_round_ms": [
+        0.2872501,
+        0.286884,
+        0.2900842,
+        0.285528,
+        0.285015
+      ],
+      "event_ms": 0.285696005821,
+      "fingerprint": "8729bc8ef4895a63",
+      "values": 2359296,
+      "mismatches": 0
+    }
+  ],
+  "pooled_round_median_ms": {
+    "4": 0.28706705,
+    "6": 0.219382
+  },
+  "speedup": 1.3085259957517026,
+  "latency_reduction": 0.23578132704537147,
+  "scope": "Two interleaved runs per variant, five timing rounds each; not an independent statistical trial"
+}

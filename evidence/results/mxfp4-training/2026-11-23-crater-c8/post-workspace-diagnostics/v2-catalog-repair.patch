@@ -1,0 +1,215 @@
+--- mxfp4_post_workspace_diagnostics.py
++++ mxfp4_post_workspace_diagnostics_v2.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python3
+-"""Bounded optional NCU and memcheck diagnostics after the frozen workspace run.
++"""Focused NCU follow-up, reusing the successful immutable v1 memcheck.
+ 
+ No compilation/install/clock/admin/service changes. Existing source and native
+ artifacts are read-only. All target launches use reviewed owned-group cleanup.
+@@ -29,6 +29,10 @@
+ WSHA = '4018f7b5b08d3493ee746458cd98dea58925e1bc233b4e456b4adfea2fc9ee03'
+ CSHA = '65e23628156a4430421cd6ad21359a62e4f2ab922f9daf58ee7d1621b5ecdde7'
+ PROBE_SHA = '8b7f0a9f2b5dbeb6b1f0ceaa0297ab4b0ef10e474a550f5d97f6925a8b33502c'
++PRIOR_RUNNER_SHA = 'ab8802a3c077106f01ae63eb94b44f85ec006aa49b847bdcf94faa94b43915f1'
++PRIOR_ARCHIVE_SHA = '4f28d0f0e0db93e205347164c387fb1d7242568362726b16b667f018822794bb'
++PRIOR_COMPLETION_SHA = '3567fc6e504c7b9db7dd3c9f1bedd324992c03f82c5ad52a5f6f83e985252ddc'
++ACTUAL_HELP_SHA = '62f9c7e9473087aa5a9e8e0adadc4e80d17d948512cb2d98feea50e6cec57bab'
+ SOURCE_COMMIT = 'f74de5be95687d75758c1f636ffbd00d6b63d161'
+ SOURCE_SHA = 'aa7ac287d389d1e8705fdeef60713bae1927116c85bb7355a52a817e4a806a89'
+ NCU = Path('/usr/local/cuda/bin/ncu')
+@@ -43,8 +47,9 @@
+     'sm__cycles_elapsed.avg.per_second', 'gpu__time_duration.sum',
+ )
+ REQUIRED_METRICS = {METRICS[0], METRICS[1], METRICS[4]}
+-PLAN = ('wait-workspace-lock', 'ncu-version', 'ncu-help', 'ncu-gv100-catalog',
+-        'ncu-profile', 'compute-sanitizer-version', 'memcheck-prepare-cache')
++BASE_METRICS = tuple(dict.fromkeys(name.split('.', 1)[0] for name in METRICS))
++PLAN = ('wait-workspace-lock', 'reuse-prior-memcheck', 'ncu-version', 'ncu-help',
++        'ncu-gv100-catalog', 'ncu-profile')
+ H = Q = W = C = None
+ 
+ 
+@@ -71,6 +76,7 @@
+             self.env['PYTHONPATH'] = str(self.source)
+             self.own_hash = H.sha(Path(__file__))
+             self.probe = Path(args.probe)
++            self.prior_diagnostics = Path(args.prior_diagnostics_run)
+             self.micro = self.cache / 'build-micro/check_mxfp4_prepare_cache'
+             self.system_tools = {}
+             self.report = {'schema_version': 1, 'purpose': 'optional bounded post-workspace diagnostics',
+@@ -81,6 +87,9 @@
+                 'source_commit': SOURCE_COMMIT, 'source_archive_sha256': SOURCE_SHA,
+                 'workspace_run': str(self.workspace), 'cache_run': str(self.cache),
+                 'source_root_used_read_only': str(self.source), 'cache_build': 'off',
++                'diagnostic_revision': 2, 'prior_diagnostics_run': str(self.prior_diagnostics),
++                'catalog_repair': 'suffix query limited to nine original candidate base metrics',
++                'catalog_query_base_metrics': list(BASE_METRICS), 'memcheck_reexecuted': False,
+                 'profile_scope': 'one_resident_packed_to_FP32_C2_pipeline_inside_CUDA_profiler_start_stop',
+                 'quantization_in_profile_scope': False, 'profile_is_performance_benchmark': False,
+                 'memcheck_scope': 'actual_cache_ON_preparation327_microchecker_binary',
+@@ -207,6 +216,9 @@
+ 
+         def ncu_help(self, rows):
+             text = self.log_text('ncu-help')
++            H.need(H.sha(self.results / 'stages/ncu-help/stdout.log') == ACTUAL_HELP_SHA
++                   and 'Use --metrics to specify the base metrics' in ' '.join(text.split()),
++                   'Installed NCU help differs from the reviewed suffix-query semantics')
+             for option in ('profile-from-start', 'clock-control', 'cache-control', 'replay-mode',
+                            'launch-count', 'query-metrics-mode', 'chips', 'target-processes',
+                            'log-file', 'export', 'csv', 'page', 'config-file'):
+@@ -282,19 +294,73 @@
+                     'metric_rows': len(records), 'probe_json_sha256': H.sha(self.results / 'profile-probe.json'),
+                     'profile_sha256': H.sha(profile), 'diagnostic_only': True}
+ 
+-        def memcheck_gate(self, rows):
+-            checked = C.micro_gate(rows)
+-            text = (self.results / 'memcheck.log').read_text(errors='replace')
+-            H.need('ERROR SUMMARY: 0 errors' in text, 'Compute Sanitizer did not report zero memory errors')
+-            return {'passed': True, 'gpu_executed': True, 'memory_errors': 0,
+-                    'actual_microcheck_summary': checked, 'memcheck_log_sha256': H.sha(self.results / 'memcheck.log'),
+-                    'binary_sha256': H.sha(self.micro), 'tool': 'memcheck', 'leak_check': 'full'}
++        def reuse_prior_memcheck(self):
++            row = {'name': 'reuse-prior-memcheck', 'status': 'running', 'passed': False,
++                   'executed': False, 'gpu_stage': False, 'gpu_executed': False,
++                   'evidence_reused': True, 'started_at_utc': H.utc()}
++            self.report['stages'].append(row); self.save(); started = time.monotonic()
++            try:
++                root = self.prior_diagnostics
++                completion, evidence = Q.archive_evidence(root, 'native')
++                H.fields(evidence, {'status': 'failed', 'archive_sha256': PRIOR_ARCHIVE_SHA,
++                    'archive_bytes': 826674, 'completion_sha256': PRIOR_COMPLETION_SHA}, 'Immutable v1 diagnostic archive')
++                H.fields(completion, {'status': 'failed', 'runner_sha256': PRIOR_RUNNER_SHA,
++                    'probe_sha256': PROBE_SHA, 'source_commit': SOURCE_COMMIT,
++                    'source_archive_sha256': SOURCE_SHA, 'source_and_binaries_unchanged': True,
++                    'cache_build': 'off', 'workspace_run': str(self.workspace), 'cache_run': str(self.cache)},
++                    'Prior diagnostic source/binary binding')
++                H.need(completion['source_hashes_before'] == completion['source_hashes_after'] == self.expected
++                       and completion['binary_hashes_before_gpu'] == completion['binary_hashes_after_gpu'] == self.binaries,
++                       'Prior memcheck did not use the current frozen source/binaries')
++                by_name = {stage['name']: stage for stage in completion['stages']}
++                H.need(len(completion['stages']) == len(by_name) == 7
++                       and {name for name, stage in by_name.items() if stage['status'] == 'failed'} == {'ncu-gv100-catalog'}
++                       and by_name['ncu-gv100-catalog'].get('returncode') == 0
++                       and by_name['ncu-gv100-catalog'].get('error') == 'Metric catalog exceeds diagnostic bound'
++                       and by_name['ncu-profile']['status'] == 'blocked', 'Unexpected v1 failure/scope')
++                for name in ('wait-workspace-lock', 'ncu-version', 'ncu-help', 'compute-sanitizer-version', 'memcheck-prepare-cache'):
++                    H.fields(by_name[name], {'status': 'passed', 'passed': True}, 'Passed v1 prerequisite ' + name)
++                stage = by_name['memcheck-prepare-cache']
++                H.fields(stage, {'executed': True, 'gpu_executed': True, 'returncode': 0}, 'Actual prior memcheck execution')
++                H.need(stage['argv'] == [str(SANITIZER), '--tool', 'memcheck', '--error-exitcode', '99',
++                    '--leak-check', 'full', '--target-processes', 'application-only', '--log-file',
++                    str(root / 'results/memcheck.log'), str(self.micro), '--device', '0', '--correctness-only'],
++                    'Prior actual memcheck command differs')
++                checked = C.micro_gate(H.json_lines(root / 'results/stages/memcheck-prepare-cache/stdout.log'))
++                logfile = root / 'results/memcheck.log'
++                H.need('ERROR SUMMARY: 0 errors' in logfile.read_text(errors='replace'), 'Prior memcheck error summary differs')
++                H.fields(stage['validation'], {'passed': True, 'gpu_executed': True, 'memory_errors': 0,
++                    'binary_sha256': H.sha(self.micro), 'memcheck_log_sha256': H.sha(logfile),
++                    'tool': 'memcheck', 'leak_check': 'full'}, 'Prior memcheck result')
++                for path, digest in completion['installed_tool_files_sha256'].items():
++                    H.regular(path); H.need(H.sha(path) == digest, 'Previously used diagnostic tool changed')
++                    self.system_tools[path] = digest
++                destination = self.results / 'prior-diagnostics-v1'; destination.mkdir(mode=0o700)
++                for name in ('archive-manifest.json', 'results.tar.gz', 'results/completion.json',
++                             'results/memcheck.log', 'results/stages/memcheck-prepare-cache/stage.json',
++                             'results/stages/memcheck-prepare-cache/stdout.log',
++                             'results/stages/memcheck-prepare-cache/stderr.log'):
++                    self.remember(root / name)
++                    shutil.copyfile(root / name, destination / name.replace('/', '__'))
++                row.update(status='passed', passed=True, prior_gpu_executed=True,
++                           archive_evidence=evidence, memory_errors=0, actual_microcheck_summary=checked,
++                           actual_microchecker_sha256=H.sha(self.micro), memcheck_log_sha256=H.sha(logfile))
++                self.report['prior_memcheck_evidence'] = dict(row)
++                return True
++            except (Exception, KeyboardInterrupt) as error:
++                row.update(status='blocked' if isinstance(error, H.Blocked) else 'failed',
++                           error_type=type(error).__name__, error=str(error))
++                if isinstance(error, KeyboardInterrupt): self.deadline = time.monotonic()
++                return False
++            finally:
++                row.update(finished_at_utc=H.utc(), wall_seconds=time.monotonic() - started); self.save()
+ 
+         def execute(self):
+             self.integrity()
+             shutil.copyfile(Path(__file__), self.results / 'diagnostics-runner.py')
+             shutil.copyfile(self.probe, self.results / 'profile-probe.py')
+             if not self.await_workspace(): raise H.Blocked('Passed workspace and same B flock prerequisite failed')
++            if not self.reuse_prior_memcheck(): raise H.Blocked('Immutable prior memcheck evidence failed verification')
+             self.integrity()
+             available = self.tool(NCU)
+             version = available and self.stage('ncu-version', [NCU, '--version'], 30, self.ncu_version)
+@@ -302,7 +368,7 @@
+             help_ok = version and self.stage('ncu-help', [NCU, '--help'], 30, self.ncu_help)
+             if not version: self.block('ncu-help', 'NCU version prerequisite unavailable')
+             catalog = help_ok and self.stage('ncu-gv100-catalog', [NCU, '--config-file', 'off', '--query-metrics', '--chips', 'gv100',
+-                '--query-metrics-mode', 'all'], 60, self.catalog_gate)
++                '--query-metrics-mode', 'suffix', '--metrics', ','.join(BASE_METRICS)], 60, self.catalog_gate)
+             if not help_ok: self.block('ncu-gv100-catalog', 'NCU version/options prerequisite unavailable')
+             if catalog:
+                 command = [NCU, '--config-file', 'off']
+@@ -319,19 +385,6 @@
+                 self.stage('ncu-profile', command, 300, self.profile_gate, gpu=True, library=self.library)
+             else:
+                 self.block('ncu-profile', 'NCU compatible version/options/actual metric catalog unavailable', gpu=True)
+-            if self.tool(SANITIZER):
+-                tool_ok = self.stage('compute-sanitizer-version', [SANITIZER, '--version'], 30,
+-                    lambda rows: {'passed': True, 'actual_version_output': self.log_text('compute-sanitizer-version').strip()})
+-                if tool_ok:
+-                    self.stage('memcheck-prepare-cache', [SANITIZER, '--tool', 'memcheck', '--error-exitcode', '99',
+-                        '--leak-check', 'full', '--target-processes', 'application-only',
+-                        '--log-file', str(self.results / 'memcheck.log'), self.micro,
+-                        '--device', '0', '--correctness-only'], 300, self.memcheck_gate, gpu=True)
+-                else:
+-                    self.block('memcheck-prepare-cache', 'Compute Sanitizer version query failed', gpu=True)
+-            else:
+-                self.block('compute-sanitizer-version', 'Compute Sanitizer is not installed at the fixed CUDA path')
+-                self.block('memcheck-prepare-cache', 'Compute Sanitizer unavailable', gpu=True)
+ 
+         def finish(self, error=None):
+             self.cleanup()
+@@ -339,7 +392,7 @@
+             seen = {s['name'] for s in self.report['stages']}
+             for name in PLAN:
+                 if name not in seen: self.block(name, 'Diagnostic prerequisite/deadline prevented execution',
+-                                               gpu=name in ('ncu-profile', 'memcheck-prepare-cache'))
++                                               gpu=name == 'ncu-profile')
+             try:
+                 self.integrity(); self.report['source_and_binaries_unchanged'] = self.expected is not None
+                 self.report['source_hashes_after'] = H.tree_hashes(self.source) if self.expected else None
+@@ -356,7 +409,7 @@
+                     wall_seconds=time.monotonic() - self.start,
+                     gpu_executed=True if True in gpu else (None if None in gpu else False),
+                     diagnostic_results={s['name']: s['status'] for s in self.report['stages']
+-                                        if s['name'] in ('ncu-profile', 'memcheck-prepare-cache')},
++                                        if s['name'] in ('ncu-profile', 'reuse-prior-memcheck')},
+                     prior_performance_evidence_modified=False)
+                 H.need(len(self.report['stages']) == len(PLAN)
+                        and {s['name'] for s in self.report['stages']} == set(PLAN), 'Diagnostic stage plan differs')
+@@ -385,14 +438,15 @@
+     for name in ('run-directory', 'python', 'probe'): p.add_argument('--' + name, required=True)
+     p.add_argument('--workspace-run', default='/workspace/user/mxfp4-workspace-20261123T2300')
+     p.add_argument('--prior-cache-run', default='/workspace/user/mxfp4-c2-cache-20261123T2240')
++    p.add_argument('--prior-diagnostics-run', default='/workspace/user/mxfp4-post-workspace-diagnostics-20261123T2305')
+     args = p.parse_args()
+-    for name in ('run_directory', 'python', 'probe', 'workspace_run', 'prior_cache_run'):
++    for name in ('run_directory', 'python', 'probe', 'workspace_run', 'prior_cache_run', 'prior_diagnostics_run'):
+         if not os.path.isabs(getattr(args, name)): p.error('Every path must be explicitly absolute')
+     args.cache_build = 'off'; args.framework_run = args.workspace_run
+     global H, Q, W, C
+     H = load(HELPER, HELPER_SHA, 'diagnostic_native_helper')
+     Q = load(QHELPER, QSHA, 'diagnostic_quantizer_helper'); Q.H = H
+-    for name in ('workspace_run', 'prior_cache_run'):
++    for name in ('workspace_run', 'prior_cache_run', 'prior_diagnostics_run'):
+         folder = Path(getattr(args, name))
+         H.need(folder.is_dir() and not folder.is_symlink() and folder.stat().st_uid == os.geteuid(),
+                'Prior run must be an owned nonsymlink existing directory')
+@@ -403,7 +457,7 @@
+     run = Path(args.run_directory)
+     H.need(run.parent.is_dir() and not run.exists() and not run.is_symlink(), 'Use a new diagnostic run directory')
+     run = run.parent.resolve(strict=True) / run.name
+-    for old in (Path(args.workspace_run), Path(args.prior_cache_run), Path(H.B_ROOT)):
++    for old in (Path(args.workspace_run), Path(args.prior_cache_run), Path(args.prior_diagnostics_run), Path(H.B_ROOT)):
+         H.need(run != old and run not in old.parents and old not in run.parents, 'Diagnostic output overlaps prior run')
+     run.mkdir(mode=0o700); runner = create_runner()(args, run)
+     def interrupted(signum, frame):

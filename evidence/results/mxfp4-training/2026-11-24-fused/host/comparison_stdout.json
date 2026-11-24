@@ -1,0 +1,1 @@
+{"host_only": true, "four_nibble_patterns": 65536, "row_cases": 6798, "metadata_fields_compared": ["energy", "nan_scales", "min_scale", "span", "zero", "saturated"], "byte_offsets": 16, "max_blocks": 8194, "energy_cap": 281474976710657, "passed": true}

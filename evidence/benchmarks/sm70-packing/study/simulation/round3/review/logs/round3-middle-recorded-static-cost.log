@@ -1,0 +1,1 @@
+{"middle_shift_integer_output": {"instructions": 3, "registers": 10}, "middle_bfe_integer_output": {"instructions": 4, "registers": 10}, "middle_shift_float_output": {"instructions": 4, "registers": 10}, "middle_bfe_float_output": {"instructions": 5, "registers": 10}, "middle_float_output": {"instructions": 5, "registers": 12}}

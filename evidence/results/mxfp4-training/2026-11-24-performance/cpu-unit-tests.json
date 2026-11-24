@@ -1,0 +1,21 @@
+{
+  "command": [
+    "/workspace/scratch/3cc0562b0106/mxfp4-venv/bin/python",
+    "-m",
+    "unittest",
+    "tests.test_mxfp4_reference",
+    "tests.test_mxfp4_torch",
+    "-v"
+  ],
+  "returncode": 0,
+  "passed": true,
+  "gpu_executed": false,
+  "finished_at_utc": "2026-11-23T16:54:13.633454+00:00",
+  "output_sha256": "6f7293d4adbeafebcc59b26f283ad32b47b9773bb180639854c813b7015cdd5f",
+  "source_sha256": {
+    "tools/mxfp4_training/reference.py": "eeba6d661ad051c6caaa9e192d0dbe2c9666369faf31c384b88fc42556b02b8b",
+    "tools/mxfp4_training/torch_ops.py": "cdc8fa7ffbf63546f12427cada352048d1d438af219037b9cc2105be199f1487",
+    "tests/test_mxfp4_reference.py": "6b451ed63643ce3b020a2f59e31a4d6f447e2f68b49b2db8823188f51e80cc8c",
+    "tests/test_mxfp4_torch.py": "0d1ce163bd7d526d10676700af66560d2c1b48cad80a52b55546d203a7d0ee96"
+  }
+}

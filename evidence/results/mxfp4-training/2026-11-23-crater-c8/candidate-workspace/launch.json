@@ -1,0 +1,30 @@
+{
+  "status": "launched",
+  "started_at_utc": "2026-11-23T22:45:54.936771+00:00",
+  "pid": 9764,
+  "proc_start_ticks": "26421629",
+  "uid": 1001,
+  "hostname": "sg-jincy26-261124-4abd5-default0-0",
+  "run_directory": "/workspace/user/mxfp4-workspace-20261123T2300",
+  "argv": [
+    "/opt/venv/bin/python3",
+    "-B",
+    "/workspace/user/mxfp4-workspace-20261123T2300.py",
+    "--source-archive",
+    "/workspace/user/mxfp4-workspace-inputs-20261123T2300/source.tar.gz",
+    "--source-binding",
+    "/workspace/user/mxfp4-workspace-inputs-20261123T2300/source-binding.json",
+    "--run-directory",
+    "/workspace/user/mxfp4-workspace-20261123T2300",
+    "--python",
+    "/opt/venv/bin/python3",
+    "--cache-build",
+    "off"
+  ],
+  "source_commit": "f74de5be95687d75758c1f636ffbd00d6b63d161",
+  "source_archive_sha256": "aa7ac287d389d1e8705fdeef60713bae1927116c85bb7355a52a817e4a806a89",
+  "runner_sha256": "4018f7b5b08d3493ee746458cd98dea58925e1bc233b4e456b4adfea2fc9ee03",
+  "source_binding_sha256": "956a731acf0e89493050e72da0c8ca7f118215f0bb17875006be007629b4dcb4",
+  "cache_build": "off",
+  "selection_reason": "Retain the default C2 build to isolate context reuse; preliminary cache gains at2048/4096 are below1percent and not treated as established gains."
+}

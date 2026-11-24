@@ -1,0 +1,1119 @@
+{
+  "metadata": {
+    "created_utc": "2026-11-22T13:11:50.747499+00:00",
+    "execution": "Python integer translation of the authors' V100 numerical model, validated against published hardware fixtures",
+    "actual_new_gpu_measurement": false,
+    "cycle_or_throughput_simulation": false,
+    "original_matlab_octave_code_executed_by_this_script": false,
+    "upstream_repo": "https://github.com/north-numerical-computing/MATLAB-tensor-core",
+    "upstream_commit": "6fd0520850164bdd1c37f901954e27ec63eada56",
+    "numpy": "2.3.5",
+    "python": "3.12.14",
+    "upstream_provenance": {
+      "commit": "6fd0520850164bdd1c37f901954e27ec63eada56",
+      "verification_mode": "snapshot_frozen_file_hashes",
+      "manifest_sha256": "ca1ecccb9eb760606b789ab740cb4fc314955a34eefb1933469f24da4373a165",
+      "verified_files": 11,
+      "git_metadata_present": false
+    },
+    "model_source_sha256": "8a5ca4507c4309a21f849e2e441076db3de6b8e0d1330704bc450412a8e97956",
+    "driver_source_sha256": "922aa3e7b3a188b6e4e15c620a6a49aa449f8b9ffcbea0eba8695bd5f42d6262",
+    "upstream_source_sha256": {
+      "models/V100TC.m": "f72056b0af60b249516078b45a110dab16a5542808d73f4bd158efca51ec18d7",
+      "models/tools/Generic_BFMA_TC.m": "98c79251eb48f4d70b14c94f0ab11e7150f87c149dac36a69784a3b2ccb9ce51",
+      "models/tools/GEMM.m": "ea4ec5348a2d92c995e812bf7216283a48d0270edc15c8d2c5d11166281e67d8"
+    },
+    "command": "python3 /workspace/scratch/f8d9571c451b/simulation/numerics/run_numerical_study.py --upstream /workspace/scratch/f8d9571c451b/simulation/numerics/upstream-snapshot --random-cases 4096",
+    "argv": [
+      "/workspace/scratch/f8d9571c451b/simulation/numerics/run_numerical_study.py",
+      "--upstream",
+      "/workspace/scratch/f8d9571c451b/simulation/numerics/upstream-snapshot",
+      "--random-cases",
+      "4096"
+    ],
+    "seed": 20261122,
+    "elapsed_seconds": 1.5005344849996618
+  },
+  "model_features": {
+    "products_per_bfma": 4,
+    "extra_alignment_bits": 0,
+    "sticky_bits": 0,
+    "normalize_individual_products": false,
+    "global_alignment": true,
+    "include_c_in_global_alignment": true,
+    "final_rounding": "toward_zero",
+    "input_subnormals_preserved": true,
+    "output_subnormals_preserved": true
+  },
+  "upstream_hardware_fixture_validation": {
+    "fixture_count": 5000,
+    "comparison": "Bitwise equality of binary32 results",
+    "mismatches": {
+      "ported_v100": 0,
+      "ieee_serial_fp32": 2104,
+      "once_rounded_reference": 1885
+    },
+    "coverage": {
+      "a_fp16": {
+        "values": 20000,
+        "finite": 20000,
+        "zeros": 0,
+        "subnormals_in_declared_format": 0,
+        "minimum_nonzero_magnitude": 0.0001596212387084961,
+        "maximum_magnitude": 3.91796875,
+        "minimum_unbiased_exponent": -13,
+        "maximum_unbiased_exponent": 1
+      },
+      "b_fp16": {
+        "values": 20000,
+        "finite": 20000,
+        "zeros": 0,
+        "subnormals_in_declared_format": 0,
+        "minimum_nonzero_magnitude": 9.709596633911133e-05,
+        "maximum_magnitude": 3.921875,
+        "minimum_unbiased_exponent": -14,
+        "maximum_unbiased_exponent": 1
+      },
+      "c_fp32": {
+        "values": 5000,
+        "finite": 5000,
+        "zeros": 0,
+        "subnormals_in_declared_format": 0,
+        "minimum_nonzero_magnitude": 0.00040052225813269615,
+        "maximum_magnitude": 0.9997449517250061,
+        "minimum_unbiased_exponent": -12,
+        "maximum_unbiased_exponent": -1
+      },
+      "d_fp32": {
+        "values": 5000,
+        "finite": 5000,
+        "zeros": 0,
+        "subnormals_in_declared_format": 0,
+        "minimum_nonzero_magnitude": 0.0003063678741455078,
+        "maximum_magnitude": 9.627761840820312,
+        "minimum_unbiased_exponent": -12,
+        "maximum_unbiased_exponent": 3
+      }
+    },
+    "sha256": {
+      "model_validation/V100/fp16/a_V100_fp16.txt": "53d8534fd1106f7e9a23e902b918e59108f9e1b05843d20a36b3049a61bf8204",
+      "model_validation/V100/fp16/b_V100_fp16.txt": "1a019e8dcec2a44a741e691268e4c4a9eb9eb9ebc128be097f9921b813d4c6f9",
+      "model_validation/V100/fp16/c_V100_fp32.txt": "d38097e1e4d5547234e7be1c6daabeb4ba8fe24e99367391a3f7b5c600001848",
+      "model_validation/V100/fp16/d_V100_fp32.txt": "1cfbb62768f303c90aff43458afe386e297b99df7a4e69ab4b0cde26dbcbac83"
+    },
+    "all_a_b_exactly_fp16": true,
+    "first_ieee_difference": {
+      "index": 2,
+      "a": [
+        -0.54833984375,
+        -1.1826171875,
+        0.44287109375,
+        1.9169921875
+      ],
+      "b": [
+        -0.455078125,
+        -1.2978515625,
+        0.94140625,
+        0.65234375
+      ],
+      "c": 0.3347441554069519,
+      "upstream_expected": 3.78660249710083,
+      "v100_model": 3.78660249710083,
+      "ieee_serial": 3.786602735519409,
+      "v100_trace": {
+        "terms_signed_significand_exponent": [
+          [
+            16746176,
+            -3
+          ],
+          [
+            12875352,
+            0
+          ],
+          [
+            27979136,
+            -3
+          ],
+          [
+            20980544,
+            -1
+          ],
+          [
+            11232150,
+            -2
+          ]
+        ],
+        "max_exponent": 0,
+        "aligned_signed_significands": [
+          2093272,
+          12875352,
+          3497392,
+          10490272,
+          2808037
+        ],
+        "discarded_magnitude_bits": [
+          0,
+          0,
+          0,
+          0,
+          2
+        ],
+        "integer_sum": 31764325,
+        "output_bits_hex": "407257b2"
+      }
+    },
+    "scope": "5000 published hardware-output fixtures. This is not an exhaustive validation of the V100 input space and not new hardware measurements."
+  },
+  "packing_schemes": [
+    {
+      "name": "shared_rhs_q3_r512_k16",
+      "domain_q": [
+        -3,
+        -2,
+        -1,
+        0,
+        1,
+        2,
+        3
+      ],
+      "k": 16,
+      "radix": 512,
+      "independent_two_sided": false,
+      "random_cases": 4096,
+      "constant_extreme_cases": 343,
+      "alternating_cases": 27,
+      "total_cases": 4466,
+      "v100_decode_failures": 0,
+      "packed_value_vs_exact_integer_mismatches": 0,
+      "packed_value_vs_ieee_serial_mismatches": 0,
+      "bfma_groups_that_discarded_alignment_bits": 0,
+      "observed_max_abs_packed_operand": 1539.0,
+      "observed_max_abs_accumulator": 73872.0
+    },
+    {
+      "name": "independent_ternary_r128_k16",
+      "domain_q": [
+        -1,
+        0,
+        1
+      ],
+      "k": 16,
+      "radix": 128,
+      "independent_two_sided": true,
+      "random_cases": 4096,
+      "constant_extreme_cases": 81,
+      "alternating_cases": 81,
+      "total_cases": 4258,
+      "v100_decode_failures": 0,
+      "packed_value_vs_exact_integer_mismatches": 0,
+      "packed_value_vs_ieee_serial_mismatches": 0,
+      "bfma_groups_that_discarded_alignment_bits": 0,
+      "observed_max_abs_packed_operand": 129.0,
+      "observed_max_abs_accumulator": 266256.0
+    },
+    {
+      "name": "independent_ternary_r256_k32",
+      "domain_q": [
+        -1,
+        0,
+        1
+      ],
+      "k": 32,
+      "radix": 256,
+      "independent_two_sided": true,
+      "random_cases": 4096,
+      "constant_extreme_cases": 81,
+      "alternating_cases": 81,
+      "total_cases": 4258,
+      "v100_decode_failures": 0,
+      "packed_value_vs_exact_integer_mismatches": 0,
+      "packed_value_vs_ieee_serial_mismatches": 0,
+      "bfma_groups_that_discarded_alignment_bits": 0,
+      "observed_max_abs_packed_operand": 257.0,
+      "observed_max_abs_accumulator": 2113568.0
+    },
+    {
+      "name": "independent_q3_r512_k4",
+      "domain_q": [
+        -3,
+        -2,
+        -1,
+        0,
+        1,
+        2,
+        3
+      ],
+      "k": 4,
+      "radix": 512,
+      "independent_two_sided": true,
+      "random_cases": 4096,
+      "constant_extreme_cases": 2401,
+      "alternating_cases": 81,
+      "total_cases": 6578,
+      "v100_decode_failures": 0,
+      "packed_value_vs_exact_integer_mismatches": 0,
+      "packed_value_vs_ieee_serial_mismatches": 0,
+      "bfma_groups_that_discarded_alignment_bits": 0,
+      "observed_max_abs_packed_operand": 1539.0,
+      "observed_max_abs_accumulator": 9474084.0
+    },
+    {
+      "name": "independent_q2_r256_k8",
+      "domain_q": [
+        -2,
+        -1,
+        0,
+        1,
+        2
+      ],
+      "k": 8,
+      "radix": 256,
+      "independent_two_sided": true,
+      "random_cases": 4096,
+      "constant_extreme_cases": 625,
+      "alternating_cases": 81,
+      "total_cases": 4802,
+      "v100_decode_failures": 0,
+      "packed_value_vs_exact_integer_mismatches": 0,
+      "packed_value_vs_ieee_serial_mismatches": 0,
+      "bfma_groups_that_discarded_alignment_bits": 0,
+      "observed_max_abs_packed_operand": 514.0,
+      "observed_max_abs_accumulator": 2113568.0
+    },
+    {
+      "name": "independent_q3_r256_k4",
+      "domain_q": [
+        -3,
+        -2,
+        -1,
+        0,
+        1,
+        2,
+        3
+      ],
+      "k": 4,
+      "radix": 256,
+      "independent_two_sided": true,
+      "random_cases": 4096,
+      "constant_extreme_cases": 2401,
+      "alternating_cases": 81,
+      "total_cases": 6578,
+      "v100_decode_failures": 0,
+      "packed_value_vs_exact_integer_mismatches": 0,
+      "packed_value_vs_ieee_serial_mismatches": 0,
+      "bfma_groups_that_discarded_alignment_bits": 0,
+      "observed_max_abs_packed_operand": 771.0,
+      "observed_max_abs_accumulator": 2377764.0
+    }
+  ],
+  "full_e2m1_scalar_and_collision": {
+    "scalar_cases": 3375,
+    "distinct_encoded_products": 849,
+    "ambiguous_scalar_keys": 0,
+    "scalar_exact_product_mismatches": 0,
+    "k2_collision_confirmed_in_v100_model": true,
+    "collision_cases": [
+      {
+        "label": "full_e2m1_collision_a",
+        "a": [
+          8.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "b": [
+          8.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        "c": 0.0,
+        "model": 64.0,
+        "expected_hex": "42800000",
+        "ieee_serial": 64.0,
+        "once_rounded": 64.0,
+        "wanted_decoded_q_dots": [
+          64,
+          0
+        ]
+      },
+      {
+        "label": "full_e2m1_collision_b",
+        "a": [
+          -8.0,
+          128.0,
+          0.0,
+          0.0
+        ],
+        "b": [
+          8.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        "c": 0.0,
+        "model": 64.0,
+        "expected_hex": "42800000",
+        "ieee_serial": 64.0,
+        "once_rounded": 64.0,
+        "wanted_decoded_q_dots": [
+          -64,
+          1
+        ]
+      }
+    ]
+  },
+  "numerical_semantics_and_boundary_controls": [
+    {
+      "label": "two_small_products_lost_at_global_alignment",
+      "a": [
+        0.000244140625,
+        0.000244140625,
+        1.0,
+        0.0
+      ],
+      "b": [
+        0.000244140625,
+        0.000244140625,
+        1.0,
+        0.0
+      ],
+      "c": 0.0,
+      "model": 1.0,
+      "expected_hex": "3f800000",
+      "ieee_serial": 1.0000001192092896,
+      "once_rounded": 1.0000001192092896,
+      "alignment_trace": {
+        "terms_signed_significand_exponent": [
+          [
+            8388608,
+            -24
+          ],
+          [
+            8388608,
+            -24
+          ],
+          [
+            8388608,
+            0
+          ]
+        ],
+        "max_exponent": 0,
+        "aligned_signed_significands": [
+          0,
+          0,
+          8388608
+        ],
+        "discarded_magnitude_bits": [
+          8388608,
+          8388608,
+          0
+        ],
+        "integer_sum": 8388608,
+        "output_bits_hex": "3f800000"
+      }
+    },
+    {
+      "label": "cancellation_cannot_recover_lost_alignment_bits",
+      "a": [
+        1.0,
+        1.0,
+        0.000244140625,
+        0.0
+      ],
+      "b": [
+        1.0,
+        -1.0,
+        0.000244140625,
+        0.0
+      ],
+      "c": 0.0,
+      "model": 0.0,
+      "expected_hex": "00000000",
+      "ieee_serial": 5.960464477539063e-08,
+      "once_rounded": 5.960464477539063e-08,
+      "alignment_trace": {
+        "terms_signed_significand_exponent": [
+          [
+            8388608,
+            0
+          ],
+          [
+            -8388608,
+            0
+          ],
+          [
+            8388608,
+            -24
+          ]
+        ],
+        "max_exponent": 0,
+        "aligned_signed_significands": [
+          8388608,
+          -8388608,
+          0
+        ],
+        "discarded_magnitude_bits": [
+          0,
+          0,
+          8388608
+        ],
+        "integer_sum": 0,
+        "output_bits_hex": "00000000"
+      }
+    },
+    {
+      "label": "paper_v100_denormalized_product_1p5_times_1p5",
+      "a": [
+        1.5,
+        0.00048828125,
+        0.00048828125,
+        0.0
+      ],
+      "b": [
+        1.5,
+        0.000244140625,
+        0.000244140625,
+        0.0
+      ],
+      "c": 0.0,
+      "model": 2.250000238418579,
+      "expected_hex": "40100001",
+      "ieee_serial": 2.25,
+      "once_rounded": 2.250000238418579,
+      "alignment_trace": {
+        "terms_signed_significand_exponent": [
+          [
+            18874368,
+            0
+          ],
+          [
+            8388608,
+            -23
+          ],
+          [
+            8388608,
+            -23
+          ]
+        ],
+        "max_exponent": 0,
+        "aligned_signed_significands": [
+          18874368,
+          1,
+          1
+        ],
+        "discarded_magnitude_bits": [
+          0,
+          0,
+          0
+        ],
+        "integer_sum": 18874370,
+        "output_bits_hex": "40100001"
+      }
+    },
+    {
+      "label": "paper_v100_normalized_product_1_times_2p25",
+      "a": [
+        1.0,
+        0.00048828125,
+        0.00048828125,
+        0.0
+      ],
+      "b": [
+        2.25,
+        0.000244140625,
+        0.000244140625,
+        0.0
+      ],
+      "c": 0.0,
+      "model": 2.25,
+      "expected_hex": "40100000",
+      "ieee_serial": 2.25,
+      "once_rounded": 2.250000238418579,
+      "alignment_trace": {
+        "terms_signed_significand_exponent": [
+          [
+            9437184,
+            1
+          ],
+          [
+            8388608,
+            -23
+          ],
+          [
+            8388608,
+            -23
+          ]
+        ],
+        "max_exponent": 1,
+        "aligned_signed_significands": [
+          9437184,
+          0,
+          0
+        ],
+        "discarded_magnitude_bits": [
+          0,
+          8388608,
+          8388608
+        ],
+        "integer_sum": 9437184,
+        "output_bits_hex": "40100000"
+      }
+    },
+    {
+      "label": "paper_nonmonotonic_lower_c",
+      "a": [
+        0.000244140625,
+        0.000244140625,
+        0.000244140625,
+        0.000244140625
+      ],
+      "b": [
+        0.000244140625,
+        0.000244140625,
+        0.000244140625,
+        0.000244140625
+      ],
+      "c": 0.9999999403953552,
+      "model": 1.0000001192092896,
+      "expected_hex": "3f800001",
+      "ieee_serial": 1.0,
+      "once_rounded": 1.000000238418579,
+      "alignment_trace": {
+        "terms_signed_significand_exponent": [
+          [
+            8388608,
+            -24
+          ],
+          [
+            8388608,
+            -24
+          ],
+          [
+            8388608,
+            -24
+          ],
+          [
+            8388608,
+            -24
+          ],
+          [
+            16777215,
+            -1
+          ]
+        ],
+        "max_exponent": -1,
+        "aligned_signed_significands": [
+          1,
+          1,
+          1,
+          1,
+          16777215
+        ],
+        "discarded_magnitude_bits": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "integer_sum": 16777219,
+        "output_bits_hex": "3f800001"
+      }
+    },
+    {
+      "label": "paper_nonmonotonic_higher_c",
+      "a": [
+        0.000244140625,
+        0.000244140625,
+        0.000244140625,
+        0.000244140625
+      ],
+      "b": [
+        0.000244140625,
+        0.000244140625,
+        0.000244140625,
+        0.000244140625
+      ],
+      "c": 1.0,
+      "model": 1.0,
+      "expected_hex": "3f800000",
+      "ieee_serial": 1.0,
+      "once_rounded": 1.000000238418579,
+      "alignment_trace": {
+        "terms_signed_significand_exponent": [
+          [
+            8388608,
+            -24
+          ],
+          [
+            8388608,
+            -24
+          ],
+          [
+            8388608,
+            -24
+          ],
+          [
+            8388608,
+            -24
+          ],
+          [
+            8388608,
+            0
+          ]
+        ],
+        "max_exponent": 0,
+        "aligned_signed_significands": [
+          0,
+          0,
+          0,
+          0,
+          8388608
+        ],
+        "discarded_magnitude_bits": [
+          8388608,
+          8388608,
+          8388608,
+          8388608,
+          0
+        ],
+        "integer_sum": 8388608,
+        "output_bits_hex": "3f800000"
+      }
+    },
+    {
+      "label": "fp16_min_subnormal_input_product",
+      "a": [
+        5.960464477539063e-08,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "b": [
+        5.960464477539063e-08,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "c": 0.0,
+      "model": 3.552713678800501e-15,
+      "expected_hex": "27800000",
+      "ieee_serial": 3.552713678800501e-15,
+      "once_rounded": 3.552713678800501e-15,
+      "alignment_trace": {
+        "terms_signed_significand_exponent": [
+          [
+            8,
+            -28
+          ]
+        ],
+        "max_exponent": -28,
+        "aligned_signed_significands": [
+          8
+        ],
+        "discarded_magnitude_bits": [
+          0
+        ],
+        "integer_sum": 8,
+        "output_bits_hex": "27800000"
+      }
+    },
+    {
+      "label": "fp32_subnormal_accumulator_preserved",
+      "a": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "b": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "c": 1.401298464324817e-45,
+      "model": 1.401298464324817e-45,
+      "expected_hex": "00000001",
+      "ieee_serial": 1.401298464324817e-45,
+      "once_rounded": 1.401298464324817e-45,
+      "alignment_trace": {
+        "terms_signed_significand_exponent": [
+          [
+            1,
+            -126
+          ]
+        ],
+        "max_exponent": -126,
+        "aligned_signed_significands": [
+          1
+        ],
+        "discarded_magnitude_bits": [
+          0
+        ],
+        "integer_sum": 1,
+        "output_bits_hex": "00000001"
+      }
+    },
+    {
+      "label": "fp16_max_finite_products",
+      "a": [
+        65504.0,
+        65504.0,
+        65504.0,
+        65504.0
+      ],
+      "b": [
+        65504.0,
+        65504.0,
+        65504.0,
+        65504.0
+      ],
+      "c": 0.0,
+      "model": 17163096064.0,
+      "expected_hex": "507fc004",
+      "ieee_serial": 17163096064.0,
+      "once_rounded": 17163096064.0,
+      "alignment_trace": {
+        "terms_signed_significand_exponent": [
+          [
+            33521672,
+            30
+          ],
+          [
+            33521672,
+            30
+          ],
+          [
+            33521672,
+            30
+          ],
+          [
+            33521672,
+            30
+          ]
+        ],
+        "max_exponent": 30,
+        "aligned_signed_significands": [
+          33521672,
+          33521672,
+          33521672,
+          33521672
+        ],
+        "discarded_magnitude_bits": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "integer_sum": 134086688,
+        "output_bits_hex": "507fc004"
+      }
+    },
+    {
+      "label": "fp16_max_finite_products_cancel",
+      "a": [
+        65504.0,
+        65504.0,
+        65504.0,
+        65504.0
+      ],
+      "b": [
+        65504.0,
+        -65504.0,
+        65504.0,
+        -65504.0
+      ],
+      "c": 0.0,
+      "model": 0.0,
+      "expected_hex": "00000000",
+      "ieee_serial": 0.0,
+      "once_rounded": 0.0,
+      "alignment_trace": {
+        "terms_signed_significand_exponent": [
+          [
+            33521672,
+            30
+          ],
+          [
+            -33521672,
+            30
+          ],
+          [
+            33521672,
+            30
+          ],
+          [
+            -33521672,
+            30
+          ]
+        ],
+        "max_exponent": 30,
+        "aligned_signed_significands": [
+          33521672,
+          -33521672,
+          33521672,
+          -33521672
+        ],
+        "discarded_magnitude_bits": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "integer_sum": 0,
+        "output_bits_hex": "00000000"
+      }
+    },
+    {
+      "label": "fp32_max_finite_accumulator",
+      "a": [
+        65504.0,
+        65504.0,
+        65504.0,
+        65504.0
+      ],
+      "b": [
+        65504.0,
+        65504.0,
+        65504.0,
+        65504.0
+      ],
+      "c": 3.4028234663852886e+38,
+      "model": 3.4028234663852886e+38,
+      "expected_hex": "7f7fffff",
+      "ieee_serial": 3.4028234663852886e+38,
+      "once_rounded": 3.4028234663852886e+38,
+      "alignment_trace": {
+        "terms_signed_significand_exponent": [
+          [
+            33521672,
+            30
+          ],
+          [
+            33521672,
+            30
+          ],
+          [
+            33521672,
+            30
+          ],
+          [
+            33521672,
+            30
+          ],
+          [
+            16777215,
+            127
+          ]
+        ],
+        "max_exponent": 127,
+        "aligned_signed_significands": [
+          0,
+          0,
+          0,
+          0,
+          16777215
+        ],
+        "discarded_magnitude_bits": [
+          33521672,
+          33521672,
+          33521672,
+          33521672,
+          0
+        ],
+        "integer_sum": 16777215,
+        "output_bits_hex": "7f7fffff"
+      }
+    },
+    {
+      "label": "unsafe_ternary_radix1024_k16",
+      "a": [
+        1025.0,
+        1025.0,
+        1025.0,
+        1024.0,
+        1024.0,
+        1024.0,
+        1024.0,
+        1024.0,
+        1024.0,
+        1024.0,
+        1024.0,
+        1024.0,
+        1024.0,
+        1024.0,
+        1024.0,
+        1024.0
+      ],
+      "b": [
+        1025.0,
+        1025.0,
+        1025.0,
+        1024.0,
+        1024.0,
+        1024.0,
+        1024.0,
+        1024.0,
+        1024.0,
+        1024.0,
+        1024.0,
+        1024.0,
+        1024.0,
+        1024.0,
+        1024.0,
+        1024.0
+      ],
+      "c": 0.0,
+      "model": 16783362.0,
+      "expected_hex": "4b800c01",
+      "ieee_serial": 16783364.0,
+      "once_rounded": 16783364.0,
+      "exact_integer_packed_sum": 16783363,
+      "wanted_q_dots": [
+        3,
+        16
+      ],
+      "v100_decoded": [
+        2,
+        16
+      ],
+      "ieee_decoded": [
+        4,
+        16
+      ]
+    },
+    {
+      "label": "unsafe_independent_q3_radix512_k8",
+      "a": [
+        1537.0,
+        1536.0,
+        1536.0,
+        1536.0,
+        1536.0,
+        1536.0,
+        1536.0,
+        1536.0
+      ],
+      "b": [
+        1537.0,
+        1536.0,
+        1536.0,
+        1536.0,
+        1536.0,
+        1536.0,
+        1536.0,
+        1536.0
+      ],
+      "c": 0.0,
+      "model": 18877440.0,
+      "expected_hex": "4b900600",
+      "ieee_serial": 18877440.0,
+      "once_rounded": 18877440.0,
+      "exact_integer_packed_sum": 18877441,
+      "wanted_q_dots": [
+        1,
+        72
+      ],
+      "v100_decoded": [
+        0,
+        72
+      ],
+      "group4_trace": [
+        {
+          "block_start": 0,
+          "result": 9440257.0,
+          "trace": {
+            "terms_signed_significand_exponent": [
+              [
+                18898952,
+                20
+              ],
+              [
+                18874368,
+                20
+              ],
+              [
+                18874368,
+                20
+              ],
+              [
+                18874368,
+                20
+              ]
+            ],
+            "max_exponent": 20,
+            "aligned_signed_significands": [
+              18898952,
+              18874368,
+              18874368,
+              18874368
+            ],
+            "discarded_magnitude_bits": [
+              0,
+              0,
+              0,
+              0
+            ],
+            "integer_sum": 75522056,
+            "output_bits_hex": "4b100c01"
+          }
+        },
+        {
+          "block_start": 4,
+          "result": 18877440.0,
+          "trace": {
+            "terms_signed_significand_exponent": [
+              [
+                18874368,
+                20
+              ],
+              [
+                18874368,
+                20
+              ],
+              [
+                18874368,
+                20
+              ],
+              [
+                18874368,
+                20
+              ],
+              [
+                9440257,
+                23
+              ]
+            ],
+            "max_exponent": 23,
+            "aligned_signed_significands": [
+              2359296,
+              2359296,
+              2359296,
+              2359296,
+              9440257
+            ],
+            "discarded_magnitude_bits": [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "integer_sum": 18877441,
+            "output_bits_hex": "4b900600"
+          }
+        }
+      ]
+    }
+  ],
+  "limitations": [
+    "Port implements finite FP16 A/B and FP32 C/D; FP16-output, other architectures and arbitrary NaN payload rules are not implemented.",
+    "Published 5000-case fixtures do not exhaust the input space. Coverage statistics show which exponent/subnormal regimes they cover.",
+    "Additional subnormal/extreme cases compare model behavior and mathematical expectations, not new V100 hardware outputs.",
+    "Recursive groups of four use the authors' GEMM driver ordering; a real WMMA/cuBLAS kernel can group larger reductions differently.",
+    "No instruction execution, scheduling, registers, memory bandwidth, timing, training gradients or convergence is modeled.",
+    "Safe packed integer cases have every partial sum below 2**24 and common alignment grid finer than one, so these controls show no lost alignment bits."
+  ]
+}

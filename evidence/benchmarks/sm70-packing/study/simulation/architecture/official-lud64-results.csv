@@ -1,0 +1,11 @@
+kernel_index,kernel_name,gpu_sim_cycle,gpu_sim_insn,gpu_tot_sim_cycle,gpu_tot_sim_insn
+1,_Z12lud_diagonalPfii,20908,19673,20908,19673
+2,_Z13lud_perimeterPfii,8768,48240,29676,67913
+3,_Z12lud_internalPfii,5832,156672,35508,224585
+4,_Z12lud_diagonalPfii,20908,19673,56416,244258
+5,_Z13lud_perimeterPfii,8747,32160,65163,276418
+6,_Z12lud_internalPfii,5804,69632,70967,346050
+7,_Z12lud_diagonalPfii,20908,19673,91875,365723
+8,_Z13lud_perimeterPfii,8744,16080,100619,381803
+9,_Z12lud_internalPfii,5782,17408,106401,399211
+10,_Z12lud_diagonalPfii,20908,19673,127309,418884

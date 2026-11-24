@@ -1,0 +1,6 @@
+{
+  "all_checks_passed": true,
+  "cpp_python_lane_mapping_mismatches": 0,
+  "rectangular_contract_cases": 3,
+  "gpu_executed": false
+}

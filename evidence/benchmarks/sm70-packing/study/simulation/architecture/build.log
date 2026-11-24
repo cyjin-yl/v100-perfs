@@ -1,0 +1,141 @@
+[  1%] Generating build string file to /workspace/scratch/f8d9571c451b/simulation/architecture/build/gpgpu-sim
+[  2%] [BISON][ptx_parser] Building parser with bison 3.8.2
+/workspace/scratch/f8d9571c451b/simulation/architecture/accel-sim-framework/gpu-simulator/gpgpu-sim/src/cuda-sim/ptx.y: warning: 1 reduce/reduce conflict [-Wconflicts-rr]
+/workspace/scratch/f8d9571c451b/simulation/architecture/accel-sim-framework/gpu-simulator/gpgpu-sim/src/cuda-sim/ptx.y: note: rerun with option '-Wcounterexamples' to generate conflict counterexamples
+[  3%] Generating ptx_parser_decode.def
+[  3%] Built target gen_build_string
+[  3%] Built target gen_ptx_parser_decode
+[  3%] Generating instructions.h
+[  3%] Building CXX object gpgpu-sim/src/gpgpu-sim/CMakeFiles/gpgpusim.dir/addrdec.cc.o
+[  3%] Built target gen_instructions_h
+[  3%] [BISON][intersim_config_parser] Building parser with bison 3.8.2
+[  4%] [FLEX][intersim_config_lexer] Building scanner with flex 2.6.4
+[  4%] Building CXX object gpgpu-sim/src/intersim2/CMakeFiles/intersim.dir/y.tab.c.o
+[  5%] Building CXX object gpgpu-sim/src/intersim2/CMakeFiles/intersim.dir/lex.yy.c.o
+[  6%] Building CXX object gpgpu-sim/src/intersim2/CMakeFiles/intersim.dir/allocators/allocator.cpp.o
+[  6%] Building CXX object gpgpu-sim/src/intersim2/CMakeFiles/intersim.dir/allocators/islip.cpp.o
+[  7%] Building CXX object gpgpu-sim/src/gpgpu-sim/CMakeFiles/gpgpusim.dir/dram.cc.o
+[  8%] Building CXX object gpgpu-sim/src/intersim2/CMakeFiles/intersim.dir/allocators/loa.cpp.o
+[  8%] Building CXX object gpgpu-sim/src/intersim2/CMakeFiles/intersim.dir/allocators/maxsize.cpp.o
+[  9%] Building CXX object gpgpu-sim/src/intersim2/CMakeFiles/intersim.dir/allocators/pim.cpp.o
+[ 10%] Building CXX object gpgpu-sim/src/intersim2/CMakeFiles/intersim.dir/allocators/selalloc.cpp.o
+[ 10%] Building CXX object gpgpu-sim/src/gpgpu-sim/CMakeFiles/gpgpusim.dir/dram_sched.cc.o
+[ 10%] Building CXX object gpgpu-sim/src/intersim2/CMakeFiles/intersim.dir/allocators/separable.cpp.o
+[ 11%] Building CXX object gpgpu-sim/src/intersim2/CMakeFiles/intersim.dir/allocators/separable_input_first.cpp.o
+[ 11%] Building CXX object gpgpu-sim/src/intersim2/CMakeFiles/intersim.dir/allocators/separable_output_first.cpp.o
+[ 12%] Building CXX object gpgpu-sim/src/intersim2/CMakeFiles/intersim.dir/allocators/wavefront.cpp.o
+[ 13%] Building CXX object gpgpu-sim/src/gpgpu-sim/CMakeFiles/gpgpusim.dir/gpu-cache.cc.o
+[ 14%] Building CXX object gpgpu-sim/src/intersim2/CMakeFiles/intersim.dir/arbiters/arbiter.cpp.o
+[ 14%] Building CXX object gpgpu-sim/src/intersim2/CMakeFiles/intersim.dir/arbiters/matrix_arb.cpp.o
+[ 15%] Building CXX object gpgpu-sim/src/intersim2/CMakeFiles/intersim.dir/arbiters/prio_arb.cpp.o
+[ 15%] Building CXX object gpgpu-sim/src/intersim2/CMakeFiles/intersim.dir/arbiters/roundrobin_arb.cpp.o
+[ 16%] Building CXX object gpgpu-sim/src/intersim2/CMakeFiles/intersim.dir/arbiters/tree_arb.cpp.o
+[ 17%] Building CXX object gpgpu-sim/src/intersim2/CMakeFiles/intersim.dir/batchtrafficmanager.cpp.o
+[ 17%] Building CXX object gpgpu-sim/src/intersim2/CMakeFiles/intersim.dir/booksim_config.cpp.o
+[ 18%] Building CXX object gpgpu-sim/src/gpgpu-sim/CMakeFiles/gpgpusim.dir/gpu-misc.cc.o
+[ 18%] Building CXX object gpgpu-sim/src/gpgpu-sim/CMakeFiles/gpgpusim.dir/gpu-sim.cc.o
+[ 19%] Building CXX object gpgpu-sim/src/intersim2/CMakeFiles/intersim.dir/buffer.cpp.o
+[ 19%] Building CXX object gpgpu-sim/src/intersim2/CMakeFiles/intersim.dir/buffer_state.cpp.o
+[ 20%] Building CXX object gpgpu-sim/src/intersim2/CMakeFiles/intersim.dir/config_utils.cpp.o
+[ 21%] Building CXX object gpgpu-sim/src/intersim2/CMakeFiles/intersim.dir/credit.cpp.o
+[ 21%] Building CXX object gpgpu-sim/src/intersim2/CMakeFiles/intersim.dir/flitchannel.cpp.o
+[ 22%] Building CXX object gpgpu-sim/src/intersim2/CMakeFiles/intersim.dir/flit.cpp.o
+[ 22%] Building CXX object gpgpu-sim/src/intersim2/CMakeFiles/intersim.dir/gputrafficmanager.cpp.o
+[ 23%] Building CXX object gpgpu-sim/src/gpgpu-sim/CMakeFiles/gpgpusim.dir/hashing.cc.o
+[ 23%] Building CXX object gpgpu-sim/src/gpgpu-sim/CMakeFiles/gpgpusim.dir/histogram.cc.o
+[ 24%] Building CXX object gpgpu-sim/src/gpgpu-sim/CMakeFiles/gpgpusim.dir/icnt_wrapper.cc.o
+[ 25%] Building CXX object gpgpu-sim/src/intersim2/CMakeFiles/intersim.dir/injection.cpp.o
+[ 26%] Building CXX object gpgpu-sim/src/gpgpu-sim/CMakeFiles/gpgpusim.dir/l2cache.cc.o
+[ 27%] Building CXX object gpgpu-sim/src/intersim2/CMakeFiles/intersim.dir/interconnect_interface.cpp.o
+[ 27%] Building CXX object gpgpu-sim/src/gpgpu-sim/CMakeFiles/gpgpusim.dir/local_interconnect.cc.o
+[ 27%] Building CXX object gpgpu-sim/src/intersim2/CMakeFiles/intersim.dir/intersim_config.cpp.o
+[ 28%] Building CXX object gpgpu-sim/src/intersim2/CMakeFiles/intersim.dir/main.cpp.o
+[ 28%] Building CXX object gpgpu-sim/src/intersim2/CMakeFiles/intersim.dir/misc_utils.cpp.o
+[ 29%] Building CXX object gpgpu-sim/src/intersim2/CMakeFiles/intersim.dir/module.cpp.o
+[ 30%] Building CXX object gpgpu-sim/src/gpgpu-sim/CMakeFiles/gpgpusim.dir/mem_fetch.cc.o
+[ 31%] Building CXX object gpgpu-sim/src/intersim2/CMakeFiles/intersim.dir/networks/anynet.cpp.o
+[ 31%] Building CXX object gpgpu-sim/src/intersim2/CMakeFiles/intersim.dir/networks/cmesh.cpp.o
+[ 31%] Building CXX object gpgpu-sim/src/gpgpu-sim/CMakeFiles/gpgpusim.dir/mem_latency_stat.cc.o
+[ 32%] Building CXX object gpgpu-sim/src/intersim2/CMakeFiles/intersim.dir/networks/dragonfly.cpp.o
+[ 32%] Building CXX object gpgpu-sim/src/intersim2/CMakeFiles/intersim.dir/networks/fattree.cpp.o
+[ 34%] Building CXX object gpgpu-sim/src/intersim2/CMakeFiles/intersim.dir/networks/flatfly_onchip.cpp.o
+[ 35%] Building CXX object gpgpu-sim/src/gpgpu-sim/CMakeFiles/gpgpusim.dir/power_interface.cc.o
+[ 36%] Building CXX object gpgpu-sim/src/intersim2/CMakeFiles/intersim.dir/networks/fly.cpp.o
+[ 36%] Building CXX object gpgpu-sim/src/intersim2/CMakeFiles/intersim.dir/networks/kncube.cpp.o
+[ 37%] Building CXX object gpgpu-sim/src/intersim2/CMakeFiles/intersim.dir/networks/network.cpp.o
+[ 37%] Building CXX object gpgpu-sim/src/intersim2/CMakeFiles/intersim.dir/networks/qtree.cpp.o
+[ 38%] Building CXX object gpgpu-sim/src/gpgpu-sim/CMakeFiles/gpgpusim.dir/power_stat.cc.o
+[ 39%] Building CXX object gpgpu-sim/src/intersim2/CMakeFiles/intersim.dir/networks/tree4.cpp.o
+[ 40%] Building CXX object gpgpu-sim/src/intersim2/CMakeFiles/intersim.dir/outputset.cpp.o
+[ 40%] Building CXX object gpgpu-sim/src/intersim2/CMakeFiles/intersim.dir/packet_reply_info.cpp.o
+[ 41%] Building CXX object gpgpu-sim/src/intersim2/CMakeFiles/intersim.dir/power/buffer_monitor.cpp.o
+[ 41%] Building CXX object gpgpu-sim/src/gpgpu-sim/CMakeFiles/gpgpusim.dir/scoreboard.cc.o
+[ 41%] Building CXX object gpgpu-sim/src/intersim2/CMakeFiles/intersim.dir/power/power_module.cpp.o
+[ 42%] Building CXX object gpgpu-sim/src/intersim2/CMakeFiles/intersim.dir/power/switch_monitor.cpp.o
+[ 43%] Building CXX object gpgpu-sim/src/intersim2/CMakeFiles/intersim.dir/rng_double_wrapper.cpp.o
+[ 43%] Building CXX object gpgpu-sim/src/intersim2/CMakeFiles/intersim.dir/rng_wrapper.cpp.o
+[ 44%] Building CXX object gpgpu-sim/src/intersim2/CMakeFiles/intersim.dir/routefunc.cpp.o
+[ 45%] Building CXX object gpgpu-sim/src/gpgpu-sim/CMakeFiles/gpgpusim.dir/shader.cc.o
+[ 45%] Building CXX object gpgpu-sim/src/intersim2/CMakeFiles/intersim.dir/routers/chaos_router.cpp.o
+[ 46%] Building CXX object gpgpu-sim/src/intersim2/CMakeFiles/intersim.dir/routers/event_router.cpp.o
+[ 47%] Building CXX object gpgpu-sim/src/intersim2/CMakeFiles/intersim.dir/routers/iq_router.cpp.o
+[ 47%] Building CXX object gpgpu-sim/src/intersim2/CMakeFiles/intersim.dir/routers/router.cpp.o
+[ 48%] Building CXX object gpgpu-sim/src/intersim2/CMakeFiles/intersim.dir/stats.cpp.o
+[ 48%] Building CXX object gpgpu-sim/src/intersim2/CMakeFiles/intersim.dir/traffic.cpp.o
+[ 48%] Building CXX object gpgpu-sim/src/gpgpu-sim/CMakeFiles/gpgpusim.dir/stack.cc.o
+[ 49%] Building CXX object gpgpu-sim/src/intersim2/CMakeFiles/intersim.dir/trafficmanager.cpp.o
+[ 50%] Building CXX object gpgpu-sim/src/gpgpu-sim/CMakeFiles/gpgpusim.dir/stat-tool.cc.o
+[ 51%] Building CXX object gpgpu-sim/src/gpgpu-sim/CMakeFiles/gpgpusim.dir/traffic_breakdown.cc.o
+[ 51%] Building CXX object gpgpu-sim/src/gpgpu-sim/CMakeFiles/gpgpusim.dir/visualizer.cc.o
+[ 52%] Building CXX object gpgpu-sim/src/intersim2/CMakeFiles/intersim.dir/vc.cpp.o
+[ 52%] Linking CXX static library libintersim.a
+[ 52%] Built target intersim
+[ 53%] Building CXX object gpgpu-sim/src/accelwattch/CMakeFiles/accelwattch.dir/cacti/Ucache.cc.o
+[ 54%] Linking CXX static library libgpgpusim.a
+[ 54%] Built target gpgpusim
+[ 55%] [BISON][cuobjdump_parser] Building parser with bison 3.8.2
+[ 56%] [FLEX][cuobjdump_lexer] Building scanner with flex 2.6.4
+[ 56%] Building CXX object gpgpu-sim/libcuda/CMakeFiles/cuda.dir/cuda_runtime_api.cc.o
+/workspace/scratch/f8d9571c451b/simulation/architecture/accel-sim-framework/gpu-simulator/gpgpu-sim/libcuda/cuda_runtime_api.cc:141:10: fatal error: cudaProfiler.h: No such file or directory
+  141 | #include "cudaProfiler.h"
+      |          ^~~~~~~~~~~~~~~~
+compilation terminated.
+gmake[3]: *** [gpgpu-sim/libcuda/CMakeFiles/cuda.dir/build.make:92: gpgpu-sim/libcuda/CMakeFiles/cuda.dir/cuda_runtime_api.cc.o] Error 1
+gmake[2]: *** [CMakeFiles/Makefile2:795: gpgpu-sim/libcuda/CMakeFiles/cuda.dir/all] Error 2
+gmake[2]: *** Waiting for unfinished jobs....
+[ 56%] Building CXX object gpgpu-sim/src/accelwattch/CMakeFiles/accelwattch.dir/XML_Parse.cc.o
+[ 57%] Building CXX object gpgpu-sim/src/accelwattch/CMakeFiles/accelwattch.dir/cacti/arbiter.cc.o
+[ 57%] Building CXX object gpgpu-sim/src/accelwattch/CMakeFiles/accelwattch.dir/cacti/area.cc.o
+[ 58%] Building CXX object gpgpu-sim/src/accelwattch/CMakeFiles/accelwattch.dir/array.cc.o
+[ 59%] Building CXX object gpgpu-sim/src/accelwattch/CMakeFiles/accelwattch.dir/cacti/bank.cc.o
+[ 59%] Building CXX object gpgpu-sim/src/accelwattch/CMakeFiles/accelwattch.dir/cacti/basic_circuit.cc.o
+[ 60%] Building CXX object gpgpu-sim/src/accelwattch/CMakeFiles/accelwattch.dir/basic_components.cc.o
+[ 60%] Building CXX object gpgpu-sim/src/accelwattch/CMakeFiles/accelwattch.dir/cacti/cacti_interface.cc.o
+[ 61%] Building CXX object gpgpu-sim/src/accelwattch/CMakeFiles/accelwattch.dir/cacti/component.cc.o
+[ 62%] Building CXX object gpgpu-sim/src/accelwattch/CMakeFiles/accelwattch.dir/core.cc.o
+[ 62%] Building CXX object gpgpu-sim/src/accelwattch/CMakeFiles/accelwattch.dir/cacti/crossbar.cc.o
+[ 63%] Building CXX object gpgpu-sim/src/accelwattch/CMakeFiles/accelwattch.dir/cacti/decoder.cc.o
+[ 63%] Building CXX object gpgpu-sim/src/accelwattch/CMakeFiles/accelwattch.dir/cacti/htree2.cc.o
+[ 64%] Building CXX object gpgpu-sim/src/accelwattch/CMakeFiles/accelwattch.dir/interconnect.cc.o
+[ 65%] Building CXX object gpgpu-sim/src/accelwattch/CMakeFiles/accelwattch.dir/cacti/io.cc.o
+[ 65%] Building CXX object gpgpu-sim/src/accelwattch/CMakeFiles/accelwattch.dir/iocontrollers.cc.o
+[ 67%] Building CXX object gpgpu-sim/src/accelwattch/CMakeFiles/accelwattch.dir/logic.cc.o
+[ 67%] Building CXX object gpgpu-sim/src/accelwattch/CMakeFiles/accelwattch.dir/main.cc.o
+[ 68%] Building CXX object gpgpu-sim/src/accelwattch/CMakeFiles/accelwattch.dir/cacti/mat.cc.o
+[ 69%] Building CXX object gpgpu-sim/src/accelwattch/CMakeFiles/accelwattch.dir/memoryctrl.cc.o
+[ 69%] Building CXX object gpgpu-sim/src/accelwattch/CMakeFiles/accelwattch.dir/noc.cc.o
+[ 70%] Building CXX object gpgpu-sim/src/accelwattch/CMakeFiles/accelwattch.dir/cacti/nuca.cc.o
+[ 70%] Building CXX object gpgpu-sim/src/accelwattch/CMakeFiles/accelwattch.dir/cacti/parameter.cc.o
+[ 71%] Building CXX object gpgpu-sim/src/accelwattch/CMakeFiles/accelwattch.dir/processor.cc.o
+[ 72%] Building CXX object gpgpu-sim/src/accelwattch/CMakeFiles/accelwattch.dir/cacti/router.cc.o
+[ 72%] Building CXX object gpgpu-sim/src/accelwattch/CMakeFiles/accelwattch.dir/sharedcache.cc.o
+[ 73%] Building CXX object gpgpu-sim/src/accelwattch/CMakeFiles/accelwattch.dir/cacti/subarray.cc.o
+[ 73%] Building CXX object gpgpu-sim/src/accelwattch/CMakeFiles/accelwattch.dir/cacti/technology.cc.o
+[ 74%] Building CXX object gpgpu-sim/src/accelwattch/CMakeFiles/accelwattch.dir/cacti/uca.cc.o
+[ 75%] Building CXX object gpgpu-sim/src/accelwattch/CMakeFiles/accelwattch.dir/cacti/wire.cc.o
+[ 53%] Building CXX object gpgpu-sim/src/accelwattch/CMakeFiles/accelwattch.dir/xmlParser.cc.o
+[ 54%] Building CXX object gpgpu-sim/src/accelwattch/CMakeFiles/accelwattch.dir/gpgpu_sim_wrapper.cc.o
+[ 54%] Linking CXX static library libaccelwattch.a
+[ 74%] Built target accelwattch
+gmake[1]: *** [CMakeFiles/Makefile2:365: CMakeFiles/accel-sim.out.dir/rule] Error 2
+gmake: *** [Makefile:169: accel-sim.out] Error 2

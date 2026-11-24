@@ -1,0 +1,11 @@
+{
+  "status": "failed",
+  "passed": false,
+  "results_archive": "/workspace/user/mxfp4-framework-followup-b-20261123T2104/results.tar.gz",
+  "sha256": "565b574ed4ef312bee5ccd3b8d6d02444069df2f1e72673ded2a05ccecf047dc",
+  "bytes": 1142,
+  "completion_sha256": "85696f2b6bfd3e317282c71a61e9c80508d50de8ca70f1cdf662b28a6d1bcc27",
+  "source_commit": "80d3a7c2bb0bb551a34b28bd7fda59978b6304ef",
+  "source_archive_sha256": "62378914e2b6ad7e34e3dd70736cb90aea07c962963494d97062d5f5738b0f57",
+  "original_B_results_rewritten": false
+}

@@ -1,0 +1,26 @@
+{
+  "status": "launched",
+  "started_at_utc": "2026-11-23T23:02:17.160958+00:00",
+  "pid": 10179,
+  "proc_start_ticks": "26519851",
+  "uid": 1001,
+  "hostname": "sg-jincy26-261124-4abd5-default0-0",
+  "run_directory": "/workspace/user/mxfp4-post-workspace-diagnostics-20261123T2305",
+  "argv": [
+    "/opt/venv/bin/python3",
+    "-B",
+    "/workspace/user/mxfp4-post-workspace-diagnostics-20261123T2305.py",
+    "--run-directory",
+    "/workspace/user/mxfp4-post-workspace-diagnostics-20261123T2305",
+    "--python",
+    "/opt/venv/bin/python3",
+    "--probe",
+    "/workspace/user/mxfp4-post-workspace-diagnostics-20261123T2305.probe.py"
+  ],
+  "source_commit": "f74de5be95687d75758c1f636ffbd00d6b63d161",
+  "source_archive_sha256": "aa7ac287d389d1e8705fdeef60713bae1927116c85bb7355a52a817e4a806a89",
+  "runner_sha256": "ab8802a3c077106f01ae63eb94b44f85ec006aa49b847bdcf94faa94b43915f1",
+  "probe_sha256": "8b7f0a9f2b5dbeb6b1f0ceaa0297ab4b0ef10e474a550f5d97f6925a8b33502c",
+  "cache_build": "off",
+  "purpose": "Bounded one-C2-pipeline counter diagnostic plus actual cache microcheck memcheck; no clock/cache forcing or configuration changes."
+}

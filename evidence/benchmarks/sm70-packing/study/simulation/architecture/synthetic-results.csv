@@ -1,0 +1,11 @@
+variant,name,hmma_per_warp,independent_accumulator_chains,warps,hmma_warp_instructions,other_warp_instructions,gpu_sim_cycle,gpu_sim_insn,gpu_ipc,completed,log
+upstream_qv100,hmma256_chains1_warps1,256,1,1,256,11,6818,8544,1.2532,True,logs/upstream_qv100-hmma256_chains1_warps1.log
+upstream_qv100,hmma256_chains4_warps1,256,4,1,256,11,5543,8544,1.5414,True,logs/upstream_qv100-hmma256_chains4_warps1.log
+upstream_qv100,hmma256_chains8_warps1,256,8,1,256,11,5658,8544,1.5101,True,logs/upstream_qv100-hmma256_chains8_warps1.log
+upstream_qv100,hmma256_chains1_warps4,256,1,4,1024,44,6819,34176,5.0119,True,logs/upstream_qv100-hmma256_chains1_warps4.log
+upstream_qv100,hmma256_chains1_warps16,256,1,16,4096,176,7134,136704,19.1623,True,logs/upstream_qv100-hmma256_chains1_warps16.log
+upstream_qv100,no_hmma_warps1,0,1,1,0,11,5028,352,0.07,True,logs/upstream_qv100-no_hmma_warps1.log
+whatif_hmma_latency8_init2,hmma256_chains1_warps1,256,1,1,256,11,8098,8544,1.0551,True,logs/whatif_hmma_latency8_init2-hmma256_chains1_warps1.log
+whatif_hmma_latency8_init2,hmma256_chains4_warps1,256,4,1,256,11,5800,8544,1.4731,True,logs/whatif_hmma_latency8_init2-hmma256_chains4_warps1.log
+whatif_hmma_latency8_init2,hmma256_chains8_warps1,256,8,1,256,11,5778,8544,1.4787,True,logs/whatif_hmma_latency8_init2-hmma256_chains8_warps1.log
+whatif_hmma_latency8_init2,no_hmma_warps1,0,1,1,0,11,5028,352,0.07,True,logs/whatif_hmma_latency8_init2-no_hmma_warps1.log

@@ -1,0 +1,31 @@
+{
+  "status": "host_structure_checks_passed",
+  "gpu_executed": false,
+  "runner_bytes": 29395,
+  "runner_sha256": "ab8802a3c077106f01ae63eb94b44f85ec006aa49b847bdcf94faa94b43915f1",
+  "probe_bytes": 10043,
+  "probe_sha256": "8b7f0a9f2b5dbeb6b1f0ceaa0297ab4b0ef10e474a550f5d97f6925a8b33502c",
+  "design_notes_bytes": 6037,
+  "design_notes_sha256": "33b2ad609b8e71d0c48dbfe056e4dc0c149c5524851a68771abc6dcb7cf792d8",
+  "stage_count": 7,
+  "candidate_metric_count": 9,
+  "actual_H_Q_W_C_helper_hashes_verified": true,
+  "constructor_inheritance_and_read_only_source_paths_verified": true,
+  "profile_expected_native_submitted_calls": 12,
+  "config_isolation_command_branches": [
+    {
+      "advertised_rename_kernels": true,
+      "catalog_and_profile_config_off": true,
+      "rename_flag_follows_help": true,
+      "missing_config_option_blocks": true
+    },
+    {
+      "advertised_rename_kernels": false,
+      "catalog_and_profile_config_off": true,
+      "rename_flag_follows_help": true,
+      "missing_config_option_blocks": true
+    }
+  ],
+  "scope_metric_clock_cache_replay_arguments_unchanged": true,
+  "runtime_NCU_support_not_proven_by_host_checks": true
+}

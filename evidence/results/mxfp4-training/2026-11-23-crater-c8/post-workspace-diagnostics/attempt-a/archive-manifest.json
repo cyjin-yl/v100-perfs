@@ -1,0 +1,17 @@
+{
+  "bytes": 826674,
+  "completion_sha256": "3567fc6e504c7b9db7dd3c9f1bedd324992c03f82c5ad52a5f6f83e985252ddc",
+  "diagnostic_results": {
+    "memcheck-prepare-cache": "passed",
+    "ncu-profile": "blocked"
+  },
+  "gpu_executed": true,
+  "passed": false,
+  "prior_performance_evidence_modified": false,
+  "probe_sha256": "8b7f0a9f2b5dbeb6b1f0ceaa0297ab4b0ef10e474a550f5d97f6925a8b33502c",
+  "runner_sha256": "ab8802a3c077106f01ae63eb94b44f85ec006aa49b847bdcf94faa94b43915f1",
+  "sha256": "4f28d0f0e0db93e205347164c387fb1d7242568362726b16b667f018822794bb",
+  "source_archive_sha256": "aa7ac287d389d1e8705fdeef60713bae1927116c85bb7355a52a817e4a806a89",
+  "source_commit": "f74de5be95687d75758c1f636ffbd00d6b63d161",
+  "status": "failed"
+}

@@ -1,0 +1,19 @@
+# Preserve hashed research inputs and raw experiment evidence byte for byte,
+# including upstream CRLF files, when a checkout enables core.autocrlf.
+evidence/benchmarks/sm70-packing/study/** -text
+evidence/results/sm70-packing/** -text
+evidence/results/mxfp4-training/** -text
+# cuobjdump emits trailing spaces in its raw, hashed header; retain its bytes.
+evidence/results/mxfp4-training/**/mxfp4-sm70.sass.txt -whitespace
+evidence/results/mxfp4-training/2026-11-24-fused/verified/v4/prefetch-c6-int32-no-tail.sass.txt -whitespace
+evidence/results/mxfp4-training/2026-11-24-hardware-study/verified/v6/c6-int32-no-tail.sass.txt -whitespace
+evidence/results/mxfp4-training/2026-11-24-hardware-study/verified/v6/c8-halfrow.sass.txt -whitespace
+# Retain the exact hashed remote driver, including its recorded final blank line.
+evidence/results/mxfp4-training/2026-11-24-hardware-study/verified/v6/run_iteration.py -whitespace
+# Preserve exact SXM2 disassembly headers and unified-diff context lines.
+evidence/results/mxfp4-training/2026-11-23-crater-c8/attempt-b/early-static/c8-in-c3-binary.sass.txt -whitespace
+evidence/results/mxfp4-training/2026-11-23-crater-c8/candidate-c9-c10/static/c8.sass.txt -whitespace
+evidence/results/mxfp4-training/2026-11-23-crater-c8/candidate-c2-prepare-cache/candidate-prepare-cache.patch -whitespace
+evidence/results/mxfp4-training/2026-11-23-crater-c8/candidate-cuda-rne/candidate-quantizer.patch -whitespace
+evidence/results/mxfp4-training/2026-11-23-crater-c8/post-workspace-diagnostics/config-hardening.patch -whitespace
+evidence/results/mxfp4-training/2026-11-23-crater-c8/post-workspace-diagnostics/v2-catalog-repair.patch -whitespace

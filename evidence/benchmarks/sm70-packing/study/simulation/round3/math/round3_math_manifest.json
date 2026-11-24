@@ -1,0 +1,32 @@
+{
+  "kind": "round3_math_frozen_cpu_v100_model_results",
+  "gpu_executed": false,
+  "files": {
+    "round3_math.py": {
+      "bytes": 18944,
+      "sha256": "97a2f6f41f2443e6219a8da95096f35bb903883ed7b467c2d3b06d2a87b1f5ad"
+    },
+    "round3_math_results.json": {
+      "bytes": 104484,
+      "sha256": "7b6558688ecc760c655af1b32cace307b300fdc096606553a934711d8c937c24"
+    },
+    "run_summary.json": {
+      "bytes": 1667,
+      "sha256": "4421c779da9da48dfe7c8135088e83f55a194e8a08ce9a8f2a8ccba470e5f6b4"
+    },
+    "README.md": {
+      "bytes": 8284,
+      "sha256": "9bdaa62491fda4eb5d52743c5aa0bf96c2f4af67e98dfdb93e3680a77109e784"
+    },
+    "PROOF.md": {
+      "bytes": 6646,
+      "sha256": "064ee269fa920b571249a60a12561a43ccf08f3c042151c92f65a810ada2808b"
+    }
+  },
+  "dependencies": [
+    "simulation/numerics/v100_model.py",
+    "simulation/numerics/run_numerical_study.py",
+    "simulation/numerics/upstream-snapshot"
+  ],
+  "entrypoint": "python3 simulation/round3/math/round3_math.py"
+}

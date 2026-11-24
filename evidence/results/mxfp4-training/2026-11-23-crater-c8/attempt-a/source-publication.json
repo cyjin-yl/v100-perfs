@@ -1,0 +1,9 @@
+{
+  "created_at_utc": "2026-11-23T20:25:26.682840+00:00",
+  "job_name": "sg-jincy26-261124-4abd5",
+  "ready": true,
+  "remote_script_sha256": "023b140da884955f3e36c308215b930a9c0a9269761feb06d85c8f66dc5bcf73",
+  "schema_version": 1,
+  "source_commit": "91e776034aba6e215b085a373affb5c71f2a79e6",
+  "source_sha256": "50a4d7a0444bf6544b2ea2f269d26013e36a6f18356fb0c53e5ab5116abedf8a"
+}

@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "source_archive_sha256": "077953136dd2cf00faabde0ae4bd9910761cedb059f85c44473fe5ede838c251",
+  "binary": "build-c8/bench_mxfp4_fused",
+  "binary_sha256": "ad3f496ad3cae7c9aa576bf655b5c70629336641abcc4dc56c16222bb7a16056",
+  "cuobjdump": "/usr/local/cuda-12.4/bin/cuobjdump",
+  "cuobjdump_version": "cuobjdump: NVIDIA (R) fat binary listing tool\nCopyright (c) 2005-2024 NVIDIA Corporation\nBuilt on Fri_Mar_15_14:38:03_PDT_2024\nCuda compilation tools, release 12.4, V12.4.127\nBuild cuda_12.4.r12.4/compiler.34043715_0\n",
+  "sections": [
+    {
+      "name": "c6-int32-no-tail.sass.txt",
+      "function": "Function : _ZN52_GLOBAL__N__702f8fc1_19_mxfp4_gemm_fused_cu_da86c26226fused_certified_prefetch32IiLb0EEEvPKhS2_S2_S2_PfT_S4_S4_S2_PKiS4_",
+      "sha256": "1fb3a49b06a862888de4d17902e89769d8f22fa30b733672d5b1d48ccaf131ea",
+      "bytes": 534839
+    },
+    {
+      "name": "c8-halfrow.sass.txt",
+      "function": "Function : _ZN52_GLOBAL__N__702f8fc1_19_mxfp4_gemm_fused_cu_da86c26234fused_certified_prefetch32_halfrowEPKhS1_S1_S1_PfiiiS1_PKii",
+      "sha256": "2999d8db387863648d03e9d776ab93b63b2aae3cb47f0af4ac63226f8b93f945",
+      "bytes": 430038
+    }
+  ],
+  "gpu_executed_by_disassembly": false
+}

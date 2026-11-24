@@ -1,0 +1,152 @@
+{
+  "source_commit": "f338faaa5cbdcd900aa82ae95af00ed5fb770235",
+  "source_sha256": "58e95bb116ba08d49e1fc0f51e3fa9fae17d442f45bbc0ea617ca163ae099ec9",
+  "source_bytes": 138658,
+  "members": [
+    {
+      "name": "evidence/benchmarks/sm70-packing/study/simulation/round3/cuda/fragment_mapping.hpp",
+      "sha256": "78ca809cc6606912724982559c31ed82b6141ec74651cf65324015ecd901f4b1",
+      "bytes": 1146
+    },
+    {
+      "name": "tools/mxfp4_training/README.md",
+      "sha256": "31c7f298ee8373eb29c6819240caec977f1c08c14d6e9245579fd12108613cb0",
+      "bytes": 38036
+    },
+    {
+      "name": "tools/mxfp4_training/__init__.py",
+      "sha256": "ae369746a798b3ba067012f6dba6df218db0c9547d22786b9589026d1e2047cb",
+      "bytes": 220
+    },
+    {
+      "name": "tools/mxfp4_training/bench_quantize_cuda.py",
+      "sha256": "3748307ea1a25a62e719e6275af6190d8302da0389e4eaf849d36f642fb0a53a",
+      "bytes": 20424
+    },
+    {
+      "name": "tools/mxfp4_training/bench_torch_cuda.py",
+      "sha256": "a7bf192784bdcb3f95542002f706252c98f234ee04b2b8bbedd4ac7a51915ae8",
+      "bytes": 28997
+    },
+    {
+      "name": "tools/mxfp4_training/build_cuda.py",
+      "sha256": "58523660b85219fce702977acbb084d34ac66eaaef4e00273bae2e94d7cf03ff",
+      "bytes": 8371
+    },
+    {
+      "name": "tools/mxfp4_training/check_quantize_cuda.py",
+      "sha256": "baa4323496efc3c8360ef1d697e2843153dd6c985cb17e18aabe5d9ec3147c38",
+      "bytes": 32413
+    },
+    {
+      "name": "tools/mxfp4_training/check_torch_certified.py",
+      "sha256": "eab5d7ffd75b85717bf0fef30a25ae8cbe0fac0c272e9e29065fed84227b1c54",
+      "bytes": 27103
+    },
+    {
+      "name": "tools/mxfp4_training/check_torch_cuda.py",
+      "sha256": "7c6f03690ca9b5f554071f5a2f29c39ac5cb8404cdbf9bb278ed25e0263a4c42",
+      "bytes": 23661
+    },
+    {
+      "name": "tools/mxfp4_training/crater_queue_runner.py",
+      "sha256": "d53282e098400575b499f3e3a82ce0790220b72a3fb62c8a5ae0cd75ade575fb",
+      "bytes": 34285
+    },
+    {
+      "name": "tools/mxfp4_training/crater_remote_run.py",
+      "sha256": "b3cf06196828297325990d1b17473f8fa7afce3899421a28235048d45b2a79e4",
+      "bytes": 19438
+    },
+    {
+      "name": "tools/mxfp4_training/csrc/bench_mxfp4.cu",
+      "sha256": "d07e73cbb50edf3cacabb20e610b278a9cfff33fd5fe3cb289c8589c0493d3fe",
+      "bytes": 47133
+    },
+    {
+      "name": "tools/mxfp4_training/csrc/bench_mxfp4_fused.cu",
+      "sha256": "22dbeb4f13fa981c574ee458ef1ab7138ad522ec23cadf6922b4ce450d54331e",
+      "bytes": 24626
+    },
+    {
+      "name": "tools/mxfp4_training/csrc/check_mxfp4.cu",
+      "sha256": "b6786d69703e150a36d5fdf819334057661ad5558bfecdc00f1e7106fa3f3383",
+      "bytes": 20814
+    },
+    {
+      "name": "tools/mxfp4_training/csrc/check_mxfp4_certified.cu",
+      "sha256": "8757fe1a2917b67e61a969a42c0f9d61d13f301c10f281836dee07084c55ecc6",
+      "bytes": 28655
+    },
+    {
+      "name": "tools/mxfp4_training/csrc/check_mxfp4_half2_decode.cu",
+      "sha256": "40dd036f039c81a80c2ee999bfe3280b1764a20050a827f70a4e43667c9df235",
+      "bytes": 7007
+    },
+    {
+      "name": "tools/mxfp4_training/csrc/mxfp4_gemm.cu",
+      "sha256": "d1902ef6313f82a3a829596b7fd3708f3552363dcee72ab5b400be63ba66d11c",
+      "bytes": 6005
+    },
+    {
+      "name": "tools/mxfp4_training/csrc/mxfp4_gemm.h",
+      "sha256": "083b85365544016f591de46c8e9e0e9ed9db3ad9faba7f771756d50515d753fd",
+      "bytes": 1526
+    },
+    {
+      "name": "tools/mxfp4_training/csrc/mxfp4_gemm_certified.cu",
+      "sha256": "8a9eb15390927b05ea5d9be49ec874a7ccd57750e9816f259da42607a4661e99",
+      "bytes": 31993
+    },
+    {
+      "name": "tools/mxfp4_training/csrc/mxfp4_gemm_certified.h",
+      "sha256": "bb7daa3a2667aea6b844f30a331e951fe028c22f45adebb32e0c12a7c14e5d44",
+      "bytes": 6360
+    },
+    {
+      "name": "tools/mxfp4_training/csrc/mxfp4_gemm_fused.cu",
+      "sha256": "caa87aafe3b0978bfe78bf4f662b4612c5294f099ce07b35f7d5c5ff87de7cb6",
+      "bytes": 43553
+    },
+    {
+      "name": "tools/mxfp4_training/csrc/mxfp4_gemm_fused.h",
+      "sha256": "7e9268a1712b59ece46931fef7a605b8b1b24b36df70d98d058ea2abdcf30541",
+      "bytes": 3887
+    },
+    {
+      "name": "tools/mxfp4_training/csrc/mxfp4_gemm_tiled.cu",
+      "sha256": "be1655e12671bb8940f61f9b519e9199738e598033d248e29c795bccf0861e84",
+      "bytes": 13628
+    },
+    {
+      "name": "tools/mxfp4_training/csrc/mxfp4_gemm_tiled.h",
+      "sha256": "e765ccd49f45a0a4a6a8a9d3ffecbf86dcd37df8685891143af53d78f21a2b3d",
+      "bytes": 4330
+    },
+    {
+      "name": "tools/mxfp4_training/csrc/mxfp4_quantize_rne.cu",
+      "sha256": "cb9e8437a4f310e37cf5ca48eab761bf7bbd8d4effe846f9376ad284f112ca92",
+      "bytes": 6779
+    },
+    {
+      "name": "tools/mxfp4_training/csrc/mxfp4_quantize_rne.h",
+      "sha256": "7d4743a9560c0fb960813a9e2933b372c08d8086a863b48793f4260603892624",
+      "bytes": 2227
+    },
+    {
+      "name": "tools/mxfp4_training/pretrain_smoke.py",
+      "sha256": "d51c92c19ec6c53072c0b98c077cbca5a417f59d5c988f553fda3719ee9d0201",
+      "bytes": 8941
+    },
+    {
+      "name": "tools/mxfp4_training/reference.py",
+      "sha256": "eeba6d661ad051c6caaa9e192d0dbe2c9666369faf31c384b88fc42556b02b8b",
+      "bytes": 10075
+    },
+    {
+      "name": "tools/mxfp4_training/torch_ops.py",
+      "sha256": "37838ea16b34bd4e5f39307b0d9661c47616f0a1a69f9dd2de632b22e86fa400",
+      "bytes": 24204
+    }
+  ]
+}

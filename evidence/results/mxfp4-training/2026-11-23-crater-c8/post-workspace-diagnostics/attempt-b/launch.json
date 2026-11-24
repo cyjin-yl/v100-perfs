@@ -1,0 +1,26 @@
+{
+  "status": "launched",
+  "started_at_utc": "2026-11-23T23:10:39.354662+00:00",
+  "pid": 10447,
+  "proc_start_ticks": "26570070",
+  "uid": 1001,
+  "hostname": "sg-jincy26-261124-4abd5-default0-0",
+  "run_directory": "/workspace/user/mxfp4-post-workspace-diagnostics-v2-20261123T2312",
+  "argv": [
+    "/opt/venv/bin/python3",
+    "-B",
+    "/workspace/user/mxfp4-post-workspace-diagnostics-v2-20261123T2312.py",
+    "--run-directory",
+    "/workspace/user/mxfp4-post-workspace-diagnostics-v2-20261123T2312",
+    "--python",
+    "/opt/venv/bin/python3",
+    "--probe",
+    "/workspace/user/mxfp4-post-workspace-diagnostics-v2-20261123T2312.probe.py"
+  ],
+  "source_commit": "f74de5be95687d75758c1f636ffbd00d6b63d161",
+  "source_archive_sha256": "aa7ac287d389d1e8705fdeef60713bae1927116c85bb7355a52a817e4a806a89",
+  "runner_sha256": "e43a70b44fffa4ec8645a506f2d2b333bda0e783808c087ff757e10bc2554595",
+  "probe_sha256": "8b7f0a9f2b5dbeb6b1f0ceaa0297ab4b0ef10e474a550f5d97f6925a8b33502c",
+  "cache_build": "off",
+  "purpose": "Focused one-C2-pipeline profiling with limited metric catalog; successful immutable prior memcheck reused without reexecution."
+}

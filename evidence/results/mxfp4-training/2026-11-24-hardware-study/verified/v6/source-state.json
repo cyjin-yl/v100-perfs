@@ -1,0 +1,30 @@
+{
+  "sha256": "077953136dd2cf00faabde0ae4bd9910761cedb059f85c44473fe5ede838c251",
+  "bytes": 107138,
+  "source_parent_commit": "8834f6a15b1e866b4b6fe67dcdb8a0d79c4b7e50",
+  "source_files": {
+    "evidence/benchmarks/sm70-packing/study/simulation/round3/cuda/fragment_mapping.hpp": "78ca809cc6606912724982559c31ed82b6141ec74651cf65324015ecd901f4b1",
+    "tools/mxfp4_training/README.md": "0c20fed56633b54e5ab711f6a88aa027e68a65c536766a3363a2c8a9433b09f7",
+    "tools/mxfp4_training/__init__.py": "ae369746a798b3ba067012f6dba6df218db0c9547d22786b9589026d1e2047cb",
+    "tools/mxfp4_training/bench_torch_cuda.py": "9c5cc1d0af1c22b36e1970d329b6f2f08a09564b383e174822340976eb2a26dc",
+    "tools/mxfp4_training/build_cuda.py": "7d0f9038bbb6601895326de6eb64a56828c8f382ba79c8c05968894f5b79c783",
+    "tools/mxfp4_training/check_torch_cuda.py": "7c6f03690ca9b5f554071f5a2f29c39ac5cb8404cdbf9bb278ed25e0263a4c42",
+    "tools/mxfp4_training/crater_queue_runner.py": "d53282e098400575b499f3e3a82ce0790220b72a3fb62c8a5ae0cd75ade575fb",
+    "tools/mxfp4_training/crater_remote_run.py": "9002694a66329a17c4e6e3ee8355660b77fa137f30c794bda1812cec77cb27a0",
+    "tools/mxfp4_training/csrc/bench_mxfp4.cu": "d07e73cbb50edf3cacabb20e610b278a9cfff33fd5fe3cb289c8589c0493d3fe",
+    "tools/mxfp4_training/csrc/bench_mxfp4_fused.cu": "22dbeb4f13fa981c574ee458ef1ab7138ad522ec23cadf6922b4ce450d54331e",
+    "tools/mxfp4_training/csrc/check_mxfp4.cu": "476a24671ac3ac6c9ed28562f9357e570cb50c1a9244533df5cba94c9a701a71",
+    "tools/mxfp4_training/csrc/check_mxfp4_certified.cu": "1d4f4d6139e2c626a0877629fa4a1a30205a985c9847e727d230e370ea22dfbe",
+    "tools/mxfp4_training/csrc/mxfp4_gemm.cu": "d1902ef6313f82a3a829596b7fd3708f3552363dcee72ab5b400be63ba66d11c",
+    "tools/mxfp4_training/csrc/mxfp4_gemm.h": "083b85365544016f591de46c8e9e0e9ed9db3ad9faba7f771756d50515d753fd",
+    "tools/mxfp4_training/csrc/mxfp4_gemm_certified.cu": "462f0601801f588fe7b948b30da87d4d84a6f36bfe42ebb47055099cbdd94dc6",
+    "tools/mxfp4_training/csrc/mxfp4_gemm_certified.h": "4044ab192cbef6879d28f77bcdb7b71d5d97897e51e0dde01c3627975af9388a",
+    "tools/mxfp4_training/csrc/mxfp4_gemm_fused.cu": "b81e780adddcb87b1a548ecda583e1a1e030041c74cf89999ec2270bc7123708",
+    "tools/mxfp4_training/csrc/mxfp4_gemm_fused.h": "34ebe0d912a1e85f975093d81c3dc23feed70a88e0cf48499b26278ba4ad1442",
+    "tools/mxfp4_training/csrc/mxfp4_gemm_tiled.cu": "be1655e12671bb8940f61f9b519e9199738e598033d248e29c795bccf0861e84",
+    "tools/mxfp4_training/csrc/mxfp4_gemm_tiled.h": "e765ccd49f45a0a4a6a8a9d3ffecbf86dcd37df8685891143af53d78f21a2b3d",
+    "tools/mxfp4_training/pretrain_smoke.py": "5498f99f779e091c71b03a82cd48049e45b3bf2fc65c09e195df4a9632f5e1c6",
+    "tools/mxfp4_training/reference.py": "eeba6d661ad051c6caaa9e192d0dbe2c9666369faf31c384b88fc42556b02b8b",
+    "tools/mxfp4_training/torch_ops.py": "cdc8fa7ffbf63546f12427cada352048d1d438af219037b9cc2105be199f1487"
+  }
+}

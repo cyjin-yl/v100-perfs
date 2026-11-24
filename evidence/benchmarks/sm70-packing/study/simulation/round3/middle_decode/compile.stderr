@@ -1,0 +1,27 @@
+nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+ptxas info    : 0 bytes gmem
+ptxas info    : Compiling entry function 'middle_shift_integer_output' for 'sm_70'
+ptxas info    : Function properties for middle_shift_integer_output
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 10 registers, used 0 barriers, 372 bytes cmem[0]
+ptxas info    : Compile time = 2.269 ms
+ptxas info    : Compiling entry function 'middle_bfe_integer_output' for 'sm_70'
+ptxas info    : Function properties for middle_bfe_integer_output
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 10 registers, used 0 barriers, 372 bytes cmem[0]
+ptxas info    : Compile time = 0.837 ms
+ptxas info    : Compiling entry function 'middle_shift_float_output' for 'sm_70'
+ptxas info    : Function properties for middle_shift_float_output
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 10 registers, used 0 barriers, 372 bytes cmem[0]
+ptxas info    : Compile time = 0.846 ms
+ptxas info    : Compiling entry function 'middle_bfe_float_output' for 'sm_70'
+ptxas info    : Function properties for middle_bfe_float_output
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 10 registers, used 0 barriers, 372 bytes cmem[0]
+ptxas info    : Compile time = 0.829 ms
+ptxas info    : Compiling entry function 'middle_float_output' for 'sm_70'
+ptxas info    : Function properties for middle_float_output
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 12 registers, used 0 barriers, 372 bytes cmem[0]
+ptxas info    : Compile time = 0.969 ms

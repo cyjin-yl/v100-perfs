@@ -1,0 +1,199 @@
+{
+  "gpu_executed": false,
+  "cuobjdump_returncode": 0,
+  "library_sha256": "d6917ae08edb45d2242f05126e6298dca63dd9366ec0c8b59d447bc9ac358690",
+  "kernels": [
+    {
+      "name": "_ZN52_GLOBAL__N__b531b9bb_19_mxfp4_gemm_fused_cu_da86c26215fused_certifiedIlLb1ELi128ELi128ELi64ELi256ELi32ELi64EEEvPKhS2_S2_S2_PfT_S4_S4_S2_PKiS4_",
+      "hmma_instruction_lines": 512,
+      "sample": [
+        "/*37e0*/                   HMMA.884.F32.F32.STEP0 R48, R84.reuse.ROW, R82.reuse.COL, R48 ;  /* 0x0000005254307236 */",
+        "/*37f0*/                   HMMA.884.F32.F32.STEP1 R50, R84.reuse.ROW, R82.reuse.COL, R50 ;  /* 0x0000005254327236 */",
+        "/*3800*/                   HMMA.884.F32.F32.STEP2 R52, R84.reuse.ROW, R82.reuse.COL, R52 ;  /* 0x0000005254347236 */",
+        "/*3810*/                   HMMA.884.F32.F32.STEP3 R54, R84.reuse.ROW, R82.COL, R54 ;        /* 0x0000005254367236 */",
+        "/*3820*/                   HMMA.884.F32.F32.STEP0 R56, R84.reuse.ROW, R80.reuse.COL, R56 ;  /* 0x0000005054387236 */",
+        "/*3830*/                   HMMA.884.F32.F32.STEP1 R58, R84.reuse.ROW, R80.reuse.COL, R58 ;  /* 0x00000050543a7236 */",
+        "/*3840*/                   HMMA.884.F32.F32.STEP2 R60, R84.reuse.ROW, R80.reuse.COL, R60 ;  /* 0x00000050543c7236 */",
+        "/*3850*/                   HMMA.884.F32.F32.STEP3 R62, R84.reuse.ROW, R80.COL, R62 ;        /* 0x00000050543e7236 */"
+      ],
+      "ldl_lines": 0,
+      "stl_lines": 0
+    },
+    {
+      "name": "_ZN52_GLOBAL__N__b531b9bb_19_mxfp4_gemm_fused_cu_da86c26215fused_certifiedIlLb0ELi128ELi128ELi64ELi256ELi32ELi64EEEvPKhS2_S2_S2_PfT_S4_S4_S2_PKiS4_",
+      "hmma_instruction_lines": 512,
+      "sample": [
+        "/*4820*/                   HMMA.884.F32.F32.STEP0 R48, R84.reuse.ROW, R82.reuse.COL, R48 ;  /* 0x0000005254307236 */",
+        "/*4830*/                   HMMA.884.F32.F32.STEP1 R50, R84.reuse.ROW, R82.reuse.COL, R50 ;  /* 0x0000005254327236 */",
+        "/*4840*/                   HMMA.884.F32.F32.STEP2 R52, R84.reuse.ROW, R82.reuse.COL, R52 ;  /* 0x0000005254347236 */",
+        "/*4850*/                   HMMA.884.F32.F32.STEP3 R54, R84.reuse.ROW, R82.COL, R54 ;        /* 0x0000005254367236 */",
+        "/*4860*/                   HMMA.884.F32.F32.STEP0 R56, R84.reuse.ROW, R80.reuse.COL, R56 ;  /* 0x0000005054387236 */",
+        "/*4870*/                   HMMA.884.F32.F32.STEP1 R58, R84.reuse.ROW, R80.reuse.COL, R58 ;  /* 0x00000050543a7236 */",
+        "/*4880*/                   HMMA.884.F32.F32.STEP2 R60, R84.reuse.ROW, R80.reuse.COL, R60 ;  /* 0x00000050543c7236 */",
+        "/*4890*/                   HMMA.884.F32.F32.STEP3 R62, R84.reuse.ROW, R80.COL, R62 ;        /* 0x00000050543e7236 */"
+      ],
+      "ldl_lines": 0,
+      "stl_lines": 0
+    },
+    {
+      "name": "_ZN52_GLOBAL__N__b531b9bb_19_mxfp4_gemm_fused_cu_da86c26215fused_certifiedIlLb1ELi128ELi128ELi32ELi256ELi32ELi64EEEvPKhS2_S2_S2_PfT_S4_S4_S2_PKiS4_",
+      "hmma_instruction_lines": 256,
+      "sample": [
+        "/*4650*/                   HMMA.884.F32.F32.STEP0 R64, R76.reuse.ROW, R86.reuse.COL, R64 ;  /* 0x000000564c407236 */",
+        "/*4660*/                   HMMA.884.F32.F32.STEP1 R66, R76.reuse.ROW, R86.reuse.COL, R66 ;  /* 0x000000564c427236 */",
+        "/*4670*/                   HMMA.884.F32.F32.STEP2 R60, R76.reuse.ROW, R86.reuse.COL, R60 ;  /* 0x000000564c3c7236 */",
+        "/*4680*/                   HMMA.884.F32.F32.STEP3 R62, R76.reuse.ROW, R86.COL, R62 ;        /* 0x000000564c3e7236 */",
+        "/*4690*/                   HMMA.884.F32.F32.STEP0 R56, R76.reuse.ROW, R82.reuse.COL, R56 ;  /* 0x000000524c387236 */",
+        "/*46a0*/                   HMMA.884.F32.F32.STEP1 R58, R76.reuse.ROW, R82.reuse.COL, R58 ;  /* 0x000000524c3a7236 */",
+        "/*46b0*/                   HMMA.884.F32.F32.STEP2 R52, R76.reuse.ROW, R82.reuse.COL, R52 ;  /* 0x000000524c347236 */",
+        "/*46c0*/                   HMMA.884.F32.F32.STEP3 R54, R76.reuse.ROW, R82.COL, R54 ;        /* 0x000000524c367236 */"
+      ],
+      "ldl_lines": 0,
+      "stl_lines": 0
+    },
+    {
+      "name": "_ZN52_GLOBAL__N__b531b9bb_19_mxfp4_gemm_fused_cu_da86c26215fused_certifiedIlLb0ELi128ELi128ELi32ELi256ELi32ELi64EEEvPKhS2_S2_S2_PfT_S4_S4_S2_PKiS4_",
+      "hmma_instruction_lines": 256,
+      "sample": [
+        "/*42f0*/                   HMMA.884.F32.F32.STEP0 R64, R76.reuse.ROW, R86.reuse.COL, R64 ;  /* 0x000000564c407236 */",
+        "/*4300*/                   HMMA.884.F32.F32.STEP1 R66, R76.reuse.ROW, R86.reuse.COL, R66 ;  /* 0x000000564c427236 */",
+        "/*4310*/                   HMMA.884.F32.F32.STEP2 R60, R76.reuse.ROW, R86.reuse.COL, R60 ;  /* 0x000000564c3c7236 */",
+        "/*4320*/                   HMMA.884.F32.F32.STEP3 R62, R76.reuse.ROW, R86.COL, R62 ;        /* 0x000000564c3e7236 */",
+        "/*4330*/                   HMMA.884.F32.F32.STEP0 R56, R76.reuse.ROW, R82.reuse.COL, R56 ;  /* 0x000000524c387236 */",
+        "/*4340*/                   HMMA.884.F32.F32.STEP1 R58, R76.reuse.ROW, R82.reuse.COL, R58 ;  /* 0x000000524c3a7236 */",
+        "/*4350*/                   HMMA.884.F32.F32.STEP2 R52, R76.reuse.ROW, R82.reuse.COL, R52 ;  /* 0x000000524c347236 */",
+        "/*4360*/                   HMMA.884.F32.F32.STEP3 R54, R76.reuse.ROW, R82.COL, R54 ;        /* 0x000000524c367236 */"
+      ],
+      "ldl_lines": 0,
+      "stl_lines": 0
+    },
+    {
+      "name": "_ZN52_GLOBAL__N__b531b9bb_19_mxfp4_gemm_fused_cu_da86c26215fused_certifiedIlLb1ELi64ELi64ELi64ELi128ELi32ELi32EEEvPKhS2_S2_S2_PfT_S4_S4_S2_PKiS4_",
+      "hmma_instruction_lines": 256,
+      "sample": [
+        "/*35e0*/                   HMMA.884.F32.F32.STEP0 R28, R26.reuse.ROW, R18.reuse.COL, R28 ;  /* 0x000000121a1c7236 */",
+        "/*3600*/                   HMMA.884.F32.F32.STEP1 R30, R26.reuse.ROW, R18.reuse.COL, R30 ;  /* 0x000000121a1e7236 */",
+        "/*3610*/                   HMMA.884.F32.F32.STEP2 R32, R26.reuse.ROW, R18.reuse.COL, R32 ;  /* 0x000000121a207236 */",
+        "/*3620*/                   HMMA.884.F32.F32.STEP3 R34, R26.reuse.ROW, R18.COL, R34 ;        /* 0x000000121a227236 */",
+        "/*3630*/                   HMMA.884.F32.F32.STEP0 R36, R26.reuse.ROW, R8.reuse.COL, R36 ;   /* 0x000000081a247236 */",
+        "/*3640*/                   HMMA.884.F32.F32.STEP1 R38, R26.reuse.ROW, R8.reuse.COL, R38 ;   /* 0x000000081a267236 */",
+        "/*3650*/                   HMMA.884.F32.F32.STEP2 R24, R26.reuse.ROW, R8.reuse.COL, R4 ;    /* 0x000000081a187236 */",
+        "/*3660*/                   HMMA.884.F32.F32.STEP3 R26, R26.ROW, R8.COL, R6 ;                /* 0x000000081a1a7236 */"
+      ],
+      "ldl_lines": 0,
+      "stl_lines": 0
+    },
+    {
+      "name": "_ZN52_GLOBAL__N__b531b9bb_19_mxfp4_gemm_fused_cu_da86c26215fused_certifiedIlLb0ELi64ELi64ELi64ELi128ELi32ELi32EEEvPKhS2_S2_S2_PfT_S4_S4_S2_PKiS4_",
+      "hmma_instruction_lines": 256,
+      "sample": [
+        "/*4620*/                   HMMA.884.F32.F32.STEP0 R28, R26.reuse.ROW, R18.reuse.COL, R28 ;  /* 0x000000121a1c7236 */",
+        "/*4640*/                   HMMA.884.F32.F32.STEP1 R30, R26.reuse.ROW, R18.reuse.COL, R30 ;  /* 0x000000121a1e7236 */",
+        "/*4650*/                   HMMA.884.F32.F32.STEP2 R32, R26.reuse.ROW, R18.reuse.COL, R32 ;  /* 0x000000121a207236 */",
+        "/*4660*/                   HMMA.884.F32.F32.STEP3 R34, R26.reuse.ROW, R18.COL, R34 ;        /* 0x000000121a227236 */",
+        "/*4670*/                   HMMA.884.F32.F32.STEP0 R36, R26.reuse.ROW, R8.reuse.COL, R36 ;   /* 0x000000081a247236 */",
+        "/*4680*/                   HMMA.884.F32.F32.STEP1 R38, R26.reuse.ROW, R8.reuse.COL, R38 ;   /* 0x000000081a267236 */",
+        "/*4690*/                   HMMA.884.F32.F32.STEP2 R24, R26.reuse.ROW, R8.reuse.COL, R4 ;    /* 0x000000081a187236 */",
+        "/*46a0*/                   HMMA.884.F32.F32.STEP3 R26, R26.ROW, R8.COL, R6 ;                /* 0x000000081a1a7236 */"
+      ],
+      "ldl_lines": 0,
+      "stl_lines": 0
+    },
+    {
+      "name": "_ZN52_GLOBAL__N__b531b9bb_19_mxfp4_gemm_fused_cu_da86c26215fused_certifiedIiLb1ELi128ELi128ELi64ELi256ELi32ELi64EEEvPKhS2_S2_S2_PfT_S4_S4_S2_PKiS4_",
+      "hmma_instruction_lines": 512,
+      "sample": [
+        "/*3030*/                   HMMA.884.F32.F32.STEP0 R48, R84.reuse.ROW, R82.reuse.COL, R48 ;  /* 0x0000005254307236 */",
+        "/*3040*/                   HMMA.884.F32.F32.STEP1 R50, R84.reuse.ROW, R82.reuse.COL, R50 ;  /* 0x0000005254327236 */",
+        "/*3050*/                   HMMA.884.F32.F32.STEP2 R52, R84.reuse.ROW, R82.reuse.COL, R52 ;  /* 0x0000005254347236 */",
+        "/*3060*/                   HMMA.884.F32.F32.STEP3 R54, R84.reuse.ROW, R82.COL, R54 ;        /* 0x0000005254367236 */",
+        "/*3070*/                   HMMA.884.F32.F32.STEP0 R56, R84.reuse.ROW, R80.reuse.COL, R56 ;  /* 0x0000005054387236 */",
+        "/*3080*/                   HMMA.884.F32.F32.STEP1 R58, R84.reuse.ROW, R80.reuse.COL, R58 ;  /* 0x00000050543a7236 */",
+        "/*3090*/                   HMMA.884.F32.F32.STEP2 R60, R84.reuse.ROW, R80.reuse.COL, R60 ;  /* 0x00000050543c7236 */",
+        "/*30a0*/                   HMMA.884.F32.F32.STEP3 R62, R84.reuse.ROW, R80.COL, R62 ;        /* 0x00000050543e7236 */"
+      ],
+      "ldl_lines": 0,
+      "stl_lines": 0
+    },
+    {
+      "name": "_ZN52_GLOBAL__N__b531b9bb_19_mxfp4_gemm_fused_cu_da86c26215fused_certifiedIiLb0ELi128ELi128ELi64ELi256ELi32ELi64EEEvPKhS2_S2_S2_PfT_S4_S4_S2_PKiS4_",
+      "hmma_instruction_lines": 512,
+      "sample": [
+        "/*4000*/                   HMMA.884.F32.F32.STEP0 R48, R84.reuse.ROW, R82.reuse.COL, R48 ;  /* 0x0000005254307236 */",
+        "/*4010*/                   HMMA.884.F32.F32.STEP1 R50, R84.reuse.ROW, R82.reuse.COL, R50 ;  /* 0x0000005254327236 */",
+        "/*4020*/                   HMMA.884.F32.F32.STEP2 R52, R84.reuse.ROW, R82.reuse.COL, R52 ;  /* 0x0000005254347236 */",
+        "/*4030*/                   HMMA.884.F32.F32.STEP3 R54, R84.reuse.ROW, R82.COL, R54 ;        /* 0x0000005254367236 */",
+        "/*4040*/                   HMMA.884.F32.F32.STEP0 R56, R84.reuse.ROW, R80.reuse.COL, R56 ;  /* 0x0000005054387236 */",
+        "/*4050*/                   HMMA.884.F32.F32.STEP1 R58, R84.reuse.ROW, R80.reuse.COL, R58 ;  /* 0x00000050543a7236 */",
+        "/*4060*/                   HMMA.884.F32.F32.STEP2 R60, R84.reuse.ROW, R80.reuse.COL, R60 ;  /* 0x00000050543c7236 */",
+        "/*4070*/                   HMMA.884.F32.F32.STEP3 R62, R84.reuse.ROW, R80.COL, R62 ;        /* 0x00000050543e7236 */"
+      ],
+      "ldl_lines": 0,
+      "stl_lines": 0
+    },
+    {
+      "name": "_ZN52_GLOBAL__N__b531b9bb_19_mxfp4_gemm_fused_cu_da86c26215fused_certifiedIiLb1ELi128ELi128ELi32ELi256ELi32ELi64EEEvPKhS2_S2_S2_PfT_S4_S4_S2_PKiS4_",
+      "hmma_instruction_lines": 256,
+      "sample": [
+        "/*3f60*/                   HMMA.884.F32.F32.STEP0 R64, R82.reuse.ROW, R80.reuse.COL, R64 ;  /* 0x0000005052407236 */",
+        "/*3f70*/                   HMMA.884.F32.F32.STEP1 R66, R82.reuse.ROW, R80.reuse.COL, R66 ;  /* 0x0000005052427236 */",
+        "/*3f80*/                   HMMA.884.F32.F32.STEP2 R60, R82.reuse.ROW, R80.reuse.COL, R60 ;  /* 0x00000050523c7236 */",
+        "/*3f90*/                   HMMA.884.F32.F32.STEP3 R62, R82.reuse.ROW, R80.COL, R62 ;        /* 0x00000050523e7236 */",
+        "/*3fa0*/                   HMMA.884.F32.F32.STEP0 R56, R82.reuse.ROW, R74.reuse.COL, R56 ;  /* 0x0000004a52387236 */",
+        "/*3fb0*/                   HMMA.884.F32.F32.STEP1 R58, R82.reuse.ROW, R74.reuse.COL, R58 ;  /* 0x0000004a523a7236 */",
+        "/*3fc0*/                   HMMA.884.F32.F32.STEP2 R52, R82.reuse.ROW, R74.reuse.COL, R52 ;  /* 0x0000004a52347236 */",
+        "/*3fd0*/                   HMMA.884.F32.F32.STEP3 R54, R82.reuse.ROW, R74.COL, R54 ;        /* 0x0000004a52367236 */"
+      ],
+      "ldl_lines": 0,
+      "stl_lines": 0
+    },
+    {
+      "name": "_ZN52_GLOBAL__N__b531b9bb_19_mxfp4_gemm_fused_cu_da86c26215fused_certifiedIiLb0ELi128ELi128ELi32ELi256ELi32ELi64EEEvPKhS2_S2_S2_PfT_S4_S4_S2_PKiS4_",
+      "hmma_instruction_lines": 256,
+      "sample": [
+        "/*3c60*/                   HMMA.884.F32.F32.STEP0 R64, R82.reuse.ROW, R80.reuse.COL, R64 ;  /* 0x0000005052407236 */",
+        "/*3c70*/                   HMMA.884.F32.F32.STEP1 R66, R82.reuse.ROW, R80.reuse.COL, R66 ;  /* 0x0000005052427236 */",
+        "/*3c80*/                   HMMA.884.F32.F32.STEP2 R60, R82.reuse.ROW, R80.reuse.COL, R60 ;  /* 0x00000050523c7236 */",
+        "/*3c90*/                   HMMA.884.F32.F32.STEP3 R62, R82.reuse.ROW, R80.COL, R62 ;        /* 0x00000050523e7236 */",
+        "/*3ca0*/                   HMMA.884.F32.F32.STEP0 R56, R82.reuse.ROW, R74.reuse.COL, R56 ;  /* 0x0000004a52387236 */",
+        "/*3cb0*/                   HMMA.884.F32.F32.STEP1 R58, R82.reuse.ROW, R74.reuse.COL, R58 ;  /* 0x0000004a523a7236 */",
+        "/*3cc0*/                   HMMA.884.F32.F32.STEP2 R52, R82.reuse.ROW, R74.reuse.COL, R52 ;  /* 0x0000004a52347236 */",
+        "/*3cd0*/                   HMMA.884.F32.F32.STEP3 R54, R82.reuse.ROW, R74.COL, R54 ;        /* 0x0000004a52367236 */"
+      ],
+      "ldl_lines": 0,
+      "stl_lines": 0
+    },
+    {
+      "name": "_ZN52_GLOBAL__N__b531b9bb_19_mxfp4_gemm_fused_cu_da86c26215fused_certifiedIiLb1ELi64ELi64ELi64ELi128ELi32ELi32EEEvPKhS2_S2_S2_PfT_S4_S4_S2_PKiS4_",
+      "hmma_instruction_lines": 256,
+      "sample": [
+        "/*2e30*/                   HMMA.884.F32.F32.STEP0 R32, R4.reuse.ROW, R12.reuse.COL, R32 ;   /* 0x0000000c04207236 */",
+        "/*2e50*/                   HMMA.884.F32.F32.STEP1 R34, R4.reuse.ROW, R12.reuse.COL, R34 ;   /* 0x0000000c04227236 */",
+        "/*2e60*/                   HMMA.884.F32.F32.STEP2 R36, R4.reuse.ROW, R12.reuse.COL, R36 ;   /* 0x0000000c04247236 */",
+        "/*2e80*/                   HMMA.884.F32.F32.STEP3 R38, R4.reuse.ROW, R12.COL, R38 ;         /* 0x0000000c04267236 */",
+        "/*2e90*/                   HMMA.884.F32.F32.STEP0 R28, R4.reuse.ROW, R6.reuse.COL, R28 ;    /* 0x00000006041c7236 */",
+        "/*2ea0*/                   HMMA.884.F32.F32.STEP1 R30, R4.reuse.ROW, R6.reuse.COL, R30 ;    /* 0x00000006041e7236 */",
+        "/*2eb0*/                   HMMA.884.F32.F32.STEP2 R40, R4.reuse.ROW, R6.reuse.COL, R40 ;    /* 0x0000000604287236 */",
+        "/*2ec0*/                   HMMA.884.F32.F32.STEP3 R42, R4.ROW, R6.COL, R42 ;                /* 0x00000006042a7236 */"
+      ],
+      "ldl_lines": 0,
+      "stl_lines": 0
+    },
+    {
+      "name": "_ZN52_GLOBAL__N__b531b9bb_19_mxfp4_gemm_fused_cu_da86c26215fused_certifiedIiLb0ELi64ELi64ELi64ELi128ELi32ELi32EEEvPKhS2_S2_S2_PfT_S4_S4_S2_PKiS4_",
+      "hmma_instruction_lines": 256,
+      "sample": [
+        "/*3e00*/                   HMMA.884.F32.F32.STEP0 R32, R4.reuse.ROW, R12.reuse.COL, R32 ;   /* 0x0000000c04207236 */",
+        "/*3e20*/                   HMMA.884.F32.F32.STEP1 R34, R4.reuse.ROW, R12.reuse.COL, R34 ;   /* 0x0000000c04227236 */",
+        "/*3e30*/                   HMMA.884.F32.F32.STEP2 R36, R4.reuse.ROW, R12.reuse.COL, R36 ;   /* 0x0000000c04247236 */",
+        "/*3e50*/                   HMMA.884.F32.F32.STEP3 R38, R4.reuse.ROW, R12.COL, R38 ;         /* 0x0000000c04267236 */",
+        "/*3e60*/                   HMMA.884.F32.F32.STEP0 R28, R4.reuse.ROW, R6.reuse.COL, R28 ;    /* 0x00000006041c7236 */",
+        "/*3e70*/                   HMMA.884.F32.F32.STEP1 R30, R4.reuse.ROW, R6.reuse.COL, R30 ;    /* 0x00000006041e7236 */",
+        "/*3e80*/                   HMMA.884.F32.F32.STEP2 R40, R4.reuse.ROW, R6.reuse.COL, R40 ;    /* 0x0000000604287236 */",
+        "/*3e90*/                   HMMA.884.F32.F32.STEP3 R42, R4.ROW, R6.COL, R42 ;                /* 0x00000006042a7236 */"
+      ],
+      "ldl_lines": 0,
+      "stl_lines": 0
+    }
+  ]
+}

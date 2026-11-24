@@ -1,0 +1,38 @@
+import concurrent.futures,json,subprocess,time,traceback,hashlib
+from pathlib import Path
+root=Path("/tmp/v100-mxfp4-fused-3cc0562b0106/v1")
+record={"schema_version":1,"source_archive_sha256":"db2cf811a5cb07531109a50d315fcd653c4bbdda508855bfb6297d42e38d3bf6","jobs":[],"started_at_utc":time.strftime("%Y-%m-%dT%H:%M:%SZ",time.gmtime()),"completed":False}
+def save():
+ (root/"driver-state.json").write_text(json.dumps(record,indent=2)+"\n")
+def build(v):
+ out=root/("build-c"+str(v));out.mkdir(exist_ok=True)
+ cmd=["python3",str(root/"tools/mxfp4_training/build_cuda.py"),"--nvcc","/usr/local/cuda-12.9/bin/nvcc","--output-dir",str(out),"--with-certified","--with-benchmark","--tiled-variant","1","--certified-variant",str(v)]
+ start=time.monotonic()
+ with (out/"driver-build.stdout").open("w") as so,(out/"driver-build.stderr").open("w") as se:
+  try:r=subprocess.run(cmd,stdout=so,stderr=se,timeout=900);rc=r.returncode
+  except subprocess.TimeoutExpired:rc=124
+ return dict(stage="build",variant=v,returncode=rc,seconds=time.monotonic()-start,argv=cmd)
+try:
+ save()
+ with concurrent.futures.ThreadPoolExecutor(max_workers=2) as pool:
+  for item in pool.map(build,[2,3,4,5]):
+   record["jobs"].append(item);save()
+ for v in [2,3,4,5]:
+  if not any(x["variant"]==v and x["returncode"]==0 for x in record["jobs"]):continue
+  out=root/("build-c"+str(v))
+  cmd=[str(out/"check_mxfp4_certified"),"--device","0","--correctness-only","--reserve-mib","64"]
+  with (out/"correctness.jsonl").open("w") as so,(out/"correctness.stderr").open("w") as se:
+   try:r=subprocess.run(cmd,stdout=so,stderr=se,timeout=180);rc=r.returncode
+   except subprocess.TimeoutExpired:rc=124
+  record["jobs"].append(dict(stage="correctness",variant=v,returncode=rc,argv=cmd));save()
+  if rc:continue
+  cmd=[str(out/"bench_mxfp4"),"--device","0","--m","2048","--n","2048","--k","2048","--mode","random_block_scales","--iters","10","--rounds","5","--warmup","3","--max-mib","64","--reserve-mib","64"]
+  with (out/"varied-2048.jsonl").open("w") as so,(out/"varied-2048.stderr").open("w") as se:
+   try:r=subprocess.run(cmd,stdout=so,stderr=se,timeout=300);rc=r.returncode
+   except subprocess.TimeoutExpired:rc=124
+  record["jobs"].append(dict(stage="benchmark",variant=v,returncode=rc,argv=cmd));save()
+ record["completed"]=True
+except Exception as exc:
+ record["error"]=str(exc);record["traceback"]=traceback.format_exc()
+finally:
+ record["finished_at_utc"]=time.strftime("%Y-%m-%dT%H:%M:%SZ",time.gmtime());save()

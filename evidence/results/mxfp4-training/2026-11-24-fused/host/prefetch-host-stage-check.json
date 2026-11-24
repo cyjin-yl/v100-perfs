@@ -1,0 +1,230 @@
+{
+  "passed": true,
+  "gpu_executed": false,
+  "cuda_compilation_executed": false,
+  "original_kernel_and_helpers_byte_unchanged": true,
+  "new_epilogue_matches_old_BK32": true,
+  "stage_group_comparisons": 430080,
+  "valid_raw_groups_loaded": 223776,
+  "shape_cases": 24,
+  "source_sha256": "da23760c6fbc2141dd77060c3cbac4ad7d37fcafb09b604d2de96017fbe82923",
+  "header_sha256": "71787df5949fd16d5de3dcc02e014119489f685ca7620286a4cd9d84f8041229",
+  "cases": [
+    {
+      "shape": [
+        128,
+        128,
+        0
+      ],
+      "stage_group_comparisons": 0,
+      "valid_raw_groups_loaded": 0
+    },
+    {
+      "shape": [
+        128,
+        128,
+        32
+      ],
+      "stage_group_comparisons": 2048,
+      "valid_raw_groups_loaded": 2048
+    },
+    {
+      "shape": [
+        128,
+        128,
+        64
+      ],
+      "stage_group_comparisons": 4096,
+      "valid_raw_groups_loaded": 4096
+    },
+    {
+      "shape": [
+        128,
+        128,
+        96
+      ],
+      "stage_group_comparisons": 6144,
+      "valid_raw_groups_loaded": 6144
+    },
+    {
+      "shape": [
+        128,
+        128,
+        192
+      ],
+      "stage_group_comparisons": 12288,
+      "valid_raw_groups_loaded": 12288
+    },
+    {
+      "shape": [
+        128,
+        128,
+        288
+      ],
+      "stage_group_comparisons": 18432,
+      "valid_raw_groups_loaded": 18432
+    },
+    {
+      "shape": [
+        129,
+        131,
+        0
+      ],
+      "stage_group_comparisons": 0,
+      "valid_raw_groups_loaded": 0
+    },
+    {
+      "shape": [
+        129,
+        131,
+        32
+      ],
+      "stage_group_comparisons": 8192,
+      "valid_raw_groups_loaded": 4160
+    },
+    {
+      "shape": [
+        129,
+        131,
+        64
+      ],
+      "stage_group_comparisons": 16384,
+      "valid_raw_groups_loaded": 8320
+    },
+    {
+      "shape": [
+        129,
+        131,
+        96
+      ],
+      "stage_group_comparisons": 24576,
+      "valid_raw_groups_loaded": 12480
+    },
+    {
+      "shape": [
+        129,
+        131,
+        192
+      ],
+      "stage_group_comparisons": 49152,
+      "valid_raw_groups_loaded": 24960
+    },
+    {
+      "shape": [
+        129,
+        131,
+        288
+      ],
+      "stage_group_comparisons": 73728,
+      "valid_raw_groups_loaded": 37440
+    },
+    {
+      "shape": [
+        131,
+        129,
+        0
+      ],
+      "stage_group_comparisons": 0,
+      "valid_raw_groups_loaded": 0
+    },
+    {
+      "shape": [
+        131,
+        129,
+        32
+      ],
+      "stage_group_comparisons": 8192,
+      "valid_raw_groups_loaded": 4160
+    },
+    {
+      "shape": [
+        131,
+        129,
+        64
+      ],
+      "stage_group_comparisons": 16384,
+      "valid_raw_groups_loaded": 8320
+    },
+    {
+      "shape": [
+        131,
+        129,
+        96
+      ],
+      "stage_group_comparisons": 24576,
+      "valid_raw_groups_loaded": 12480
+    },
+    {
+      "shape": [
+        131,
+        129,
+        192
+      ],
+      "stage_group_comparisons": 49152,
+      "valid_raw_groups_loaded": 24960
+    },
+    {
+      "shape": [
+        131,
+        129,
+        288
+      ],
+      "stage_group_comparisons": 73728,
+      "valid_raw_groups_loaded": 37440
+    },
+    {
+      "shape": [
+        17,
+        19,
+        0
+      ],
+      "stage_group_comparisons": 0,
+      "valid_raw_groups_loaded": 0
+    },
+    {
+      "shape": [
+        17,
+        19,
+        32
+      ],
+      "stage_group_comparisons": 2048,
+      "valid_raw_groups_loaded": 288
+    },
+    {
+      "shape": [
+        17,
+        19,
+        64
+      ],
+      "stage_group_comparisons": 4096,
+      "valid_raw_groups_loaded": 576
+    },
+    {
+      "shape": [
+        17,
+        19,
+        96
+      ],
+      "stage_group_comparisons": 6144,
+      "valid_raw_groups_loaded": 864
+    },
+    {
+      "shape": [
+        17,
+        19,
+        192
+      ],
+      "stage_group_comparisons": 12288,
+      "valid_raw_groups_loaded": 1728
+    },
+    {
+      "shape": [
+        17,
+        19,
+        288
+      ],
+      "stage_group_comparisons": 18432,
+      "valid_raw_groups_loaded": 2592
+    }
+  ]
+}

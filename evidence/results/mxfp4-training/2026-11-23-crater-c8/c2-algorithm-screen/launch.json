@@ -1,0 +1,23 @@
+{
+  "phase": "launched",
+  "argv": [
+    "timeout",
+    "--signal=TERM",
+    "--kill-after=20s",
+    "5460s",
+    "/opt/venv/bin/python3",
+    "-B",
+    "/workspace/user/mxfp4-c2-algorithm-20261123T2145/controller.py"
+  ],
+  "candidate_sha256": {
+    "candidate.py": "e2229c8d04b6a9e6ffd32d72bca3dfe5104015e69aafb591d600ad236db43239",
+    "bench_c2_algorithms.cu": "ab55fc59c1f10d392d1d867a1a366b66ec159eabc3f58689f0e2069084c221ab",
+    "README.md": "41680ef106ea64ead4c3bd438c1f6e6afd458545a6f97cf20cd3750e81842b2f",
+    "controller.py": "d58b6399686b8444dc2c01f305502d397c0856e9434362284b18c7b5e9da05d8"
+  },
+  "created_at_utc": "2026-11-23T21:41:35.535263+00:00",
+  "node_uid": 1001,
+  "pid": 6731,
+  "starttime": 26035689,
+  "launched_at_utc": "2026-11-23T21:41:35.537482+00:00"
+}

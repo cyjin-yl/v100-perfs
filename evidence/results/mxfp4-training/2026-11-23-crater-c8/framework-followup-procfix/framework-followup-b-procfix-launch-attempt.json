@@ -1,0 +1,8 @@
+{
+  "started_utc": "2026-11-23T21:15:11.032876+00:00",
+  "job": "sg-jincy26-261124-4abd5",
+  "helper_sha256": "2046ca0b52d0f52fa9baaf565be92fe899a5ac165da3970eaa583902eee0197b",
+  "remote_script": "/workspace/user/mxfp4-framework-followup-b-20261123T2115-procfix.py",
+  "remote_run_directory": "/workspace/user/mxfp4-framework-followup-b-20261123T2115-procfix",
+  "native_root": "/workspace/user/mxfp4-sg-jincy26-261124-4abd5-20261123T204443Z-9fb4ed47"
+}

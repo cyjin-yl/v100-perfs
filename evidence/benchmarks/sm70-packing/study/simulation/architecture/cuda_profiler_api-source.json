@@ -1,0 +1,7 @@
+{
+  "url": "https://developer.download.nvidia.com/compute/cuda/redist/cuda_profiler_api/linux-x86_64/cuda_profiler_api-linux-x86_64-12.8.90-archive.tar.xz",
+  "relative_path": "cuda_profiler_api/linux-x86_64/cuda_profiler_api-linux-x86_64-12.8.90-archive.tar.xz",
+  "sha256": "f97b3779e909caa5edf56606432ec1dd3173a5d3d503ef39f367467dbdb006b7",
+  "md5": "8f6091bdda231439cad0182ea65d730e",
+  "size": "16180"
+}

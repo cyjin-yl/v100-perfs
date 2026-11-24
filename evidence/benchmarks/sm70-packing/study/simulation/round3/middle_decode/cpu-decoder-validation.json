@@ -1,0 +1,27 @@
+{
+  "scope": "CPU decoder identities, conservative coefficient box",
+  "gpu_executed": false,
+  "cycle_simulation": false,
+  "coefficient_ranges": {
+    "high": [
+      -108,
+      108
+    ],
+    "target": [
+      -216,
+      216
+    ],
+    "low_plus_error": [
+      -126,
+      126
+    ]
+  },
+  "fp32_integer_exact_input_required": true,
+  "full_cartesian_combinations": 23772133,
+  "admitted": 18916471,
+  "nonrepresentable_rejected": 4855662,
+  "shift_errors": 0,
+  "bfe_errors": 0,
+  "float_errors": 0,
+  "passed": true
+}

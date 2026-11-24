@@ -1,0 +1,16 @@
+{
+  "source_commit": "80d3a7c2bb0bb551a34b28bd7fda59978b6304ef",
+  "source_sha256": "62378914e2b6ad7e34e3dd70736cb90aea07c962963494d97062d5f5738b0f57",
+  "bytes": 108219,
+  "changed_members_from_attempt_a": [
+    "tools/mxfp4_training/README.md",
+    "tools/mxfp4_training/csrc/check_mxfp4.cu"
+  ],
+  "change_notes": {
+    "tools/mxfp4_training/README.md": "Previously published recovery status at 2f33d47",
+    "tools/mxfp4_training/csrc/check_mxfp4.cu": "Explicit element type for the identical eight shape/seed fixtures"
+  },
+  "remote_script_sha256": "023b140da884955f3e36c308215b930a9c0a9269761feb06d85c8f66dc5bcf73",
+  "native_kernels_changed": false,
+  "test_shapes_and_seed_changed": false
+}

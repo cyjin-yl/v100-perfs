@@ -681,6 +681,14 @@ class LayoutManifestTests(unittest.TestCase):
                 "docs",
                 "/docs/performance/methodology",
             ),
+            "docs/performance/qwen38/1cat-v100-evidence-ledger-2026-10-09.md": (
+                "docs",
+                "/docs/performance/qwen38/1cat-v100-evidence-ledger-2026-10-09",
+            ),
+            "docs/performance/qwen38/engine-quantization-comparison-2026-10-09.md": (
+                "docs",
+                "/docs/performance/qwen38/engine-quantization-comparison-2026-10-09",
+            ),
             "docs/performance/qwen38/sweep-matrix.md": (
                 "docs",
                 "/docs/performance/qwen38/sweep-matrix",
@@ -704,6 +712,14 @@ class LayoutManifestTests(unittest.TestCase):
             "docs/research/performance/short-prefill-plan.md": (
                 "docs",
                 "/docs/research/performance/short-prefill-plan",
+            ),
+            "docs/research/performance/sm70-packing/index.md": (
+                "docs",
+                "/docs/research/performance/sm70-packing",
+            ),
+            "docs/research/performance/sm70-packing/mxfp4-certified-fastpath.md": (
+                "docs",
+                "/docs/research/performance/sm70-packing/mxfp4-certified-fastpath",
             ),
             "docs/research/storage/optane-l3.md": (
                 "docs",
@@ -782,10 +798,14 @@ class LayoutManifestTests(unittest.TestCase):
             "docs/concepts/tool-calling/constraint-architecture.md",
             "docs/operations/troubleshooting/silent-hang.md",
             "docs/operations/troubleshooting/tool-call-copy-fidelity.md",
+            "docs/performance/qwen38/1cat-v100-evidence-ledger-2026-10-09.md",
+            "docs/performance/qwen38/engine-quantization-comparison-2026-10-09.md",
             "docs/performance/qwen38/sweep-matrix.md",
             "docs/performance/qwen38/toolcall-benchmark-2026-08-22.md",
             "docs/research/performance/prefill-exact-port.md",
             "docs/research/performance/short-prefill-plan.md",
+            "docs/research/performance/sm70-packing/index.md",
+            "docs/research/performance/sm70-packing/mxfp4-certified-fastpath.md",
             "docs/research/storage/optane-l3.md",
         }
         actual_supporting_docs = {

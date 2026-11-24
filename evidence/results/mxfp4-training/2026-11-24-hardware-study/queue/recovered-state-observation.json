@@ -1,0 +1,17 @@
+{
+  "cli_commit": "8232a995908027a65cab2e7a22851ac091ee1a29",
+  "cli_version": "1.4.1",
+  "gpu_executed": null,
+  "job": "sg-jincy26-261123-e5bb3",
+  "namespace": "crater-workspace",
+  "owner": "jincy26",
+  "phase": "waiting",
+  "reason": "Owned job status is Pending",
+  "remote_dir": "/workspace/user/mxfp4-sg-jincy26-261123-e5bb3-20261123T190830Z-5f5e8cd5",
+  "remote_payload_attempted": false,
+  "remote_payload_completed": false,
+  "run_id": "20261123T190830Z-5f5e8cd5",
+  "schema_version": 1,
+  "started_at": "2026-11-23T19:08:30+00:00",
+  "updated_at": "2026-11-23T19:09:30+00:00"
+}

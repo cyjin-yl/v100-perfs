@@ -1,0 +1,23 @@
+nvcc warning : Support for offline compilation for architectures prior to '<compute/sm/lto>_75' will be removed in a future release (Use -Wno-deprecated-gpu-targets to suppress warning).
+ptxas info    : 0 bytes gmem
+ptxas info    : Compiling entry function '_ZN52_GLOBAL__N__0c0dea50_19_mxfp4_gemm_tiled_cu_16b2015515gemm_tiled_mx32IlLb1EEEvPKhS2_S2_S2_PfT_S4_S4_S4_' for 'sm_70'
+ptxas info    : Function properties for _ZN52_GLOBAL__N__0c0dea50_19_mxfp4_gemm_tiled_cu_16b2015515gemm_tiled_mx32IlLb1EEEvPKhS2_S2_S2_PfT_S4_S4_S4_
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 116 registers, used 1 barriers, 9344 bytes smem, 424 bytes cmem[0]
+ptxas info    : Compile time = 177.832 ms
+ptxas info    : Compiling entry function '_ZN52_GLOBAL__N__0c0dea50_19_mxfp4_gemm_tiled_cu_16b2015515gemm_tiled_mx32IlLb0EEEvPKhS2_S2_S2_PfT_S4_S4_S4_' for 'sm_70'
+ptxas info    : Function properties for _ZN52_GLOBAL__N__0c0dea50_19_mxfp4_gemm_tiled_cu_16b2015515gemm_tiled_mx32IlLb0EEEvPKhS2_S2_S2_PfT_S4_S4_S4_
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 114 registers, used 1 barriers, 9344 bytes smem, 424 bytes cmem[0]
+ptxas info    : Compile time = 162.132 ms
+ptxas info    : Compiling entry function '_ZN52_GLOBAL__N__0c0dea50_19_mxfp4_gemm_tiled_cu_16b2015515gemm_tiled_mx32IiLb1EEEvPKhS2_S2_S2_PfT_S4_S4_S4_' for 'sm_70'
+ptxas info    : Function properties for _ZN52_GLOBAL__N__0c0dea50_19_mxfp4_gemm_tiled_cu_16b2015515gemm_tiled_mx32IiLb1EEEvPKhS2_S2_S2_PfT_S4_S4_S4_
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 95 registers, used 1 barriers, 9344 bytes smem, 408 bytes cmem[0]
+ptxas info    : Compile time = 112.071 ms
+ptxas info    : Compiling entry function '_ZN52_GLOBAL__N__0c0dea50_19_mxfp4_gemm_tiled_cu_16b2015515gemm_tiled_mx32IiLb0EEEvPKhS2_S2_S2_PfT_S4_S4_S4_' for 'sm_70'
+ptxas info    : Function properties for _ZN52_GLOBAL__N__0c0dea50_19_mxfp4_gemm_tiled_cu_16b2015515gemm_tiled_mx32IiLb0EEEvPKhS2_S2_S2_PfT_S4_S4_S4_
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 95 registers, used 1 barriers, 9344 bytes smem, 408 bytes cmem[0]
+ptxas info    : Compile time = 104.521 ms
+ptxas info    : 0 bytes gmem

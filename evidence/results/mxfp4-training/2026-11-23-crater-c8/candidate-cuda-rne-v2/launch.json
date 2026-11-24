@@ -1,0 +1,33 @@
+{
+  "phase": "launched",
+  "argv": [
+    "timeout",
+    "--signal=TERM",
+    "--kill-after=15s",
+    "5460s",
+    "/opt/venv/bin/python3",
+    "-B",
+    "/workspace/user/mxfp4-cuda-rne-v2-20261123T2204.py",
+    "--source-archive",
+    "/workspace/user/mxfp4-cuda-rne-v2-inputs-20261123T2204/source.tar.gz",
+    "--source-binding",
+    "/workspace/user/mxfp4-cuda-rne-v2-inputs-20261123T2204/source-binding.json",
+    "--run-directory",
+    "/workspace/user/mxfp4-cuda-rne-v2-20261123T2204",
+    "--prior-native-run",
+    "/workspace/user/mxfp4-c9-c10-20261123T2128",
+    "--python",
+    "/opt/venv/bin/python3"
+  ],
+  "runner_sha256": "96d3db40d25426370cfc8542dff908edf00a385c0055019c727c9c005fb8a548",
+  "source_commit": "f338faaa5cbdcd900aa82ae95af00ed5fb770235",
+  "source_sha256": "58e95bb116ba08d49e1fc0f51e3fa9fae17d442f45bbc0ea617ca163ae099ec9",
+  "node_uid": 1001,
+  "created_at_utc": "2026-11-23T22:04:50.630452+00:00",
+  "previous_quantizer_run": "/workspace/user/mxfp4-cuda-rne-20261123T2157",
+  "previous_archive_sha256": "36682c293f811545d1ed8f67e68602c8d94a30bd1d87160db762136f6566d03f",
+  "recovery_change": "checker-only: resolve lazy view for old Torch control; native wrapper/direct unchanged",
+  "pid": 7769,
+  "starttime": 26175198,
+  "launched_at_utc": "2026-11-23T22:04:50.632968+00:00"
+}

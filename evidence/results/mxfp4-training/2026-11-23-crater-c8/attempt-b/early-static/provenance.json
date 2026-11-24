@@ -1,0 +1,16 @@
+{
+  "evidence_type": "early_static_C8_function_from_completed_C3_build",
+  "gpu_executed_by_analysis": false,
+  "source_commit": "80d3a7c2bb0bb551a34b28bd7fda59978b6304ef",
+  "source_archive_sha256": "62378914e2b6ad7e34e3dd70736cb90aea07c962963494d97062d5f5738b0f57",
+  "binary_path": "/workspace/user/mxfp4-sg-jincy26-261124-4abd5-20261123T204443Z-9fb4ed47/build-fused-c3/bench_mxfp4",
+  "binary_sha256": "ff597372d4d03a2964e94964ce7d3f509c586f75b4eb1115b1d908e93f7fd82d",
+  "build_certified_variant": 3,
+  "function": "fused_certified_prefetch32_halfrow",
+  "sass_sha256": "34dbf9c24b836dfeb187ad48af440c89ea4f3573507b66a32efb65be0dddc1ad",
+  "sass_bytes": 430114,
+  "nvcc_version": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2025 NVIDIA Corporation\nBuilt on Fri_Feb_21_20:23:50_PST_2025\nCuda compilation tools, release 12.8, V12.8.93\nBuild cuda_12.8.r12.8/compiler.35583870_0",
+  "cuobjdump": "/usr/local/cuda-12.8/bin/cuobjdump",
+  "cuobjdump_version": "cuobjdump: NVIDIA (R) fat binary listing tool\nCopyright (c) 2005-2025 NVIDIA Corporation\nBuilt on Thu_Feb_13_02:19:26_PST_2025\nCuda compilation tools, release 12.8, V12.8.90\nBuild cuda_12.8.r12.8/compiler.35538042_0\n",
+  "warning": "Function exists in C3 build but C3 benchmark does not dispatch it; new C8 build will be checked separately."
+}

@@ -1,0 +1,350 @@
+[
+  {
+    "variant": 3,
+    "shape": [
+      1536,
+      1536,
+      1536
+    ],
+    "fingerprint": "8729bc8ef4895a63",
+    "timings": [
+      {
+        "name": "mxfp4_baseline",
+        "scope": "packed_to_fp32_including_decode_and_scale",
+        "primary_clock": "synchronized_steady_clock",
+        "median_ms": 5.573819,
+        "min_ms": 5.5094434,
+        "max_ms": 5.7215314,
+        "useful_tflops": 1.30032161288,
+        "cuda_event_median_ms": 5.47502098083,
+        "cuda_event_useful_tflops": 1.32378621696,
+        "synchronized_wall_median_ms": 5.573819,
+        "synchronized_wall_useful_tflops": 1.30032161288,
+        "round_ms": [
+          5.6167035,
+          5.7215314,
+          5.5384131,
+          5.5094434,
+          5.573819
+        ],
+        "cuda_event_round_ms": [
+          5.47502098083,
+          5.48249588013,
+          5.29920005798,
+          5.27185935974,
+          5.51393280029
+        ],
+        "synchronized_wall_round_ms": [
+          5.6167035,
+          5.7215314,
+          5.5384131,
+          5.5094434,
+          5.573819
+        ]
+      },
+      {
+        "name": "mxfp4_tiled",
+        "scope": "packed_to_fp32_including_decode_and_scale",
+        "primary_clock": "synchronized_steady_clock",
+        "median_ms": 0.8282392,
+        "min_ms": 0.8166225,
+        "max_ms": 0.8302143,
+        "useful_tflops": 8.75080207747,
+        "cuda_event_median_ms": 0.589516782761,
+        "cuda_event_useful_tflops": 12.2944036946,
+        "synchronized_wall_median_ms": 0.8282392,
+        "synchronized_wall_useful_tflops": 8.75080207747,
+        "round_ms": [
+          0.8282392,
+          0.8166225,
+          0.8283472,
+          0.8251251,
+          0.8302143
+        ],
+        "cuda_event_round_ms": [
+          0.589516782761,
+          0.589516782761,
+          0.590540790558,
+          0.587161588669,
+          0.589311981201
+        ],
+        "synchronized_wall_round_ms": [
+          0.8282392,
+          0.8166225,
+          0.8283472,
+          0.8251251,
+          0.8302143
+        ]
+      },
+      {
+        "name": "mxfp4_certified_total",
+        "scope": "packed_to_fp32_gpu_certificate_fused_normalized_hmma_and_conditional_fallback",
+        "primary_clock": "synchronized_steady_clock",
+        "median_ms": 1.2238593,
+        "min_ms": 1.2179659,
+        "max_ms": 1.2331118,
+        "useful_tflops": 5.92205109852,
+        "cuda_event_median_ms": 0.985702419281,
+        "cuda_event_useful_tflops": 7.3528857901,
+        "synchronized_wall_median_ms": 1.2238593,
+        "synchronized_wall_useful_tflops": 5.92205109852,
+        "round_ms": [
+          1.219908,
+          1.2179659,
+          1.2238593,
+          1.2251383,
+          1.2331118
+        ],
+        "cuda_event_round_ms": [
+          0.982835197449,
+          0.981196784973,
+          0.987135982513,
+          0.985702419281,
+          0.993177604675
+        ],
+        "synchronized_wall_round_ms": [
+          1.219908,
+          1.2179659,
+          1.2238593,
+          1.2251383,
+          1.2331118
+        ]
+      }
+    ],
+    "certificate_accepted": true,
+    "full_timed_values": 2359296,
+    "timed_mismatches": 0
+  },
+  {
+    "variant": 4,
+    "shape": [
+      1536,
+      1536,
+      1536
+    ],
+    "fingerprint": "8729bc8ef4895a63",
+    "timings": [
+      {
+        "name": "mxfp4_baseline",
+        "scope": "packed_to_fp32_including_decode_and_scale",
+        "primary_clock": "synchronized_steady_clock",
+        "median_ms": 5.6652511,
+        "min_ms": 5.5344068,
+        "max_ms": 5.8367187,
+        "useful_tflops": 1.27933558179,
+        "cuda_event_median_ms": 5.54721298218,
+        "cuda_event_useful_tflops": 1.30655832673,
+        "synchronized_wall_median_ms": 5.6652511,
+        "synchronized_wall_useful_tflops": 1.27933558179,
+        "round_ms": [
+          5.6652511,
+          5.5344068,
+          5.8367187,
+          5.7282457,
+          5.6523034
+        ],
+        "cuda_event_round_ms": [
+          5.54721298218,
+          5.29479675293,
+          5.59738883972,
+          5.62943992615,
+          5.41276168823
+        ],
+        "synchronized_wall_round_ms": [
+          5.6652511,
+          5.5344068,
+          5.8367187,
+          5.7282457,
+          5.6523034
+        ]
+      },
+      {
+        "name": "mxfp4_tiled",
+        "scope": "packed_to_fp32_including_decode_and_scale",
+        "primary_clock": "synchronized_steady_clock",
+        "median_ms": 0.8199837,
+        "min_ms": 0.6879654,
+        "max_ms": 0.8297123,
+        "useful_tflops": 8.83890412944,
+        "cuda_event_median_ms": 0.589107179642,
+        "cuda_event_useful_tflops": 12.3029519287,
+        "synchronized_wall_median_ms": 0.8199837,
+        "synchronized_wall_useful_tflops": 8.83890412944,
+        "round_ms": [
+          0.6879654,
+          0.8286073,
+          0.8297123,
+          0.8199837,
+          0.6880183
+        ],
+        "cuda_event_round_ms": [
+          0.452198410034,
+          0.589107179642,
+          0.590131187439,
+          0.590745592117,
+          0.588697576523
+        ],
+        "synchronized_wall_round_ms": [
+          0.6879654,
+          0.8286073,
+          0.8297123,
+          0.8199837,
+          0.6880183
+        ]
+      },
+      {
+        "name": "mxfp4_certified_total",
+        "scope": "packed_to_fp32_gpu_certificate_fused_normalized_hmma_and_conditional_fallback",
+        "primary_clock": "synchronized_steady_clock",
+        "median_ms": 0.7772003,
+        "min_ms": 0.7744383,
+        "max_ms": 0.7859439,
+        "useful_tflops": 9.32546900973,
+        "cuda_event_median_ms": 0.548044776917,
+        "cuda_event_useful_tflops": 13.2247539203,
+        "synchronized_wall_median_ms": 0.7772003,
+        "synchronized_wall_useful_tflops": 9.32546900973,
+        "round_ms": [
+          0.7859439,
+          0.7763503,
+          0.7772003,
+          0.7744383,
+          0.7856938
+        ],
+        "cuda_event_round_ms": [
+          0.546816015244,
+          0.548249578476,
+          0.540262413025,
+          0.550092792511,
+          0.548044776917
+        ],
+        "synchronized_wall_round_ms": [
+          0.7859439,
+          0.7763503,
+          0.7772003,
+          0.7744383,
+          0.7856938
+        ]
+      }
+    ],
+    "certificate_accepted": true,
+    "full_timed_values": 2359296,
+    "timed_mismatches": 0
+  },
+  {
+    "variant": 5,
+    "shape": [
+      1536,
+      1536,
+      1536
+    ],
+    "fingerprint": "8729bc8ef4895a63",
+    "timings": [
+      {
+        "name": "mxfp4_baseline",
+        "scope": "packed_to_fp32_including_decode_and_scale",
+        "primary_clock": "synchronized_steady_clock",
+        "median_ms": 5.5879957,
+        "min_ms": 5.5649344,
+        "max_ms": 5.8693565,
+        "useful_tflops": 1.29702270744,
+        "cuda_event_median_ms": 5.50164489746,
+        "cuda_event_useful_tflops": 1.31738006489,
+        "synchronized_wall_median_ms": 5.5879957,
+        "synchronized_wall_useful_tflops": 1.29702270744,
+        "round_ms": [
+          5.5834446,
+          5.8693565,
+          5.5879957,
+          5.5649344,
+          5.8156885
+        ],
+        "cuda_event_round_ms": [
+          5.50164489746,
+          5.62892799377,
+          5.54649581909,
+          5.3262336731,
+          5.50051841736
+        ],
+        "synchronized_wall_round_ms": [
+          5.5834446,
+          5.8693565,
+          5.5879957,
+          5.5649344,
+          5.8156885
+        ]
+      },
+      {
+        "name": "mxfp4_tiled",
+        "scope": "packed_to_fp32_including_decode_and_scale",
+        "primary_clock": "synchronized_steady_clock",
+        "median_ms": 0.8191456,
+        "min_ms": 0.8165517,
+        "max_ms": 0.8316764,
+        "useful_tflops": 8.84794755902,
+        "cuda_event_median_ms": 0.591359996796,
+        "cuda_event_useful_tflops": 12.2560831833,
+        "synchronized_wall_median_ms": 0.8191456,
+        "synchronized_wall_useful_tflops": 8.84794755902,
+        "round_ms": [
+          0.8191456,
+          0.8165517,
+          0.8197438,
+          0.8181227,
+          0.8316764
+        ],
+        "cuda_event_round_ms": [
+          0.591359996796,
+          0.595251178741,
+          0.582041597366,
+          0.591155195236,
+          0.592076778412
+        ],
+        "synchronized_wall_round_ms": [
+          0.8191456,
+          0.8165517,
+          0.8197438,
+          0.8181227,
+          0.8316764
+        ]
+      },
+      {
+        "name": "mxfp4_certified_total",
+        "scope": "packed_to_fp32_gpu_certificate_fused_normalized_hmma_and_conditional_fallback",
+        "primary_clock": "synchronized_steady_clock",
+        "median_ms": 0.7968124,
+        "min_ms": 0.6622589,
+        "max_ms": 0.8014927,
+        "useful_tflops": 9.09593941058,
+        "cuda_event_median_ms": 0.56238079071,
+        "cuda_event_useful_tflops": 12.8876331335,
+        "synchronized_wall_median_ms": 0.7968124,
+        "synchronized_wall_useful_tflops": 9.09593941058,
+        "round_ms": [
+          0.7968124,
+          0.6622589,
+          0.7993825,
+          0.8014927,
+          0.7916772
+        ],
+        "cuda_event_round_ms": [
+          0.564838409424,
+          0.424652814865,
+          0.56238079071,
+          0.565248012543,
+          0.552857589722
+        ],
+        "synchronized_wall_round_ms": [
+          0.7968124,
+          0.6622589,
+          0.7993825,
+          0.8014927,
+          0.7916772
+        ]
+      }
+    ],
+    "certificate_accepted": true,
+    "full_timed_values": 2359296,
+    "timed_mismatches": 0
+  }
+]

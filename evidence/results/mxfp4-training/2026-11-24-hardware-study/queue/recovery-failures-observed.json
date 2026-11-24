@@ -1,0 +1,196 @@
+{
+  "schema_version": 1,
+  "captured_at_utc": "2026-11-23T19:54:47.359495+00:00",
+  "first_replacement_creation": {
+    "job_name": "sg-jincy26-261124-de561",
+    "created_at": "2026-11-23T19:41:53Z",
+    "namespace": "crater-workspace",
+    "owner": "jincy26",
+    "image": "gpu-harbor.act.buaa.edu.cn/user-jincy26/onecat-main-sm70-cu128-ngc22:1.5.3-upgrade-20261114",
+    "resources": {
+      "limits": {
+        "cpu": "4001m",
+        "memory": "16385Mi",
+        "nvidia.com/v100": "1"
+      },
+      "requests": {
+        "cpu": "4",
+        "memory": "16Gi",
+        "nvidia.com/v100": "1"
+      }
+    },
+    "volume_mounts": [
+      {
+        "mountPath": "/dev/shm",
+        "name": "crater-cache"
+      },
+      {
+        "mountPath": "/crater-start.sh",
+        "name": "start-bash-script-volume",
+        "readOnly": true,
+        "subPath": "start.sh"
+      }
+    ],
+    "security_context": {
+      "capabilities": {
+        "add": [
+          "IPC_LOCK",
+          "SYS_PTRACE"
+        ]
+      },
+      "runAsGroup": 0,
+      "runAsUser": 0
+    }
+  },
+  "v2_submit_attempt": {
+    "schema_version": 1,
+    "started_at_utc": "2026-11-23T19:46:19.404370+00:00",
+    "old_job": "sg-jincy26-261123-e5bb3",
+    "old_job_status": "Failed",
+    "display_name": "mxfp4-c8-1124-sshfix-v2",
+    "bootstrap_sha256": "0572620dc6d2f62412fc343c1571fae153af160ea2d7c7ef583875b945986962",
+    "original_deadline_utc": "2026-11-24T04:52:24+00:00",
+    "source_commit": "91e776034aba6e215b085a373affb5c71f2a79e6",
+    "job_cancelled": false,
+    "existing_queued_job_recreated": false,
+    "argv_command_omitted": true,
+    "argv_without_shell_body": [
+      "/home/ezra/verdant-dev4-transfer/tools/crater-1.4.1",
+      "job",
+      "create",
+      "custom",
+      "--name",
+      "mxfp4-c8-1124-sshfix-v2",
+      "--image",
+      "gpu-harbor.act.buaa.edu.cn/user-jincy26/onecat-main-sm70-cu128-ngc22:1.5.3-upgrade-20261114",
+      "--arch",
+      "amd64",
+      "--cpu",
+      "4",
+      "--memory",
+      "16Gi",
+      "--gpu",
+      "1",
+      "--gpu-resource",
+      "nvidia.com/v100",
+      "--working-dir",
+      "/workspace/user",
+      "--volume",
+      "sugon-gpu-home-lab/jincy26:/workspace/user",
+      "--forward",
+      "ssh:2222",
+      "--env",
+      "MXFP4_DEADLINE_UTC=2026-11-24T04:52:24Z",
+      "--shell",
+      "bash",
+      "--command",
+      "<bootstrap omitted; SHA256 recorded>",
+      "--json",
+      "--no-interactive"
+    ]
+  },
+  "v2_create_error": {
+    "category": "api_error",
+    "code": "ERR_SERVER_INTERNAL_5XX",
+    "message": "\u8bf7\u6c42\u5931\u8d25\uff08HTTP 500\uff09\uff1ainvalid mount path format: sugon-gpu-home-lab/jincy26",
+    "context": {
+      "crater_code": 99999,
+      "http_status": 500,
+      "msg": "invalid mount path format: sugon-gpu-home-lab/jincy26"
+    }
+  },
+  "v2_create_stdout_empty": true,
+  "original_job_failure": {
+    "schema_version": 1,
+    "observed_at_utc": "2026-11-23T19:34:56.648973+00:00",
+    "job": {
+      "jobName": "sg-jincy26-261123-e5bb3",
+      "namespace": "crater-workspace",
+      "username": "jincy26",
+      "status": "Failed",
+      "createdAt": "2026-11-23T15:57:51Z",
+      "startedAt": "2026-11-23T19:30:59Z",
+      "completedAt": "2026-11-23T19:31:01Z",
+      "podGroupPhase": "Running",
+      "resources": {
+        "cpu": "4",
+        "memory": "16Gi",
+        "nvidia.com/v100": "1"
+      },
+      "terminatedStates": [
+        {
+          "containerID": "containerd://94fb4df5d63515d945235ebe591317b28ae009692707ef9affdfe78a23df8990",
+          "exitCode": 1,
+          "finishedAt": "2026-11-23T19:30:59Z",
+          "reason": "Error",
+          "startedAt": "2026-11-23T19:30:59Z"
+        }
+      ]
+    },
+    "events": [
+      {
+        "firstTimestamp": "2026-11-23T19:30:59Z",
+        "lastTimestamp": "2026-11-23T19:30:59Z",
+        "reason": "Started",
+        "message": "Container started",
+        "type": "Normal"
+      },
+      {
+        "firstTimestamp": "2026-11-23T19:30:58Z",
+        "lastTimestamp": "2026-11-23T19:30:58Z",
+        "reason": "Created",
+        "message": "Container created",
+        "type": "Normal"
+      },
+      {
+        "firstTimestamp": "2026-11-23T19:30:58Z",
+        "lastTimestamp": "2026-11-23T19:30:58Z",
+        "reason": "Pulled",
+        "message": "Successfully pulled image \"gpu-harbor.act.buaa.edu.cn/user-jincy26/onecat-main-sm70-cu128-ngc22:1.5.3-upgrade-20261114\" in 5m22.39s (5m22.39s including waiting). Image size: 11265334081 bytes.",
+        "type": "Normal"
+      },
+      {
+        "firstTimestamp": "2026-11-23T19:25:36Z",
+        "lastTimestamp": "2026-11-23T19:25:36Z",
+        "reason": "Pulling",
+        "message": "Pulling image \"gpu-harbor.act.buaa.edu.cn/user-jincy26/onecat-main-sm70-cu128-ngc22:1.5.3-upgrade-20261114\"",
+        "type": "Normal"
+      },
+      {
+        "firstTimestamp": "2026-11-23T19:25:35Z",
+        "lastTimestamp": "2026-11-23T19:25:35Z",
+        "reason": "Scheduled",
+        "message": "Successfully assigned crater-workspace/sg-jincy26-261123-e5bb3-default0-0 to dell-gpu-25",
+        "type": "Normal"
+      }
+    ],
+    "logs": {
+      "logs": [
+        {
+          "namespace": "crater-workspace",
+          "pod": "sg-jincy26-261123-e5bb3-default0-0",
+          "container": "custom",
+          "content": "Image has no sshd\n"
+        }
+      ]
+    },
+    "watcher_state": {
+      "cli_commit": "8232a995908027a65cab2e7a22851ac091ee1a29",
+      "cli_version": "1.4.1",
+      "error": "Owned job reached terminal status Failed",
+      "gpu_executed": null,
+      "job": "sg-jincy26-261123-e5bb3",
+      "namespace": "crater-workspace",
+      "owner": "jincy26",
+      "phase": "failed",
+      "reason": "Owned job status is Pending",
+      "remote_dir": "/workspace/user/mxfp4-sg-jincy26-261123-e5bb3-20261123T190830Z-5f5e8cd5",
+      "remote_payload_attempted": false,
+      "remote_payload_completed": false,
+      "run_id": "20261123T190830Z-5f5e8cd5",
+      "schema_version": 1,
+      "started_at": "2026-11-23T19:08:30+00:00",
+      "updated_at": "2026-11-23T19:31:30+00:00"
+    }
+  }
+}

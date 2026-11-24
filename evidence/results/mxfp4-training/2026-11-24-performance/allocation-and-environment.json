@@ -1,0 +1,21 @@
+{
+  "observed_at_utc": "2026-11-23T16:47:29.574821+00:00",
+  "allocation": {
+    "resources": {
+      "cpu": "4",
+      "memory": "16Gi",
+      "nvidia.com/v100": "1"
+    },
+    "status": "Pending",
+    "podGroupPhase": "Inqueue",
+    "createdAt": "2026-11-23T15:57:51Z",
+    "startedAt": "0001-01-01T00:00:00Z"
+  },
+  "requested_gpu_count": 1,
+  "job_owned_by_authenticated_user": true,
+  "actual_job_name_sha256": "89c1db705c79464e3d603996e7b9d4c308359b367a20f3c2a82f8f6e80c3910c",
+  "gpu_environment_csv": "index, name, memory.total [MiB], memory.used [MiB], memory.free [MiB], utilization.gpu [%], clocks.current.sm [MHz], clocks.current.memory [MHz], power.draw [W], power.limit [W]\n0, Tesla V100-PCIE-32GB, 32768 MiB, 32046 MiB, 449 MiB, 99 %, 1380 MHz, 877 MHz, 140.83 W, 250.00 W\n1, Tesla V100-PCIE-32GB, 32768 MiB, 32046 MiB, 449 MiB, 99 %, 1380 MHz, 877 MHz, 143.33 W, 250.00 W\n",
+  "environment_scope": "post-measurement snapshot; not continuous utilization telemetry",
+  "existing_gpu_services_stopped": false,
+  "clock_or_power_changes": false
+}

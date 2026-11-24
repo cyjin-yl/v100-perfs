@@ -1,0 +1,111 @@
+{
+  "schema_version": 1,
+  "source_archive_sha256": "ee91ede25497f0ce2b363d1356378c1629f3b43c6aba2f5877a018c281cace48",
+  "jobs": [
+    {
+      "stage": "build",
+      "variant": 3,
+      "returncode": 0,
+      "seconds": 81.11104896198958,
+      "argv": [
+        "python3",
+        "/tmp/v100-mxfp4-fused-3cc0562b0106/v2/tools/mxfp4_training/build_cuda.py",
+        "--nvcc",
+        "/usr/local/cuda-12.9/bin/nvcc",
+        "--output-dir",
+        "/tmp/v100-mxfp4-fused-3cc0562b0106/v2/build-c3",
+        "--with-certified",
+        "--with-benchmark",
+        "--tiled-variant",
+        "1",
+        "--certified-variant",
+        "3"
+      ]
+    },
+    {
+      "stage": "build",
+      "variant": 4,
+      "returncode": 0,
+      "seconds": 83.7062165820389,
+      "argv": [
+        "python3",
+        "/tmp/v100-mxfp4-fused-3cc0562b0106/v2/tools/mxfp4_training/build_cuda.py",
+        "--nvcc",
+        "/usr/local/cuda-12.9/bin/nvcc",
+        "--output-dir",
+        "/tmp/v100-mxfp4-fused-3cc0562b0106/v2/build-c4",
+        "--with-certified",
+        "--with-benchmark",
+        "--tiled-variant",
+        "1",
+        "--certified-variant",
+        "4"
+      ]
+    },
+    {
+      "stage": "build",
+      "variant": 5,
+      "returncode": 0,
+      "seconds": 79.54142674495233,
+      "argv": [
+        "python3",
+        "/tmp/v100-mxfp4-fused-3cc0562b0106/v2/tools/mxfp4_training/build_cuda.py",
+        "--nvcc",
+        "/usr/local/cuda-12.9/bin/nvcc",
+        "--output-dir",
+        "/tmp/v100-mxfp4-fused-3cc0562b0106/v2/build-c5",
+        "--with-certified",
+        "--with-benchmark",
+        "--tiled-variant",
+        "1",
+        "--certified-variant",
+        "5"
+      ]
+    },
+    {
+      "stage": "correctness",
+      "variant": 3,
+      "returncode": 0,
+      "argv": [
+        "/tmp/v100-mxfp4-fused-3cc0562b0106/v2/build-c3/check_mxfp4_certified",
+        "--device",
+        "0",
+        "--correctness-only",
+        "--small-memory-correctness",
+        "--reserve-mib",
+        "48"
+      ]
+    },
+    {
+      "stage": "correctness",
+      "variant": 4,
+      "returncode": 0,
+      "argv": [
+        "/tmp/v100-mxfp4-fused-3cc0562b0106/v2/build-c4/check_mxfp4_certified",
+        "--device",
+        "0",
+        "--correctness-only",
+        "--small-memory-correctness",
+        "--reserve-mib",
+        "48"
+      ]
+    },
+    {
+      "stage": "correctness",
+      "variant": 5,
+      "returncode": 0,
+      "argv": [
+        "/tmp/v100-mxfp4-fused-3cc0562b0106/v2/build-c5/check_mxfp4_certified",
+        "--device",
+        "0",
+        "--correctness-only",
+        "--small-memory-correctness",
+        "--reserve-mib",
+        "48"
+      ]
+    }
+  ],
+  "started_at_utc": "2026-11-23T17:51:45Z",
+  "completed": true,
+  "finished_at_utc": "2026-11-23T17:54:27Z"
+}

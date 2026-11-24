@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "executed_at_utc": "2026-11-23T15:27:56.661736+00:00",
+  "evidence_type": "CPU numerical and surrogate-autograd tests",
+  "python": "3.12.14",
+  "torch": "2.5.1+cpu",
+  "numpy": "2.3.5",
+  "tests_run": 43,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "passed": true,
+  "gpu_executed": false,
+  "source_sha256": {
+    "tests/test_mxfp4_reference.py": "6b451ed63643ce3b020a2f59e31a4d6f447e2f68b49b2db8823188f51e80cc8c",
+    "tests/test_mxfp4_torch.py": "9d7b74b074553f792484ece770ecf00887bcb0853177b3a47bc0391ba7979a6b",
+    "tools/mxfp4_training/__init__.py": "ae369746a798b3ba067012f6dba6df218db0c9547d22786b9589026d1e2047cb",
+    "tools/mxfp4_training/build_cuda.py": "a4380ff6f55f0346a69ad8877af40dd6e275246e4dfe7b4cf6dcc07cbbfa19ca",
+    "tools/mxfp4_training/csrc/check_mxfp4.cu": "d9296a8e534ca5862a4116dffd066620a61a9b9142a9735c85491e94572e787c",
+    "tools/mxfp4_training/csrc/mxfp4_gemm.cu": "d1902ef6313f82a3a829596b7fd3708f3552363dcee72ab5b400be63ba66d11c",
+    "tools/mxfp4_training/csrc/mxfp4_gemm.h": "083b85365544016f591de46c8e9e0e9ed9db3ad9faba7f771756d50515d753fd",
+    "tools/mxfp4_training/pretrain_smoke.py": "7d0bff2c002aa5ffebdd1966495b32c7b2fcf1afdcd8d7cc5792c5ada1828842",
+    "tools/mxfp4_training/reference.py": "eeba6d661ad051c6caaa9e192d0dbe2c9666369faf31c384b88fc42556b02b8b",
+    "tools/mxfp4_training/torch_ops.py": "aa796f98894d1d587137352e2d4f5ebcb7e7193d276a1dfe3aa3e88f9d7168fc"
+  },
+  "log": "cpu-tests.txt",
+  "log_sha256": "e0b838af59e21f834ef1948981719d82ed116286f6924d6f7e001898341d39eb"
+}

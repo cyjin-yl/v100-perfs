@@ -1,0 +1,141 @@
+{
+  "schema_version": 1,
+  "source_archive_sha256": "db2cf811a5cb07531109a50d315fcd653c4bbdda508855bfb6297d42e38d3bf6",
+  "jobs": [
+    {
+      "stage": "build",
+      "variant": 2,
+      "returncode": 0,
+      "seconds": 56.1060750070028,
+      "argv": [
+        "python3",
+        "/tmp/v100-mxfp4-fused-3cc0562b0106/v1/tools/mxfp4_training/build_cuda.py",
+        "--nvcc",
+        "/usr/local/cuda-12.9/bin/nvcc",
+        "--output-dir",
+        "/tmp/v100-mxfp4-fused-3cc0562b0106/v1/build-c2",
+        "--with-certified",
+        "--with-benchmark",
+        "--tiled-variant",
+        "1",
+        "--certified-variant",
+        "2"
+      ]
+    },
+    {
+      "stage": "build",
+      "variant": 3,
+      "returncode": 0,
+      "seconds": 79.24580257403431,
+      "argv": [
+        "python3",
+        "/tmp/v100-mxfp4-fused-3cc0562b0106/v1/tools/mxfp4_training/build_cuda.py",
+        "--nvcc",
+        "/usr/local/cuda-12.9/bin/nvcc",
+        "--output-dir",
+        "/tmp/v100-mxfp4-fused-3cc0562b0106/v1/build-c3",
+        "--with-certified",
+        "--with-benchmark",
+        "--tiled-variant",
+        "1",
+        "--certified-variant",
+        "3"
+      ]
+    },
+    {
+      "stage": "build",
+      "variant": 4,
+      "returncode": 0,
+      "seconds": 73.89913495897781,
+      "argv": [
+        "python3",
+        "/tmp/v100-mxfp4-fused-3cc0562b0106/v1/tools/mxfp4_training/build_cuda.py",
+        "--nvcc",
+        "/usr/local/cuda-12.9/bin/nvcc",
+        "--output-dir",
+        "/tmp/v100-mxfp4-fused-3cc0562b0106/v1/build-c4",
+        "--with-certified",
+        "--with-benchmark",
+        "--tiled-variant",
+        "1",
+        "--certified-variant",
+        "4"
+      ]
+    },
+    {
+      "stage": "build",
+      "variant": 5,
+      "returncode": 0,
+      "seconds": 73.44912431197008,
+      "argv": [
+        "python3",
+        "/tmp/v100-mxfp4-fused-3cc0562b0106/v1/tools/mxfp4_training/build_cuda.py",
+        "--nvcc",
+        "/usr/local/cuda-12.9/bin/nvcc",
+        "--output-dir",
+        "/tmp/v100-mxfp4-fused-3cc0562b0106/v1/build-c5",
+        "--with-certified",
+        "--with-benchmark",
+        "--tiled-variant",
+        "1",
+        "--certified-variant",
+        "5"
+      ]
+    },
+    {
+      "stage": "correctness",
+      "variant": 2,
+      "returncode": 1,
+      "argv": [
+        "/tmp/v100-mxfp4-fused-3cc0562b0106/v1/build-c2/check_mxfp4_certified",
+        "--device",
+        "0",
+        "--correctness-only",
+        "--reserve-mib",
+        "64"
+      ]
+    },
+    {
+      "stage": "correctness",
+      "variant": 3,
+      "returncode": 1,
+      "argv": [
+        "/tmp/v100-mxfp4-fused-3cc0562b0106/v1/build-c3/check_mxfp4_certified",
+        "--device",
+        "0",
+        "--correctness-only",
+        "--reserve-mib",
+        "64"
+      ]
+    },
+    {
+      "stage": "correctness",
+      "variant": 4,
+      "returncode": 1,
+      "argv": [
+        "/tmp/v100-mxfp4-fused-3cc0562b0106/v1/build-c4/check_mxfp4_certified",
+        "--device",
+        "0",
+        "--correctness-only",
+        "--reserve-mib",
+        "64"
+      ]
+    },
+    {
+      "stage": "correctness",
+      "variant": 5,
+      "returncode": 1,
+      "argv": [
+        "/tmp/v100-mxfp4-fused-3cc0562b0106/v1/build-c5/check_mxfp4_certified",
+        "--device",
+        "0",
+        "--correctness-only",
+        "--reserve-mib",
+        "64"
+      ]
+    }
+  ],
+  "started_at_utc": "2026-11-23T17:41:19Z",
+  "completed": true,
+  "finished_at_utc": "2026-11-23T17:43:53Z"
+}

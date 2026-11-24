@@ -1,0 +1,34 @@
+--- mxfp4_post_workspace_diagnostics.py.before_config
++++ mxfp4_post_workspace_diagnostics.py
+@@ -209,9 +209,12 @@
+             text = self.log_text('ncu-help')
+             for option in ('profile-from-start', 'clock-control', 'cache-control', 'replay-mode',
+                            'launch-count', 'query-metrics-mode', 'chips', 'target-processes',
+-                           'log-file', 'export', 'csv', 'page'):
++                           'log-file', 'export', 'csv', 'page', 'config-file'):
+                 if '--' + option not in text: raise H.Blocked('Installed NCU lacks required option: ' + option)
+-            return {'passed': True, 'required_installed_options_observed': True}
++            self.report['ncu_rename_kernels_off_supported'] = '--rename-kernels' in text
++            return {'passed': True, 'required_installed_options_observed': True,
++                    'config_file_off_option_observed': True,
++                    'rename_kernels_off_option_observed': self.report['ncu_rename_kernels_off_supported']}
+ 
+         def catalog_gate(self, rows):
+             text = self.log_text('ncu-gv100-catalog')
+@@ -298,11 +301,14 @@
+             if not available: self.block('ncu-version', 'Installed NCU is unavailable')
+             help_ok = version and self.stage('ncu-help', [NCU, '--help'], 30, self.ncu_help)
+             if not version: self.block('ncu-help', 'NCU version prerequisite unavailable')
+-            catalog = help_ok and self.stage('ncu-gv100-catalog', [NCU, '--query-metrics', '--chips', 'gv100',
++            catalog = help_ok and self.stage('ncu-gv100-catalog', [NCU, '--config-file', 'off', '--query-metrics', '--chips', 'gv100',
+                 '--query-metrics-mode', 'all'], 60, self.catalog_gate)
+             if not help_ok: self.block('ncu-gv100-catalog', 'NCU version/options prerequisite unavailable')
+             if catalog:
+-                command = [NCU, '--devices', '0', '--target-processes', 'application-only',
++                command = [NCU, '--config-file', 'off']
++                if self.report['ncu_rename_kernels_off_supported']:
++                    command += ['--rename-kernels', 'off']
++                command += ['--devices', '0', '--target-processes', 'application-only',
+                     '--profile-from-start', 'off', '--clock-control', 'none', '--cache-control', 'none',
+                     '--replay-mode', 'kernel', '--launch-count', '10', '--kernel-name-base', 'demangled',
+                     '--section', 'LaunchStats', '--metrics', ','.join(self.report['selected_profile_metrics']),

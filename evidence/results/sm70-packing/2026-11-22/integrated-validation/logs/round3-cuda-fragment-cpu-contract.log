@@ -1,0 +1,11 @@
+{
+  "gpu_executed": false,
+  "cycle_simulation": false,
+  "official_layout_source": "https://docs.nvidia.com/cuda/archive/11.4.0/parallel-thread-execution/index.html#warp-level-matrix-fragment-mma-884-f16",
+  "host_compiled_header_map_verified": true,
+  "impulse_cases": 1024,
+  "case_count": 44,
+  "full_E2M1_by_full_E2M1_rejected_candidates": 3,
+  "errors_total": 0,
+  "scope": "Documented fragment map, exact bounded-integer arithmetic, E2M1 nibbles, finite small E8M0 scales; not general Volta rounding or training convergence."
+}

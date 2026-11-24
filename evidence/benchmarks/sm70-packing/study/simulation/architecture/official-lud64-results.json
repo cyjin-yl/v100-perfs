@@ -1,0 +1,99 @@
+{
+  "scope": "Official published Tesla-V100-directory trace replay in upstream QV100 cycle model; not packing-kernel execution, not numeric validation, not hardware timing",
+  "completed": true,
+  "kernel_count": 10,
+  "gpu_tot_sim_cycle": 127309,
+  "gpu_tot_sim_insn": 418884,
+  "argv": [
+    "./build/accel-sim.out",
+    "-trace",
+    "./official-lud64/kernelslist.g",
+    "-config",
+    "./configs/qv100-upstream.config",
+    "-config",
+    "./configs/qv100-upstream-trace.config"
+  ],
+  "log_sha256": "87c22cc21fb99de67c4a9370a9d6eacb70784a560f5415c0241369ef9bff9e96",
+  "kernels": [
+    {
+      "kernel_index": 1,
+      "kernel_name": "_Z12lud_diagonalPfii",
+      "gpu_sim_cycle": 20908,
+      "gpu_sim_insn": 19673,
+      "gpu_tot_sim_cycle": 20908,
+      "gpu_tot_sim_insn": 19673
+    },
+    {
+      "kernel_index": 2,
+      "kernel_name": "_Z13lud_perimeterPfii",
+      "gpu_sim_cycle": 8768,
+      "gpu_sim_insn": 48240,
+      "gpu_tot_sim_cycle": 29676,
+      "gpu_tot_sim_insn": 67913
+    },
+    {
+      "kernel_index": 3,
+      "kernel_name": "_Z12lud_internalPfii",
+      "gpu_sim_cycle": 5832,
+      "gpu_sim_insn": 156672,
+      "gpu_tot_sim_cycle": 35508,
+      "gpu_tot_sim_insn": 224585
+    },
+    {
+      "kernel_index": 4,
+      "kernel_name": "_Z12lud_diagonalPfii",
+      "gpu_sim_cycle": 20908,
+      "gpu_sim_insn": 19673,
+      "gpu_tot_sim_cycle": 56416,
+      "gpu_tot_sim_insn": 244258
+    },
+    {
+      "kernel_index": 5,
+      "kernel_name": "_Z13lud_perimeterPfii",
+      "gpu_sim_cycle": 8747,
+      "gpu_sim_insn": 32160,
+      "gpu_tot_sim_cycle": 65163,
+      "gpu_tot_sim_insn": 276418
+    },
+    {
+      "kernel_index": 6,
+      "kernel_name": "_Z12lud_internalPfii",
+      "gpu_sim_cycle": 5804,
+      "gpu_sim_insn": 69632,
+      "gpu_tot_sim_cycle": 70967,
+      "gpu_tot_sim_insn": 346050
+    },
+    {
+      "kernel_index": 7,
+      "kernel_name": "_Z12lud_diagonalPfii",
+      "gpu_sim_cycle": 20908,
+      "gpu_sim_insn": 19673,
+      "gpu_tot_sim_cycle": 91875,
+      "gpu_tot_sim_insn": 365723
+    },
+    {
+      "kernel_index": 8,
+      "kernel_name": "_Z13lud_perimeterPfii",
+      "gpu_sim_cycle": 8744,
+      "gpu_sim_insn": 16080,
+      "gpu_tot_sim_cycle": 100619,
+      "gpu_tot_sim_insn": 381803
+    },
+    {
+      "kernel_index": 9,
+      "kernel_name": "_Z12lud_internalPfii",
+      "gpu_sim_cycle": 5782,
+      "gpu_sim_insn": 17408,
+      "gpu_tot_sim_cycle": 106401,
+      "gpu_tot_sim_insn": 399211
+    },
+    {
+      "kernel_index": 10,
+      "kernel_name": "_Z12lud_diagonalPfii",
+      "gpu_sim_cycle": 20908,
+      "gpu_sim_insn": 19673,
+      "gpu_tot_sim_cycle": 127309,
+      "gpu_tot_sim_insn": 418884
+    }
+  ]
+}

@@ -1,0 +1,1831 @@
+{
+  "schema_version": 1,
+  "purpose": "independent actual explicit-workspace archive audit",
+  "audit_started_at_utc": "2026-11-23T22:54:20.582183+00:00",
+  "audit_status": "verified",
+  "audit_passed": true,
+  "issues": [],
+  "auditor_sha256": "a441ce29878fa0248241d1ffb1d32fb5637f7ee4dbe68de2b084d50707e6b50f",
+  "helper_sha256": "054bd0a94b17d48426f65bcd8cfea0566d1c63c167fe342ceed48347288be8b9",
+  "audit_gpu_executed": false,
+  "audit_remote_executed": false,
+  "archived_code_executed": false,
+  "performance_rows": [
+    {
+      "size": 1024,
+      "lifecycle": "per_call",
+      "eligible": true,
+      "pooled_wall_median_ms": 3.7122701993212104,
+      "pooled_event_median_ms": 3.7105087280273437,
+      "wall_useful_tflops": 0.5784825814652899,
+      "event_useful_tflops": 0.5787572016146931,
+      "raw_wall_round_ms": [
+        4.1145686991512775,
+        3.52044909959659,
+        2.984202897641808,
+        3.236125403782353,
+        3.904091299045831,
+        2.765176701359451,
+        3.4812784986570477,
+        5.1029652007855475,
+        5.458381801145151,
+        4.270481498679146
+      ],
+      "raw_event_round_ms": [
+        4.112659072875976,
+        3.5185726165771483,
+        2.9825376510620116,
+        3.2345855712890623,
+        3.902444839477539,
+        2.763785552978516,
+        3.479872131347656,
+        5.1016193389892575,
+        5.4566497802734375,
+        4.26866569519043
+      ],
+      "processes": 2,
+      "rounds_per_process": 5,
+      "separate_lifecycle_observations": []
+    },
+    {
+      "size": 1024,
+      "lifecycle": "workspace",
+      "eligible": true,
+      "pooled_wall_median_ms": 0.47152970219030976,
+      "pooled_event_median_ms": 0.4702479839324951,
+      "wall_useful_tflops": 4.554291358581848,
+      "event_useful_tflops": 4.566704635374418,
+      "raw_wall_round_ms": [
+        0.47564880223944783,
+        0.4730565007776022,
+        0.4713508009444922,
+        0.46911000390537083,
+        0.4717086034361273,
+        0.4739465017337352,
+        0.47509800060652196,
+        0.4704719001892954,
+        0.46818130067549646,
+        0.4713414004072547
+      ],
+      "raw_event_round_ms": [
+        0.4742527961730957,
+        0.4715775966644287,
+        0.47005438804626465,
+        0.4677887916564941,
+        0.4704415798187256,
+        0.47260479927062987,
+        0.47368640899658204,
+        0.46913599967956543,
+        0.4669023990631104,
+        0.4699872016906738
+      ],
+      "processes": 2,
+      "rounds_per_process": 5,
+      "separate_lifecycle_observations": [
+        {
+          "context_create_and_initial_abi_query_ms": 22.755461977794766,
+          "context_close_and_final_wait_ms": 9.893191047012806,
+          "separate_create_close_total_ms": 32.64865302480757,
+          "create_close_ms_per_all_completed_call": 0.5352238200788126,
+          "note": "Amortization denominator includes one validation, warmup, and measured calls; not a training-step rate"
+        },
+        {
+          "context_create_and_initial_abi_query_ms": 29.044369992334396,
+          "context_close_and_final_wait_ms": 0.7840660400688648,
+          "separate_create_close_total_ms": 29.82843603240326,
+          "create_close_ms_per_all_completed_call": 0.48899075462956165,
+          "note": "Amortization denominator includes one validation, warmup, and measured calls; not a training-step rate"
+        }
+      ]
+    },
+    {
+      "size": 4096,
+      "lifecycle": "per_call",
+      "eligible": true,
+      "pooled_wall_median_ms": 6.023360652034171,
+      "pooled_event_median_ms": 6.021980857849121,
+      "wall_useful_tflops": 22.81765303652953,
+      "event_useful_tflops": 22.822881160915756,
+      "raw_wall_round_ms": [
+        7.191073801368475,
+        9.374802897218615,
+        6.876226904569194,
+        6.076239299727604,
+        5.484088300727308,
+        5.957345804199576,
+        5.154549103463069,
+        4.493616096442565,
+        5.970482004340738,
+        6.237052200594917
+      ],
+      "raw_event_round_ms": [
+        7.188751983642578,
+        9.373308563232422,
+        6.874745941162109,
+        6.074703979492187,
+        5.482675170898437,
+        5.954988861083985,
+        5.153049468994141,
+        4.492310333251953,
+        5.969257736206055,
+        6.2358142852783205
+      ],
+      "processes": 2,
+      "rounds_per_process": 5,
+      "separate_lifecycle_observations": []
+    },
+    {
+      "size": 4096,
+      "lifecycle": "workspace",
+      "eligible": true,
+      "pooled_wall_median_ms": 2.4337259004823864,
+      "pooled_event_median_ms": 2.432459259033203,
+      "wall_useful_tflops": 56.47265102646044,
+      "event_useful_tflops": 56.50205772680691,
+      "raw_wall_round_ms": [
+        2.4421882000751793,
+        2.7131683949846774,
+        2.4279189005028456,
+        2.428331400733441,
+        2.4276884039863944,
+        2.4378761008847505,
+        2.6165273040533066,
+        2.4364901008084416,
+        2.4299528973642737,
+        2.430961700156331
+      ],
+      "raw_event_round_ms": [
+        2.440755271911621,
+        2.7110111236572267,
+        2.426646423339844,
+        2.4270208358764647,
+        2.4264032363891603,
+        2.436502456665039,
+        2.614067268371582,
+        2.435196876525879,
+        2.4286848068237306,
+        2.429721641540527
+      ],
+      "processes": 2,
+      "rounds_per_process": 5,
+      "separate_lifecycle_observations": [
+        {
+          "context_create_and_initial_abi_query_ms": 29.64305703062564,
+          "context_close_and_final_wait_ms": 2.3842889931984246,
+          "separate_create_close_total_ms": 32.027346023824066,
+          "create_close_ms_per_all_completed_call": 0.5250384594069519,
+          "note": "Amortization denominator includes one validation, warmup, and measured calls; not a training-step rate"
+        },
+        {
+          "context_create_and_initial_abi_query_ms": 25.250695005524904,
+          "context_close_and_final_wait_ms": 1.2377829989418387,
+          "separate_create_close_total_ms": 26.488478004466742,
+          "create_close_ms_per_all_completed_call": 0.43423734433552036,
+          "note": "Amortization denominator includes one validation, warmup, and measured calls; not a training-step rate"
+        }
+      ]
+    }
+  ],
+  "comparisons": [
+    {
+      "size": 1024,
+      "workspace_over_per_call_throughput_ratio": 7.8728236674747905,
+      "wall_latency_reduction_percent": 87.29807700213931,
+      "same_actual_FP32_input_bytes_all_four_processes": true,
+      "create_close_excluded_only_for_explicit_workspace": true
+    },
+    {
+      "size": 4096,
+      "workspace_over_per_call_throughput_ratio": 2.4749544107823676,
+      "wall_latency_reduction_percent": 59.595215344435935,
+      "same_actual_FP32_input_bytes_all_four_processes": true,
+      "create_close_excluded_only_for_explicit_workspace": true
+    }
+  ],
+  "provenance": {
+    "source_archive": {
+      "path": "/workspace/scratch/3cc0562b0106/v100-perfs/evidence/results/mxfp4-training/2026-11-23-crater-c8/candidate-workspace/source.tar.gz",
+      "sha256": "aa7ac287d389d1e8705fdeef60713bae1927116c85bb7355a52a817e4a806a89",
+      "bytes": 157598,
+      "regular_members": 33,
+      "expanded_bytes": 605315
+    },
+    "results_archive": {
+      "path": "/workspace/scratch/3cc0562b0106/v100-perfs/evidence/results/mxfp4-training/2026-11-23-crater-c8/candidate-workspace/results.tar.gz",
+      "sha256": "ac5998366a536800bac705eb03c185e01b089b0e7b24b29d84aa8e5aa2b65c30",
+      "bytes": 111196,
+      "regular_members": 58,
+      "expanded_bytes": 1084769
+    },
+    "source_commit": "f74de5be95687d75758c1f636ffbd00d6b63d161",
+    "new_modules": {
+      "certified_workspace.py": "03a2222d6efb4ddf5369e01220041c16923da05ceb40235a92e48d3269cfe6cf",
+      "check_certified_workspace.py": "00b59608ad22b2d2d236b20c1fa64c0f7110481fac1d6525e4ef74d77bf797fc",
+      "bench_certified_workspace.py": "b0d1a07dc08b8856a31c6226ec25c367264fe438c9559256739fff90247ac4bc"
+    },
+    "source_member_sha256": {
+      "evidence/benchmarks/sm70-packing/study/simulation/round3/cuda/fragment_mapping.hpp": "78ca809cc6606912724982559c31ed82b6141ec74651cf65324015ecd901f4b1",
+      "tools/mxfp4_training/README.md": "31c7f298ee8373eb29c6819240caec977f1c08c14d6e9245579fd12108613cb0",
+      "tools/mxfp4_training/__init__.py": "ae369746a798b3ba067012f6dba6df218db0c9547d22786b9589026d1e2047cb",
+      "tools/mxfp4_training/bench_certified_workspace.py": "b0d1a07dc08b8856a31c6226ec25c367264fe438c9559256739fff90247ac4bc",
+      "tools/mxfp4_training/bench_quantize_cuda.py": "3748307ea1a25a62e719e6275af6190d8302da0389e4eaf849d36f642fb0a53a",
+      "tools/mxfp4_training/bench_torch_cuda.py": "a7bf192784bdcb3f95542002f706252c98f234ee04b2b8bbedd4ac7a51915ae8",
+      "tools/mxfp4_training/build_cuda.py": "416b69c561b30827bf7e739bd928a25e63e4903d3061881abaa4f802855d6c36",
+      "tools/mxfp4_training/certified_workspace.py": "03a2222d6efb4ddf5369e01220041c16923da05ceb40235a92e48d3269cfe6cf",
+      "tools/mxfp4_training/check_certified_workspace.py": "00b59608ad22b2d2d236b20c1fa64c0f7110481fac1d6525e4ef74d77bf797fc",
+      "tools/mxfp4_training/check_quantize_cuda.py": "baa4323496efc3c8360ef1d697e2843153dd6c985cb17e18aabe5d9ec3147c38",
+      "tools/mxfp4_training/check_torch_certified.py": "eab5d7ffd75b85717bf0fef30a25ae8cbe0fac0c272e9e29065fed84227b1c54",
+      "tools/mxfp4_training/check_torch_cuda.py": "7c6f03690ca9b5f554071f5a2f29c39ac5cb8404cdbf9bb278ed25e0263a4c42",
+      "tools/mxfp4_training/crater_queue_runner.py": "d53282e098400575b499f3e3a82ce0790220b72a3fb62c8a5ae0cd75ade575fb",
+      "tools/mxfp4_training/crater_remote_run.py": "b3cf06196828297325990d1b17473f8fa7afce3899421a28235048d45b2a79e4",
+      "tools/mxfp4_training/csrc/bench_mxfp4.cu": "d07e73cbb50edf3cacabb20e610b278a9cfff33fd5fe3cb289c8589c0493d3fe",
+      "tools/mxfp4_training/csrc/bench_mxfp4_fused.cu": "22dbeb4f13fa981c574ee458ef1ab7138ad522ec23cadf6922b4ce450d54331e",
+      "tools/mxfp4_training/csrc/check_mxfp4.cu": "b6786d69703e150a36d5fdf819334057661ad5558bfecdc00f1e7106fa3f3383",
+      "tools/mxfp4_training/csrc/check_mxfp4_certified.cu": "8757fe1a2917b67e61a969a42c0f9d61d13f301c10f281836dee07084c55ecc6",
+      "tools/mxfp4_training/csrc/check_mxfp4_half2_decode.cu": "40dd036f039c81a80c2ee999bfe3280b1764a20050a827f70a4e43667c9df235",
+      "tools/mxfp4_training/csrc/check_mxfp4_prepare_cache.cu": "b2c4370afef07d5f4ef0539c0b4aea0f200098dafabc801c3885dd61caee6d42",
+      "tools/mxfp4_training/csrc/mxfp4_gemm.cu": "d1902ef6313f82a3a829596b7fd3708f3552363dcee72ab5b400be63ba66d11c",
+      "tools/mxfp4_training/csrc/mxfp4_gemm.h": "083b85365544016f591de46c8e9e0e9ed9db3ad9faba7f771756d50515d753fd",
+      "tools/mxfp4_training/csrc/mxfp4_gemm_certified.cu": "8ac28719be57eab34006962dff0e52b2dfde3dbd036acf4175b5acf739982c52",
+      "tools/mxfp4_training/csrc/mxfp4_gemm_certified.h": "bb7daa3a2667aea6b844f30a331e951fe028c22f45adebb32e0c12a7c14e5d44",
+      "tools/mxfp4_training/csrc/mxfp4_gemm_fused.cu": "caa87aafe3b0978bfe78bf4f662b4612c5294f099ce07b35f7d5c5ff87de7cb6",
+      "tools/mxfp4_training/csrc/mxfp4_gemm_fused.h": "7e9268a1712b59ece46931fef7a605b8b1b24b36df70d98d058ea2abdcf30541",
+      "tools/mxfp4_training/csrc/mxfp4_gemm_tiled.cu": "be1655e12671bb8940f61f9b519e9199738e598033d248e29c795bccf0861e84",
+      "tools/mxfp4_training/csrc/mxfp4_gemm_tiled.h": "e765ccd49f45a0a4a6a8a9d3ffecbf86dcd37df8685891143af53d78f21a2b3d",
+      "tools/mxfp4_training/csrc/mxfp4_quantize_rne.cu": "cb9e8437a4f310e37cf5ca48eab761bf7bbd8d4effe846f9376ad284f112ca92",
+      "tools/mxfp4_training/csrc/mxfp4_quantize_rne.h": "7d4743a9560c0fb960813a9e2933b372c08d8086a863b48793f4260603892624",
+      "tools/mxfp4_training/pretrain_smoke.py": "d51c92c19ec6c53072c0b98c077cbca5a417f59d5c988f553fda3719ee9d0201",
+      "tools/mxfp4_training/reference.py": "eeba6d661ad051c6caaa9e192d0dbe2c9666369faf31c384b88fc42556b02b8b",
+      "tools/mxfp4_training/torch_ops.py": "37838ea16b34bd4e5f39307b0d9661c47616f0a1a69f9dd2de632b22e86fa400"
+    },
+    "result_member_sha256": {
+      "bench-1024-01-per_call.json": "4419c6eda0eb0f52b886d9d29fa39f89cfa5ba67fb56ba9eac87c73d45f9b59d",
+      "bench-1024-02-workspace.json": "a33cd4b9a82bfa0242415515c941850ce7f9c14484b232fad831a6bddf6aceae",
+      "bench-1024-03-workspace.json": "e1d55b2ddfab589b41fb381f778ad7c4772bcfb14761e3eb3a5288ed27a6c62c",
+      "bench-1024-04-per_call.json": "46c2b64981f6df7e7b4ade1fc906e0dabaeefff24d15c4a6c855acc66644356a",
+      "bench-4096-01-per_call.json": "3bc80b4e8dda1ea1f25d55b5f550af57b5a9e35c64ad5221fa0979b081c2bd33",
+      "bench-4096-02-workspace.json": "4b7b04b0381d578da0c0fc33ac1bdad0a7e6b58d266dd51bbfc356eb8088fbc9",
+      "bench-4096-03-workspace.json": "a0d611b49418a4496592974ccec1523a2df8fe6aa3da4c4c467ec3c317708e8a",
+      "bench-4096-04-per_call.json": "e32e2c5ae9f6defca8cc0af32c5a7e2508360a6b29fc546f2583903a521fb7ee",
+      "completion.json": "44c342efb6944c89befcb9bf0344d95a52c5b5db0dc798aa6317a301bdc88121",
+      "prior-cache/archive-manifest.json": "8908d8ddf7da50c19857f019b14f61b7b1a1552e854fcf111ae70de461963d66",
+      "prior-cache/build-off/certified_harness.log": "0f530bb8aca21c2fcda3ec21a520b3b4c16cf3cfcf2fe314b18a552a4a1afddf",
+      "prior-cache/build-off/compile-evidence.json": "114d8906b43e8509ed0544fd83d6d07ee3736e61f570718262a5d8ab643cfb03",
+      "prior-cache/build-off/performance_benchmark.log": "92dea351fbb51eeabb2fb123cf4d49c26bddd61c4e4a4bd89f91ccb9589089bd",
+      "prior-cache/build-off/shared_library.log": "ae63ad99de0d3f0422f6096345c4d5204788c8b3faca93952bce1369002a1e8b",
+      "prior-cache/build-off/standalone_harness.log": "98c0a8880d899e34769ce267ecc448c72484635f221bc43e78e48d8979220559",
+      "prior-cache/build-off/tiled_harness.log": "70853011fc0b3fe48c50e3affb1cef9199be0662979d3ce066c2e148effe1b6c",
+      "prior-cache/build-on/certified_harness.log": "70c3c28721036ff93bd4f512d2e82222d531887710934d06dda9a687218b5690",
+      "prior-cache/build-on/compile-evidence.json": "2732b0223d01c924d4645e39dec3398b8e9552ea528f101e1791d66f745df4b9",
+      "prior-cache/build-on/performance_benchmark.log": "4770e96ca1a32e757fe60e69e1028ec04384c594220c932ebf716e939f740a4b",
+      "prior-cache/build-on/shared_library.log": "5ca0453215078d5fc76bae80cdaaaec88e149c4208ef2f0dad0ae0a3fff0a0f1",
+      "prior-cache/build-on/standalone_harness.log": "f1052fff9ae3aca60faabc6e6b52662b4d6b0023025fd7a2648e645a3b83adf5",
+      "prior-cache/build-on/tiled_harness.log": "ae734b3b6f6877ae4d974d56c69a4d2878f43042c65b9a23a9b0e90106e48162",
+      "prior-cache/completion.json": "514b95d413864b7a43f90d04d8670bec4b6a3ab440c9cdb9d182795471e08e9f",
+      "prior-cache/prepare-cache-experiment-runner.py": "65e23628156a4430421cd6ad21359a62e4f2ab922f9daf58ee7d1621b5ecdde7",
+      "prior-cache/quantize-cuda-off.json": "b92b12cd1880490cf20eb204c237b60dca120874b7d85c52eb9b44fd194b3dec",
+      "prior-cache/quantize-cuda-on.json": "ef9156d4d62bc7ec197ef682c10da7dd876e2fbe4a05a7b806b04454d90d71d6",
+      "reviewed-native-helper.py": "f7f45628bcf7616a7e7915823c77f2f75602cff66be29bf640c5ec3be8ecce1e",
+      "reviewed-rnev2-helper.py": "96d3db40d25426370cfc8542dff908edf00a385c0055019c727c9c005fb8a548",
+      "source-binding.json": "551caae7d871375ddb854a20cd6307f16785bd26636c7bd81b473238986cea76",
+      "stages/bench-1024-01-per_call/stage.json": "2c2570f27ec3f4634077dc00d9055785de1167164e680bc8ac9389cfb560916c",
+      "stages/bench-1024-01-per_call/stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stages/bench-1024-01-per_call/stdout.log": "02997e0de49050c1a9cfec4c407d1a9d6506a24ef0c804cba4c39eec2aa1bc1d",
+      "stages/bench-1024-02-workspace/stage.json": "bb6c1ad6d2d306c600b21665b4e5414ab78f88c2d6ed75fe4379ef34dac897f0",
+      "stages/bench-1024-02-workspace/stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stages/bench-1024-02-workspace/stdout.log": "9298cc962f40f40c0bc1e331802c3c6a3371e635a96ab63d80bf55453767ed85",
+      "stages/bench-1024-03-workspace/stage.json": "4910b60b9ee43ca7e27edbdbde86f9a728c1b57043096f7753d2b15008750ff5",
+      "stages/bench-1024-03-workspace/stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stages/bench-1024-03-workspace/stdout.log": "9298cc962f40f40c0bc1e331802c3c6a3371e635a96ab63d80bf55453767ed85",
+      "stages/bench-1024-04-per_call/stage.json": "869de8cd339849536abfbb8961436e1db32ab2b90809411efd124d07474db623",
+      "stages/bench-1024-04-per_call/stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stages/bench-1024-04-per_call/stdout.log": "02997e0de49050c1a9cfec4c407d1a9d6506a24ef0c804cba4c39eec2aa1bc1d",
+      "stages/bench-4096-01-per_call/stage.json": "188a7df9725a4c748838423abd47efdbaf577650820a83b575855c3687339ac1",
+      "stages/bench-4096-01-per_call/stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stages/bench-4096-01-per_call/stdout.log": "02997e0de49050c1a9cfec4c407d1a9d6506a24ef0c804cba4c39eec2aa1bc1d",
+      "stages/bench-4096-02-workspace/stage.json": "993a6611c641c62b1a7947c8e7895d010811dea7e1d15194a0a17e0e4c70fba7",
+      "stages/bench-4096-02-workspace/stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stages/bench-4096-02-workspace/stdout.log": "9298cc962f40f40c0bc1e331802c3c6a3371e635a96ab63d80bf55453767ed85",
+      "stages/bench-4096-03-workspace/stage.json": "d5ec89c3b267e7cc72475331e0739fd94c8d3b631d398cd4bf51d6f7d2d63547",
+      "stages/bench-4096-03-workspace/stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stages/bench-4096-03-workspace/stdout.log": "9298cc962f40f40c0bc1e331802c3c6a3371e635a96ab63d80bf55453767ed85",
+      "stages/bench-4096-04-per_call/stage.json": "17dbd72e6ed5d91c1921023b273ca5b9c66a16b1c2e02a6b2aad670afc438c3e",
+      "stages/bench-4096-04-per_call/stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stages/bench-4096-04-per_call/stdout.log": "02997e0de49050c1a9cfec4c407d1a9d6506a24ef0c804cba4c39eec2aa1bc1d",
+      "stages/check-certified-workspace/stage.json": "157702b19a1f6c3368bd7414ade8483f34e2621a944b9b36b8d63dd873c8dbdf",
+      "stages/check-certified-workspace/stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stages/check-certified-workspace/stdout.log": "8facad3438a9d894c72304cb1d527fc91e0d64508dd4eb434d05e06a2de10917",
+      "workspace-check.json": "6b366091da694048cbb080b1c7a0130db68f0bc59794855f22e537ce26eb1947",
+      "workspace-experiment-runner.py": "4018f7b5b08d3493ee746458cd98dea58925e1bc233b4e456b4adfea2fc9ee03"
+    },
+    "prior_cache_archive": {
+      "path": "/workspace/scratch/3cc0562b0106/v100-perfs/evidence/results/mxfp4-training/2026-11-23-crater-c8/candidate-c2-prepare-cache/results.tar.gz",
+      "sha256": "9bea8409d639e984fa7834a16681312f23b14158b4c6f568796165f7bda0c797",
+      "bytes": 150676,
+      "regular_members": 109,
+      "expanded_bytes": 1761684
+    },
+    "cache_independent_audit_sha256": "bbf376a2a5b4d853ba1ff894eac488ca1938187424c10dd181252d74d383477a",
+    "source_delta": "three Python modules only",
+    "selected_cache_build": "off",
+    "selected_library": {
+      "path": "/workspace/user/mxfp4-c2-cache-20261123T2240/build-off/libmxfp4_sm70.so",
+      "sha256": "8940ad39d1ccb6e2a5a8d82635df03dd5401453a2c5565ba7a15c8e31336e7b3",
+      "bytes": 3037568
+    },
+    "selected_compile_manifest_sha256": "114d8906b43e8509ed0544fd83d6d07ee3736e61f570718262a5d8ab643cfb03",
+    "ELF_bytes_present_locally": false,
+    "ELF_scope": "node-recorded hashes cross-bound to old manifests and stage before/after records",
+    "launch_sha256": "b5f5ada90fc5e7449dd90d27f06077260bbfd0370f46029c6afb4ae2278a646c",
+    "same_B_lock_path": "/tmp/mxfp4-framework-followup-1001-de413aab15e0c29541e2.lock"
+  },
+  "stage_counts": {
+    "passed": 10
+  },
+  "stage_statuses": [
+    {
+      "name": "wait-cache-lock",
+      "status": "passed",
+      "passed": true,
+      "executed": false,
+      "gpu_executed": false,
+      "returncode": null,
+      "error": null,
+      "reason": null
+    },
+    {
+      "name": "check-certified-workspace",
+      "status": "passed",
+      "passed": true,
+      "executed": true,
+      "gpu_executed": true,
+      "returncode": 0,
+      "error": null,
+      "reason": null
+    },
+    {
+      "name": "bench-1024-01-per_call",
+      "status": "passed",
+      "passed": true,
+      "executed": true,
+      "gpu_executed": true,
+      "returncode": 0,
+      "error": null,
+      "reason": null
+    },
+    {
+      "name": "bench-1024-02-workspace",
+      "status": "passed",
+      "passed": true,
+      "executed": true,
+      "gpu_executed": true,
+      "returncode": 0,
+      "error": null,
+      "reason": null
+    },
+    {
+      "name": "bench-1024-03-workspace",
+      "status": "passed",
+      "passed": true,
+      "executed": true,
+      "gpu_executed": true,
+      "returncode": 0,
+      "error": null,
+      "reason": null
+    },
+    {
+      "name": "bench-1024-04-per_call",
+      "status": "passed",
+      "passed": true,
+      "executed": true,
+      "gpu_executed": true,
+      "returncode": 0,
+      "error": null,
+      "reason": null
+    },
+    {
+      "name": "bench-4096-01-per_call",
+      "status": "passed",
+      "passed": true,
+      "executed": true,
+      "gpu_executed": true,
+      "returncode": 0,
+      "error": null,
+      "reason": null
+    },
+    {
+      "name": "bench-4096-02-workspace",
+      "status": "passed",
+      "passed": true,
+      "executed": true,
+      "gpu_executed": true,
+      "returncode": 0,
+      "error": null,
+      "reason": null
+    },
+    {
+      "name": "bench-4096-03-workspace",
+      "status": "passed",
+      "passed": true,
+      "executed": true,
+      "gpu_executed": true,
+      "returncode": 0,
+      "error": null,
+      "reason": null
+    },
+    {
+      "name": "bench-4096-04-per_call",
+      "status": "passed",
+      "passed": true,
+      "executed": true,
+      "gpu_executed": true,
+      "returncode": 0,
+      "error": null,
+      "reason": null
+    }
+  ],
+  "experiment_status": "passed",
+  "experiment_passed": true,
+  "checker": {
+    "cases": 11,
+    "independent_full_output_comparisons": 16,
+    "compared_output_values": 1455,
+    "canonical_positive_zero_values": 96,
+    "actual_call_counts": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "mutation_admission": [
+      1,
+      1,
+      1,
+      0,
+      0
+    ],
+    "optional_coverage_unavailable": [
+      "second CUDA device: only one visible device; CPU operand rejection executed"
+    ],
+    "raw_sha256": "6b366091da694048cbb080b1c7a0130db68f0bc59794855f22e537ce26eb1947",
+    "all_cases": [
+      {
+        "name": "explicit_lifecycle_and_first_output",
+        "passed": true,
+        "pre_entry": {
+          "error_type": "RuntimeError",
+          "message": "certified workspace is not active; enter it exactly once"
+        },
+        "read_only_bindings": {
+          "shape": {
+            "error_type": "AttributeError",
+            "message": "property 'shape' of 'CertifiedWorkspace' object has no setter"
+          },
+          "device": {
+            "error_type": "AttributeError",
+            "message": "property 'device' of 'CertifiedWorkspace' object has no setter"
+          },
+          "padded_k": {
+            "error_type": "AttributeError",
+            "message": "property 'padded_k' of 'CertifiedWorkspace' object has no setter"
+          },
+          "library_path": {
+            "error_type": "AttributeError",
+            "message": "property 'library_path' of 'CertifiedWorkspace' object has no setter"
+          }
+        },
+        "initial_info": {
+          "abi_version": 1,
+          "device": 0,
+          "m": 8,
+          "n": 12,
+          "padded_k": 64,
+          "workspace_bytes": 4197256,
+          "max_energy_a": 0,
+          "max_energy_b": 0,
+          "accepted": 0,
+          "reject_flags": 0,
+          "min_scale_a": 0,
+          "max_scale_a": 0,
+          "min_scale_b": 0,
+          "max_scale_b": 0,
+          "max_span_a": 0,
+          "max_span_b": 0,
+          "nan_scales_a": 0,
+          "nan_scales_b": 0,
+          "zero_rows_a": 0,
+          "zero_rows_b": 0,
+          "energy_saturated_a": 0,
+          "energy_saturated_b": 0,
+          "metadata_valid": 0,
+          "reserved": 0,
+          "submitted_calls": 0,
+          "context_lifecycle": "explicit_single_shape_owner_thread_workspace"
+        },
+        "submission_info": {
+          "abi_version": 1,
+          "device": 0,
+          "m": 8,
+          "n": 12,
+          "padded_k": 64,
+          "workspace_bytes": 4197256,
+          "max_energy_a": 2829,
+          "max_energy_b": 2527,
+          "accepted": 1,
+          "reject_flags": 0,
+          "min_scale_a": 127,
+          "max_scale_a": 127,
+          "min_scale_b": 127,
+          "max_scale_b": 127,
+          "max_span_a": 0,
+          "max_span_b": 0,
+          "nan_scales_a": 0,
+          "nan_scales_b": 0,
+          "zero_rows_a": 0,
+          "zero_rows_b": 0,
+          "energy_saturated_a": 0,
+          "energy_saturated_b": 0,
+          "metadata_valid": 1,
+          "reserved": 0,
+          "submitted_calls": 1,
+          "context_lifecycle": "explicit_single_shape_owner_thread_workspace"
+        },
+        "output": {
+          "shape": [
+            8,
+            12
+          ],
+          "values": 96,
+          "comparison": "exact_except_nan_payload_and_signed_zero",
+          "atol": 0.0,
+          "rtol": 0.0,
+          "exact_mismatches": 0,
+          "tolerance_failures": 0,
+          "max_finite_abs_error": 0.0,
+          "canonical_positive_zero_values": 0
+        },
+        "closed": true,
+        "idempotent_close": true,
+        "use_after_close": {
+          "error_type": "RuntimeError",
+          "message": "certified workspace is not active; enter it exactly once"
+        },
+        "reentry": {
+          "error_type": "RuntimeError",
+          "message": "certified workspace can be entered exactly once"
+        }
+      },
+      {
+        "name": "odd_logical_k_padding_and_native_shape_binding",
+        "passed": true,
+        "logical_k": 33,
+        "native_padded_k": 64,
+        "output": {
+          "shape": [
+            3,
+            5
+          ],
+          "values": 15,
+          "comparison": "exact_except_nan_payload_and_signed_zero",
+          "atol": 0.0,
+          "rtol": 0.0,
+          "exact_mismatches": 0,
+          "tolerance_failures": 0,
+          "max_finite_abs_error": 0.0,
+          "canonical_positive_zero_values": 0
+        },
+        "invalid_padding_rejected": {
+          "error_type": "ValueError",
+          "message": "K padding must be canonical positive zero"
+        },
+        "final_info": {
+          "abi_version": 1,
+          "device": 0,
+          "m": 3,
+          "n": 5,
+          "padded_k": 64,
+          "workspace_bytes": 4195528,
+          "max_energy_a": 1526,
+          "max_energy_b": 1567,
+          "accepted": 1,
+          "reject_flags": 0,
+          "min_scale_a": 127,
+          "max_scale_a": 127,
+          "min_scale_b": 127,
+          "max_scale_b": 127,
+          "max_span_a": 0,
+          "max_span_b": 0,
+          "nan_scales_a": 0,
+          "nan_scales_b": 0,
+          "zero_rows_a": 0,
+          "zero_rows_b": 0,
+          "energy_saturated_a": 0,
+          "energy_saturated_b": 0,
+          "metadata_valid": 1,
+          "reserved": 0,
+          "submitted_calls": 1,
+          "context_lifecycle": "explicit_single_shape_owner_thread_workspace"
+        }
+      },
+      {
+        "name": "initial_diagnostic_failure_rolls_back_native_allocation",
+        "passed": true,
+        "failure_after_real_create_and_real_info_call": {
+          "error_type": "RuntimeError",
+          "message": "MXFP4 certified workspace diagnostic query failed: status=1, invalid argument"
+        },
+        "native_destroy_calls": 1,
+        "closed": true
+      },
+      {
+        "name": "mutated_inputs_certificate_and_nan_fallback",
+        "passed": true,
+        "outputs": [
+          {
+            "shape": [
+              8,
+              12
+            ],
+            "values": 96,
+            "comparison": "exact_except_nan_payload_and_signed_zero",
+            "atol": 0.0,
+            "rtol": 0.0,
+            "exact_mismatches": 0,
+            "tolerance_failures": 0,
+            "max_finite_abs_error": 0.0,
+            "canonical_positive_zero_values": 0
+          },
+          {
+            "shape": [
+              8,
+              12
+            ],
+            "values": 96,
+            "comparison": "exact_except_nan_payload_and_signed_zero",
+            "atol": 0.0,
+            "rtol": 0.0,
+            "exact_mismatches": 0,
+            "tolerance_failures": 0,
+            "max_finite_abs_error": 0.0,
+            "canonical_positive_zero_values": 0
+          },
+          {
+            "shape": [
+              8,
+              12
+            ],
+            "values": 96,
+            "comparison": "exact_except_nan_payload_and_signed_zero",
+            "atol": 0.0,
+            "rtol": 0.0,
+            "exact_mismatches": 0,
+            "tolerance_failures": 0,
+            "max_finite_abs_error": 0.0,
+            "canonical_positive_zero_values": 96
+          },
+          {
+            "shape": [
+              8,
+              12
+            ],
+            "values": 96,
+            "comparison": "exact_except_nan_payload_and_signed_zero",
+            "atol": 0.0,
+            "rtol": 0.0,
+            "exact_mismatches": 0,
+            "tolerance_failures": 0,
+            "max_finite_abs_error": 0.0,
+            "canonical_positive_zero_values": 0
+          },
+          {
+            "shape": [
+              8,
+              12
+            ],
+            "values": 96,
+            "comparison": "exact_except_nan_payload_and_signed_zero",
+            "atol": 0.0,
+            "rtol": 0.0,
+            "exact_mismatches": 0,
+            "tolerance_failures": 0,
+            "max_finite_abs_error": 0.0,
+            "canonical_positive_zero_values": 0
+          }
+        ],
+        "diagnostics": [
+          {
+            "abi_version": 1,
+            "device": 0,
+            "m": 8,
+            "n": 12,
+            "padded_k": 64,
+            "workspace_bytes": 4197256,
+            "max_energy_a": 2286,
+            "max_energy_b": 3055,
+            "accepted": 1,
+            "reject_flags": 0,
+            "min_scale_a": 127,
+            "max_scale_a": 127,
+            "min_scale_b": 127,
+            "max_scale_b": 127,
+            "max_span_a": 0,
+            "max_span_b": 0,
+            "nan_scales_a": 0,
+            "nan_scales_b": 0,
+            "zero_rows_a": 0,
+            "zero_rows_b": 0,
+            "energy_saturated_a": 0,
+            "energy_saturated_b": 0,
+            "metadata_valid": 1,
+            "reserved": 0,
+            "submitted_calls": 1,
+            "context_lifecycle": "explicit_single_shape_owner_thread_workspace"
+          },
+          {
+            "abi_version": 1,
+            "device": 0,
+            "m": 8,
+            "n": 12,
+            "padded_k": 64,
+            "workspace_bytes": 4197256,
+            "max_energy_a": 6898,
+            "max_energy_b": 2845,
+            "accepted": 1,
+            "reject_flags": 0,
+            "min_scale_a": 127,
+            "max_scale_a": 127,
+            "min_scale_b": 127,
+            "max_scale_b": 127,
+            "max_span_a": 1,
+            "max_span_b": 0,
+            "nan_scales_a": 0,
+            "nan_scales_b": 0,
+            "zero_rows_a": 0,
+            "zero_rows_b": 0,
+            "energy_saturated_a": 0,
+            "energy_saturated_b": 0,
+            "metadata_valid": 1,
+            "reserved": 0,
+            "submitted_calls": 2,
+            "context_lifecycle": "explicit_single_shape_owner_thread_workspace"
+          },
+          {
+            "abi_version": 1,
+            "device": 0,
+            "m": 8,
+            "n": 12,
+            "padded_k": 64,
+            "workspace_bytes": 4197256,
+            "max_energy_a": 0,
+            "max_energy_b": 2596,
+            "accepted": 1,
+            "reject_flags": 0,
+            "min_scale_a": 127,
+            "max_scale_a": 127,
+            "min_scale_b": 127,
+            "max_scale_b": 127,
+            "max_span_a": 0,
+            "max_span_b": 0,
+            "nan_scales_a": 0,
+            "nan_scales_b": 0,
+            "zero_rows_a": 8,
+            "zero_rows_b": 0,
+            "energy_saturated_a": 0,
+            "energy_saturated_b": 0,
+            "metadata_valid": 1,
+            "reserved": 0,
+            "submitted_calls": 3,
+            "context_lifecycle": "explicit_single_shape_owner_thread_workspace"
+          },
+          {
+            "abi_version": 1,
+            "device": 0,
+            "m": 8,
+            "n": 12,
+            "padded_k": 64,
+            "workspace_bytes": 4197256,
+            "max_energy_a": 281474976710657,
+            "max_energy_b": 2459,
+            "accepted": 0,
+            "reject_flags": 6,
+            "min_scale_a": 127,
+            "max_scale_a": 127,
+            "min_scale_b": 127,
+            "max_scale_b": 127,
+            "max_span_a": 24,
+            "max_span_b": 0,
+            "nan_scales_a": 0,
+            "nan_scales_b": 0,
+            "zero_rows_a": 0,
+            "zero_rows_b": 0,
+            "energy_saturated_a": 1,
+            "energy_saturated_b": 0,
+            "metadata_valid": 1,
+            "reserved": 0,
+            "submitted_calls": 4,
+            "context_lifecycle": "explicit_single_shape_owner_thread_workspace"
+          },
+          {
+            "abi_version": 1,
+            "device": 0,
+            "m": 8,
+            "n": 12,
+            "padded_k": 64,
+            "workspace_bytes": 4197256,
+            "max_energy_a": 3039,
+            "max_energy_b": 2757,
+            "accepted": 0,
+            "reject_flags": 1,
+            "min_scale_a": 127,
+            "max_scale_a": 127,
+            "min_scale_b": 127,
+            "max_scale_b": 127,
+            "max_span_a": 0,
+            "max_span_b": 0,
+            "nan_scales_a": 1,
+            "nan_scales_b": 0,
+            "zero_rows_a": 0,
+            "zero_rows_b": 0,
+            "energy_saturated_a": 0,
+            "energy_saturated_b": 0,
+            "metadata_valid": 1,
+            "reserved": 0,
+            "submitted_calls": 5,
+            "context_lifecycle": "explicit_single_shape_owner_thread_workspace"
+          }
+        ],
+        "final_info": {
+          "abi_version": 1,
+          "device": 0,
+          "m": 8,
+          "n": 12,
+          "padded_k": 64,
+          "workspace_bytes": 4197256,
+          "max_energy_a": 3039,
+          "max_energy_b": 2757,
+          "accepted": 0,
+          "reject_flags": 1,
+          "min_scale_a": 127,
+          "max_scale_a": 127,
+          "min_scale_b": 127,
+          "max_scale_b": 127,
+          "max_span_a": 0,
+          "max_span_b": 0,
+          "nan_scales_a": 1,
+          "nan_scales_b": 0,
+          "zero_rows_a": 0,
+          "zero_rows_b": 0,
+          "energy_saturated_a": 0,
+          "energy_saturated_b": 0,
+          "metadata_valid": 1,
+          "reserved": 0,
+          "submitted_calls": 5,
+          "context_lifecycle": "explicit_single_shape_owner_thread_workspace"
+        },
+        "same_device_input_storage_mutated_between_calls": true,
+        "nan_payload_equivalence_only_for_nan_fixture": true
+      },
+      {
+        "name": "preflight_failures_recover_without_submission",
+        "passed": true,
+        "wrong_shape": {
+          "error_type": "ValueError",
+          "message": "workspace operands do not match its fixed logical shape"
+        },
+        "wrong_operand_device_cpu": {
+          "error_type": "ValueError",
+          "message": "workspace operands do not match its bound CUDA device"
+        },
+        "nonempty_diagnostic": {
+          "error_type": "ValueError",
+          "message": "certified_info must be an empty dict"
+        },
+        "recovery_output": {
+          "shape": [
+            8,
+            12
+          ],
+          "values": 96,
+          "comparison": "exact_except_nan_payload_and_signed_zero",
+          "atol": 0.0,
+          "rtol": 0.0,
+          "exact_mismatches": 0,
+          "tolerance_failures": 0,
+          "max_finite_abs_error": 0.0,
+          "canonical_positive_zero_values": 0
+        }
+      },
+      {
+        "name": "wrong_host_thread_never_enters_native_context",
+        "passed": true,
+        "gemm": {
+          "error_type": "RuntimeError",
+          "message": "certified workspace requires its entering host thread"
+        },
+        "info": {
+          "error_type": "RuntimeError",
+          "message": "certified workspace requires its entering host thread"
+        },
+        "close": {
+          "error_type": "RuntimeError",
+          "message": "certified workspace requires its entering host thread"
+        },
+        "owner_recovery_output": {
+          "shape": [
+            8,
+            12
+          ],
+          "values": 96,
+          "comparison": "exact_except_nan_payload_and_signed_zero",
+          "atol": 0.0,
+          "rtol": 0.0,
+          "exact_mismatches": 0,
+          "tolerance_failures": 0,
+          "max_finite_abs_error": 0.0,
+          "canonical_positive_zero_values": 0
+        }
+      },
+      {
+        "name": "busy_stream_reject_then_completed_stream_switch",
+        "passed": true,
+        "busy_switch": {
+          "error_type": "CertifiedWorkspaceBusy",
+          "message": "previous workspace stream is still busy; synchronize it before switching"
+        },
+        "initial_output": {
+          "shape": [
+            8,
+            12
+          ],
+          "values": 96,
+          "comparison": "exact_except_nan_payload_and_signed_zero",
+          "atol": 0.0,
+          "rtol": 0.0,
+          "exact_mismatches": 0,
+          "tolerance_failures": 0,
+          "max_finite_abs_error": 0.0,
+          "canonical_positive_zero_values": 0
+        },
+        "switched_output": {
+          "shape": [
+            8,
+            12
+          ],
+          "values": 96,
+          "comparison": "exact_except_nan_payload_and_signed_zero",
+          "atol": 0.0,
+          "rtol": 0.0,
+          "exact_mismatches": 0,
+          "tolerance_failures": 0,
+          "max_finite_abs_error": 0.0,
+          "canonical_positive_zero_values": 0
+        },
+        "final_info": {
+          "abi_version": 1,
+          "device": 0,
+          "m": 8,
+          "n": 12,
+          "padded_k": 64,
+          "workspace_bytes": 4197256,
+          "max_energy_a": 2829,
+          "max_energy_b": 2527,
+          "accepted": 1,
+          "reject_flags": 0,
+          "min_scale_a": 127,
+          "max_scale_a": 127,
+          "min_scale_b": 127,
+          "max_scale_b": 127,
+          "max_span_a": 0,
+          "max_span_b": 0,
+          "nan_scales_a": 0,
+          "nan_scales_b": 0,
+          "zero_rows_a": 0,
+          "zero_rows_b": 0,
+          "energy_saturated_a": 0,
+          "energy_saturated_b": 0,
+          "metadata_valid": 1,
+          "reserved": 0,
+          "submitted_calls": 2,
+          "context_lifecycle": "explicit_single_shape_owner_thread_workspace"
+        },
+        "different_stream_handles": true
+      },
+      {
+        "name": "queued_calls_tensor_lifetime_and_close_wait",
+        "passed": true,
+        "submitted_calls": 4,
+        "close_waited": true,
+        "outputs": [
+          {
+            "shape": [
+              8,
+              12
+            ],
+            "values": 96,
+            "comparison": "exact_except_nan_payload_and_signed_zero",
+            "atol": 0.0,
+            "rtol": 0.0,
+            "exact_mismatches": 0,
+            "tolerance_failures": 0,
+            "max_finite_abs_error": 0.0,
+            "canonical_positive_zero_values": 0
+          },
+          {
+            "shape": [
+              8,
+              12
+            ],
+            "values": 96,
+            "comparison": "exact_except_nan_payload_and_signed_zero",
+            "atol": 0.0,
+            "rtol": 0.0,
+            "exact_mismatches": 0,
+            "tolerance_failures": 0,
+            "max_finite_abs_error": 0.0,
+            "canonical_positive_zero_values": 0
+          },
+          {
+            "shape": [
+              8,
+              12
+            ],
+            "values": 96,
+            "comparison": "exact_except_nan_payload_and_signed_zero",
+            "atol": 0.0,
+            "rtol": 0.0,
+            "exact_mismatches": 0,
+            "tolerance_failures": 0,
+            "max_finite_abs_error": 0.0,
+            "canonical_positive_zero_values": 0
+          },
+          {
+            "shape": [
+              8,
+              12
+            ],
+            "values": 96,
+            "comparison": "exact_except_nan_payload_and_signed_zero",
+            "atol": 0.0,
+            "rtol": 0.0,
+            "exact_mismatches": 0,
+            "tolerance_failures": 0,
+            "max_finite_abs_error": 0.0,
+            "canonical_positive_zero_values": 0
+          }
+        ],
+        "temporary_operand_references_released_after_enqueue": true
+      },
+      {
+        "name": "partial_native_submission_failure_closes_and_waits",
+        "passed": true,
+        "injected_after_real_native_submission": true,
+        "failure": {
+          "error_type": "RuntimeError",
+          "message": "MXFP4 certified workspace gemm failed: status=1, invalid argument"
+        },
+        "native_destroy_calls": 1,
+        "stream_complete_after_failure": true,
+        "closed": true
+      },
+      {
+        "name": "context_body_exception_cleans_up",
+        "passed": true,
+        "body_failure": {
+          "error_type": "BodyError",
+          "message": "intentional context-body exception"
+        },
+        "closed": true,
+        "stream_complete": true
+      },
+      {
+        "name": "capture_rejection_and_post_capture_recovery",
+        "passed": true,
+        "gemm_capture_rejected_before_validation": {
+          "error_type": "RuntimeError",
+          "message": "certified workspace does not support CUDA Graph capture"
+        },
+        "destroy_capture_rejected_without_consuming_context": {
+          "error_type": "RuntimeError",
+          "message": "certified workspace does not support CUDA Graph capture"
+        },
+        "post_capture_recovery_output": {
+          "shape": [
+            8,
+            12
+          ],
+          "values": 96,
+          "comparison": "exact_except_nan_payload_and_signed_zero",
+          "atol": 0.0,
+          "rtol": 0.0,
+          "exact_mismatches": 0,
+          "tolerance_failures": 0,
+          "max_finite_abs_error": 0.0,
+          "canonical_positive_zero_values": 0
+        }
+      }
+    ]
+  },
+  "performance_eligible": true,
+  "raw_runs": [
+    {
+      "name": "bench-1024-01-per_call",
+      "raw_sha256": "4419c6eda0eb0f52b886d9d29fa39f89cfa5ba67fb56ba9eac87c73d45f9b59d",
+      "lifecycle": "per_call",
+      "size": 1024,
+      "timing": {
+        "primary_clock": "synchronized_perf_counter",
+        "median_ms": 3.52044909959659,
+        "useful_tflops": 0.6100027545480152,
+        "synchronized_wall_round_ms": [
+          4.1145686991512775,
+          3.52044909959659,
+          2.984202897641808,
+          3.236125403782353,
+          3.904091299045831
+        ],
+        "cuda_event_round_ms": [
+          4.112659072875976,
+          3.5185726165771483,
+          2.9825376510620116,
+          3.2345855712890623,
+          3.902444839477539
+        ],
+        "cuda_event_median_ms": 3.5185726165771483
+      },
+      "separate_lifecycle_timing": {
+        "context_create_and_initial_abi_query_ms": null,
+        "context_close_and_final_wait_ms": null
+      },
+      "input_sha256": {
+        "a_fp32_bytes": "2d4001ed071779906ae3c56c7057bc18ae829a2653f12b9b163eb9bc966b1fbf",
+        "b_fp32_bytes": "18771dbd1900f9588780ebcf4d8c126fea910ed8b2f0f5576dea0a20e69210c8"
+      },
+      "initial_certificate": {
+        "abi_version": 1,
+        "device": 0,
+        "m": 1024,
+        "n": 1024,
+        "padded_k": 1024,
+        "workspace_bytes": 8421448,
+        "max_energy_a": 75537,
+        "max_energy_b": 73562,
+        "accepted": 1,
+        "reject_flags": 0,
+        "min_scale_a": 125,
+        "max_scale_a": 125,
+        "min_scale_b": 125,
+        "max_scale_b": 125,
+        "max_span_a": 2,
+        "max_span_b": 2,
+        "nan_scales_a": 0,
+        "nan_scales_b": 0,
+        "zero_rows_a": 0,
+        "zero_rows_b": 0,
+        "energy_saturated_a": 0,
+        "energy_saturated_b": 0,
+        "metadata_valid": 1,
+        "reserved": 0,
+        "submitted_calls": 1,
+        "context_lifecycle": "per_call_create_gemm_destroy_synchronous"
+      },
+      "actual_last_timed_certificate": null
+    },
+    {
+      "name": "bench-1024-02-workspace",
+      "raw_sha256": "a33cd4b9a82bfa0242415515c941850ce7f9c14484b232fad831a6bddf6aceae",
+      "lifecycle": "workspace",
+      "size": 1024,
+      "timing": {
+        "primary_clock": "synchronized_perf_counter",
+        "median_ms": 0.4717086034361273,
+        "useful_tflops": 4.552564087991634,
+        "synchronized_wall_round_ms": [
+          0.47564880223944783,
+          0.4730565007776022,
+          0.4713508009444922,
+          0.46911000390537083,
+          0.4717086034361273
+        ],
+        "cuda_event_round_ms": [
+          0.4742527961730957,
+          0.4715775966644287,
+          0.47005438804626465,
+          0.4677887916564941,
+          0.4704415798187256
+        ],
+        "cuda_event_median_ms": 0.4704415798187256
+      },
+      "separate_lifecycle_timing": {
+        "context_create_and_initial_abi_query_ms": 22.755461977794766,
+        "context_close_and_final_wait_ms": 9.893191047012806,
+        "separate_create_close_total_ms": 32.64865302480757,
+        "create_close_ms_per_all_completed_call": 0.5352238200788126,
+        "note": "Amortization denominator includes one validation, warmup, and measured calls; not a training-step rate"
+      },
+      "input_sha256": {
+        "a_fp32_bytes": "2d4001ed071779906ae3c56c7057bc18ae829a2653f12b9b163eb9bc966b1fbf",
+        "b_fp32_bytes": "18771dbd1900f9588780ebcf4d8c126fea910ed8b2f0f5576dea0a20e69210c8"
+      },
+      "initial_certificate": {
+        "abi_version": 1,
+        "device": 0,
+        "m": 1024,
+        "n": 1024,
+        "padded_k": 1024,
+        "workspace_bytes": 8421448,
+        "max_energy_a": 75537,
+        "max_energy_b": 73562,
+        "accepted": 1,
+        "reject_flags": 0,
+        "min_scale_a": 125,
+        "max_scale_a": 125,
+        "min_scale_b": 125,
+        "max_scale_b": 125,
+        "max_span_a": 2,
+        "max_span_b": 2,
+        "nan_scales_a": 0,
+        "nan_scales_b": 0,
+        "zero_rows_a": 0,
+        "zero_rows_b": 0,
+        "energy_saturated_a": 0,
+        "energy_saturated_b": 0,
+        "metadata_valid": 1,
+        "reserved": 0,
+        "submitted_calls": 1,
+        "context_lifecycle": "explicit_single_shape_owner_thread_workspace"
+      },
+      "actual_last_timed_certificate": {
+        "abi_version": 1,
+        "device": 0,
+        "m": 1024,
+        "n": 1024,
+        "padded_k": 1024,
+        "workspace_bytes": 8421448,
+        "max_energy_a": 75537,
+        "max_energy_b": 73562,
+        "accepted": 1,
+        "reject_flags": 0,
+        "min_scale_a": 125,
+        "max_scale_a": 125,
+        "min_scale_b": 125,
+        "max_scale_b": 125,
+        "max_span_a": 2,
+        "max_span_b": 2,
+        "nan_scales_a": 0,
+        "nan_scales_b": 0,
+        "zero_rows_a": 0,
+        "zero_rows_b": 0,
+        "energy_saturated_a": 0,
+        "energy_saturated_b": 0,
+        "metadata_valid": 1,
+        "reserved": 0,
+        "submitted_calls": 61,
+        "context_lifecycle": "explicit_single_shape_owner_thread_workspace"
+      }
+    },
+    {
+      "name": "bench-1024-03-workspace",
+      "raw_sha256": "e1d55b2ddfab589b41fb381f778ad7c4772bcfb14761e3eb3a5288ed27a6c62c",
+      "lifecycle": "workspace",
+      "size": 1024,
+      "timing": {
+        "primary_clock": "synchronized_perf_counter",
+        "median_ms": 0.4713414004072547,
+        "useful_tflops": 4.5561108066138525,
+        "synchronized_wall_round_ms": [
+          0.4739465017337352,
+          0.47509800060652196,
+          0.4704719001892954,
+          0.46818130067549646,
+          0.4713414004072547
+        ],
+        "cuda_event_round_ms": [
+          0.47260479927062987,
+          0.47368640899658204,
+          0.46913599967956543,
+          0.4669023990631104,
+          0.4699872016906738
+        ],
+        "cuda_event_median_ms": 0.4699872016906738
+      },
+      "separate_lifecycle_timing": {
+        "context_create_and_initial_abi_query_ms": 29.044369992334396,
+        "context_close_and_final_wait_ms": 0.7840660400688648,
+        "separate_create_close_total_ms": 29.82843603240326,
+        "create_close_ms_per_all_completed_call": 0.48899075462956165,
+        "note": "Amortization denominator includes one validation, warmup, and measured calls; not a training-step rate"
+      },
+      "input_sha256": {
+        "a_fp32_bytes": "2d4001ed071779906ae3c56c7057bc18ae829a2653f12b9b163eb9bc966b1fbf",
+        "b_fp32_bytes": "18771dbd1900f9588780ebcf4d8c126fea910ed8b2f0f5576dea0a20e69210c8"
+      },
+      "initial_certificate": {
+        "abi_version": 1,
+        "device": 0,
+        "m": 1024,
+        "n": 1024,
+        "padded_k": 1024,
+        "workspace_bytes": 8421448,
+        "max_energy_a": 75537,
+        "max_energy_b": 73562,
+        "accepted": 1,
+        "reject_flags": 0,
+        "min_scale_a": 125,
+        "max_scale_a": 125,
+        "min_scale_b": 125,
+        "max_scale_b": 125,
+        "max_span_a": 2,
+        "max_span_b": 2,
+        "nan_scales_a": 0,
+        "nan_scales_b": 0,
+        "zero_rows_a": 0,
+        "zero_rows_b": 0,
+        "energy_saturated_a": 0,
+        "energy_saturated_b": 0,
+        "metadata_valid": 1,
+        "reserved": 0,
+        "submitted_calls": 1,
+        "context_lifecycle": "explicit_single_shape_owner_thread_workspace"
+      },
+      "actual_last_timed_certificate": {
+        "abi_version": 1,
+        "device": 0,
+        "m": 1024,
+        "n": 1024,
+        "padded_k": 1024,
+        "workspace_bytes": 8421448,
+        "max_energy_a": 75537,
+        "max_energy_b": 73562,
+        "accepted": 1,
+        "reject_flags": 0,
+        "min_scale_a": 125,
+        "max_scale_a": 125,
+        "min_scale_b": 125,
+        "max_scale_b": 125,
+        "max_span_a": 2,
+        "max_span_b": 2,
+        "nan_scales_a": 0,
+        "nan_scales_b": 0,
+        "zero_rows_a": 0,
+        "zero_rows_b": 0,
+        "energy_saturated_a": 0,
+        "energy_saturated_b": 0,
+        "metadata_valid": 1,
+        "reserved": 0,
+        "submitted_calls": 61,
+        "context_lifecycle": "explicit_single_shape_owner_thread_workspace"
+      }
+    },
+    {
+      "name": "bench-1024-04-per_call",
+      "raw_sha256": "46c2b64981f6df7e7b4ade1fc906e0dabaeefff24d15c4a6c855acc66644356a",
+      "lifecycle": "per_call",
+      "size": 1024,
+      "timing": {
+        "primary_clock": "synchronized_perf_counter",
+        "median_ms": 4.270481498679146,
+        "useful_tflops": 0.5028668661049611,
+        "synchronized_wall_round_ms": [
+          2.765176701359451,
+          3.4812784986570477,
+          5.1029652007855475,
+          5.458381801145151,
+          4.270481498679146
+        ],
+        "cuda_event_round_ms": [
+          2.763785552978516,
+          3.479872131347656,
+          5.1016193389892575,
+          5.4566497802734375,
+          4.26866569519043
+        ],
+        "cuda_event_median_ms": 4.26866569519043
+      },
+      "separate_lifecycle_timing": {
+        "context_create_and_initial_abi_query_ms": null,
+        "context_close_and_final_wait_ms": null
+      },
+      "input_sha256": {
+        "a_fp32_bytes": "2d4001ed071779906ae3c56c7057bc18ae829a2653f12b9b163eb9bc966b1fbf",
+        "b_fp32_bytes": "18771dbd1900f9588780ebcf4d8c126fea910ed8b2f0f5576dea0a20e69210c8"
+      },
+      "initial_certificate": {
+        "abi_version": 1,
+        "device": 0,
+        "m": 1024,
+        "n": 1024,
+        "padded_k": 1024,
+        "workspace_bytes": 8421448,
+        "max_energy_a": 75537,
+        "max_energy_b": 73562,
+        "accepted": 1,
+        "reject_flags": 0,
+        "min_scale_a": 125,
+        "max_scale_a": 125,
+        "min_scale_b": 125,
+        "max_scale_b": 125,
+        "max_span_a": 2,
+        "max_span_b": 2,
+        "nan_scales_a": 0,
+        "nan_scales_b": 0,
+        "zero_rows_a": 0,
+        "zero_rows_b": 0,
+        "energy_saturated_a": 0,
+        "energy_saturated_b": 0,
+        "metadata_valid": 1,
+        "reserved": 0,
+        "submitted_calls": 1,
+        "context_lifecycle": "per_call_create_gemm_destroy_synchronous"
+      },
+      "actual_last_timed_certificate": null
+    },
+    {
+      "name": "bench-4096-01-per_call",
+      "raw_sha256": "3bc80b4e8dda1ea1f25d55b5f550af57b5a9e35c64ad5221fa0979b081c2bd33",
+      "lifecycle": "per_call",
+      "size": 4096,
+      "timing": {
+        "primary_clock": "synchronized_perf_counter",
+        "median_ms": 6.876226904569194,
+        "useful_tflops": 19.987553549268856,
+        "synchronized_wall_round_ms": [
+          7.191073801368475,
+          9.374802897218615,
+          6.876226904569194,
+          6.076239299727604,
+          5.484088300727308
+        ],
+        "cuda_event_round_ms": [
+          7.188751983642578,
+          9.373308563232422,
+          6.874745941162109,
+          6.074703979492187,
+          5.482675170898437
+        ],
+        "cuda_event_median_ms": 6.874745941162109
+      },
+      "separate_lifecycle_timing": {
+        "context_create_and_initial_abi_query_ms": null,
+        "context_close_and_final_wait_ms": null
+      },
+      "input_sha256": {
+        "a_fp32_bytes": "73077f286c81a87cd0ae7405d74d3d8ef6ca14ff408ff53ad99c2916981ef6f5",
+        "b_fp32_bytes": "f44ffcc49ab1370d6b271361c1db666c26726d56361da0016e96153f5f671cbf"
+      },
+      "initial_certificate": {
+        "abi_version": 1,
+        "device": 0,
+        "m": 4096,
+        "n": 4096,
+        "padded_k": 4096,
+        "workspace_bytes": 71434312,
+        "max_energy_a": 1051071,
+        "max_energy_b": 1010808,
+        "accepted": 1,
+        "reject_flags": 0,
+        "min_scale_a": 124,
+        "max_scale_a": 125,
+        "min_scale_b": 124,
+        "max_scale_b": 125,
+        "max_span_a": 2,
+        "max_span_b": 2,
+        "nan_scales_a": 0,
+        "nan_scales_b": 0,
+        "zero_rows_a": 0,
+        "zero_rows_b": 0,
+        "energy_saturated_a": 0,
+        "energy_saturated_b": 0,
+        "metadata_valid": 1,
+        "reserved": 0,
+        "submitted_calls": 1,
+        "context_lifecycle": "per_call_create_gemm_destroy_synchronous"
+      },
+      "actual_last_timed_certificate": null
+    },
+    {
+      "name": "bench-4096-02-workspace",
+      "raw_sha256": "4b7b04b0381d578da0c0fc33ac1bdad0a7e6b58d266dd51bbfc356eb8088fbc9",
+      "lifecycle": "workspace",
+      "size": 4096,
+      "timing": {
+        "primary_clock": "synchronized_perf_counter",
+        "median_ms": 2.428331400733441,
+        "useful_tflops": 56.59810412635137,
+        "synchronized_wall_round_ms": [
+          2.4421882000751793,
+          2.7131683949846774,
+          2.4279189005028456,
+          2.428331400733441,
+          2.4276884039863944
+        ],
+        "cuda_event_round_ms": [
+          2.440755271911621,
+          2.7110111236572267,
+          2.426646423339844,
+          2.4270208358764647,
+          2.4264032363891603
+        ],
+        "cuda_event_median_ms": 2.4270208358764647
+      },
+      "separate_lifecycle_timing": {
+        "context_create_and_initial_abi_query_ms": 29.64305703062564,
+        "context_close_and_final_wait_ms": 2.3842889931984246,
+        "separate_create_close_total_ms": 32.027346023824066,
+        "create_close_ms_per_all_completed_call": 0.5250384594069519,
+        "note": "Amortization denominator includes one validation, warmup, and measured calls; not a training-step rate"
+      },
+      "input_sha256": {
+        "a_fp32_bytes": "73077f286c81a87cd0ae7405d74d3d8ef6ca14ff408ff53ad99c2916981ef6f5",
+        "b_fp32_bytes": "f44ffcc49ab1370d6b271361c1db666c26726d56361da0016e96153f5f671cbf"
+      },
+      "initial_certificate": {
+        "abi_version": 1,
+        "device": 0,
+        "m": 4096,
+        "n": 4096,
+        "padded_k": 4096,
+        "workspace_bytes": 71434312,
+        "max_energy_a": 1051071,
+        "max_energy_b": 1010808,
+        "accepted": 1,
+        "reject_flags": 0,
+        "min_scale_a": 124,
+        "max_scale_a": 125,
+        "min_scale_b": 124,
+        "max_scale_b": 125,
+        "max_span_a": 2,
+        "max_span_b": 2,
+        "nan_scales_a": 0,
+        "nan_scales_b": 0,
+        "zero_rows_a": 0,
+        "zero_rows_b": 0,
+        "energy_saturated_a": 0,
+        "energy_saturated_b": 0,
+        "metadata_valid": 1,
+        "reserved": 0,
+        "submitted_calls": 1,
+        "context_lifecycle": "explicit_single_shape_owner_thread_workspace"
+      },
+      "actual_last_timed_certificate": {
+        "abi_version": 1,
+        "device": 0,
+        "m": 4096,
+        "n": 4096,
+        "padded_k": 4096,
+        "workspace_bytes": 71434312,
+        "max_energy_a": 1051071,
+        "max_energy_b": 1010808,
+        "accepted": 1,
+        "reject_flags": 0,
+        "min_scale_a": 124,
+        "max_scale_a": 125,
+        "min_scale_b": 124,
+        "max_scale_b": 125,
+        "max_span_a": 2,
+        "max_span_b": 2,
+        "nan_scales_a": 0,
+        "nan_scales_b": 0,
+        "zero_rows_a": 0,
+        "zero_rows_b": 0,
+        "energy_saturated_a": 0,
+        "energy_saturated_b": 0,
+        "metadata_valid": 1,
+        "reserved": 0,
+        "submitted_calls": 61,
+        "context_lifecycle": "explicit_single_shape_owner_thread_workspace"
+      }
+    },
+    {
+      "name": "bench-4096-03-workspace",
+      "raw_sha256": "a0d611b49418a4496592974ccec1523a2df8fe6aa3da4c4c467ec3c317708e8a",
+      "lifecycle": "workspace",
+      "size": 4096,
+      "timing": {
+        "primary_clock": "synchronized_perf_counter",
+        "median_ms": 2.4364901008084416,
+        "useful_tflops": 56.40858275040681,
+        "synchronized_wall_round_ms": [
+          2.4378761008847505,
+          2.6165273040533066,
+          2.4364901008084416,
+          2.4299528973642737,
+          2.430961700156331
+        ],
+        "cuda_event_round_ms": [
+          2.436502456665039,
+          2.614067268371582,
+          2.435196876525879,
+          2.4286848068237306,
+          2.429721641540527
+        ],
+        "cuda_event_median_ms": 2.435196876525879
+      },
+      "separate_lifecycle_timing": {
+        "context_create_and_initial_abi_query_ms": 25.250695005524904,
+        "context_close_and_final_wait_ms": 1.2377829989418387,
+        "separate_create_close_total_ms": 26.488478004466742,
+        "create_close_ms_per_all_completed_call": 0.43423734433552036,
+        "note": "Amortization denominator includes one validation, warmup, and measured calls; not a training-step rate"
+      },
+      "input_sha256": {
+        "a_fp32_bytes": "73077f286c81a87cd0ae7405d74d3d8ef6ca14ff408ff53ad99c2916981ef6f5",
+        "b_fp32_bytes": "f44ffcc49ab1370d6b271361c1db666c26726d56361da0016e96153f5f671cbf"
+      },
+      "initial_certificate": {
+        "abi_version": 1,
+        "device": 0,
+        "m": 4096,
+        "n": 4096,
+        "padded_k": 4096,
+        "workspace_bytes": 71434312,
+        "max_energy_a": 1051071,
+        "max_energy_b": 1010808,
+        "accepted": 1,
+        "reject_flags": 0,
+        "min_scale_a": 124,
+        "max_scale_a": 125,
+        "min_scale_b": 124,
+        "max_scale_b": 125,
+        "max_span_a": 2,
+        "max_span_b": 2,
+        "nan_scales_a": 0,
+        "nan_scales_b": 0,
+        "zero_rows_a": 0,
+        "zero_rows_b": 0,
+        "energy_saturated_a": 0,
+        "energy_saturated_b": 0,
+        "metadata_valid": 1,
+        "reserved": 0,
+        "submitted_calls": 1,
+        "context_lifecycle": "explicit_single_shape_owner_thread_workspace"
+      },
+      "actual_last_timed_certificate": {
+        "abi_version": 1,
+        "device": 0,
+        "m": 4096,
+        "n": 4096,
+        "padded_k": 4096,
+        "workspace_bytes": 71434312,
+        "max_energy_a": 1051071,
+        "max_energy_b": 1010808,
+        "accepted": 1,
+        "reject_flags": 0,
+        "min_scale_a": 124,
+        "max_scale_a": 125,
+        "min_scale_b": 124,
+        "max_scale_b": 125,
+        "max_span_a": 2,
+        "max_span_b": 2,
+        "nan_scales_a": 0,
+        "nan_scales_b": 0,
+        "zero_rows_a": 0,
+        "zero_rows_b": 0,
+        "energy_saturated_a": 0,
+        "energy_saturated_b": 0,
+        "metadata_valid": 1,
+        "reserved": 0,
+        "submitted_calls": 61,
+        "context_lifecycle": "explicit_single_shape_owner_thread_workspace"
+      }
+    },
+    {
+      "name": "bench-4096-04-per_call",
+      "raw_sha256": "e32e2c5ae9f6defca8cc0af32c5a7e2508360a6b29fc546f2583903a521fb7ee",
+      "lifecycle": "per_call",
+      "size": 4096,
+      "timing": {
+        "primary_clock": "synchronized_perf_counter",
+        "median_ms": 5.957345804199576,
+        "useful_tflops": 23.070501191170347,
+        "synchronized_wall_round_ms": [
+          5.957345804199576,
+          5.154549103463069,
+          4.493616096442565,
+          5.970482004340738,
+          6.237052200594917
+        ],
+        "cuda_event_round_ms": [
+          5.954988861083985,
+          5.153049468994141,
+          4.492310333251953,
+          5.969257736206055,
+          6.2358142852783205
+        ],
+        "cuda_event_median_ms": 5.954988861083985
+      },
+      "separate_lifecycle_timing": {
+        "context_create_and_initial_abi_query_ms": null,
+        "context_close_and_final_wait_ms": null
+      },
+      "input_sha256": {
+        "a_fp32_bytes": "73077f286c81a87cd0ae7405d74d3d8ef6ca14ff408ff53ad99c2916981ef6f5",
+        "b_fp32_bytes": "f44ffcc49ab1370d6b271361c1db666c26726d56361da0016e96153f5f671cbf"
+      },
+      "initial_certificate": {
+        "abi_version": 1,
+        "device": 0,
+        "m": 4096,
+        "n": 4096,
+        "padded_k": 4096,
+        "workspace_bytes": 71434312,
+        "max_energy_a": 1051071,
+        "max_energy_b": 1010808,
+        "accepted": 1,
+        "reject_flags": 0,
+        "min_scale_a": 124,
+        "max_scale_a": 125,
+        "min_scale_b": 124,
+        "max_scale_b": 125,
+        "max_span_a": 2,
+        "max_span_b": 2,
+        "nan_scales_a": 0,
+        "nan_scales_b": 0,
+        "zero_rows_a": 0,
+        "zero_rows_b": 0,
+        "energy_saturated_a": 0,
+        "energy_saturated_b": 0,
+        "metadata_valid": 1,
+        "reserved": 0,
+        "submitted_calls": 1,
+        "context_lifecycle": "per_call_create_gemm_destroy_synchronous"
+      },
+      "actual_last_timed_certificate": null
+    }
+  ],
+  "input_fingerprints": {
+    "1024": {
+      "a_fp32_bytes": "2d4001ed071779906ae3c56c7057bc18ae829a2653f12b9b163eb9bc966b1fbf",
+      "b_fp32_bytes": "18771dbd1900f9588780ebcf4d8c126fea910ed8b2f0f5576dea0a20e69210c8"
+    },
+    "4096": {
+      "a_fp32_bytes": "73077f286c81a87cd0ae7405d74d3d8ef6ca14ff408ff53ad99c2916981ef6f5",
+      "b_fp32_bytes": "f44ffcc49ab1370d6b271361c1db666c26726d56361da0016e96153f5f671cbf"
+    }
+  },
+  "operation_calls_per_process": 61,
+  "timed_calls_per_process": 50,
+  "independent_checker_cases": 11,
+  "repeated_rounds_are_independent_samples": false,
+  "separate_resource_timing": {
+    "scope": "first explicit context creation plus final close in each benchmark process",
+    "total_ms_min": 26.488478004466742,
+    "total_ms_max": 32.64865302480757,
+    "observations": [
+      {
+        "run": "bench-1024-02-workspace",
+        "size": 1024,
+        "context_create_and_initial_abi_query_ms": 22.755461977794766,
+        "context_close_and_final_wait_ms": 9.893191047012806,
+        "separate_create_close_total_ms": 32.64865302480757,
+        "create_close_ms_per_all_completed_call": 0.5352238200788126,
+        "note": "Amortization denominator includes one validation, warmup, and measured calls; not a training-step rate"
+      },
+      {
+        "run": "bench-1024-03-workspace",
+        "size": 1024,
+        "context_create_and_initial_abi_query_ms": 29.044369992334396,
+        "context_close_and_final_wait_ms": 0.7840660400688648,
+        "separate_create_close_total_ms": 29.82843603240326,
+        "create_close_ms_per_all_completed_call": 0.48899075462956165,
+        "note": "Amortization denominator includes one validation, warmup, and measured calls; not a training-step rate"
+      },
+      {
+        "run": "bench-4096-02-workspace",
+        "size": 4096,
+        "context_create_and_initial_abi_query_ms": 29.64305703062564,
+        "context_close_and_final_wait_ms": 2.3842889931984246,
+        "separate_create_close_total_ms": 32.027346023824066,
+        "create_close_ms_per_all_completed_call": 0.5250384594069519,
+        "note": "Amortization denominator includes one validation, warmup, and measured calls; not a training-step rate"
+      },
+      {
+        "run": "bench-4096-03-workspace",
+        "size": 4096,
+        "context_create_and_initial_abi_query_ms": 25.250695005524904,
+        "context_close_and_final_wait_ms": 1.2377829989418387,
+        "separate_create_close_total_ms": 26.488478004466742,
+        "create_close_ms_per_all_completed_call": 0.43423734433552036,
+        "note": "Amortization denominator includes one validation, warmup, and measured calls; not a training-step rate"
+      }
+    ],
+    "included_in_reported_repeated_call_TFLOPS": false,
+    "not_a_universal_per_context_cold_cost_estimate": true
+  },
+  "limitations": [
+    "This API is explicit, single-shape, owner-thread reuse; autograd and MXLinear do not use it, and existing default interfaces are unchanged.",
+    "Repeated-call timing includes both full quantizations, validation, allocations, Python/ctypes, preparation, certificate, GEMM and epilogue/fallback.",
+    "Workspace creation and close are measured separately; per-call creation and synchronous destruction remain inside each timed operation.",
+    "The separate amortization divisor 61 includes one initial validation, ten warmups and fifty timed operations, not sixty-one independent cases or training steps.",
+    "Each lifecycle has two independent processes per size and ten correlated round observations; no confidence interval or statistical significance is established.",
+    "The individual per-call process medians vary; ABBA reduces ordering bias but does not establish a fixed universal speedup or isolate every source of variance.",
+    "Only the final actual timed GEMM output is fully validated per process; intermediate timed outputs are not individually copied back.",
+    "Per-call final native contexts are destroyed before the timer returns, so no final certificate is available; the initial per-call diagnostic and final output checks are retained.",
+    "The large Gaussian output oracle is the unchanged exact tiled path; independent NumPy checks are provided by the workspace and prerequisite suites, not full large-matrix CPU GEMM.",
+    "CUDA event intervals include host submission gaps and wrapper synchronizations; they are not isolated kernel timings.",
+    "This runner has no continuous NVML clock/load trace and does not assert exclusive device activity; selected cache build is held identical across both lifecycles.",
+    "Only node-recorded ELF hashes are available locally, cross-bound to build manifests and before/after execution records.",
+    "No real-corpus LLM pretraining, backward/autograd integration, optimizer step, training throughput or peak-memory benefit is established here."
+  ],
+  "audit_finished_at_utc": "2026-11-23T22:54:20.640002+00:00"
+}

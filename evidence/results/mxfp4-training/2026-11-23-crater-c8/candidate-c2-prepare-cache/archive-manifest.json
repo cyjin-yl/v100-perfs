@@ -1,0 +1,14 @@
+{
+  "bytes": 150676,
+  "completion_sha256": "514b95d413864b7a43f90d04d8670bec4b6a3ab440c9cdb9d182795471e08e9f",
+  "gpu_executed": true,
+  "passed": true,
+  "results_archive": "/workspace/user/mxfp4-c2-cache-20261123T2240/results.tar.gz",
+  "reviewed_native_helper_sha256": "f7f45628bcf7616a7e7915823c77f2f75602cff66be29bf640c5ec3be8ecce1e",
+  "reviewed_quantizer_helper_sha256": "96d3db40d25426370cfc8542dff908edf00a385c0055019c727c9c005fb8a548",
+  "runner_sha256": "65e23628156a4430421cd6ad21359a62e4f2ab922f9daf58ee7d1621b5ecdde7",
+  "sha256": "9bea8409d639e984fa7834a16681312f23b14158b4c6f568796165f7bda0c797",
+  "source_archive_sha256": "a7062abcfa1b9263d7a7bf0d282f2de1b51cfa279939f3b969eacb543f5417c0",
+  "source_commit": "c581389551be2233ba23404fa72c471cc4c6f961",
+  "status": "passed"
+}
